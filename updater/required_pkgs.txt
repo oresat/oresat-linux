@@ -1,0 +1,8 @@
+vim
+g++
+make
+gcc
+python3
+htop
+tree
+python3-pip
