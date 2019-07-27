@@ -5,4 +5,19 @@ These script will allow OreSat A8 to be updated when it is in space.
 The ground station side will used ansible and QEMU to make a tar of packages, source code, a instruction yaml file. QEMU will have a virtual copy of 4 A8 on OreSat (GPS, Star Tracker, OreSat Live, & Cirrus Flux Camera) for ansible to controll. 
 
 ## OreSat side
-The onboard OreSat side will untar the tar of packages and install the packages listed in instuction for the A8 it is currently running on.
+The onboard OreSat side will untar the tar of packages and install the packages listed in instuctions.conf for the A8 it is currently running on.
+
+python3 updater.py path-to-tar-file device
+where device can be:
+    GPS
+    StarTracker
+    OreSatLive
+    CFC
+
+Status:
+- [ ] Package managment
+    - [ ] Updater installs packages based off of instructions.conf
+    - [ ] Updater removes packages based off of instructions.conf
+    - [ ] Output result of instruction in a file result.txt
+- [ ] Source code
+- [ ] Kernel updates

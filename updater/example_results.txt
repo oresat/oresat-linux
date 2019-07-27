@@ -1,0 +1,26 @@
+[GPS-remove-pkgs]
+
+[StarTracker-remove-pkgs]
+g++_4%3a6.3.0-4_armhf.deb                       done
+g++-6_6.3.0-18+deb9u1_armhf.deb                 done
+libstdc++-6-dev_6.3.0-18+deb9u1_armhf.deb       done
+
+[OreSatLive-remove-pkgs]
+
+[CFC-remove-pkgs]
+non-existant-pkg                                error
+
+[GPS-install-pkgs]
+libstdc++-6-dev_6.3.0-18+deb9u1_armhf.deb       done
+g++-6_6.3.0-18+deb9u1_armhf.deb                 done
+g++_4%3a6.3.0-4_armhf.deb                       done
+
+[StarTracker-install-pkgs]
+g++_4%3a6.3.0-4_armhf.deb                       failed
+
+[OreSatLive-install-pkgs]
+non-existant-pkg2.deb                           error
+non-existant-pkg3.deb                           error
+
+[CFC-install-pkgs]
+
