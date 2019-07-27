@@ -16,8 +16,8 @@ where device can be:
 
 Status:
 - [ ] Package managment
-    - [*] Untar
-    - [*] Installs all packages in tar
+    - [x] Untar
+    - [x] Installs all packages in tar
     - [ ] Installs packages based off of instructions.conf
     - [ ] Removes packages based off of instructions.conf
     - [ ] Output results of the updater in result.txt
