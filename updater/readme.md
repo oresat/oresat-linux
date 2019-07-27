@@ -7,12 +7,12 @@ The ground station side will used ansible and QEMU to make a tar of packages, so
 ## OreSat side
 The onboard OreSat side will untar the tar of packages and install the packages listed in instuctions.conf for the A8 it is currently running on.
 
-python3 updater.py path-to-tar-file device
+`python3 updater.py path-to-tar-file device`
 where device can be:
-    GPS
-    StarTracker
-    OreSatLive
-    CFC
+    - GPS
+    - StarTracker
+    - OreSatLive
+    - CFC
 
 Status:
 - [ ] Package managment
