@@ -16,8 +16,10 @@ where device can be:
 
 Status:
 - [ ] Package managment
-    - [ ] Updater installs packages based off of instructions.conf
-    - [ ] Updater removes packages based off of instructions.conf
-    - [ ] Output result of instruction in a file result.txt
+    - [*] Untar
+    - [*] Installs all packages in tar
+    - [ ] Installs packages based off of instructions.conf
+    - [ ] Removes packages based off of instructions.conf
+    - [ ] Output results of the updater in result.txt
 - [ ] Source code
 - [ ] Kernel updates
