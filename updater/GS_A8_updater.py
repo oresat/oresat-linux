@@ -59,24 +59,28 @@ def makeTaskFile(pkgsList):
 def main():
     print("Getting list of currently install packages")
     results = getInstalledPkgsList()
+    #save copy of results
 
     print("Reading required pkgs file")
     output = readPkgFile("required_pkgs.txt")
     if (output == []):
-        print("No packages ot update")
+        print("Required_pkgs.txt not found")
         return -1
 
     print("Making a task & playbook for Ansible")
     makeTaskFile(output)
+
     print("Running Ansible")
     output2 = subprocess.Popen(["ansible-playbook", "-K", PLAYBOOK_PATH],
                                 shell=False,
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
-    #print(output2)
+    result = output2.stdout.readlines()
+    print("Ansible Output: %s" % result)
 
     print("Getting list of currently install packages")
     results2 = getInstalledPkgsList()
+    #save copy of results
 
     print("Getting difference")
     removeList, addList = getListDifference(results, results2)
