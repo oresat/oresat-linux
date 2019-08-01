@@ -1,6 +1,8 @@
 import os, sys, subprocess
 ARGS = 3 #how many args are expected
 
+#TODO add error handling for each function
+
 def file_read(txt_file, tar_file, computer):
     
     #this is just for testing, delete this condition and only use the else
@@ -8,13 +10,18 @@ def file_read(txt_file, tar_file, computer):
         file_object = open(txt_file, "r")
     else:
         tar_dir = untar(tar_file)
-        #file_name is the text file passed in with the instructions
-        txt_file_path = "./tar_dir/"
-        file_object = open(txt_file_path + txt_file, "r")
+        #text file passed in with the instructions
+        file_object = open(tar_file + "/" + txt_file, "r")
         #file_contents is a list of strings, each a line from txt file
     file_contents = file_object.readlines()
+    computer_name = computer 
+    instruction = "-remove-pkgs"
+    read_list(computer_name, tar_file, file_contents, instruction)
+    computer_name = computer 
+    instruction = "-install-pkgs"
+    read_list(computer_name, tar_file, file_contents, instruction)
     
-     
+    clean_dir()
     
 
 #function takes a .tar file as an argument
@@ -40,23 +47,40 @@ def untar(file_name):
         return 0
 
 
-def install(target_dir):
-    #creates a list of all the directory contents
-    directory = os.listdir("./" + target_dir)
-    i = 0
-    #iterates through the directory 
-    while i < len(directory):
-        #if a deb file, use the bash commans to install it
-        if(directory[i].endswith("deb")):
-            bashCommand = "sudo apt install ./" + target_dir + "/" + directory[i]
-            output = subprocess.check_output(['bash','-c', bashCommand])
-            #cli output for each install commans is in output
-        i += 1
-    bashCommand = "mkdir ./old_updates/" + target_dir
-    output = subprocess.check_output(['bash','-c', bashCommand])
-    bashCommand = "mv " + target_dir + " old_updates/" + target_dir
-    output = subprocess.check_output(['bash','-c', bashCommand])
+def install(file_path):
+    if(file_path.endswith("deb")):
+       bashCommand = "sudo apt install ./" + target_dir + "/" + directory[i]
+       output = subprocess.check_output(['bash','-c', bashCommand])
+       #cli output for each install commans is in output
+       #TODO add else condition, add error checking
+    return 1
+	
 
+def remove(file_path):
+    #TODO figure out how to remove from deb
+
+def read_list(computer_name, file_path, file_contents, instruction):
+    list_len = len(file_contents)
+    section_start = 0
+    i = 0
+    for i in range(list_len):
+        if(file_contents[i].startswith("["+computer_name+"]"):
+            section_start = i
+            break
+    i = section_start + 1
+    while !file_contents[i].startswith("["):
+        if(instruction == "-remove-pkgs"):
+            remove(file_path + "/" + file_contents[i])
+        else:
+            install(file_path + "/" + file_contents[i])
+        i+=1
+    if(i = section_start + 1):
+        return 0
+    else:
+        return 1
+        
+
+def clean_dir(file_path):
 
 
 if(len(sys.argv) == ARGS+1):
