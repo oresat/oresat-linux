@@ -21,7 +21,7 @@ def file_read(txt_file, tar_file, computer):
     instruction = "-install-pkgs"
     read_list(computer_name, tar_file, file_contents, instruction)
     
-    clean_dir()
+    clean_dir(tar_file)
     
 
 #function takes a .tar file as an argument
@@ -49,39 +49,53 @@ def untar(file_name):
 
 def install(file_path):
     if(file_path.endswith("deb")):
-       bashCommand = "sudo apt install ./" + target_dir + "/" + directory[i]
+       bashCommand = "sudo apt install ./" + file_path
        output = subprocess.check_output(['bash','-c', bashCommand])
        #cli output for each install commans is in output
-       #TODO add else condition, add error checking
-    return 1
+       #TODO add error checking
+       return True
+    else:
+       return False
 	
 
 def remove(file_path):
     #TODO figure out how to remove from deb
+    print("remove")
 
 def read_list(computer_name, file_path, file_contents, instruction):
     list_len = len(file_contents)
     section_start = 0
     i = 0
     for i in range(list_len):
-        if(file_contents[i].startswith("["+computer_name+"]"):
+        if(file_contents[i].startswith("["+computer_name+instruction+"]")):
             section_start = i
             break
     i = section_start + 1
-    while !file_contents[i].startswith("["):
+    while file_contents[i].startswith("[") != True:
         if(instruction == "-remove-pkgs"):
-            remove(file_path + "/" + file_contents[i])
+            if(remove(file_path + "/" + file_contents[i])):
+                file_contents += "     completed"
+            else:
+                file_contents += "     failed"
         else:
-            install(file_path + "/" + file_contents[i])
+            if(install(file_path + "/" + file_contents[i])):
+                file_contents += "     completed"
+            else:
+                file_contents += "     failed"
         i+=1
-    if(i = section_start + 1):
+    if(i == section_start + 1):
         return 0
     else:
         return 1
         
 
 def clean_dir(file_path):
+    #TODO write function getting all files squared  
+    print("clean")
 
+def prepare_tar(file_path):
+    #TODO remake the tar file 
+    print("prepare")
 
 if(len(sys.argv) == ARGS+1):
     file_read(sys.argv[1], sys.argv[2], sys.argv[3])
