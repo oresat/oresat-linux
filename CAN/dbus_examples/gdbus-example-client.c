@@ -23,18 +23,17 @@ get_server_stdout (GDBusConnection  *connection,
   fd = -1;
   method_call_message = NULL;
   method_reply_message = NULL;
-  gdouble speed_in_mph = 12.1;
 
   method_call_message = g_dbus_message_new_method_call (name_owner,
                                                         "/org/gtk/GDBus/TestObject",
                                                         "org.gtk.GDBus.TestInterface",
-                                                        "EmitSignal");
+                                                        "GimmeStdout");
   method_reply_message = g_dbus_connection_send_message_with_reply_sync (connection,
                                                                          method_call_message,
                                                                          G_DBUS_SEND_MESSAGE_FLAGS_NONE,
                                                                          -1,
                                                                          NULL, /* out_serial */
-                                                                         g_variant_new("(ds)", speed_in_mph, "test"),
+                                                                         NULL, /* cancellable */
                                                                          error);
   if (method_reply_message == NULL)
       goto out;
