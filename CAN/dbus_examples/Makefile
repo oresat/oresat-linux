@@ -6,7 +6,7 @@ DBUS_FLAGS= -I/usr/include/gio-unix-2.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-
 all: client server
 
 client:
-	$(CC) gdbus-example-unix-fd-client.c -o client $(DBUS_FLAGS)
+	$(CC) gdbus-example-client.c -o client $(DBUS_FLAGS)
 
 server:
 	$(CC) gdbus-example-server.c -o server $(DBUS_FLAGS)
