@@ -21,7 +21,6 @@ class Server_XML(object):
 	    <method name='Quit'/>
             <signal name="app_1_signal">
                 <arg type='s'/>
-                <arg type='i'/>
                 <arg type='d'/>
             </signal>
         </interface>
@@ -42,10 +41,12 @@ def repeating_timer():
     """Generate random integer between 0 and 100 and emit over Session D-Bus
     return True to keep the GLib timer calling this function once a second."""
     test_string = "HelloWorld"
-    random_integer = random.randint(0,100)
+    #random_integer = random.randint(0,100)
     random_double = random.uniform(0.0,10.0)
-    print(test_string, random_integer, random_double)
-    emit.app_1_signal(test_string, random_integer, random_double)
+    print(test_string, random_double)
+    #print(test_string, random_integer, random_double)
+    #emit.app_1_signal(test_string, random_integer, random_double)
+    emit.app_1_signal(test_string, random_double)
     return True
 
 if __name__=="__main__":

@@ -1,13 +1,13 @@
 #include <string.h>
 #include <stdlib.h>
-
 #include <sys/types.h>
 #include <unistd.h>
-
 #include <time.h>
-
 #include <gio/gio.h>
 #include <gio/gunixfdlist.h>
+
+#define DBUS_PATH "/org/example/project_1/server_1"
+#define DBUS_INTERFACE ".org.example.project_1.server_1"
 
 /* see gdbus-example-server.c for the server implementation */
 static gint
@@ -25,9 +25,9 @@ get_server_stdout (GDBusConnection  *connection,
   method_reply_message = NULL;
 
   method_call_message = g_dbus_message_new_method_call (name_owner,
-                                                        "/org/gtk/GDBus/TestObject",
-                                                        "org.gtk.GDBus.TestInterface",
-                                                        "GimmeStdout");
+                                                        DBUS_PATH,
+                                                        DBUS_INTERFACE,
+                                                        "Command");
   method_reply_message = g_dbus_connection_send_message_with_reply_sync (connection,
                                                                          method_call_message,
                                                                          G_DBUS_SEND_MESSAGE_FLAGS_NONE,
@@ -67,7 +67,7 @@ on_name_appeared (GDBusConnection *connection,
   fd = get_server_stdout (connection, name_owner, &error);
   if (fd == -1)
     {
-      g_printerr ("Error invoking GimmeStdout(): %s\n",
+      g_printerr ("Error invoking Command(): %s\n",
                   error->message);
       g_error_free (error);
       exit (1);
@@ -116,7 +116,7 @@ main (int argc, char *argv[])
   GMainLoop *loop;
 
   watcher_id = g_bus_watch_name (G_BUS_TYPE_SESSION,
-                                 "org.gtk.GDBus.TestServer",
+                                 DBUS_INTERFACE,
                                  G_BUS_NAME_WATCHER_FLAGS_NONE,
                                  on_name_appeared,
                                  on_name_vanished,
