@@ -3,13 +3,15 @@ DBUS_FLAGS= -I/usr/include/gio-unix-2.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-
 
 .PHONY: all
 
-all: client server
+all: message_client signal_client server
 
-client:
-	$(CC) gdbus-example-client.c -o client $(DBUS_FLAGS)
+message_client:
+	$(CC) gdbus-example-message-client.c -o message_client $(DBUS_FLAGS)
+signal_client:
+	$(CC) gdbus-example-signal-client.c -o signal_client $(DBUS_FLAGS)
 
 server:
 	$(CC) gdbus-example-server.c -o server $(DBUS_FLAGS)
 
 clean:
-	rm server client 
+	rm server signal_client message_client

@@ -18,7 +18,7 @@ class Server_XML(object):
                 <arg type='s' name='command' direction='in'/>
                 <arg type='s' name='response' direction='out'/>
             </method>
-	    <method name='Quit'/>
+            <method name='Quit'/>
             <signal name="app_1_signal">
                 <arg type='s'/>
                 <arg type='d'/>

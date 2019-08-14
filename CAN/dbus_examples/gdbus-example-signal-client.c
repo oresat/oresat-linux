@@ -20,7 +20,6 @@ test_connection_callback (GDBusConnection  *connection,
                           gpointer         user_data)
 {
     gchar *test_string;
-    gint test_integer;
     gdouble test_double;
     GMainLoop *loop = g_main_loop_new (NULL, FALSE);
 
@@ -29,7 +28,7 @@ test_connection_callback (GDBusConnection  *connection,
                    &test_string,
                    test_double);
 
-    g_print ("%s %d\n", 
+    g_print ("%s %f\n", 
                 test_string, 
                 test_double);
 
@@ -73,7 +72,7 @@ on_name_vanished (GDBusConnection *connection,
   g_printerr ("Failed to get name owner for %s\n"
               "Is server running?\n",
               name);
-  exit (1);
+  //exit (1);
 }
 
 
