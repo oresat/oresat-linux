@@ -41,9 +41,6 @@ handle_method_call (GDBusConnection       *connection,
 {
   if (g_strcmp0 (method_name, "Command") == 0)
     {
-        gchar *greeting;
-        gchar *response;
-
         if (g_dbus_connection_get_capabilities (connection) & G_DBUS_CAPABILITY_FLAGS_UNIX_FD_PASSING)
         {
             GDBusMessage *reply;
@@ -138,9 +135,11 @@ repeating_timer(gpointer connection)
 
     if(error != NULL) {
         g_assert(error);
-        g_print("&s", error->message);
+        g_print("%s", error->message);
         g_error_free(error);
+        return FALSE;
     }
+    return TRUE;
 }
 
 static void

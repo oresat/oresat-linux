@@ -19,8 +19,8 @@ test_connection_callback (GDBusConnection  *connection,
                           GVariant         *parameters,
                           gpointer         user_data)
 {
-    gchar *test_string;
-    gdouble test_double;
+    gchar *test_string = NULL;
+    gdouble test_double = 0.0;
     GMainLoop *loop = g_main_loop_new (NULL, FALSE);
 
     g_variant_get (parameters,

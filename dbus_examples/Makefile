@@ -1,17 +1,22 @@
 CC= gcc
-DBUS_FLAGS= -I/usr/include/gio-unix-2.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/lib/libffi-3.2.1/include -pthread -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/dbus-1.0 -I/usr/lib/dbus-1.0/include -lgio-2.0 -lgobject-2.0 -lglib-2.0 -ldbus-1 
+
+CFLAGS_DBUS = $(shell pkg-config --cflags --libs dbus-1)
+CFLAGS_DBUS_GLIB = $(shell pkg-config --cflags --libs dbus-glib-1)
+CFLAGS_GIO  = $(shell pkg-config --cflags --libs gio-unix-2.0)
+CFLAGS = -g -Wall -Werror
 
 .PHONY: all
 
 all: message_client signal_client server
 
 message_client:
-	$(CC) gdbus-example-message-client.c -o message_client $(DBUS_FLAGS)
+	$(CC) gdbus-example-message-client.c -o message_client $(CFLAGS) $(CFLAGS_DBUS) $(CFLAGS_DBUS_GLIB) $(CFLAGS_GIO)
+
 signal_client:
-	$(CC) gdbus-example-signal-client.c -o signal_client $(DBUS_FLAGS)
+	$(CC) gdbus-example-signal-client.c -o signal_client $(CFLAGS) $(CFLAGS_DBUS) $(CFLAGS_DBUS_GLIB) $(CFLAGS_GIO)
 
 server:
-	$(CC) gdbus-example-server.c -o server $(DBUS_FLAGS)
+	$(CC) gdbus-example-server.c -o server $(CFLAGS) $(CFLAGS_DBUS) $(CFLAGS_DBUS_GLIB) $(CFLAGS_GIO)
 
 clean:
-	rm server signal_client message_client
+	rm -f server signal_client message_client
