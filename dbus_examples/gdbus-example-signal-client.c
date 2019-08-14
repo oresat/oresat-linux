@@ -26,7 +26,7 @@ test_connection_callback (GDBusConnection  *connection,
     g_variant_get (parameters,
                    "(&sd)",
                    &test_string,
-                   test_double);
+                   &test_double);
 
     g_print ("%s %f\n", 
                 test_string, 
@@ -72,7 +72,7 @@ on_name_vanished (GDBusConnection *connection,
   g_printerr ("Failed to get name owner for %s\n"
               "Is server running?\n",
               name);
-  //exit (1);
+  exit (1);
 }
 
 
