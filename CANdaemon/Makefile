@@ -8,30 +8,34 @@ CFLAGS = -Wall -Werror -g $(CFLAGS_GIO) $(CFLAGS_DBUS_GLIB) $(CFLAGS_DBUS)
 LDFLAGS = -lrt -pthread
 
 
-SRC =     	./src
-OBJ_DICT_SRC =  ./src/objDict
+SRC = 		./src
+STACK_SRC = 	./src/stack
+OBJ_DICT_SRC = 	./src/objDict
+DBUS_SRC = 	./src/dbus
 
 
 LINK_TARGET  =  ./canopend
 
 
-INCLUDE_DIRS = -I$(SRC)    \
+INCLUDE_DIRS = -I$(STACK_SRC)    \
+               -I$(SRC) \
                -I$(OBJ_DICT_SRC) \
+               -I$(DBUS_SRC) \
 
 
-SOURCES =       $(SRC)/CO_driver.c         \
-                $(SRC)/CO_OD_storage.c     \
-                $(SRC)/CO_Linux_tasks.c    \
-                $(SRC)/crc16-ccitt.c       \
-                $(SRC)/CO_SDO.c            \
-                $(SRC)/CO_Emergency.c      \
-                $(SRC)/CO_NMT_Heartbeat.c  \
-                $(SRC)/CO_SYNC.c           \
-                $(SRC)/CO_PDO.c            \
-                $(SRC)/CO_HBconsumer.c     \
-                $(SRC)/CO_SDOmaster.c      \
-                $(SRC)/CO_trace.c          \
-                $(SRC)/CANopen.c           \
+SOURCES =       $(STACK_SRC)/CO_driver.c         \
+                $(STACK_SRC)/CO_OD_storage.c     \
+                $(STACK_SRC)/CO_Linux_tasks.c    \
+                $(STACK_SRC)/crc16-ccitt.c       \
+                $(STACK_SRC)/CO_SDO.c            \
+                $(STACK_SRC)/CO_Emergency.c      \
+                $(STACK_SRC)/CO_NMT_Heartbeat.c  \
+                $(STACK_SRC)/CO_SYNC.c           \
+                $(STACK_SRC)/CO_PDO.c            \
+                $(STACK_SRC)/CO_HBconsumer.c     \
+                $(STACK_SRC)/CO_SDOmaster.c      \
+                $(STACK_SRC)/CO_trace.c          \
+                $(STACK_SRC)/CANopen.c           \
                 $(SRC)/CO_command.c        \
                 $(SRC)/CO_comm_helpers.c   \
                 $(SRC)/CO_master.c         \
@@ -43,9 +47,9 @@ SOURCES =       $(SRC)/CO_driver.c         \
 OBJS = $(SOURCES:%.c=%.o)
 
 
-.PHONY: all clean
+.PHONY: all
 
-all: clean $(LINK_TARGET)
+all: $(LINK_TARGET)
 
 clean:
 	rm -f $(OBJS) $(LINK_TARGET)
