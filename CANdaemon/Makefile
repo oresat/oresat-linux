@@ -36,7 +36,6 @@ SOURCES =       $(STACK_SRC)/CO_driver.c         \
                 $(STACK_SRC)/CO_SDOmaster.c      \
                 $(STACK_SRC)/CO_trace.c          \
                 $(STACK_SRC)/CANopen.c           \
-                $(SRC)/CO_command.c        \
                 $(SRC)/CO_comm_helpers.c   \
                 $(SRC)/CO_master.c         \
                 $(SRC)/CO_time.c           \

@@ -24,11 +24,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-#include "CANopen.h"
-#include "CO_OD_storage.h"
-#include "CO_Linux_tasks.h"
-#include "CO_time.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -40,8 +35,14 @@
 #include <net/if.h>
 #include <linux/reboot.h>
 #include <sys/reboot.h>
-#include "CO_command.h"
 #include <pthread.h>
+
+#include "CANopen.h"
+#include "CO_OD_storage.h"
+#include "CO_Linux_tasks.h"
+#include "CO_time.h"
+//#include "CO_command.h"
+#include "config.h"
 
 
 #define NSEC_PER_SEC            (1000000000)    /* The number of nanoseconds per second. */
@@ -59,12 +60,12 @@ volatile uint16_t           CO_timer1ms = 0U;
 pthread_mutex_t             CO_CAN_VALID_mtx = PTHREAD_MUTEX_INITIALIZER;
 
 /* Other variables and objects */
-static int                  rtPriority = -1;    /* Real time priority, configurable by arguments. (-1=RT disabled) */
+static int                  rtPriority = RT_PRIO;    /* Real time priority, configurable by arguments. (-1=RT disabled) */
 static int                  mainline_epoll_fd;  /* epoll file descriptor for mainline */
 static CO_OD_storage_t      odStor;             /* Object Dictionary storage object for CO_OD_ROM */
 static CO_OD_storage_t      odStorAuto;         /* Object Dictionary storage object for CO_OD_EEPROM */
-static char                *odStorFile_rom    = "od_storage";       /* Name of the file */
-static char                *odStorFile_eeprom = "od_storage_auto";  /* Name of the file */
+static char                *odStorFile_rom    = OD_STORAGE;
+static char                *odStorFile_eeprom = OD_STORAGE_AUTO;
 static CO_time_t            CO_time;            /* Object for current time */
 
 /* Realtime thread */
@@ -93,36 +94,6 @@ void CO_error(const uint32_t info) {
 }
 
 
-static void printUsage(char *progName) {
-fprintf(stderr,
-"Usage: %s <CAN device name> [options]\n", progName);
-fprintf(stderr,
-"\n"
-"Options:\n"
-"  -i <Node ID>        CANopen Node-id (1..127). If not specified, value from\n"
-"                      Object dictionary (0x2101) is used.\n"
-"  -p <RT priority>    Realtime priority of RT task (RT disabled by default).\n"
-"  -r                  Enable reboot on CANopen NMT reset_node command. \n"
-"  -s <ODstorage file> Set Filename for OD storage ('od_storage' is default).\n"
-"  -a <ODstorageAuto>  Set Filename for automatic storage variables from\n"
-"                      Object dictionary. ('od_storage_auto' is default).\n");
-fprintf(stderr,
-"  -c <Socket path>    Enable command interface for master functionality. \n"
-"                      If socket path is specified as empty string \"\",\n"
-"                      default '%s' will be used.\n"
-"                      Note that location of socket path may affect security.\n"
-"                      See 'canopencomm/canopencomm --help' for more info.\n"
-, CO_command_socketPath);
-fprintf(stderr,
-"\n"
-"LICENSE\n"
-"    This program is part of CANopenSocket and can be downloaded from:\n"
-"    https://github.com/CANopenNode/CANopenSocket\n"
-"    Permission is granted to copy, distribute and/or modify this document\n"
-"    under the terms of the GNU General Public License, Version 2.\n"
-"\n");
-}
-
 
 /******************************************************************************/
 /** Mainline and RT thread                                                   **/
@@ -131,63 +102,25 @@ int main (int argc, char *argv[]) {
     CO_NMT_reset_cmd_t reset = CO_RESET_NOT;
     CO_ReturnError_t odStorStatus_rom, odStorStatus_eeprom;
     int CANdevice0Index = 0;
-    int opt;
     bool_t firstRun = true;
-
-    char* CANdevice = NULL;         /* CAN device, configurable by arguments. */
-    bool_t nodeIdFromArgs = false;  /* True, if program arguments are used for CANopen Node Id */
-    int nodeId = -1;                /* Use value from Object Dictionary or set to 1..127 by arguments */
-    bool_t rebootEnable = false;    /* Configurable by arguments */
-    bool_t commandEnable = false;   /* Configurable by arguments */
-
-    if(argc < 2 || strcmp(argv[1], "--help") == 0){
-        printUsage(argv[0]);
-        exit(EXIT_SUCCESS);
-    }
-
-
-    /* Get program options */
-    while((opt = getopt(argc, argv, "i:p:rc:s:a:")) != -1) {
-        switch (opt) {
-            case 'i':
-                nodeId = strtol(optarg, NULL, 0);
-                nodeIdFromArgs = true;
-                break;
-            case 'p': rtPriority = strtol(optarg, NULL, 0); break;
-            case 'r': rebootEnable = true;                  break;
-            case 'c':
-                /* In case of empty string keep default name, just enable interface. */
-                if(strlen(optarg) != 0) {
-                    CO_command_socketPath = optarg;
-                }
-                commandEnable = true;
-                break;
-            case 's': odStorFile_rom = optarg;              break;
-            case 'a': odStorFile_eeprom = optarg;           break;
-            default:
-                printUsage(argv[0]);
-                exit(EXIT_FAILURE);
-        }
-    }
-
-    if(optind < argc) {
-        CANdevice = argv[optind];
-        CANdevice0Index = if_nametoindex(CANdevice);
-    }
+    char* CANdevice = CAN_DEVICE;
+    bool_t nodeIdFromArgs = true; // TODO fix later
+    int nodeId = NODE_ID;
+    bool_t rebootEnable = false;
+    bool_t commandEnable = false;
 
     if(nodeIdFromArgs && (nodeId < 1 || nodeId > 127)) {
-        fprintf(stderr, "Wrong node ID (%d)\n", nodeId);
-        printUsage(argv[0]);
+        printf("NodeId is %d, must be between 1 and 127\n", nodeId);
         exit(EXIT_FAILURE);
     }
 
     if(rtPriority != -1 && (rtPriority < sched_get_priority_min(SCHED_FIFO)
                          || rtPriority > sched_get_priority_max(SCHED_FIFO))) {
         fprintf(stderr, "Wrong RT priority (%d)\n", rtPriority);
-        printUsage(argv[0]);
         exit(EXIT_FAILURE);
     }
 
+    CANdevice0Index = if_nametoindex(CANdevice);
     if(CANdevice0Index == 0) {
         char s[120];
         snprintf(s, 120, "Can't find CAN device \"%s\"", CANdevice);
@@ -321,10 +254,9 @@ int main (int argc, char *argv[]) {
 
             /* Initialize socket command interface */
             if(commandEnable) {
-                if(CO_command_init() != 0) {
-                    CO_errExit("Socket command interface initialization failed");
-                }
-                printf("%s - Command interface on socket '%s' started ...\n", argv[0], CO_command_socketPath);
+                //if(CO_command_init() != 0) { // TODO DBUS INIT
+                //    CO_errExit("Socket command interface initialization failed");
+                //}
             }
         }
 
@@ -366,9 +298,9 @@ int main (int argc, char *argv[]) {
 /* program exit ***************************************************************/
     /* join threads */
     if(commandEnable) {
-        if(CO_command_clear() != 0) {
-            CO_errExit("Socket command interface removal failed");
-        }
+        //if(CO_command_clear() != 0) { // TODO DBUS
+        //    CO_errExit("Socket command interface removal failed");
+        //}
     }
 
     CO_endProgram = 1;
