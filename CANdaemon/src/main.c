@@ -40,11 +40,8 @@
 #include <net/if.h>
 #include <linux/reboot.h>
 #include <sys/reboot.h>
-
-#ifndef CO_SINGLE_THREAD
 #include "CO_command.h"
 #include <pthread.h>
-#endif
 
 
 #define NSEC_PER_SEC            (1000000000)    /* The number of nanoseconds per second. */
@@ -59,9 +56,7 @@ volatile uint16_t           CO_timer1ms = 0U;
 
 /* Mutex is locked, when CAN is not valid (configuration state). May be used
  *  from other threads. RT threads may use CO->CANmodule[0]->CANnormal instead. */
-#ifndef CO_SINGLE_THREAD
 pthread_mutex_t             CO_CAN_VALID_mtx = PTHREAD_MUTEX_INITIALIZER;
-#endif
 
 /* Other variables and objects */
 static int                  rtPriority = -1;    /* Real time priority, configurable by arguments. (-1=RT disabled) */
@@ -73,11 +68,9 @@ static char                *odStorFile_eeprom = "od_storage_auto";  /* Name of t
 static CO_time_t            CO_time;            /* Object for current time */
 
 /* Realtime thread */
-#ifndef CO_SINGLE_THREAD
 static void*                rt_thread(void* arg);
 static pthread_t            rt_thread_id;
 static int                  rt_thread_epoll_fd;
-#endif
 
 
 /* Signal handler */
@@ -113,7 +106,6 @@ fprintf(stderr,
 "  -s <ODstorage file> Set Filename for OD storage ('od_storage' is default).\n"
 "  -a <ODstorageAuto>  Set Filename for automatic storage variables from\n"
 "                      Object dictionary. ('od_storage_auto' is default).\n");
-#ifndef CO_SINGLE_THREAD
 fprintf(stderr,
 "  -c <Socket path>    Enable command interface for master functionality. \n"
 "                      If socket path is specified as empty string \"\",\n"
@@ -121,7 +113,6 @@ fprintf(stderr,
 "                      Note that location of socket path may affect security.\n"
 "                      See 'canopencomm/canopencomm --help' for more info.\n"
 , CO_command_socketPath);
-#endif
 fprintf(stderr,
 "\n"
 "LICENSE\n"
@@ -147,9 +138,7 @@ int main (int argc, char *argv[]) {
     bool_t nodeIdFromArgs = false;  /* True, if program arguments are used for CANopen Node Id */
     int nodeId = -1;                /* Use value from Object Dictionary or set to 1..127 by arguments */
     bool_t rebootEnable = false;    /* Configurable by arguments */
-#ifndef CO_SINGLE_THREAD
     bool_t commandEnable = false;   /* Configurable by arguments */
-#endif
 
     if(argc < 2 || strcmp(argv[1], "--help") == 0){
         printUsage(argv[0]);
@@ -166,7 +155,6 @@ int main (int argc, char *argv[]) {
                 break;
             case 'p': rtPriority = strtol(optarg, NULL, 0); break;
             case 'r': rebootEnable = true;                  break;
-#ifndef CO_SINGLE_THREAD
             case 'c':
                 /* In case of empty string keep default name, just enable interface. */
                 if(strlen(optarg) != 0) {
@@ -174,7 +162,6 @@ int main (int argc, char *argv[]) {
                 }
                 commandEnable = true;
                 break;
-#endif
             case 's': odStorFile_rom = optarg;              break;
             case 'a': odStorFile_eeprom = optarg;           break;
             default:
@@ -248,10 +235,8 @@ int main (int argc, char *argv[]) {
         printf("%s - communication reset ...\n", argv[0]);
 
 
-#ifndef CO_SINGLE_THREAD
         /* Wait other threads (command interface). */
         pthread_mutex_lock(&CO_CAN_VALID_mtx);
-#endif
 
         /* Wait rt_thread. */
         if(!firstRun) {
@@ -311,22 +296,6 @@ int main (int argc, char *argv[]) {
             /* Init mainline */
             taskMain_init(mainline_epoll_fd, &OD_performance[ODA_performance_mainCycleMaxTime]);
 
-
-#ifdef CO_SINGLE_THREAD
-            /* Init taskRT */
-            CANrx_taskTmr_init(mainline_epoll_fd, TMR_TASK_INTERVAL_NS, &OD_performance[ODA_performance_timerCycleMaxTime]);
-
-            OD_performance[ODA_performance_timerCycleTime] = TMR_TASK_INTERVAL_NS/1000; /* informative */
-
-            /* Set priority for mainline */
-            if(rtPriority > 0) {
-                struct sched_param param;
-
-                param.sched_priority = rtPriority;
-                if(sched_setscheduler(0, SCHED_FIFO, &param) != 0)
-                    CO_errExit("Program init - mainline set scheduler failed");
-            }
-#else
             /* Configure epoll for rt_thread */
             rt_thread_epoll_fd = epoll_create(2);
             if(rt_thread_epoll_fd == -1)
@@ -349,9 +318,7 @@ int main (int argc, char *argv[]) {
                 if(pthread_setschedparam(rt_thread_id, SCHED_FIFO, &param) != 0)
                     CO_errExit("Program init - rt_thread set scheduler failed");
             }
-#endif
 
-#ifndef CO_SINGLE_THREAD
             /* Initialize socket command interface */
             if(commandEnable) {
                 if(CO_command_init() != 0) {
@@ -359,16 +326,11 @@ int main (int argc, char *argv[]) {
                 }
                 printf("%s - Command interface on socket '%s' started ...\n", argv[0], CO_command_socketPath);
             }
-#endif
         }
-
 
         /* start CAN */
         CO_CANsetNormalMode(CO->CANmodule[0]);
-#ifndef CO_SINGLE_THREAD
         pthread_mutex_unlock(&CO_CAN_VALID_mtx);
-#endif
-
 
         reset = CO_RESET_NOT;
 
@@ -388,17 +350,6 @@ int main (int argc, char *argv[]) {
                 }
             }
 
-#ifdef CO_SINGLE_THREAD
-            else if(CANrx_taskTmr_process(ev.data.fd)) {
-                /* code was processed in the above function. Additional code process below */
-                INCREMENT_1MS(CO_timer1ms);
-                /* Detect timer large overflow */
-                if(OD_performance[ODA_performance_timerCycleMaxTime] > TMR_TASK_OVERFLOW_US && rtPriority > 0) {
-                    CO_errorReport(CO->em, CO_EM_ISR_TIMER_OVERFLOW, CO_EMC_SOFTWARE_INTERNAL, 0x22400000L | OD_performance[ODA_performance_timerCycleMaxTime]);
-                }
-            }
-#endif
-
             else if(taskMain_process(ev.data.fd, &reset, CO_timer1ms)) {
                 /* code was processed in the above function. Additional code process below */
                 CO_OD_storage_autoSave(&odStorAuto, CO_timer1ms, 60000);
@@ -414,20 +365,16 @@ int main (int argc, char *argv[]) {
 
 /* program exit ***************************************************************/
     /* join threads */
-#ifndef CO_SINGLE_THREAD
     if(commandEnable) {
         if(CO_command_clear() != 0) {
             CO_errExit("Socket command interface removal failed");
         }
     }
-#endif
 
     CO_endProgram = 1;
-#ifndef CO_SINGLE_THREAD
     if(pthread_join(rt_thread_id, NULL) != 0) {
         CO_errExit("Program end - pthread_join failed");
     }
-#endif
 
     /* Store CO_OD_EEPROM */
     CO_OD_storage_autoSave(&odStorAuto, 0, 0);
@@ -452,7 +399,6 @@ int main (int argc, char *argv[]) {
 }
 
 
-#ifndef CO_SINGLE_THREAD
 /* Realtime thread for CAN receive and taskTmr ********************************/
 static void* rt_thread(void* arg) {
 
@@ -497,4 +443,3 @@ static void* rt_thread(void* arg) {
 
     return NULL;
 }
-#endif

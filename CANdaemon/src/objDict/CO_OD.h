@@ -81,7 +81,7 @@
    #define CO_NO_SDO_CLIENT               1   //Associated objects: 1280
    #define CO_NO_RPDO                     16  //Associated objects from index 1400 to 160F, count = 32
    #define CO_NO_TPDO                     16  //Associated objects from index 1800 to 1A0F, count = 32
-   #define CO_NO_NMT_MASTER               0
+   #define CO_NO_NMT_MASTER               1
    #define CO_NO_TRACE                    32  //Associated objects from index 2301 to 2420, count = 65
 
 

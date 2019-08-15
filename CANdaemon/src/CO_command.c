@@ -412,7 +412,6 @@ static void command_process(int fd, char* command, size_t commandLength) {
             }
         }
 
-#if CO_NO_NMT_MASTER == 1
         /* NMT start node */
         else if(strcmp(token, "start") == 0) {
             lastTok(NULL, spaceDelim, &err);
@@ -481,7 +480,6 @@ static void command_process(int fd, char* command, size_t commandLength) {
                 }
             }
         }
-#endif
 
         /* set command - multiple settings */
         else if(strcmp(token, "set") == 0) {

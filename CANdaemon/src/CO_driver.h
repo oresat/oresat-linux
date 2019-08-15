@@ -36,11 +36,7 @@
 #include <stdbool.h>        /* for 'true', 'false' */
 #include <unistd.h>
 #include <endian.h>
-
-#ifndef CO_SINGLE_THREAD
 #include <pthread.h>
-#endif
-
 #include <linux/can.h>
 #include <linux/can/raw.h>
 #include <linux/can/error.h>
@@ -52,16 +48,6 @@
 
 
 /* Critical sections */
-#ifdef CO_SINGLE_THREAD
-    #define CO_LOCK_CAN_SEND()
-    #define CO_UNLOCK_CAN_SEND()
-
-    #define CO_LOCK_EMCY()
-    #define CO_UNLOCK_EMCY()
-
-    #define CO_LOCK_OD()
-    #define CO_UNLOCK_OD()
-#else
     #define CO_LOCK_CAN_SEND()      /* not needed */
     #define CO_UNLOCK_CAN_SEND()
 
@@ -72,7 +58,6 @@
     extern pthread_mutex_t CO_OD_mtx;
     #define CO_LOCK_OD()            {if(pthread_mutex_lock(&CO_OD_mtx) != 0) CO_errExit("Mutex lock CO_OD_mtx failed");}
     #define CO_UNLOCK_OD()          {if(pthread_mutex_unlock(&CO_OD_mtx) != 0) CO_errExit("Mutex unlock CO_OD_mtx failed");}
-#endif
 
 
 /* Data types */

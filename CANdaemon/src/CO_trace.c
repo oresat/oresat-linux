@@ -58,10 +58,10 @@ static int32_t getValueU32(void *OD_variable) { return           *((int32_t*)  O
 
 /* Different functions for printing points for different data types. */
 static uint32_t printPointCsv(char *s, uint32_t size, uint32_t timeStamp, int32_t value) {
-    return snprintf(s, size, "%u;%d\n", timeStamp,             value);
+    return snprintf(s, size, "%u;%d\n", timeStamp,  value);
 }
 static uint32_t printPointCsvUnsigned(char *s, uint32_t size, uint32_t timeStamp, int32_t value) {
-    return snprintf(s, size, "%u;%u\n", timeStamp, (uint32_t)  value);
+    return snprintf(s, size, "%u;%u\n", timeStamp, (uint32_t) value);
 }
 static uint32_t printPointBinary(char *s, uint32_t size, uint32_t timeStamp, int32_t value) {
     if(size < 8) return 0;

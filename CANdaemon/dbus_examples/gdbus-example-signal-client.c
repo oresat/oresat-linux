@@ -63,7 +63,7 @@ on_name_appeared (GDBusConnection *connection,
     g_dbus_connection_signal_unsubscribe (connection, s1);
 }
 
-
+/*
 static void
 on_name_vanished (GDBusConnection *connection,
                   const gchar     *name,
@@ -74,7 +74,7 @@ on_name_vanished (GDBusConnection *connection,
               name);
   exit (1);
 }
-
+*/
 
 int
 main (int argc, char *argv[]) 
@@ -85,7 +85,7 @@ main (int argc, char *argv[])
                                     DBUS_INTERFACE,
                                     G_BUS_NAME_WATCHER_FLAGS_NONE,
                                     on_name_appeared,
-                                    on_name_vanished,
+                                    NULL, //on_name_vanished,
                                     NULL,
                                     NULL);
 

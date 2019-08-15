@@ -33,10 +33,8 @@
 
 
 /******************************************************************************/
-#ifndef CO_SINGLE_THREAD
-    pthread_mutex_t CO_EMCY_mtx = PTHREAD_MUTEX_INITIALIZER;
-    pthread_mutex_t CO_OD_mtx = PTHREAD_MUTEX_INITIALIZER;
-#endif
+pthread_mutex_t CO_EMCY_mtx = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t CO_OD_mtx = PTHREAD_MUTEX_INITIALIZER;
 
 
 /** Set socketCAN filters *****************************************************/

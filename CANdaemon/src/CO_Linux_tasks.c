@@ -24,7 +24,7 @@
  */
 
 
-#include "../src/CANopen.h"
+#include "CANopen.h"
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/timerfd.h>
