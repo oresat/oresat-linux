@@ -1,16 +1,15 @@
 # Eample Code
 The example code for DBus uses GDBus for C and pydbus for Python.
 
-
-## DBus Server
+### DBus Server
  - Defines the DBus interface with an XML
  - Outputs two different signals (file signal and data signal). 
  - Process any method calls.
 
-## DBus Signal Client
+### DBus Signal Client
  - Print any signals found on the DBus interface.
 
-## DBus Method Client
+### DBus Method Client
  - Call the Command and quit methods.
 
 

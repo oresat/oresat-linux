@@ -11,6 +11,7 @@ The CANdaemon is a CAN interface for the main process for the GPS, Star Tracker,
 
 
 ## Usefull Links
+ -  [CANopenSocket](https://github.com/CANopenNode/CANopenSocket)
  -  [DBus-Specs](https://dbus.freedesktop.org/doc/dbus-specification.html)
  -  [CANopen-Specs](https://www.can-cia.org/groups/specifications/)
  -  [ECSS-CANBus-Extended-Protocal](https://ecss.nl/standard/ecss-e-st-50-15c-space-engineering-canbus-extension-protocol-1-may-2015/)
