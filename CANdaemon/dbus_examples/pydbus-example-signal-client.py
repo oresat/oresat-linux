@@ -5,7 +5,7 @@ from pydbus import SessionBus
 from gi.repository import GLib
 
 loop = GLib.MainLoop()
-dbus_filter = "/org/example/project_1/server_1"
+dbus_filter = "org.example.oresat"
 bus = SessionBus()
 
 
@@ -19,4 +19,7 @@ if __name__=="__main__":
     # Subscribe to bus to monitor for server signal emissions
     bus.subscribe(object = dbus_filter, 
                   signal_fired = cb_server_signal_emission)    
+    #bus.subscribe(signal="file_signal", 
+    #               object = dbus_filter, 
+    #              signal_fired = cb_server_signal_emission)    
     loop.run()

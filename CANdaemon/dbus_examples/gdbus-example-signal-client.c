@@ -7,35 +7,63 @@
 #include <gio/gio.h>
 #include <gio/gunixfdlist.h>
 
-#define DBUS_INTERFACE "org.example.project_1.server_1"
-#define DBUS_PATH "/org/example/project_1/server_1"
+#define DBUS_INTERFACE  "org.example.project.oresat"
+#define DBUS_PATH       "/org/example/project/oresat"
 
 static void
-test_connection_callback (GDBusConnection  *connection,
-                          const gchar      *sender_name,
-                          const gchar      *object_path,
-                          const gchar      *interface_name,
-                          const gchar      *signal_name,
-                          GVariant         *parameters,
-                          gpointer         user_data)
+read_data_signal (GDBusConnection  *connection,
+                  const gchar      *sender_name,
+                  const gchar      *object_path,
+                  const gchar      *interface_name,
+                  const gchar      *signal_name,
+                  GVariant         *parameters,
+                  gpointer         user_data)
 {
     gchar *test_string = NULL;
     gdouble test_double = 0.0;
+    gint test_int = 0;
     GMainLoop *loop = g_main_loop_new (NULL, FALSE);
 
     g_variant_get (parameters,
-                   "(&sd)",
+                   "(&sdi)",
                    &test_string,
-                   &test_double);
+                   &test_double,
+                   &test_int);
 
-    g_print ("%s %f\n", 
+    g_print ("%s %f %d\n", 
                 test_string, 
-                test_double);
+                test_double,
+                test_int);
 
     g_main_loop_run (loop);
     g_free (test_string);
 
 }
+
+static void
+read_file_signal (GDBusConnection  *connection,
+                  const gchar      *sender_name,
+                  const gchar      *object_path,
+                  const gchar      *interface_name,
+                  const gchar      *signal_name,
+                  GVariant         *parameters,
+                  gpointer         user_data)
+{
+    gchar *test_string = NULL;
+    GMainLoop *loop = g_main_loop_new (NULL, FALSE);
+
+    g_variant_get (parameters,
+                   "(&s)",
+                   &test_string);
+
+    g_print ("%s\n", 
+                test_string);
+
+    g_main_loop_run (loop);
+    g_free (test_string);
+}
+
+
 static void
 on_name_appeared (GDBusConnection *connection,
                   const gchar     *name,
@@ -43,38 +71,42 @@ on_name_appeared (GDBusConnection *connection,
                   gpointer         user_data)
 {
     guint s1;
+    guint s2;
     g_assert (connection != NULL);
     g_assert (!g_dbus_connection_is_closed (connection));
 
     GMainLoop *loop = g_main_loop_new (NULL, FALSE);
+
+    // subscribe to data signal
     s1 = g_dbus_connection_signal_subscribe (connection,
                                            DBUS_INTERFACE,
                                            DBUS_INTERFACE,
-                                           "app_1_signal",
+                                           "data_signal",
                                            DBUS_PATH,
                                            NULL,
                                            G_DBUS_SIGNAL_FLAGS_NONE,
-                                           test_connection_callback,
+                                           read_data_signal,
+                                           user_data,
+                                           NULL);
+
+    // subscribe to file signal
+    s2 = g_dbus_connection_signal_subscribe (connection,
+                                           DBUS_INTERFACE,
+                                           DBUS_INTERFACE,
+                                           "file_signal",
+                                           DBUS_PATH,
+                                           NULL,
+                                           G_DBUS_SIGNAL_FLAGS_NONE,
+                                           read_file_signal,
                                            user_data,
                                            NULL);
 
     g_main_loop_run (loop);
 
     g_dbus_connection_signal_unsubscribe (connection, s1);
+    g_dbus_connection_signal_unsubscribe (connection, s2);
 }
 
-/*
-static void
-on_name_vanished (GDBusConnection *connection,
-                  const gchar     *name,
-                  gpointer         user_data)
-{
-  g_printerr ("Failed to get name owner for %s\n"
-              "Is server running?\n",
-              name);
-  exit (1);
-}
-*/
 
 int
 main (int argc, char *argv[]) 
@@ -85,7 +117,7 @@ main (int argc, char *argv[])
                                     DBUS_INTERFACE,
                                     G_BUS_NAME_WATCHER_FLAGS_NONE,
                                     on_name_appeared,
-                                    NULL, //on_name_vanished,
+                                    NULL,
                                     NULL,
                                     NULL);
 

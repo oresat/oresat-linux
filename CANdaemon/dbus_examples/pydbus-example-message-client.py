@@ -2,7 +2,7 @@
 
 from pydbus import SessionBus
 
-interface_name = "org.example.project_1.server_1"
+interface_name = "org.example.oresat"
 
 bus = SessionBus()
 the_object = bus.get(interface_name)
