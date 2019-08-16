@@ -1,8 +1,6 @@
 import os, sys, subprocess
 ARGS = 3 #how many args are expected
 
-#TODO add error handling for each function
-
 def file_read(txt_file, tar_file, computer):
     
     #this is just for testing, delete this condition and only use the else
@@ -21,7 +19,7 @@ def file_read(txt_file, tar_file, computer):
     instruction = "-install-pkgs"
     read_list(computer_name, tar_file, file_contents, instruction)
     
-    clean_dir(tar_file)
+    prepare_tar(tar_file, computer)
     
 
 #function takes a .tar file as an argument
@@ -59,7 +57,9 @@ def install(file_path):
 	
 
 def remove(file_path):
-    #TODO figure out how to remove from deb
+    #make sure the file contains the package name, not a deb
+    bashCommand = "sudo apt-get remove ./"+ file_path
+    output = subprocess.check_output(['bash','-c', bashCommand])
     print("remove")
 
 def read_list(computer_name, file_path, file_contents, instruction):
@@ -89,13 +89,9 @@ def read_list(computer_name, file_path, file_contents, instruction):
         return 1
         
 
-def clean_dir(file_path):
-    #TODO write function getting all files squared  
-    print("clean")
-
-def prepare_tar(file_path):
-    #TODO remake the tar file 
-    print("prepare")
+def prepare_tar(file_path, computer):
+    bashCommand = "tar -zcvf " + computer + "-completed.tar.gz ./" + file_path
+    output = subprocess.check-output(['bash','-c', bashCommand])
 
 if(len(sys.argv) == ARGS+1):
     file_read(sys.argv[1], sys.argv[2], sys.argv[3])
