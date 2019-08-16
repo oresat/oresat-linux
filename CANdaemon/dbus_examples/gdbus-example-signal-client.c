@@ -7,10 +7,11 @@
 #include <gio/gio.h>
 #include <gio/gunixfdlist.h>
 
-#define DBUS_INTERFACE  "org.example.project.oresat"
-#define DBUS_PATH       "/org/example/project/oresat"
+#define INTERFACE_NAME "org.example.project.oresat" // must be the same in XML
+#define BUS_NAME INTERFACE_NAME                     // same as inface name, for now
+#define OBJECT_PATH "/org/example/project/oresat"
 
-static void
+ static void
 read_data_signal (GDBusConnection  *connection,
                   const gchar      *sender_name,
                   const gchar      *object_path,
@@ -79,10 +80,10 @@ on_name_appeared (GDBusConnection *connection,
 
     // subscribe to data signal
     s1 = g_dbus_connection_signal_subscribe (connection,
-                                           DBUS_INTERFACE,
-                                           DBUS_INTERFACE,
+                                           INTERFACE_NAME,
+                                           INTERFACE_NAME,
                                            "data_signal",
-                                           DBUS_PATH,
+                                           OBJECT_PATH,
                                            NULL,
                                            G_DBUS_SIGNAL_FLAGS_NONE,
                                            read_data_signal,
@@ -91,10 +92,10 @@ on_name_appeared (GDBusConnection *connection,
 
     // subscribe to file signal
     s2 = g_dbus_connection_signal_subscribe (connection,
-                                           DBUS_INTERFACE,
-                                           DBUS_INTERFACE,
+                                           INTERFACE_NAME,
+                                           INTERFACE_NAME,
                                            "file_signal",
-                                           DBUS_PATH,
+                                           OBJECT_PATH,
                                            NULL,
                                            G_DBUS_SIGNAL_FLAGS_NONE,
                                            read_file_signal,
@@ -114,7 +115,7 @@ main (int argc, char *argv[])
     GMainLoop *loop = g_main_loop_new (NULL, FALSE);
     
     guint watcher_id = g_bus_watch_name (G_BUS_TYPE_SESSION,
-                                    DBUS_INTERFACE,
+                                    INTERFACE_NAME,
                                     G_BUS_NAME_WATCHER_FLAGS_NONE,
                                     on_name_appeared,
                                     NULL,

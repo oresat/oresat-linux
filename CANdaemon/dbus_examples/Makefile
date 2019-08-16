@@ -7,10 +7,10 @@ CFLAGS = -g -Wall -Werror
 
 .PHONY: all
 
-all: message_client signal_client server
+all: method_client signal_client server
 
-message_client:
-	$(CC) gdbus-example-message-client.c -o message_client $(CFLAGS) $(CFLAGS_DBUS) $(CFLAGS_DBUS_GLIB) $(CFLAGS_GIO)
+method_client:
+	$(CC) gdbus-example-method-client.c -o method_client $(CFLAGS) $(CFLAGS_DBUS) $(CFLAGS_DBUS_GLIB) $(CFLAGS_GIO)
 
 signal_client:
 	$(CC) gdbus-example-signal-client.c -o signal_client $(CFLAGS) $(CFLAGS_DBUS) $(CFLAGS_DBUS_GLIB) $(CFLAGS_GIO)
@@ -19,4 +19,4 @@ server:
 	$(CC) gdbus-example-server.c -o server $(CFLAGS) $(CFLAGS_DBUS) $(CFLAGS_DBUS_GLIB) $(CFLAGS_GIO)
 
 clean:
-	rm -f server signal_client message_client
+	rm -f server signal_client method_client

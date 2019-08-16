@@ -3,9 +3,9 @@
 #include <gio/gunixfdlist.h>
 #include <gio/gio.h>
 
-#define INTERFACE_NAME "org.example.project_1.server_1" // must be the same in XML
-#define BUS_NAME INTERFACE_NAME                         // same as inface name, for now
-#define OBJECT_PATH "/org/example/project_1/server_1"
+#define INTERFACE_NAME "org.example.project.oresat" // must be the same in XML
+#define BUS_NAME INTERFACE_NAME                     // same as inface name, for now
+#define OBJECT_PATH "/org/example/project/oresat"
 
 /* ---------------------------------------------------------------------------------------------------- */
 
@@ -14,15 +14,19 @@ static GDBusNodeInfo *introspection_data = NULL;
 /* Introspection data for the service we are exporting */
 static const gchar introspection_xml[] =
     "<node>"
-    "   <interface name='org.example.project_1.server_1'>"
+    "   <interface name='org.example.project.oresat'>"
     "       <method name='Command'>"
     "           <arg type='s' name='command' direction='in'/>"
     "           <arg type='s' name='response' direction='out'/>"
     "       </method>"
     "       <method name='Quit'/>"
-    "       <signal name='app_1_signal'>"
+    "       <signal name='data_signal'>"
     "           <arg type='s'/>"
     "           <arg type='d'/>"
+    "           <arg type='i'/>"
+    "       </signal>"
+    "       <signal name='file_signal'>"
+    "           <arg type='s'/>"
     "       </signal>"
     "   </interface>"
     "</node>";
@@ -120,16 +124,18 @@ repeating_timer(gpointer connection)
     GError *error = NULL;
     gchar *test_string = "HelloWorld";
     gdouble test_double = 10.0;
-    GVariant *data = g_variant_new ("(sd)",
+    gint test_int = 1;
+    GVariant *data = g_variant_new ("(sdi)",
                                    test_string,
-                                   test_double);
+                                   test_double,
+                                   test_int);
 
-    g_print ("%s %f\n", test_string, test_double);
+    g_print ("%s %f %i\n", test_string, test_double, test_int);
     g_dbus_connection_emit_signal (connection,
                                     NULL,
                                     OBJECT_PATH,
                                     INTERFACE_NAME,
-                                    "app_1_signal",
+                                    "data_signal",
                                     data,
                                     &error);
 
@@ -147,12 +153,16 @@ on_name_acquired (GDBusConnection *connection,
                   const gchar     *name,
                   gpointer         user_data)
 {
-    GMainLoop *loop = g_main_loop_new (NULL, FALSE);
+    GMainLoop *loop;
+    loop = g_main_loop_new (NULL, FALSE);
 
-    while(1) {
-        repeating_timer(connection);
-        usleep(1000000);
-    }
+    g_timeout_add_seconds(1, repeating_timer, connection);
+
+    //while(1) {
+    //    time(&now);
+    //    repeating_timer(connection);
+    //    usleep(1000000);
+    //}
 
     g_main_loop_run (loop);
 }
