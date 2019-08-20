@@ -13,7 +13,7 @@
 
 
 static gint
-get_server_stdout (GDBusConnection  *connection,
+get_method (GDBusConnection  *connection,
                    const gchar      *name_owner,
                    GError          **error)
 {
@@ -68,7 +68,7 @@ on_name_appeared (GDBusConnection *connection,
     GError *error;
 
     error = NULL;
-    fd = get_server_stdout (connection, name_owner, &error);
+    fd = get_method (connection, name_owner, &error);
     if (fd == -1)
     {
         g_printerr ("Error invoking Command(): %s\n",

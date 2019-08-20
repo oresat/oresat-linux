@@ -11,7 +11,6 @@ LDFLAGS = -lrt -pthread
 SRC = 		./src
 STACK_SRC = 	./src/stack
 OBJ_DICT_SRC = 	./src/objDict
-DBUS_SRC = 	./src/dbus
 
 
 LINK_TARGET  =  ./canopend
@@ -20,7 +19,6 @@ LINK_TARGET  =  ./canopend
 INCLUDE_DIRS = -I$(STACK_SRC)    \
                -I$(SRC) \
                -I$(OBJ_DICT_SRC) \
-               -I$(DBUS_SRC) \
 
 
 SOURCES =       $(STACK_SRC)/CO_driver.c         \
@@ -36,6 +34,7 @@ SOURCES =       $(STACK_SRC)/CO_driver.c         \
                 $(STACK_SRC)/CO_SDOmaster.c      \
                 $(STACK_SRC)/CO_trace.c          \
                 $(STACK_SRC)/CANopen.c           \
+                $(SRC)/dbus.c              \
                 $(SRC)/CO_comm_helpers.c   \
                 $(SRC)/CO_master.c         \
                 $(SRC)/CO_time.c           \
