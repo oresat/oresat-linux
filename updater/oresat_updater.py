@@ -28,7 +28,7 @@ def untar(file_name):
         #contents of .tar file are extracted to a directory with the same
         #name as the tar file file without the .tar extension
         bashCommand = "tar -xvf " + file_name
-        output = subprocess.check_output(['bash','-c', bashCommand])
+        output = subprocess.check_call(['bash','-c', bashCommand])
         #create a str with the directory name by slicing off the .tar extension
         return file_name[0:len(file_name)-4]
 
@@ -36,7 +36,7 @@ def untar(file_name):
         #contents of .tar file are extracted to a directory with the same
         #name as the tar file file without the .tar extension
         bashCommand = "tar -xzf " + file_name
-        output = subprocess.check_output(['bash','-c', bashCommand])
+        output = subprocess.check_call(['bash','-c', bashCommand])
         #create a str with the directory name by slicing off the .tar extension
         return file_name[0:len(file_name)-7]
 
@@ -44,23 +44,26 @@ def untar(file_name):
         print("Error: " + file_name + " is not a tar file")
         return 0
 
-
+#maybe if this is quite enough I can just stuff it in the result file
+#also try the python apt module. it might solve this, 
+#https://stackoverflow.com/questions/17537390/how-to-install-a-package-using-the-python-apt-api
 def install(file_path):
-    if(file_path.endswith("deb")):
-       bashCommand = "sudo apt install ./" + file_path
-       output = subprocess.check_output(['bash','-c', bashCommand])
+    if(file_path.endswith("deb")): #TODO test this stuff below
+       bashCommand = "sudo apt-get -qq install ./" + file_path
+       output = subprocess.check_call(['bash','-c', bashCommand])
        #cli output for each install commans is in output
        #TODO add error checking
-       return True
+       return output
     else:
-       return False
+       return 1 #output will be 0 if it completes install, anything else fails
 	
 
-def remove(file_path):
+def remove(file_path): #TODO test the -q, test -qq
     #make sure the file contains the package name, not a deb
-    bashCommand = "sudo apt-get remove ./"+ file_path
-    output = subprocess.check_output(['bash','-c', bashCommand])
+    bashCommand = "sudo apt-get -qq remove ./"+ file_path
+    output = subprocess.check_call(['bash','-c', bashCommand])
     print("remove")
+    return output
 
 def read_list(computer_name, file_path, file_contents, instruction):
     list_len = len(file_contents)
@@ -71,14 +74,14 @@ def read_list(computer_name, file_path, file_contents, instruction):
             section_start = i
             break
     i = section_start + 1
-    while file_contents[i].startswith("[") != True:
+    while file_contents[i].startswith("[") != True: #TODO test this shit
         if(instruction == "-remove-pkgs"):
-            if(remove(file_path + "/" + file_contents[i])):
+            if(remove(file_path + "/" + file_contents[i]) == 0):
                 file_contents += "     completed"
             else:
                 file_contents += "     failed"
         else:
-            if(install(file_path + "/" + file_contents[i])):
+            if(install(file_path + "/" + file_contents[i]) == 0):
                 file_contents += "     completed"
             else:
                 file_contents += "     failed"
@@ -91,7 +94,7 @@ def read_list(computer_name, file_path, file_contents, instruction):
 
 def prepare_tar(file_path, computer):
     bashCommand = "tar -zcvf " + computer + "-completed.tar.gz ./" + file_path
-    output = subprocess.check-output(['bash','-c', bashCommand])
+    output = subprocess.check_call(['bash','-c', bashCommand])
 
 if(len(sys.argv) == ARGS+1):
     file_read(sys.argv[1], sys.argv[2], sys.argv[3])
