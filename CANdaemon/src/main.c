@@ -37,12 +37,13 @@
 #include <sys/reboot.h>
 #include <pthread.h>
 
+
+#include "configs.h"
 #include "CANopen.h"
 #include "CO_OD_storage.h"
 #include "CO_Linux_tasks.h"
 #include "CO_time.h"
-//#include "CO_command.h"
-#include "config.h"
+#include "dbus.h"
 
 
 #define NSEC_PER_SEC            (1000000000)    /* The number of nanoseconds per second. */
@@ -107,7 +108,6 @@ int main (int argc, char *argv[]) {
     bool_t nodeIdFromArgs = true; // TODO fix later
     int nodeId = NODE_ID;
     bool_t rebootEnable = false;
-    bool_t commandEnable = false;
 
     if(nodeIdFromArgs && (nodeId < 1 || nodeId > 127)) {
         printf("NodeId is %d, must be between 1 and 127\n", nodeId);
@@ -253,10 +253,8 @@ int main (int argc, char *argv[]) {
             }
 
             /* Initialize socket command interface */
-            if(commandEnable) {
-                //if(CO_command_init() != 0) { // TODO DBUS INIT
-                //    CO_errExit("Socket command interface initialization failed");
-                //}
+            if(dbus_init() != 0) {
+                CO_errExit("DBus interface initialization failed");
             }
         }
 
@@ -297,10 +295,8 @@ int main (int argc, char *argv[]) {
 
 /* program exit ***************************************************************/
     /* join threads */
-    if(commandEnable) {
-        //if(CO_command_clear() != 0) { // TODO DBUS
-        //    CO_errExit("Socket command interface removal failed");
-        //}
+    if(dbus_clear() != 0) {
+        CO_errExit("DBus interface removal failed");
     }
 
     CO_endProgram = 1;

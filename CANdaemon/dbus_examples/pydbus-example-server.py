@@ -48,8 +48,9 @@ def send_data():
     return True
 
 def send_file_path():
-    emit.file_signal("/home/debian/test_file.tar.gz")
-    print("/home/debian/test_file.tar.gz")
+    filepath = "/home/ryan/PSAS/oresat-linux/CANdaemon/dbus_examples/psas.jpg"
+    emit.file_signal(filepath)
+    print(filepath)
     return True
 
 if __name__=="__main__":
@@ -63,7 +64,7 @@ if __name__=="__main__":
 
     # Setup repeating timer
     GLib.timeout_add_seconds(interval=1, function=send_data) 
-    GLib.timeout_add_seconds(interval=5, function=send_file_path) 
+    GLib.timeout_add_seconds(interval=10, function=send_file_path) 
 
     # Run loop with graceful ctrl C exiting.
     try:

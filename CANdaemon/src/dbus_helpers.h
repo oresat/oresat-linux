@@ -7,16 +7,42 @@
 
 #include <stdint.h>
 
+#ifndef SDO_BUFFER_SIZE
+#define SDO_BUFFER_SIZE     100000
+#endif
+
+#ifndef STRING_BUFFER_SIZE
+#define STRING_BUFFER_SIZE  (SDO_BUFFER_SIZE * 4 + 100)
+#endif 
+
+#ifndef LISTEN_BACKLOG
+#define LISTEN_BACKLOG      50
+#endif
+
+
 /**
  * Initialize thread and create socket for dbus interface.
  *
  * @return 0 on success.
  */
-void send_file(char* file_path, 
-               uint16_t idx_name, 
-               uint8_t subidx_name, 
-               uint16_t idx_data, 
-               uint8_t subidx_data);
+int send_file(const char* file_path, 
+              const uint16_t idx, 
+              const uint8_t subidx_name, 
+              const uint8_t subidx_data);
+
+/**
+ * Initialize thread and create socket for dbus interface.
+ *
+ * @return 0 on success.
+ */
+unsigned int get_file_size(const char* file_path);
+
+/**
+* Initialize thread and create socket for dbus interface.
+*
+* @return 0 on success.
+*/
+char* read_file(const char* file_path, unsigned int file_size);
 
 
 /**
@@ -24,7 +50,7 @@ void send_file(char* file_path,
 *
 * @return 0 on success.
 */
-int read_file(char* file_path, char* file_data);
+char* remove_path(const char* file_path);
 
 
 /**
@@ -32,14 +58,7 @@ int read_file(char* file_path, char* file_data);
 *
 * @return 0 on success.
 */
-int remove_path(char* file_path, char* file_name);
+void send_SDO(uint16_t idx, uint8_t subidx, char* input_data, uint32_t len);
 
-
-/**
-* Initialize thread and create socket for dbus interface.
-*
-* @return 0 on success.
-*/
-void send_SDO(uint16_t idx, uint8_t subidx, char* input_data);
 
 #endif

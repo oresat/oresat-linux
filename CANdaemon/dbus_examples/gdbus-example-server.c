@@ -166,7 +166,7 @@ send_file_signal(gpointer connection)
         return FALSE;
 
     GError *error = NULL;
-    gchar *filepath = "/home/debian/test_file.tar.gz";
+    gchar *filepath = "/home/ryan/PSAS/oresat-linux/CANdaemon/dbus_examples/psas.jpg";
     GVariant *data = g_variant_new ("(s)", filepath);
 
     g_print ("%s\n", filepath);

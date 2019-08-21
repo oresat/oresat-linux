@@ -46,8 +46,13 @@
 #define CO_COMMAND_SDO_BUFFER_SIZE     100000
 #endif
 
+#ifndef STRING_BUFFER_SIZE
 #define STRING_BUFFER_SIZE  (CO_COMMAND_SDO_BUFFER_SIZE * 4 + 100)
+#endif 
+
+#ifndef LISTEN_BACKLOG
 #define LISTEN_BACKLOG      50
+#endif
 
 
 /* Globals */
