@@ -109,7 +109,7 @@
                }              OD_SDOServerParameter_t;
 /*1201    */ typedef struct {
                UNSIGNED8      maxSubIndex;
-               VISIBLE_STRING fileName[5];
+               VISIBLE_STRING fileName[20];
                DOMAIN         FIleData;
                }              OD_fileTransfer_t;
 /*1280[1]   */ typedef struct{

@@ -11,6 +11,8 @@
 #include "dbus_helpers.h"
 #include "CO_comm_helpers.h"
 
+#define FILENAME_MAX_LENGTH 20
+
 
 /* Variables */
 static uint16_t             SDOtimeoutTime = 500; /* Timeout time for SDO transfer in milliseconds, if no response */
@@ -34,7 +36,8 @@ int send_file(const char* file_path,
         return -1;
     }
 
-    send_SDO(idx, subidx_name, file_name, strlen(file_name)+1);
+    file_name[9] = ' ';
+    send_SDO(idx, subidx_name, file_name, strlen(file_name)); // don't send '\0'
     send_SDO(idx, subidx_data, file_data, file_size);
     return 1; 
 }
@@ -107,9 +110,17 @@ char* remove_path(const char* file_path) {
         --start;
     }
 
+    if(size_new > FILENAME_MAX_LENGTH) 
+        return NULL;
+
+    // make the filename all spaces
+    file_name = (char *)malloc(FILENAME_MAX_LENGTH);
+    for(unsigned int i=0; i<FILENAME_MAX_LENGTH; ++i) 
+        file_name[i] = ' ';
+
     // copy only file name
-    file_name = (char *)malloc(size_new);
     strncpy(file_name, &file_path[start], size_new);
+    file_name[FILENAME_MAX_LENGTH] = '\0';
 
     return file_name;
 }
@@ -152,7 +163,7 @@ void send_SDO(uint16_t idx, uint8_t subidx, char* input_data, uint32_t len) {
     if(err == 0) {
         err = sdoClientDownload(
                 CO->SDOclient,
-                NODE_ID,
+                3,
                 idx,
                 subidx,
                 dataTx,
@@ -189,8 +200,6 @@ void send_SDO(uint16_t idx, uint8_t subidx, char* input_data, uint32_t len) {
     resp[respLen++] = '\r';
     resp[respLen++] = '\n';
     resp[respLen++] = '\0';
-
-    printf("SDO err: %d\n", err);
 
     /* TODO printf or log
     if(write(fd, resp, respLen) != respLen) {
