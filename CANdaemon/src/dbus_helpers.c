@@ -12,6 +12,7 @@
 #include "CO_comm_helpers.h"
 
 #define FILENAME_MAX_LENGTH 20
+#define TEST_NODE_ID 3
 
 
 /* Variables */
@@ -36,7 +37,6 @@ int send_file(const char* file_path,
         return -1;
     }
 
-    file_name[9] = ' ';
     send_SDO(idx, subidx_name, file_name, strlen(file_name)); // don't send '\0'
     send_SDO(idx, subidx_data, file_data, file_size);
     return 1; 
@@ -113,14 +113,16 @@ char* remove_path(const char* file_path) {
     if(size_new > FILENAME_MAX_LENGTH) 
         return NULL;
 
-    // make the filename all spaces
-    file_name = (char *)malloc(FILENAME_MAX_LENGTH);
+    // make the filename of all spaces
+    file_name = (char *)malloc(FILENAME_MAX_LENGTH+1);
     for(unsigned int i=0; i<FILENAME_MAX_LENGTH; ++i) 
         file_name[i] = ' ';
 
     // copy only file name
-    strncpy(file_name, &file_path[start], size_new);
+    strncpy(file_name, &file_path[start], size_new-1);
     file_name[FILENAME_MAX_LENGTH] = '\0';
+
+    printf("%s;", file_name);
 
     return file_name;
 }
@@ -163,7 +165,7 @@ void send_SDO(uint16_t idx, uint8_t subidx, char* input_data, uint32_t len) {
     if(err == 0) {
         err = sdoClientDownload(
                 CO->SDOclient,
-                3,
+                TEST_NODE_ID,
                 idx,
                 subidx,
                 dataTx,
