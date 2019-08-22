@@ -49,6 +49,7 @@ struct sCO_OD_RAM CO_OD_RAM = {
 /*1003*/ {0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L},
 /*1010*/ {0x3L},
 /*1011*/ {0x1L},
+/*1201*/ {0x2L, {'H', 'e', 'l', 'l', 'o'}, 0},
 /*1280*/{{0x3, 0x0L, 0x0L, 0x0}},
 /*2100*/ {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
 /*2103*/ 0x0,
@@ -249,6 +250,10 @@ struct sCO_OD_EEPROM CO_OD_EEPROM = {
            {(void*)&CO_OD_ROM.SDOServerParameter[0].maxSubIndex, 0x05,  1},
            {(void*)&CO_OD_ROM.SDOServerParameter[0].COB_IDClientToServer, 0x85,  4},
            {(void*)&CO_OD_ROM.SDOServerParameter[0].COB_IDServerToClient, 0x85,  4}};
+/*0x1201*/ const CO_OD_entryRecord_t OD_record1201[3] = {
+           {(void*)&CO_OD_RAM.fileTransfer.maxSubIndex, 0x06, 1},
+           {(void*)&CO_OD_RAM.fileTransfer.fileName, 0x0E, 5},
+           {(void*)0, 0x0E, 0x0 }};
 /*0x1280*/ const CO_OD_entryRecord_t OD_record1280[4] = {
            {(void*)&CO_OD_RAM.SDOClientParameter[0].maxSubIndex, 0x06,  1},
            {(void*)&CO_OD_RAM.SDOClientParameter[0].COB_IDClientToServer, 0xBE,  4},
@@ -1380,6 +1385,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 {0x1019, 0x00, 0x0D,  1, (void*)&CO_OD_ROM.synchronousCounterOverflowValue},
 {0x1029, 0x06, 0x0D,  1, (void*)&CO_OD_ROM.errorBehavior[0]},
 {0x1200, 0x02, 0x00,  0, (void*)&OD_record1200},
+{0x1201, 0x02, 0x00,  1, (void*)&OD_record1201},
 {0x1280, 0x03, 0x00,  0, (void*)&OD_record1280},
 {0x1400, 0x02, 0x00,  0, (void*)&OD_record1400},
 {0x1401, 0x02, 0x00,  0, (void*)&OD_record1401},

@@ -77,7 +77,7 @@
 *******************************************************************************/
    #define CO_NO_SYNC                     1   //Associated objects: 1005, 1006, 1007, 2103, 2104
    #define CO_NO_EMERGENCY                1   //Associated objects: 1014, 1015
-   #define CO_NO_SDO_SERVER               1   //Associated objects: 1200
+   #define CO_NO_SDO_SERVER               2   //Associated objects: 1200, 1201
    #define CO_NO_SDO_CLIENT               1   //Associated objects: 1280
    #define CO_NO_RPDO                     16  //Associated objects from index 1400 to 160F, count = 32
    #define CO_NO_TPDO                     16  //Associated objects from index 1800 to 1A0F, count = 32
@@ -88,7 +88,7 @@
 /*******************************************************************************
    OBJECT DICTIONARY
 *******************************************************************************/
-   #define CO_OD_NoOfElements             169
+   #define CO_OD_NoOfElements             170
 
 
 /*******************************************************************************
@@ -107,7 +107,11 @@
                UNSIGNED32     COB_IDClientToServer;
                UNSIGNED32     COB_IDServerToClient;
                }              OD_SDOServerParameter_t;
-
+/*1201    */ typedef struct {
+               UNSIGNED8      maxSubIndex;
+               VISIBLE_STRING fileName[5];
+               DOMAIN         FIleData;
+               }              OD_fileTransfer_t;
 /*1280[1]   */ typedef struct{
                UNSIGNED8      maxSubIndex;
                UNSIGNED32     COB_IDClientToServer;
@@ -208,6 +212,7 @@ struct sCO_OD_RAM{
 /*1003      */ UNSIGNED32     preDefinedErrorField[8];
 /*1010      */ UNSIGNED32     storeParameters[1];
 /*1011      */ UNSIGNED32     restoreDefaultParameters[1];
+/*1201      */ OD_fileTransfer_t fileTransfer;
 /*1280[1]   */ OD_SDOClientParameter_t SDOClientParameter[1];
 /*2100      */ OCTET_STRING   errorStatusBits[10];
 /*2103      */ UNSIGNED16     SYNCCounter;
@@ -358,6 +363,9 @@ extern struct sCO_OD_ROM CO_OD_ROM;
 
 /*1200[1], Data Type: OD_SDOServerParameter_t, Array[1] */
       #define OD_SDOServerParameter                      CO_OD_ROM.SDOServerParameter
+
+/*1201, Data Type: OD_fileTransfer_t */
+      #define OD_fileTransfer                           CO_OD_RAM.fileTransfer
 
 /*1280[1], Data Type: OD_SDOClientParameter_t, Array[1] */
       #define OD_SDOClientParameter                      CO_OD_RAM.SDOClientParameter

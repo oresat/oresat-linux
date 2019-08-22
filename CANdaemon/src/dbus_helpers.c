@@ -14,7 +14,7 @@
 
 /* Variables */
 static uint16_t             SDOtimeoutTime = 500; /* Timeout time for SDO transfer in milliseconds, if no response */
-static uint8_t              blockTransferEnable = 0; /* SDO block transfer enabled? */
+static uint8_t              blockTransferEnable = 1; /* SDO block transfer enabled? */
 
 
 int send_file(const char* file_path, 
@@ -143,6 +143,7 @@ void send_SDO(uint16_t idx, uint8_t subidx, char* input_data, uint32_t len) {
     if(NODE_ID < 1 || NODE_ID > 127) {
         err = 1;
         respErrorCode = respErrorUnsupportedNode;
+        printf("node id err: %d\n", respErrorCode);
     }
 
     printf("sending SDO\n");
@@ -162,7 +163,7 @@ void send_SDO(uint16_t idx, uint8_t subidx, char* input_data, uint32_t len) {
 
         if(err != 0){
             respErrorCode = respErrorInternalState;
-            printf("SDO download err: %d", respErrorCode);
+            printf("SDO download err: %d\n", respErrorCode);
         }
     }
 
@@ -188,6 +189,8 @@ void send_SDO(uint16_t idx, uint8_t subidx, char* input_data, uint32_t len) {
     resp[respLen++] = '\r';
     resp[respLen++] = '\n';
     resp[respLen++] = '\0';
+
+    printf("SDO err: %d\n", err);
 
     /* TODO printf or log
     if(write(fd, resp, respLen) != respLen) {
