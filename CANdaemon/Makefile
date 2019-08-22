@@ -46,8 +46,6 @@ SOURCES =       $(STACK_SRC)/CO_driver.c	\
 OBJS = $(SOURCES:%.c=%.o)
 
 
-.PHONY: all
-
 all: $(LINK_TARGET)
 
 clean:
