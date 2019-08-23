@@ -11,6 +11,7 @@
 #include "dbus_helpers.h"
 #include "CO_comm_helpers.h"
 
+
 #define FILENAME_MAX_LENGTH 20
 #define TEST_NODE_ID 3
 
@@ -136,8 +137,8 @@ void send_SDO(uint16_t idx, uint8_t subidx, char* input_data, uint32_t len) {
 
     int err = 0; /* syntax or other error, true or false */
     int emptyLine = 0;
-    char resp[STRING_BUFFER_SIZE];
     int respLen = 0;
+    char resp[STRING_BUFFER_SIZE];
     respErrorCode_t respErrorCode = respErrorNone;
     uint32_t sequence = 0;
     //const dataType_t *datatype;

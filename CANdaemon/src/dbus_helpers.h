@@ -7,17 +7,8 @@
 
 #include <stdint.h>
 
-#ifndef SDO_BUFFER_SIZE
-#define SDO_BUFFER_SIZE     100000
-#endif
-
-#ifndef STRING_BUFFER_SIZE
-#define STRING_BUFFER_SIZE  (SDO_BUFFER_SIZE * 4 + 100)
-#endif 
-
-#ifndef LISTEN_BACKLOG
-#define LISTEN_BACKLOG      50
-#endif
+#define SDO_BUFFER_SIZE     100000000
+#define STRING_BUFFER_SIZE ((SDO_BUFFER_SIZE*4)+100)
 
 
 /**

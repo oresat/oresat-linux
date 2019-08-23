@@ -28,8 +28,11 @@
 #define DBUS_NAME       DBUS_INTERFACE                  // same as inface name, for now
 #define DBUS_PATH       "/org/example/project/oresat"   
 
+#define SIGNAL_THREAD_STACK_SIZE STRING_BUFFER_SIZE*3
+
 /* Variables */
 static pthread_t            signal_thread_id;
+static pthread_attr_t       signal_thread_attr;
 static volatile int         endProgram = 0;
 
 /* static functions */
@@ -62,7 +65,8 @@ int dbus_init(void) {
 
     /* Create thread */
     endProgram = 0;
-    if(pthread_create(&signal_thread_id, NULL, signal_thread, NULL) != 0) {
+    pthread_attr_setstacksize(&signal_thread_attr, SIGNAL_THREAD_STACK_SIZE);
+    if(pthread_create(&signal_thread_id, &signal_thread_attr, signal_thread, NULL) != 0) {
         CO_errExit("dbus_init - thread creation failed");
     }
 
