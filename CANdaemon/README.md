@@ -7,7 +7,7 @@ The CANdaemon is a CAN interface for the main process for the GPS, Star Tracker,
  - add line `dtb-overlay=/lib/firmware/BB-CAN0-00A0.dtbo` under Custom Cape
  - comment out `enable_uboot_cape_universal=1`
 ### Turn on CAN0
- - `sudo ip link set can0 up type can bitrate 500000`
+ - `sudo ip link set can0 up type can bitrate 1000000`
 
 
 ## Usefull Links
