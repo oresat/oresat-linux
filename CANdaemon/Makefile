@@ -17,11 +17,11 @@ endif
 
 
 CC ?= gcc
-CFLAGS_DBUS = $(shell pkg-config --cflags --libs dbus-1)
-CFLAGS_DBUS_GLIB = $(shell pkg-config --cflags --libs dbus-glib-1)
-CFLAGS_GIO  = $(shell pkg-config --cflags --libs gio-unix-2.0)
-CFLAGS = $(INCLUDE_DIRS) $(CFLAGS_DBUS) $(CFLAGS_DBUS_GLIB) $(CFLAGS_GIO)
-DEBUG_FLAGS = -Wall -g
+CFLAGS_DBUS =	 $(shell pkg-config --cflags --libs dbus-1) 		\
+		 $(shell pkg-config --cflags --libs dbus-glib-1) 	\
+		 $(shell pkg-config --cflags --libs gio-unix-2.0)
+CFLAGS = $(INCLUDE_DIRS)
+DEBUG_FLAGS = -Wall -g -Werror
 LDFLAGS = -lrt -pthread
 
 
@@ -30,7 +30,7 @@ STACK_SRC =     	./CANopenNode/stack
 CANOPENNODE_SRC = 	./CANopenNode
 CANDAEMON_SRC = 	./src
 OBJ_DICT_SRC =  	./objDict
-CANOPENCOMM_SRC =      	./canopencomm
+CANOPENCOMM_SRC =      	./CANopenComm
 
 
 INCLUDE_DIRS =	-I$(STACKDRV_SRC)	\
@@ -41,7 +41,7 @@ INCLUDE_DIRS =	-I$(STACKDRV_SRC)	\
 		-I$(CANOPENCOMM_SRC)
 
 
-COC_SOURCES =	$(APPL_SRC)/CANopenCommand.c
+COC_SOURCES =	$(CANOPENCOMM_SRC)/CANopenCommand.c
 
 
 CD_SOURCES =	$(STACKDRV_SRC)/CO_driver.c         \
@@ -72,7 +72,7 @@ CD_OBJS =	$(CD_SOURCES:%.c=%.o)
 COC_OBJS =	$(COC_SOURCES:%.c=%.o)
 
 
-all: $(clean) $(candaemon) $(candaemon-master) $(canopencomm)
+all: candaemon candaemon-master canopencomm
 
 clean:
 	rm -f $(CD_OBJS) $(COC_OBJS) canopencomm candaemon candaemon-master
@@ -83,8 +83,20 @@ candaemon:  $(CD_OBJS)
 candaemon-master: $(CD_OBJS)
 	$(CC) $(CFLAGS)  $(DEBUG_FLAGS)  $(LDFLAGS) src/main.c $^ -o candaemon-master -DMASTER_NODE
 
+canopend: $(CD_OBJS)
+	$(CC) $(CFLAGS)  $(DEBUG_FLAGS)  $(LDFLAGS) src/main.c $^ -o canopend -DMASTER_NODE
+
 canopencomm: $(COC_OBJS)
 	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(LDFLAGS) $^ -o canopencomm
+
+help:
+	$(info Options:)
+	$(info - candaemon: candaemon with no master node options, with dbus on)
+	$(info - candaemon-master: candaemon with master node options on and dbus on) 
+	$(info - candopend: default canopend and dbus off)
+	$(info - canopencomm: default canopencomm)
+	$(info - all: make all 4)
+	$(info - clean: remove all .o files and binaries)
 
 
 %.o: %.c
