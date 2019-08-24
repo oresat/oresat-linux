@@ -59,45 +59,51 @@ CD_SOURCES =	$(STACKDRV_SRC)/CO_driver.c         \
 		$(STACK_SRC)/CO_LSSslave.c          \
 		$(STACK_SRC)/CO_trace.c             \
 		$(CANOPENNODE_SRC)/CANopen.c        \
-		$(CANDAEMON_SRC)/CO_command.c       \
-		$(CANDAEMON_SRC)/CO_comm_helpers.c  \
 		$(CANDAEMON_SRC)/CO_master.c        \
 		$(CANDAEMON_SRC)/CO_time.c          \
-		$(CANDAEMON_SRC)/dbus.c             \
-		$(CANDAEMON_SRC)/dbus_helpers.c     \
 		$(OBJ_DICT_SRC)/CO_OD.c
+
+DBUS_SOURCES = 	$(CANDAEMON_SRC)/dbus.c             \
+		$(CANDAEMON_SRC)/dbus_helpers.c
+
+
+COMM_SOURCES =	$(CANDAEMON_SRC)/CO_command.c       \
+		$(CANDAEMON_SRC)/CO_comm_helpers.c
 
 
 CD_OBJS =	$(CD_SOURCES:%.c=%.o)
-COC_OBJS =	$(COC_SOURCES:%.c=%.o)
+COC_OBJS =	$(COC_SOURCES:%.c=%.o) 
+DBUS_OBJS =	$(DBUS_SOURCES:%.c=%.o)
+COMM_OBJS =	$(COMM_SOURCES:%.c=%.o)
+ALL_OBJS = 	$(CD_OBJS) $(COC_OBJS) $(DBUS_OBJS) $(COMM_OBJS)
+
+
+%.o: %.c
+	$(CC) $(CFLAGS) $(CFLAGS_DBUS) $(DEBUG_FLAGS) -c $< -o $@
 
 
 all: candaemon candaemon-master canopencomm
 
 clean:
-	rm -f $(CD_OBJS) $(COC_OBJS) canopencomm candaemon candaemon-master
+	rm -f $(ALL_OBJS) canopencomm candaemon canopend candaemon-master
 
-candaemon:  $(CD_OBJS) 
-	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(LDFLAGS) src/main.c $^ -o candaemon
+candaemon: $(CD_OBJS) $(COMM_OBJS) $(DBUS_OBJS)
+	$(CC) $(CFLAGS) $(CFLAGS_DBUS) $(DEBUG_FLAGS) $(LDFLAGS) $^ src/main.c -o $@
 
-candaemon-master: $(CD_OBJS)
-	$(CC) $(CFLAGS)  $(DEBUG_FLAGS)  $(LDFLAGS) src/main.c $^ -o candaemon-master -DMASTER_NODE
+candaemon-master: $(CD_OBJS) $(COMM_OBJS) $(DBUS_OBJS)
+	$(CC) $(CFLAGS) $(CFLAGS_DBUS) $(DEBUG_FLAGS)  $(LDFLAGS) $^ src/main.c -o $@ -DMASTER_NODE
 
-canopend: $(CD_OBJS)
-	$(CC) $(CFLAGS)  $(DEBUG_FLAGS)  $(LDFLAGS) src/main.c $^ -o canopend -DMASTER_NODE
+canopend: $(CD_OBJS) $(COMM_OBJS)
+	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(LDFLAGS) $^ src/main.c -o $@ -DMASTER_NODE
 
 canopencomm: $(COC_OBJS)
-	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(LDFLAGS) $^ -o canopencomm
+	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(LDFLAGS) $^ -o $@
 
 help:
-	$(info Options:)
+	$(info Make Options:)
 	$(info - candaemon: candaemon with no master node options, with dbus on)
 	$(info - candaemon-master: candaemon with master node options on and dbus on) 
 	$(info - candopend: default canopend and dbus off)
 	$(info - canopencomm: default canopencomm)
 	$(info - all: make all 4)
 	$(info - clean: remove all .o files and binaries)
-
-
-%.o: %.c
-	$(CC) $(CFLAGS) $(DFLAGS) $(DEBUG_FLAGS) -c $< -o $@
