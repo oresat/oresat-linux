@@ -2,15 +2,7 @@
 
 
 #debug on/off
-DEBUG ?= 0
-
-
-##############################################################################
-
-
-ifeq ($(DEBUG), 1)
-DEBUG_FLAGS += -DDEBUG
-endif
+DEBUG ?= 1
 
 
 ##############################################################################
@@ -21,8 +13,11 @@ CFLAGS_DBUS =	 $(shell pkg-config --cflags --libs dbus-1) 		\
 		 $(shell pkg-config --cflags --libs dbus-glib-1) 	\
 		 $(shell pkg-config --cflags --libs gio-unix-2.0)
 CFLAGS = $(INCLUDE_DIRS)
-DEBUG_FLAGS = -Wall -g -Werror
 LDFLAGS = -lrt -pthread
+
+ifeq ($(DEBUG), 1)
+DEBUG_FLAGS += -Wall -g -Werror -DDEBUG
+endif
 
 
 STACKDRV_SRC =		./CANopenNode/stack/socketCAN
@@ -82,7 +77,7 @@ ALL_OBJS = 	$(CD_OBJS) $(COC_OBJS) $(DBUS_OBJS) $(COMM_OBJS)
 	$(CC) $(CFLAGS) $(CFLAGS_DBUS) $(DEBUG_FLAGS) -c $< -o $@
 
 
-all: candaemon candaemon-master canopencomm
+all: candaemon candaemon-master canopend canopencomm
 
 clean:
 	rm -f $(ALL_OBJS) canopencomm candaemon canopend candaemon-master
@@ -94,7 +89,7 @@ candaemon-master: $(CD_OBJS) $(COMM_OBJS) $(DBUS_OBJS)
 	$(CC) $(CFLAGS) $(CFLAGS_DBUS) $(DEBUG_FLAGS)  $(LDFLAGS) $^ src/main.c -o $@ -DMASTER_NODE
 
 canopend: $(CD_OBJS) $(COMM_OBJS)
-	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(LDFLAGS) $^ src/main.c -o $@ -DMASTER_NODE
+	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(LDFLAGS) $^ src/main.c -o $@ -DCANOPEND_ONLY
 
 canopencomm: $(COC_OBJS)
 	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(LDFLAGS) $^ -o $@
