@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #include "configs.h"
-#include "stack/CANopen.h"
+#include "CANopen.h"
 #include "CO_master.h"
 #include "dbus_helpers.h"
 #include "CO_comm_helpers.h"
@@ -165,7 +165,7 @@ void send_SDO(uint16_t idx, uint8_t subidx, char* input_data, uint32_t len) {
     /* Make CANopen SDO transfer */
     if(err == 0) {
         err = sdoClientDownload(
-                CO->SDOclient,
+                CO->SDOclient[0],
                 TEST_NODE_ID,
                 idx,
                 subidx,

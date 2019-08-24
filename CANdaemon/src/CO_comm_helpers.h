@@ -28,7 +28,6 @@
 #ifndef CO_COMM_HELPERS_H
 #define CO_COMM_HELPERS_H
 
-#include <stdint.h>
 
 #include "CO_driver.h"  /* for some typedefs */
 #include "CO_SDO.h"     /* for CO_memcpySwap */

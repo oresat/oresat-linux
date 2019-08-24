@@ -45,6 +45,10 @@
 #include "CO_time.h"
 #include "dbus.h"
 
+#ifdef MASTER_NODE
+#include "CO_command.h"
+#endif
+
 
 #define NSEC_PER_SEC            (1000000000)    /* The number of nanoseconds per second. */
 #define NSEC_PER_MSEC           (1000000)       /* The number of nanoseconds per millisecond. */
@@ -105,11 +109,10 @@ int main (int argc, char *argv[]) {
     int CANdevice0Index = 0;
     bool_t firstRun = true;
     char* CANdevice = CAN_DEVICE;
-    bool_t nodeIdFromArgs = true; // TODO fix later
     int nodeId = NODE_ID;
     bool_t rebootEnable = false;
 
-    if(nodeIdFromArgs && (nodeId < 1 || nodeId > 127)) {
+    if(nodeId < 1 || nodeId > 127) {
         printf("NodeId is %d, must be between 1 and 127\n", nodeId);
         exit(EXIT_FAILURE);
     }
@@ -184,10 +187,6 @@ int main (int argc, char *argv[]) {
 
 
         /* initialize CANopen */
-        if(!nodeIdFromArgs) {
-            /* use value from Object dictionary, if not set by program arguments */
-            nodeId = OD_CANNodeID;
-        }
         err = CO_init(CANdevice0Index, nodeId, 0);
         if(err != CO_ERROR_NO) {
             char s[120];
@@ -210,7 +209,7 @@ int main (int argc, char *argv[]) {
         /* Configure callback functions for task control */
         CO_EM_initCallback(CO->em, taskMain_cbSignal);
         CO_SDO_initCallback(CO->SDO[0], taskMain_cbSignal);
-        CO_SDOclient_initCallback(CO->SDOclient, taskMain_cbSignal);
+        CO_SDOclient_initCallback(CO->SDOclient[0], taskMain_cbSignal);
 
 
         /* Initialize time */
@@ -256,6 +255,12 @@ int main (int argc, char *argv[]) {
             if(dbus_init() != 0) {
                 CO_errExit("DBus interface initialization failed");
             }
+
+#ifdef MASTER_NODE
+            if(CO_command_init() != 0) {
+                CO_errExit("Socket command interface initialization failed");
+            }
+#endif
         }
 
         /* start CAN */
@@ -298,6 +303,12 @@ int main (int argc, char *argv[]) {
     if(dbus_clear() != 0) {
         CO_errExit("DBus interface removal failed");
     }
+
+#ifdef MASTER_NODE
+    if(CO_command_clear() != 0) {
+        CO_errExit("Socket command interface removal failed");
+    }
+#endif
 
     CO_endProgram = 1;
     if(pthread_join(rt_thread_id, NULL) != 0) {
