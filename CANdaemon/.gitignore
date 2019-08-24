@@ -1,4 +1,7 @@
-CANdaemon
+candaemon
+candaemon-master
+canopencomm
+canopend
 od_storage*
 *.o
 .ycm*
