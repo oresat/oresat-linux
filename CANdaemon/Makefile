@@ -1,17 +1,11 @@
 # Makefile for CANdaemon based off of CANopend
 
-#be a master node yes/no
-MASTER_NODE ?= 1
+
 #debug on/off
 DEBUG ?= 0
 
 
 ##############################################################################
-
-
-ifeq ($(MASTER_NODE), 1)
-DFLAGS += -DMASTER_NODE
-endif
 
 
 ifeq ($(DEBUG), 1)
@@ -71,7 +65,6 @@ CD_SOURCES =	$(STACKDRV_SRC)/CO_driver.c         \
 		$(CANDAEMON_SRC)/CO_time.c          \
 		$(CANDAEMON_SRC)/dbus.c             \
 		$(CANDAEMON_SRC)/dbus_helpers.c     \
-		$(CANDAEMON_SRC)/main.c             \
 		$(OBJ_DICT_SRC)/CO_OD.c
 
 
@@ -79,23 +72,19 @@ CD_OBJS =	$(CD_SOURCES:%.c=%.o)
 COC_OBJS =	$(COC_SOURCES:%.c=%.o)
 
 
-DFLAGS = -DMASTER_NODE
+all: $(clean) $(candaemon) $(candaemon-master) $(canopencomm)
 
-
-clean-all:
+clean:
 	rm -f $(CD_OBJS) $(COC_OBJS) canopencomm candaemon candaemon-master
 
-clean-o:
-	rm -f $(CD_OBJS) $(COC_OBJS)
-
 candaemon:  $(CD_OBJS) 
-	$(CC) $(CFLAGS) $(DFLAGS) $(DEBUG_FLAGS) $(LDFLAGS) $^ -o candaemon
+	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(LDFLAGS) src/main.c $^ -o candaemon
 
 candaemon-master: $(CD_OBJS)
-	$(CC) $(CFLAGS) $(DFLAGS) $(DEBUG_FLAGS)  $(LDFLAGS) $^ -o candaemon-master
+	$(CC) $(CFLAGS)  $(DEBUG_FLAGS)  $(LDFLAGS) src/main.c $^ -o candaemon-master -DMASTER_NODE
 
 canopencomm: $(COC_OBJS)
-	$(CC) $(CFLAGS) $(DFLAGS) $(DEBUG_FLAGS) $(LDFLAGS) $^ -o canopencomm
+	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(LDFLAGS) $^ -o canopencomm
 
 
 %.o: %.c
