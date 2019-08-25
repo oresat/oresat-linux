@@ -1,3 +1,6 @@
-server
-method_client
-signal_client
+gdbus-server
+gdbus-signal-client 
+gdbus-method-client 
+sd-bus-server 
+sd-bus-method-client 
+sd-bus-signal-client
