@@ -9,9 +9,7 @@ DEBUG ?= 1
 
 
 CC ?= gcc
-CFLAGS_DBUS =	 $(shell pkg-config --cflags --libs dbus-1) 		\
-		 $(shell pkg-config --cflags --libs dbus-glib-1) 	\
-		 $(shell pkg-config --cflags --libs gio-unix-2.0)
+CFLAGS_DBUS= $(shell pkg-config --cflags --libs libsystemd)
 CFLAGS = $(INCLUDE_DIRS)
 LDFLAGS = -lrt -pthread
 

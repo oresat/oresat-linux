@@ -6,28 +6,20 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <unistd.h>
-#include <string.h>
-#include <sys/types.h>
-#include <time.h>
-#include <gio/gio.h>
-#include <gio/gunixfdlist.h>
+#include <systemd/sd-bus.h>
 
 
 #include "configs.h"
 #include "CANopen.h"
-#include "dbus.h"
-#include "CO_comm_helpers.h"
 #include "CO_master.h"
+#include "dbus.h"
 #include "dbus_helpers.h"
 
 
-/* DBUS setting */
-#define DBUS_INTERFACE  "org.example.project.oresat"    // must be the same in XML
-#define DBUS_NAME       DBUS_INTERFACE                  // same as inface name, for now
-#define DBUS_PATH       "/org/example/project/oresat"   
-
+#define INTERFACE_NAME  "org.example.project.oresat"
+#define BUS_NAME        INTERFACE_NAME
+#define OBJECT_PATH     "/org/example/project/oresat"
 #define SIGNAL_THREAD_STACK_SIZE STRING_BUFFER_SIZE*3
 
 /* Variables */
@@ -37,24 +29,18 @@ static volatile int         endProgram = 0;
 
 /* static functions */
 static void*                signal_thread(void *);
-/*static void                 read_data_signal (GDBusConnection *connection, 
-                                              const gchar *sender_name,
-                                              const gchar *object_path, 
-                                              const gchar *interface_name,
-                                              const gchar *signal_name, 
-                                              GVariant *parameters,
-                                              gpointer user_data);*/
-static void                 read_file_signal (GDBusConnection  *connection,
-                                              const gchar      *sender_name,
-                                              const gchar      *object_path,
-                                              const gchar      *interface_name,
-                                              const gchar      *signal_name,
-                                              GVariant         *parameters,
-                                              gpointer         user_data);
-static void                 on_name_appeared (GDBusConnection *connection,
-                                              const gchar     *name,
-                                              const gchar     *name_owner,
-                                              gpointer         user_data);
+static int                  read_file_signal_cb(sd_bus_message 
+                                                *m, 
+                                                void *user_data, 
+                                                sd_bus_error 
+                                                *ret_error);
+
+
+static void dbus_error(char* err, int r) {
+    endProgram = 0;
+    fprintf(stderr, "%s %s\n", err, strerror(-r));
+    exit(0);
+}
 
 
 int dbus_init(void) {
@@ -89,120 +75,60 @@ int dbus_clear(void) {
 }
 
 
+static int read_file_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_error) {
+    int r;
+    char *filepath = NULL;
+    endProgram = 1;
+
+    r = sd_bus_message_read(m, "s", &filepath);
+    if(r < 0) {
+        fprintf(stderr, "Failed to parse data signal %s\n", strerror(-r));
+        return -1;
+    }
+
+    send_file(filepath,
+          0x1201, // idx
+          1,      // subidx for file name
+          2);     // subidx for file data
+
+    return 0;
+}
+
+
 static void* signal_thread(void *arg) {
-    GMainLoop *loop = g_main_loop_new (NULL, FALSE);
-    
-    guint watcher_id = g_bus_watch_name (G_BUS_TYPE_SESSION,
-                                        DBUS_NAME,
-                                        G_BUS_NAME_WATCHER_FLAGS_NONE,
-                                        on_name_appeared,
-                                        NULL,
-                                        NULL,
-                                        NULL);
+    sd_bus_slot *slot = NULL;
+    sd_bus *bus = NULL;
+    int r;
 
-    g_main_loop_run (loop);
+    /* Connect to the user bus */
+    r = sd_bus_open_user(&bus);
+    if(r < 0)
+        dbus_error("Failed to connect to system bus:", -r);
 
-    g_bus_unwatch_name (watcher_id);
+    r = sd_bus_match_signal(bus,
+                            &slot,
+                            NULL,
+                            OBJECT_PATH,
+                            INTERFACE_NAME,
+                            "file_signal", 
+                            read_file_signal_cb, 
+                            NULL);
+    if(r < 0)
+        dbus_error("Add match error:", r);
 
-    // TODO add loop escape logic
+    while(endProgram == 0) {
+        r = sd_bus_process(bus, NULL);
+        if(r < 0)
+            dbus_error("Bus Process failed:", r);
+        if(r > 0)
+            continue;
+
+        r = sd_bus_wait(bus, (uint64_t)-1);
+        if(r < 0)
+            dbus_error("Bus wait failed:", r);
+    }
+
+    sd_bus_slot_unref(slot);
+    sd_bus_unref(bus);
     return NULL;
 }
-
-/*
-static void read_data_signal (GDBusConnection  *connection,
-                              const gchar      *sender_name,
-                              const gchar      *object_path,
-                              const gchar      *interface_name,
-                              const gchar      *signal_name,
-                              GVariant         *parameters,
-                              gpointer         user_data) {
-
-    gchar *test_string = NULL;
-    gdouble test_double = 0.0;
-    GMainLoop *loop = g_main_loop_new (NULL, FALSE);
-
-    g_variant_get (parameters,
-                   "(&sd)",
-                   &test_string,
-                   &test_double);
-
-    g_print ("%s %f\n", 
-                test_string, 
-                test_double);
-
-    // TODO make PDO
-    // TODO call PDO sender
-
-    g_main_loop_run (loop);
-    g_free (test_string);
-}
-*/
-
-
-static void read_file_signal (GDBusConnection  *connection,
-                              const gchar      *sender_name,
-                              const gchar      *object_path,
-                              const gchar      *interface_name,
-                              const gchar      *signal_name,
-                              GVariant         *parameters,
-                              gpointer         user_data) {
-
-    gchar *file_path = NULL;
-    GMainLoop *loop = g_main_loop_new (NULL, FALSE);
-
-    g_variant_get(parameters, "(&s)", &file_path);
-
-    send_file(file_path, 
-              0x1201, // idx
-              1,      // subidx for file name
-              2);     // subidx for file data
-
-    g_main_loop_run (loop);
-    g_free (file_path);
-}
-
-
-static void on_name_appeared (GDBusConnection *connection,
-                              const gchar     *name,
-                              const gchar     *name_owner,
-                              gpointer         user_data) {
-    //guint s1;
-    guint s2;
-
-    g_assert (connection != NULL);
-    g_assert (!g_dbus_connection_is_closed (connection));
-
-    GMainLoop *loop = g_main_loop_new (NULL, FALSE);
-
-    /*
-    // subscribe to data signal
-    s1 = g_dbus_connection_signal_subscribe (connection,
-                                           DBUS_NAME,
-                                           DBUS_NAME,
-                                           "data_signal",
-                                           DBUS_PATH,
-                                           NULL,
-                                           G_DBUS_SIGNAL_FLAGS_NONE,
-                                           read_data_signal,
-                                           user_data,
-                                           NULL);
-    */
-
-    // subscribe to file signal
-    s2 = g_dbus_connection_signal_subscribe (connection,
-                                           DBUS_NAME,
-                                           DBUS_NAME,
-                                           "file_signal",
-                                           DBUS_PATH,
-                                           NULL,
-                                           G_DBUS_SIGNAL_FLAGS_NONE,
-                                           read_file_signal,
-                                           user_data,
-                                           NULL);
-
-    g_main_loop_run (loop);
-
-    //g_dbus_connection_signal_unsubscribe (connection, s1);
-    g_dbus_connection_signal_unsubscribe (connection, s2);
-}
-
