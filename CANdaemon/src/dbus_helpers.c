@@ -5,8 +5,8 @@
 #include <ctype.h>
 #include <stdint.h>
 
-#include "configs.h"
 #include "CANopen.h"
+#include "CO_OD.h"
 #include "CO_master.h"
 #include "dbus_helpers.h"
 #include "CO_comm_helpers.h"
@@ -143,34 +143,29 @@ void send_SDO(uint16_t idx, uint8_t subidx, char* input_data, uint32_t len) {
     uint32_t sequence = 0;
     //const dataType_t *datatype;
     uint32_t SDOabortCode = 1;
-    uint8_t dataTx[SDO_BUFFER_SIZE]; /* SDO transmit buffer */
-    uint32_t dataTxLen = 0;  /* Length of data to transmit. */
+    uint8_t dataRx[SDO_BUFFER_SIZE]; /* SDO transmit buffer */
+    uint32_t dataRxLen = 0;  /* Length of data to transmit. */
 
-    dataTxLen = len;
+    dataRxLen = len;
     /* Length must match and must not be zero. */
-    if(dataTxLen == 0 || dataTxLen >= SDO_BUFFER_SIZE) {
+    if(dataRxLen == 0 || dataRxLen >= SDO_BUFFER_SIZE) {
         printf("len error\n");
         err = 1;
     }
-    memcpy(dataTx, input_data, dataTxLen);
-
-    if(NODE_ID < 1 || NODE_ID > 127) {
-        err = 1;
-        respErrorCode = respErrorUnsupportedNode;
-        printf("node id err: %d\n", respErrorCode);
-    }
+    memcpy(dataRx, input_data, dataRxLen);
 
     printf("sending SDO\n");
 
     /* Make CANopen SDO transfer */
     if(err == 0) {
-        err = sdoClientDownload(
+        err = sdoClientUpload(
                 CO->SDOclient[0],
-                TEST_NODE_ID,
+                OD_CANNodeID,
                 idx,
                 subidx,
-                dataTx,
-                dataTxLen,
+                dataRx,
+                sizeof(dataRx),
+                &dataRxLen,
                 &SDOabortCode,
                 SDOtimeoutTime,
                 blockTransferEnable);

@@ -10,7 +10,6 @@
 #include <systemd/sd-bus.h>
 
 
-#include "configs.h"
 #include "CANopen.h"
 #include "CO_master.h"
 #include "dbus.h"

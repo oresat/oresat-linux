@@ -38,7 +38,6 @@
 #include <pthread.h>
 
 
-#include "configs.h"
 #include "CANopen.h"
 #include "CO_OD_storage.h"
 #include "CO_Linux_tasks.h"
@@ -56,6 +55,7 @@
 #define TMR_TASK_INTERVAL_NS    (1000000)       /* Interval of taskTmr in nanoseconds */
 #define TMR_TASK_OVERFLOW_US    (5000)          /* Overflow detect limit for taskTmr in microseconds */
 #define INCREMENT_1MS(var)      (var++)         /* Increment 1ms variable in taskTmr */
+#define CAN_DEVICE              "can0"          /* CAN device (can0 or can1) */
 
 
 /* Global variable increments each millisecond. */
@@ -66,16 +66,12 @@ volatile uint16_t           CO_timer1ms = 0U;
 pthread_mutex_t             CO_CAN_VALID_mtx = PTHREAD_MUTEX_INITIALIZER;
 
 /* Other variables and objects */
-#ifdef CANOPEND_ONLY
 static int                  rtPriority = -1;    /* Real time priority, configurable by arguments. (-1=RT disabled) */
-#else
-static int                  rtPriority = RT_PRIO;    /* Real time priority, configurable by arguments. (-1=RT disabled) */
-#endif
 static int                  mainline_epoll_fd;  /* epoll file descriptor for mainline */
 static CO_OD_storage_t      odStor;             /* Object Dictionary storage object for CO_OD_ROM */
 static CO_OD_storage_t      odStorAuto;         /* Object Dictionary storage object for CO_OD_EEPROM */
-static char                *odStorFile_rom    = OD_STORAGE;
-static char                *odStorFile_eeprom = OD_STORAGE_AUTO;
+static char                *odStorFile_rom    = "od_storage";   /* Name of the od storage file */
+static char                *odStorFile_eeprom = "od_storage_auto";  /* Name of the od storage auto file */
 static CO_time_t            CO_time;            /* Object for current time */
 
 /* Realtime thread */
@@ -144,17 +140,16 @@ int main (int argc, char *argv[]) {
     CO_ReturnError_t odStorStatus_rom, odStorStatus_eeprom;
     int CANdevice0Index = 0;
     bool_t firstRun = true;
+    bool_t nodeIdFromArgs = false;  /* True, if program arguments are used for CANopen Node Id */
+    uint8_t nodeId = OD_CANNodeID;
+    bool_t rebootEnable = false;    /* Configurable by arguments */
 
 #ifdef CANOPEND_ONLY
     int opt;
     char* CANdevice = NULL;         /* CAN device, configurable by arguments. */
-    bool_t nodeIdFromArgs = false;  /* True, if program arguments are used for CANopen Node Id */
-    int nodeId = -1;                /* Use value from Object Dictionary or set to 1..127 by arguments */
 #else 
     char* CANdevice = CAN_DEVICE;
-    int nodeId = NODE_ID;
-#endif // CANOPEND_ONLY
-    bool_t rebootEnable = false;    /* Configurable by arguments */
+#endif
 
 #ifdef CANOPEND_ONLY
     if(argc < 2 || strcmp(argv[1], "--help") == 0){
@@ -189,24 +184,18 @@ int main (int argc, char *argv[]) {
         CANdevice = argv[optind];
         CANdevice0Index = if_nametoindex(CANdevice);
     }
+#else
+     CANdevice0Index = if_nametoindex(CAN_DEVICE);
+#endif
+
     if(nodeIdFromArgs && (nodeId < 1 || nodeId > 127)) {
         fprintf(stderr, "Wrong node ID (%d)\n", nodeId);
-        printUsage(argv[0]);
         exit(EXIT_FAILURE);
     }
-#else 
-    if(nodeId < 1 || nodeId > 127) {
-        printf("NodeId is %d, must be between 1 and 127\n", nodeId);
-        exit(EXIT_FAILURE);
-    }
-#endif // CANOPEND_ONLY
 
     if(rtPriority != -1 && (rtPriority < sched_get_priority_min(SCHED_FIFO)
                          || rtPriority > sched_get_priority_max(SCHED_FIFO))) {
         fprintf(stderr, "Wrong RT priority (%d)\n", rtPriority);
-#ifdef CANOPEND_ONLY
-        printUsage(argv[0]);
-#endif // CANOPEND_ONLY
         exit(EXIT_FAILURE);
     }
 
@@ -271,6 +260,12 @@ int main (int argc, char *argv[]) {
 
         /* Enter CAN configuration. */
         CO_CANsetConfigurationMode(CANdevice0Index);
+
+        /* initialize CANopen */
+        if(!nodeIdFromArgs) {
+            /* use value from Object dictionary, if not set by program arguments */
+            nodeId = OD_CANNodeID;
+        }
 
 
         /* initialize CANopen */
