@@ -4,7 +4,6 @@ The CANdaemon is a CAN interface for the main process for the GPS, Star Tracker,
 
 ## To Enable CAN on the Beaglebone
 ### Edit /boot/uEnt.txt
- - add line `dtb-overlay=/lib/firmware/BB-CAN0-00A0.dtbo` under Custom Cape
  - add line `dtb-overlay=/lib/firmware/BB-CAN1-00A0.dtbo` under Custom Cape
  - comment out `enable_uboot_cape_universal=1`
 ### Turn on CAN0

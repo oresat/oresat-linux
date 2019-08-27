@@ -43,7 +43,7 @@ int method_thread_init(void) {
                                  method_vtable,
                                  NULL);
     if (r < 0)
-        dbus_error("Failed to issue method call:", -r);
+        dbus_error("Failed to issue method call:", r);
     
     if(pthread_create(&method_thread_id, NULL, method_thread, NULL) != 0)
         dbus_error("method_thread_init - thread creation failed:", 0);
@@ -74,14 +74,14 @@ static void* method_thread(void *arg) {
         /* Process requests */
         r = sd_bus_process(bus, NULL);
         if (r < 0)
-            dbus_error("Failed to process bus:", -r);
+            dbus_error("Failed to process bus:", r);
         if (r > 0) /* we processed a request, try to process another one, right-away */
             continue;
 
         /* Wait for the next request to process */
         r = sd_bus_wait(bus, (uint64_t) -1);
         if (r < 0)
-            dbus_error("Failed to wait on bus:", -r);
+            dbus_error("Failed to wait on bus:", r);
     }
 
     return NULL;
@@ -92,7 +92,7 @@ static void* method_thread(void *arg) {
 // Methods and Method table
 
 
-static int method_command(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
+static int method_command(sd_bus_message *m, void *systemdata, sd_bus_error *ret_error) {
     int r;
     char* command;
 
@@ -106,7 +106,7 @@ static int method_command(sd_bus_message *m, void *userdata, sd_bus_error *ret_e
 }
 
 
-static int method_quit(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
+static int method_quit(sd_bus_message *m, void *systemdata, sd_bus_error *ret_error) {
     dbus_running = 0;
     return sd_bus_reply_method_return(m, "x", 1);
     return 1;
@@ -132,15 +132,22 @@ int main(int argc, char *argv[]) {
     double test_double = 10.0;
     int32_t test_int = 5;
     
-    /* Connect to the user bus */
+    /* Connect to the system bus */
+#ifdef USER_DBUS
     r = sd_bus_open_user(&bus);
+#else
+    r = sd_bus_open_system(&bus);
+#endif
     if (r < 0)
-        dbus_error("Failed to connect to system bus:", -r);
+        dbus_error("Failed to connect to system bus:", r);
 
+#ifdef USER_DBUS
     /* Take a well-known service name so that clients can find us */
-    r = sd_bus_request_name(bus, BUS_NAME, 0);
+    r = sd_bus_request_name(bus, BUS_NAME, SD_BUS_NAME_ALLOW_REPLACEMENT);
     if (r < 0)
-        dbus_error("Failed to acquire service name:", -r);
+        dbus_error("Failed to acquire service name:", r);
+    }   
+#endif
 
     method_thread_init();
 

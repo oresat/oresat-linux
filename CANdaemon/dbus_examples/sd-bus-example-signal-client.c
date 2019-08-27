@@ -43,16 +43,13 @@ int main(int argc, char *argv[]) {
     /* Connect to the user bus */
     r = sd_bus_open_user(&bus);
     if(r < 0)
-        dbus_error("Failed to connect to system bus:", -r);
+        dbus_error("Failed to connect to system bus:", r);
 
-    r = sd_bus_match_signal(bus,
-                            &slot,
-                            NULL,
-                            OBJECT_PATH,
-                            INTERFACE_NAME,
-                            "data_signal", 
-                            read_data_signal_cb, 
-                            NULL);
+    r = sd_bus_add_match(bus,
+                         &slot,
+                         "type='signal, path='"OBJECT_PATH"', interface='"INTERFACE_NAME"', member='data_signal'", 
+                         read_data_signal_cb, 
+                         NULL);
     if(r < 0)
         dbus_error("Add match error:", r);
 

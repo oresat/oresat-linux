@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
     /* Connect to the user bus */
     r = sd_bus_open_user(&bus);
     if (r < 0)
-        dbus_error("Failed to connect to system bus:", -r);
+        dbus_error("Failed to connect to system bus:", r);
 
     /* Issue the method call and store the response message in m */
     r = sd_bus_call_method(bus,
@@ -38,12 +38,12 @@ int main(int argc, char *argv[]) {
                            "s",
                            "THIS IS A TEST");
     if (r < 0)
-            dbus_error("Failed to issue method call:", -r);
+            dbus_error("Failed to issue method call:", r);
 
     /* Parse the response message */
     r = sd_bus_message_read(m, "s", &return_string);
     if (r < 0)
-            dbus_error("Failed to parse response message:", -r);
+            dbus_error("Failed to parse response message:", r);
 
     printf("%s\n", return_string);
 
