@@ -11,6 +11,7 @@
 #define BUS_NAME        INTERFACE_NAME
 #define OBJECT_PATH     "/org/example/project/oresat"
 #define WAIT_TIME       500000 // mircroseconds
+#define USER_DBUS       1 // comment out if system dbus is wanted
 
 
 static const sd_bus_vtable method_vtable[];
@@ -135,28 +136,46 @@ int main(int argc, char *argv[]) {
     /* Connect to the system bus */
 #ifdef USER_DBUS
     r = sd_bus_open_user(&bus);
+    if (r < 0)
+        dbus_error("Failed to connect to user bus:", r);
 #else
     r = sd_bus_open_system(&bus);
-#endif
     if (r < 0)
         dbus_error("Failed to connect to system bus:", r);
-
-#ifdef USER_DBUS
-    /* Take a well-known service name so that clients can find us */
-    r = sd_bus_request_name(bus, BUS_NAME, SD_BUS_NAME_ALLOW_REPLACEMENT);
-    if (r < 0)
-        dbus_error("Failed to acquire service name:", r);
-    }   
 #endif
 
+    /* Take a well-known service name so that clients can find us */
+    r = sd_bus_request_name(bus, BUS_NAME, SD_BUS_NAME_ALLOW_REPLACEMENT);
+    if (r < 0) {
+#ifdef USER_DBUS
+        dbus_error("Failed to acquire service name:", r);
+#else
+        dbus_error("Failed to acquire service name. \nIs org.example.project.oresat.conf in /etc/dbus-1/system.d/ ??:", r);
+#endif
+    }
+
     method_thread_init();
+
+    sd_bus_error error = SD_BUS_ERROR_NULL;
+
+    // make dbus properties
+    r = sd_bus_set_property(bus,
+                        NULL,
+                        OBJECT_PATH,
+                        INTERFACE_NAME,
+                        "Test",
+                        &error,
+                        "s",
+                        "Hello");
+    if (r < 0)
+        dbus_error("Set property failed:", r);
 
     while(dbus_running) {
         //send message
         r = sd_bus_emit_signal(bus, 
                                OBJECT_PATH, 
                                INTERFACE_NAME,
-                               "data_signal", 
+                               "DataSignal", 
                                "sdi", 
                                test_string,
                                test_double,
