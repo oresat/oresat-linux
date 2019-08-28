@@ -187,6 +187,12 @@ int main(int argc, char *argv[]) {
     }
 
     method_thread_clear();
+
+    r = sd_bus_release_name(bus, BUS_NAME);
+    if (r < 0) {
+        dbus_error("Failed to release service name:", r);
+    }
+
     return 1;
 }
 
