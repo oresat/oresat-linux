@@ -11,7 +11,7 @@
 #define BUS_NAME        INTERFACE_NAME
 #define OBJECT_PATH     "/org/example/project/oresat"
 #define WAIT_TIME       500000 // mircroseconds
-#define USER_DBUS       1 // comment out if system dbus is wanted
+//#define USER_DBUS       1 // comment out if system dbus is wanted
 
 
 static const sd_bus_vtable method_vtable[];

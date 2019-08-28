@@ -6,7 +6,7 @@
 #define INTERFACE_NAME  "org.example.project.oresat"
 #define BUS_NAME        INTERFACE_NAME
 #define OBJECT_PATH     "/org/example/project/oresat"
-#define USER_DBUS       1 // comment out if system dbus is wanted
+//#define USER_DBUS       1 // comment out if system dbus is wanted
 
 
 static int dbus_error(char* err, int r) {
