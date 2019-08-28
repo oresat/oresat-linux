@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
     if(r < 0)
         dbus_error("Add match error:", r);
 
-    for(int i=0; i<10; ++i) {
+    for(;;) {
         r = sd_bus_process(bus, NULL);
         if(r < 0)
             dbus_error("Bus Process failed:", r);
