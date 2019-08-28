@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
     double test_double = 10.0;
     int32_t test_int = 5;
     
-    /* Connect to the system bus */
+    /* Connect to the bus */
 #ifdef USER_DBUS
     r = sd_bus_open_user(&bus);
     if (r < 0)

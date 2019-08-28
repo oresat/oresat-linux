@@ -1,4 +1,4 @@
-# Eample Code
+# Example Code
 The example code for dbus. sd-bus and gdbus are in c. pydbus is in python3.
 
 ### Terminology

@@ -6,6 +6,7 @@
 #define INTERFACE_NAME  "org.example.project.oresat"
 #define BUS_NAME        INTERFACE_NAME
 #define OBJECT_PATH     "/org/example/project/oresat"
+#define USER_DBUS       1 // comment out if system dbus is wanted
 
 
 static int dbus_error(char* err, int r) {
@@ -40,14 +41,20 @@ int main(int argc, char *argv[]) {
     sd_bus *bus = NULL;
     int r;
 
-    /* Connect to the user bus */
+    /* Connect to the bus */
+#ifdef USER_DBUS
     r = sd_bus_open_user(&bus);
     if(r < 0)
+        dbus_error("Failed to connect to user bus:", r);
+#else
+    r = sd_bus_open_system(&bus);
+    if (r < 0)
         dbus_error("Failed to connect to system bus:", r);
+#endif
 
     r = sd_bus_add_match(bus,
                          &slot,
-                         "type='signal, path='"OBJECT_PATH"', interface='"INTERFACE_NAME"', member='data_signal'", 
+                         "type='signal', path='"OBJECT_PATH"', interface='"INTERFACE_NAME"', member='data_signal'", 
                          read_data_signal_cb, 
                          NULL);
     if(r < 0)
