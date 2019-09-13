@@ -20,11 +20,26 @@
 static uint16_t             SDOtimeoutTime = 500; /* Timeout time for SDO transfer in milliseconds, if no response */
 static uint8_t              blockTransferEnable = 1; /* SDO block transfer enabled? */
 
+void dbusError(int r, char* err) {
+    if (r < 0)
+        fprintf(stderr, "%s %s\n", err, strerror(-r));
+    return;
+}
 
-int send_file(const char* file_path, 
-              const uint16_t idx, 
-              const uint8_t subidx_name, 
-              const uint8_t subidx_data) {
+
+void dbusErrorExit(int r, char* err) {
+    if (r < 0) {
+        fprintf(stderr, "%s %s\n", err, strerror(-r));
+        exit(0);
+    }
+    return;
+}
+
+
+int OD_add_file(const uint16_t idx, 
+                const uint8_t subidx_name, 
+                const uint8_t subidx_data,
+                const char* file_path) {
 
     if(file_path == NULL)
         return 0;
@@ -41,6 +56,25 @@ int send_file(const char* file_path,
     send_SDO(idx, subidx_name, file_name, strlen(file_name)); // don't send '\0'
     send_SDO(idx, subidx_data, file_data, file_size);
     return 1; 
+}
+
+int OD_update(const uint16_t idx, 
+              const uint8_t subidx,
+              const int16_t data) {
+
+    if(data >= 0)
+        return 1;
+
+    uint32_t length = sizeof(data);
+    char* new_data = malloc(sizeof(char) * length);
+    memcpy(&new_data, &data, length);
+
+    send_SDO(idx, subidx, new_data, length);
+
+    free(new_data);
+    new_data = NULL;
+
+    return 0;
 }
 
 
@@ -141,7 +175,6 @@ void send_SDO(uint16_t idx, uint8_t subidx, char* input_data, uint32_t len) {
     char resp[STRING_BUFFER_SIZE];
     respErrorCode_t respErrorCode = respErrorNone;
     uint32_t sequence = 0;
-    //const dataType_t *datatype;
     uint32_t SDOabortCode = 1;
     uint8_t dataRx[SDO_BUFFER_SIZE]; /* SDO transmit buffer */
     uint32_t dataRxLen = 0;  /* Length of data to transmit. */

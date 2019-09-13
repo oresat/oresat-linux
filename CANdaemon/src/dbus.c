@@ -100,7 +100,7 @@ static void* signal_thread(void *arg) {
     int r;
 
     /* Connect to the user bus */
-    r = sd_bus_open_user(&bus);
+    r = sd_bus_open_system(&bus);
     if(r < 0)
         dbus_error("Failed to connect to system bus:", -r);
 

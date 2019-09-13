@@ -21,17 +21,19 @@ endif
 STACKDRV_SRC =		./CANopenNode/stack/socketCAN
 STACK_SRC =     	./CANopenNode/stack
 CANOPENNODE_SRC = 	./CANopenNode
-CANDAEMON_SRC = 	./src
+INTERFACE_SRC = 	./src
 OBJ_DICT_SRC =  	./objDict
 CANOPENCOMM_SRC =      	./CANopenComm
+GPS_SRC =		./src/gps
 
 
 INCLUDE_DIRS =	-I$(STACKDRV_SRC)	\
 		-I$(STACK_SRC)		\
 		-I$(CANOPENNODE_SRC)	\
-		-I$(CANDAEMON_SRC)	\
+		-I$(INTERFACE_SRC)	\
 		-I$(OBJ_DICT_SRC)	\
-		-I$(CANOPENCOMM_SRC)
+		-I$(CANOPENCOMM_SRC)	\
+		-I$(GPS_SRC)
 
 
 COC_SOURCES =	$(CANOPENCOMM_SRC)/CANopenCommand.c
@@ -52,16 +54,15 @@ CD_SOURCES =	$(STACKDRV_SRC)/CO_driver.c         \
 		$(STACK_SRC)/CO_LSSslave.c          \
 		$(STACK_SRC)/CO_trace.c             \
 		$(CANOPENNODE_SRC)/CANopen.c        \
-		$(CANDAEMON_SRC)/CO_master.c        \
-		$(CANDAEMON_SRC)/CO_time.c          \
+		$(INTERFACE_SRC)/CO_master.c        \
+		$(INTERFACE_SRC)/CO_time.c          \
 		$(OBJ_DICT_SRC)/CO_OD.c
 
-DBUS_SOURCES = 	$(CANDAEMON_SRC)/dbus.c             \
-		$(CANDAEMON_SRC)/dbus_helpers.c
+DBUS_SOURCES = 	$(INTERFACE_SRC)/dbus_helpers.c
 
 
-COMM_SOURCES =	$(CANDAEMON_SRC)/CO_command.c       \
-		$(CANDAEMON_SRC)/CO_comm_helpers.c
+COMM_SOURCES =	$(INTERFACE_SRC)/CO_command.c       \
+		$(INTERFACE_SRC)/CO_comm_helpers.c
 
 
 CD_OBJS =	$(CD_SOURCES:%.c=%.o)
@@ -72,19 +73,19 @@ ALL_OBJS = 	$(CD_OBJS) $(COC_OBJS) $(DBUS_OBJS) $(COMM_OBJS)
 
 
 %.o: %.c
-	$(CC) $(CFLAGS) $(CFLAGS_DBUS) $(DEBUG_FLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(CFLAGS_DBUS) $(DEBUG_FLAGS) $(INCLUDE_DIRS) -c $< -o $@
 
 
-all: candaemon candaemon-master canopend canopencomm
+all: gps-linux-interface gps-linux-interface-master canopend canopencomm
 
 clean:
-	rm -f $(ALL_OBJS) canopencomm candaemon canopend candaemon-master
+	rm -f $(ALL_OBJS) gps-linux-interface gps-linux-interface-master canopend canopencomm
 
-candaemon: $(CD_OBJS) $(COMM_OBJS) $(DBUS_OBJS)
-	$(CC) $(CFLAGS) $(CFLAGS_DBUS) $(DEBUG_FLAGS) $(LDFLAGS) $^ src/main.c -o $@
+gps-linux-interface: $(CD_OBJS) $(DBUS_OBJS)
+	$(CC) $(CFLAGS) $(CFLAGS_DBUS) $(DEBUG_FLAGS) $(LDFLAGS) $^ $(GPS_SRC)/dbus.c src/main.c -o $@ -DGPS
 
-candaemon-master: $(CD_OBJS) $(COMM_OBJS) $(DBUS_OBJS)
-	$(CC) $(CFLAGS) $(CFLAGS_DBUS) $(DEBUG_FLAGS)  $(LDFLAGS) $^ src/main.c -o $@ -DMASTER_NODE
+gps-linux-interface-master: $(CD_OBJS) $(COMM_OBJS) $(DBUS_OBJS)
+	$(CC) $(CFLAGS) $(CFLAGS_DBUS) $(DEBUG_FLAGS)  $(LDFLAGS) $^ $(GPS_SRC)/dbus.c src/main.c -o $@ -DGPS -DMASTER_NODE
 
 canopend: $(CD_OBJS) $(COMM_OBJS)
 	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(LDFLAGS) $^ src/main.c -o $@ -DCANOPEND_ONLY

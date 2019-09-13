@@ -10,16 +10,31 @@
 #define SDO_BUFFER_SIZE     100000000
 #define STRING_BUFFER_SIZE ((SDO_BUFFER_SIZE*4)+100)
 
+/* Handle the dbus error */
+void dbusError(int r, char* err);
+void dbusErrorExit(int r, char* err);
+
 
 /**
  * Initialize thread and create socket for dbus interface.
  *
  * @return 0 on success.
  */
-int send_file(const char* file_path, 
-              const uint16_t idx, 
-              const uint8_t subidx_name, 
-              const uint8_t subidx_data);
+int OD_add_file(const uint16_t idx, 
+                const uint8_t subidx_name, 
+                const uint8_t subidx_data,
+                const char* file_path);
+
+
+/**
+ * Initialize thread and create socket for dbus interface.
+ *
+ * @return 0 on success.
+ */
+int OD_update(const uint16_t idx, 
+              const uint8_t subidx,
+              const int16_t data);
+
 
 /**
  * Initialize thread and create socket for dbus interface.

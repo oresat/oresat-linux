@@ -102,8 +102,7 @@ void CO_error(const uint32_t info) {
 #ifdef CANOPEND_ONLY
 static void printUsage(char *progName) {
 fprintf(stderr,
-"Usage: %s <CAN device name> [options]\n", progName);
-fprintf(stderr,
+"Usage: %s <CAN device name> [options]\n"
 "\n"
 "Options:\n"
 "  -i <Node ID>        CANopen Node-id (1..127). If not specified, value from\n"
@@ -112,22 +111,19 @@ fprintf(stderr,
 "  -r                  Enable reboot on CANopen NMT reset_node command. \n"
 "  -s <ODstorage file> Set Filename for OD storage ('od_storage' is default).\n"
 "  -a <ODstorageAuto>  Set Filename for automatic storage variables from\n"
-"                      Object dictionary. ('od_storage_auto' is default).\n");
-fprintf(stderr,
+"                      Object dictionary. ('od_storage_auto' is default).\n"
 "  -c <Socket path>    Enable command interface for master functionality. \n"
 "                      If socket path is specified as empty string \"\",\n"
 "                      default '%s' will be used.\n"
 "                      Note that location of socket path may affect security.\n"
 "                      See 'canopencomm/canopencomm --help' for more info.\n"
-, CO_command_socketPath);
-fprintf(stderr,
 "\n"
 "LICENSE\n"
 "    This program is part of CANopenSocket and can be downloaded from:\n"
 "    https://github.com/CANopenNode/CANopenSocket\n"
 "    Permission is granted to copy, distribute and/or modify this document\n"
 "    under the terms of the GNU General Public License, Version 2.\n"
-"\n");
+"\n", progName, CO_command_socketPath);
 }
 #endif // CANOPEND_ONLY
 
@@ -440,7 +436,6 @@ static void* rt_thread(void* arg) {
         }
 
         else if(CANrx_taskTmr_process(ev.data.fd)) {
-            int i;
 
             /* code was processed in the above function. Additional code process below */
             INCREMENT_1MS(CO_timer1ms);
@@ -448,6 +443,7 @@ static void* rt_thread(void* arg) {
             /* Monitor variables with trace objects */
             CO_time_process(&CO_time);
 #if CO_NO_TRACE > 0
+            int i;
             for(i=0; i<OD_traceEnable && i<CO_NO_TRACE; i++) {
                 CO_trace_process(CO->trace[i], *CO_time.epochTimeOffsetMs);
             }
