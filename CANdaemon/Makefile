@@ -8,7 +8,7 @@ VERSION ?= 1#
 
 #0 Not a master node
 #1 Is a master node
-MASTER ?= 0#
+MASTER ?= 1#
 
 #0 debug off
 #1 debug on
@@ -68,18 +68,20 @@ DEFAULT_SOURCES = $(DEFAULT_SRC)/CO_OD.c
 GPS_SOURCES = 	$(GPS_SRC)/CO_OD.c                  \
 		$(GPS_SRC)/dbus.c
 
+STARTACKER_SOURCES = $(STARTACKER_SRC)/CO_OD.c      \
+		$(STARTACKER_SRC)/dbus.c
 
 ##############################################################################
 
 
 ifeq ($(VERSION), 1)
-#INCLUDE_DIRS =	-I$(GPS_SRC) -I$(STACKDRV_SRC) -I$(STACK_SRC) 	     \
-		-I$(CANOPENNODE_SRC) -I$(INTERFACE_SRC) -I$(CANOPENCOMM_SRC)
 INCLUDE_DIRS += -I$(GPS_SRC)
 SOURCES = $(GPS_SOURCES) $(DBUS_SOURCES) $(CD_SOURCES)
 CFLAGS += $(CFLAGS_DBUS)
 else ifeq ($(VERSION), 2)
 INCLUDE_DIRS +=	-I$(STARTACKER_SRC)
+SOURCES = $(STARTACKER_SOURCES) $(DBUS_SOURCES) $(CD_SOURCES)
+CFLAGS += $(CFLAGS_DBUS)
 else
 $(info VERSION number failed)
 endif
@@ -116,7 +118,5 @@ canopencomm:
 help:
 	$(info Make Options:)
 	$(info - linux-interface: )
-	$(info - candopend: default canopend and dbus off)
 	$(info - canopencomm: default canopencomm)
-	$(info - all: make all 4)
 	$(info - clean: remove all .o files and binaries)

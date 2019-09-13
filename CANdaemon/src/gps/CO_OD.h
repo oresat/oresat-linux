@@ -98,15 +98,15 @@
       FileVersion:  0
       CreationTime: 
       CreationDate: 
-      CreatedBy:    JP
+      CreatedBy:    Ryan
 *******************************************************************************/
 
 
 /*******************************************************************************
    DEVICE INFO:
-      VendorName:     CANopenNode
+      VendorName:     OreSat
       VendorNumber:   0
-      ProductName:    CANopenNode
+      ProductName:    GPS
       ProductNumber:  0
 *******************************************************************************/
 
@@ -116,7 +116,7 @@
 *******************************************************************************/
   #define CO_NO_SYNC                     1   //Associated objects: 1005-1007
   #define CO_NO_EMERGENCY                1   //Associated objects: 1014, 1015
-  #define CO_NO_SDO_SERVER               1   //Associated objects: 1200-127F
+  #define CO_NO_SDO_SERVER               4   //Associated objects: 1200-127F
   #define CO_NO_SDO_CLIENT               1   //Associated objects: 1280-12FF
   #define CO_NO_LSS_SERVER               0   //LSS Slave
   #define CO_NO_LSS_CLIENT               0   //LSS Master
@@ -129,7 +129,7 @@
 /*******************************************************************************
    OBJECT DICTIONARY
 *******************************************************************************/
-   #define CO_OD_NoOfElements             170
+   #define CO_OD_NoOfElements             174
 
 
 /*******************************************************************************
@@ -147,6 +147,19 @@
                UNSIGNED32     COB_IDClientToServer;
                UNSIGNED32     COB_IDServerToClient;
                }              OD_SDOServerParameter_t;
+/*1201      */ typedef struct {
+               UNSIGNED8      maxSubIndex;
+               VISIBLE_STRING fileName[19];
+               DOMAIN         fileData;
+               }              OD_fileTransfer_t;
+/*1202      */ typedef struct {
+               UNSIGNED8      maxSubIndex;
+               INTEGER32      newState;
+               }              OD_mainProcessControl_t;
+/*1203      */ typedef struct {
+               UNSIGNED8      maxSubIndex;
+               INTEGER32      currentState;
+               }              OD_mainProcessStatus_t;
 /*1280      */ typedef struct {
                UNSIGNED8      maxSubIndex;
                UNSIGNED32     COB_IDClientToServer;
@@ -226,9 +239,15 @@
 /*3000      */ typedef struct {
                UNSIGNED8      maxSubIndex;
                INTEGER16      positionX;
+               INTEGER16      postitionY;
+               INTEGER16      positionZ;
+               }              OD_stateVector_t;
+/*3001      */ typedef struct {
+               UNSIGNED8      maxSubIndex;
+               INTEGER16      positionX;
                INTEGER16      positionY;
                INTEGER16      positionZ;
-               }              OD_GPS_Data_t;
+               }              OD_stateVectorOut_t;
 
 /*******************************************************************************
    TYPE DEFINITIONS FOR OBJECT DICTIONARY INDEXES
@@ -335,6 +354,25 @@
         #define OD_1200_0_SDOServerParameter_maxSubIndex            0
         #define OD_1200_1_SDOServerParameter_COB_IDClientToServer   1
         #define OD_1200_2_SDOServerParameter_COB_IDServerToClient   2
+
+/*1201 */
+        #define OD_1201_fileTransfer                                0x1201
+
+        #define OD_1201_0_fileTransfer_maxSubIndex                  0
+        #define OD_1201_1_fileTransfer_fileName                     1
+        #define OD_1201_2_fileTransfer_fileData                     2
+
+/*1202 */
+        #define OD_1202_mainProcessControl                          0x1202
+
+        #define OD_1202_0_mainProcessControl_maxSubIndex            0
+        #define OD_1202_1_mainProcessControl_newState               1
+
+/*1203 */
+        #define OD_1203_mainProcessStatus                           0x1203
+
+        #define OD_1203_0_mainProcessStatus_maxSubIndex             0
+        #define OD_1203_1_mainProcessStatus_currentState            1
 
 /*1280 */
         #define OD_1280_SDOClientParameter                          0x1280
@@ -1960,12 +1998,20 @@
         #define OD_2420_6_trace_triggerTime                         6
 
 /*3000 */
-        #define OD_3000_GPS_Data                                    0x3000
+        #define OD_3000_stateVector                                 0x3000
 
-        #define OD_3000_0_GPS_Data_maxSubIndex                      0
-        #define OD_3000_1_GPS_Data_positionX                        1
-        #define OD_3000_2_GPS_Data_positionY                        2
-        #define OD_3000_3_GPS_Data_positionZ                        3
+        #define OD_3000_0_stateVector_maxSubIndex                   0
+        #define OD_3000_1_stateVector_positionX                     1
+        #define OD_3000_2_stateVector_postitionY                    2
+        #define OD_3000_3_stateVector_positionZ                     3
+
+/*3001 */
+        #define OD_3001_stateVectorOut                              0x3001
+
+        #define OD_3001_0_stateVectorOut_maxSubIndex                0
+        #define OD_3001_1_stateVectorOut_positionX                  1
+        #define OD_3001_2_stateVectorOut_positionY                  2
+        #define OD_3001_3_stateVectorOut_positionZ                  3
 
 /*6000 */
         #define OD_6000_readInput8Bit                               0x6000
@@ -2069,6 +2115,9 @@ struct sCO_OD_RAM{
 /*1003      */ UNSIGNED32      preDefinedErrorField[8];
 /*1010      */ UNSIGNED32      storeParameters[1];
 /*1011      */ UNSIGNED32      restoreDefaultParameters[1];
+/*1201      */ OD_fileTransfer_t fileTransfer;
+/*1202      */ OD_mainProcessControl_t mainProcessControl;
+/*1203      */ OD_mainProcessStatus_t mainProcessStatus;
 /*1280      */ OD_SDOClientParameter_t SDOClientParameter[1];
 /*2100      */ OCTET_STRING   errorStatusBits[10];
 /*2103      */ UNSIGNED16     SYNCCounter;
@@ -2081,7 +2130,8 @@ struct sCO_OD_RAM{
 /*2130      */ OD_time_t       time;
 /*2400      */ UNSIGNED8      traceEnable;
 /*2401      */ OD_trace_t      trace[32];
-/*3000      */ OD_GPS_Data_t   GPS_Data;
+/*3000      */ OD_stateVector_t stateVector;
+/*3001      */ OD_stateVectorOut_t stateVectorOut;
 /*6000      */ UNSIGNED8       readInput8Bit[8];
 /*6200      */ UNSIGNED8       writeOutput8Bit[8];
 /*6401      */ INTEGER16       readAnalogueInput16Bit[12];
@@ -2188,6 +2238,15 @@ extern struct sCO_OD_EEPROM CO_OD_EEPROM;
 /*1200, Data Type: SDOServerParameter_t */
         #define OD_SDOServerParameter                               CO_OD_ROM.SDOServerParameter
 
+/*1201, Data Type: fileTransfer_t */
+        #define OD_fileTransfer                                     CO_OD_RAM.fileTransfer
+
+/*1202, Data Type: mainProcessControl_t */
+        #define OD_mainProcessControl                               CO_OD_RAM.mainProcessControl
+
+/*1203, Data Type: mainProcessStatus_t */
+        #define OD_mainProcessStatus                                CO_OD_RAM.mainProcessStatus
+
 /*1280, Data Type: SDOClientParameter_t */
         #define OD_SDOClientParameter                               CO_OD_RAM.SDOClientParameter
 
@@ -2274,8 +2333,11 @@ extern struct sCO_OD_EEPROM CO_OD_EEPROM;
 /*2401, Data Type: trace_t */
         #define OD_trace                                            CO_OD_RAM.trace
 
-/*3000, Data Type: GPS_Data_t */
-        #define OD_GPS_Data                                         CO_OD_RAM.GPS_Data
+/*3000, Data Type: stateVector_t */
+        #define OD_stateVector                                      CO_OD_RAM.stateVector
+
+/*3001, Data Type: stateVectorOut_t */
+        #define OD_stateVectorOut                                   CO_OD_RAM.stateVectorOut
 
 /*6000, Data Type: UNSIGNED8, Array[8] */
         #define OD_readInput8Bit                                    CO_OD_RAM.readInput8Bit
