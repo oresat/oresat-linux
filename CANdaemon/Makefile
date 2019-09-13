@@ -1,8 +1,18 @@
 # Makefile for CANdaemon based off of CANopend
 
 
-#debug on/off
-DEBUG ?= 1
+#0 default
+#1 gps
+#2 star tracker
+VERSION ?= 1#
+
+#0 Not a master node
+#1 Is a master node
+MASTER ?= 0#
+
+#0 debug off
+#1 debug on
+DEBUG ?= 1#
 
 
 ##############################################################################
@@ -13,30 +23,20 @@ CFLAGS_DBUS= $(shell pkg-config --cflags --libs libsystemd)
 CFLAGS = $(INCLUDE_DIRS)
 LDFLAGS = -lrt -pthread
 
-ifeq ($(DEBUG), 1)
-DEBUG_FLAGS += -Wall -g -Werror -DDEBUG
-endif
-
 
 STACKDRV_SRC =		./CANopenNode/stack/socketCAN
 STACK_SRC =     	./CANopenNode/stack
 CANOPENNODE_SRC = 	./CANopenNode
 INTERFACE_SRC = 	./src
-OBJ_DICT_SRC =  	./objDict
-CANOPENCOMM_SRC =      	./CANopenComm
+DEFAULT_SRC =		./src/default
 GPS_SRC =		./src/gps
+STARTACKER_SRC =	./src/starTracker
 
 
 INCLUDE_DIRS =	-I$(STACKDRV_SRC)	\
 		-I$(STACK_SRC)		\
 		-I$(CANOPENNODE_SRC)	\
-		-I$(INTERFACE_SRC)	\
-		-I$(OBJ_DICT_SRC)	\
-		-I$(CANOPENCOMM_SRC)	\
-		-I$(GPS_SRC)
-
-
-COC_SOURCES =	$(CANOPENCOMM_SRC)/CANopenCommand.c
+		-I$(INTERFACE_SRC)
 
 
 CD_SOURCES =	$(STACKDRV_SRC)/CO_driver.c         \
@@ -56,7 +56,6 @@ CD_SOURCES =	$(STACKDRV_SRC)/CO_driver.c         \
 		$(CANOPENNODE_SRC)/CANopen.c        \
 		$(INTERFACE_SRC)/CO_master.c        \
 		$(INTERFACE_SRC)/CO_time.c          \
-		$(OBJ_DICT_SRC)/CO_OD.c
 
 DBUS_SOURCES = 	$(INTERFACE_SRC)/dbus_helpers.c
 
@@ -64,39 +63,59 @@ DBUS_SOURCES = 	$(INTERFACE_SRC)/dbus_helpers.c
 COMM_SOURCES =	$(INTERFACE_SRC)/CO_command.c       \
 		$(INTERFACE_SRC)/CO_comm_helpers.c
 
+DEFAULT_SOURCES = $(DEFAULT_SRC)/CO_OD.c
 
-CD_OBJS =	$(CD_SOURCES:%.c=%.o)
-COC_OBJS =	$(COC_SOURCES:%.c=%.o) 
-DBUS_OBJS =	$(DBUS_SOURCES:%.c=%.o)
-COMM_OBJS =	$(COMM_SOURCES:%.c=%.o)
-ALL_OBJS = 	$(CD_OBJS) $(COC_OBJS) $(DBUS_OBJS) $(COMM_OBJS)
+GPS_SOURCES = 	$(GPS_SRC)/CO_OD.c                  \
+		$(GPS_SRC)/dbus.c
 
+
+##############################################################################
+
+
+ifeq ($(VERSION), 1)
+#INCLUDE_DIRS =	-I$(GPS_SRC) -I$(STACKDRV_SRC) -I$(STACK_SRC) 	     \
+		-I$(CANOPENNODE_SRC) -I$(INTERFACE_SRC) -I$(CANOPENCOMM_SRC)
+INCLUDE_DIRS += -I$(GPS_SRC)
+SOURCES = $(GPS_SOURCES) $(DBUS_SOURCES) $(CD_SOURCES)
+CFLAGS += $(CFLAGS_DBUS)
+else ifeq ($(VERSION), 2)
+INCLUDE_DIRS +=	-I$(STARTACKER_SRC)
+else
+$(info VERSION number failed)
+endif
+
+
+ifeq ($(MASTER), 1)
+    CFLAGS += -DMASTER_NODE
+    SOURCES += $(COMM_SOURCES)
+endif
+
+
+ifeq ($(DEBUG), 1)
+    DEBUG_FLAGS += -Wall -g -Werror -DDEBUG
+endif
+
+
+##############################################################################
+
+
+OBJS =	$(SOURCES:%.c=%.o)
 
 %.o: %.c
-	$(CC) $(CFLAGS) $(CFLAGS_DBUS) $(DEBUG_FLAGS) $(INCLUDE_DIRS) -c $< -o $@
-
-
-all: gps-linux-interface gps-linux-interface-master canopend canopencomm
+	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(INCLUDE_DIRS) -c $< -o $@
 
 clean:
-	rm -f $(ALL_OBJS) gps-linux-interface gps-linux-interface-master canopend canopencomm
+	rm -rf $(OBJS)  linux-interface canopencomm
 
-gps-linux-interface: $(CD_OBJS) $(DBUS_OBJS)
-	$(CC) $(CFLAGS) $(CFLAGS_DBUS) $(DEBUG_FLAGS) $(LDFLAGS) $^ $(GPS_SRC)/dbus.c src/main.c -o $@ -DGPS
+linux-interface: $(OBJS)
+	$(CC) $(CFLAGS) $ $(DEBUG_FLAGS) $(LDFLAGS) $^ src/main.c -o $@
 
-gps-linux-interface-master: $(CD_OBJS) $(COMM_OBJS) $(DBUS_OBJS)
-	$(CC) $(CFLAGS) $(CFLAGS_DBUS) $(DEBUG_FLAGS)  $(LDFLAGS) $^ $(GPS_SRC)/dbus.c src/main.c -o $@ -DGPS -DMASTER_NODE
-
-canopend: $(CD_OBJS) $(COMM_OBJS)
-	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(LDFLAGS) $^ src/main.c -o $@ -DCANOPEND_ONLY
-
-canopencomm: $(COC_OBJS)
-	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(LDFLAGS) $^ -o $@
+canopencomm:
+	$(CC) $(DEBUG_FLAGS) ./CANopenComm/CANopenCommand.c -o $@
 
 help:
 	$(info Make Options:)
-	$(info - candaemon: candaemon with no master node options, with dbus on)
-	$(info - candaemon-master: candaemon with master node options on and dbus on) 
+	$(info - linux-interface: )
 	$(info - candopend: default canopend and dbus off)
 	$(info - canopencomm: default canopencomm)
 	$(info - all: make all 4)
