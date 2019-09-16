@@ -11,18 +11,9 @@
 
 ## busctl
  - busctl is a way to monitor dbus interfaces in a terminal
- - To list all system dbus interfaces
-'''
-busctl
-''' 
- - To list all session (user) dbus interfaces
-'''
-busctl --user
-''' 
- - To show all methods, signals, and properties for that dbus interface.
-'''
-busctl introspect <DBUS-INTERFACE> <DBUS-PATH>
-'''
+ - To list all system dbus interfaces `busctl`
+ - To list all session (user) dbus interfaces `busctl --user`
+ - To show all methods, signals, and properties for that dbus interface. `busctl introspect <DBUS-INTERFACE> <DBUS-PATH>`
 
 
 ## Usefull Links
