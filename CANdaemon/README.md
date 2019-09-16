@@ -20,10 +20,10 @@ The CANdaemon is [CANopenSocket], but with dbus interfaces to commicate with oth
 - systemd-dev, make, gcc, pkg-source
 
 ## Useful References
-[CANopenSocket]
-[DBus-Specs]
-[CANopen-Specs]
-[ECSS-CANBus-Extended-Protocal]
+- [CANopenSocket]
+- [DBus-Specs]
+- [CANopen-Specs]
+- [ECSS-CANBus-Extended-Protocal]
 
 <!-- Other oresat repos -->
 [GPS]:https://github.com/oresat/oresat-gps-software
