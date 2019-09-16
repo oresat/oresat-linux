@@ -1,5 +1,7 @@
 <div align="center">
+  <h1>
   <br> CANdaemon for OreSat </br>
+  </h1>
   <h4>
     <a href="#features">Features</a> |
     <a href="../BBB_Notes.md">BBB Notes</a>
@@ -15,7 +17,7 @@ The CANdaemon is [CANopenSocket], but with dbus interfaces to commicate with oth
 - Easy to add more dbus clients to control new processes.  
 
 ## Dependices (for beaglebone black)
-- systemd-dev, make, gcc
+- systemd-dev, make, gcc, pkg-source
 
 ## Useful References
 [CANopenSocket]

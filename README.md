@@ -1,5 +1,10 @@
-# OreSat-Linux
-This repo has all the general design and code for all 4 linux boards on OreSat. The four boards being GPS, StarTracker, OreSat Live, and Cirrus Flux Camera (CFC).
+<div align="center">
+  <h1>
+  <br> CANdaemon for OreSat-Linux </br>
+  </h1>
+</div>
+
+This repo has all the general design and code for all 4 linux boards on OreSat. The four boards being [GPS], [StarTracker], OreSat Live, and Cirrus Flux Camera (CFC).
 
 ## CANdaemon
 The inferface between the CANbus and the any other processes on a linux board; including the main process and the Updater process. Uses DBus for IPC (inter-process communication). This based off of CANopenSocket but with multiple DBus interfaces.
@@ -10,3 +15,6 @@ TBD
 ## Updater
 Python scripts to handle updating packages, source code, and drivers on the linux boards. Will use DBus to commicate with CANdaemon.
 
+<!-- Other oresat repos -->
+[GPS]:https://github.com/oresat/oresat-gps-software
+[StarTracker]:https://github.com/oresat/oresat-star-tracker
