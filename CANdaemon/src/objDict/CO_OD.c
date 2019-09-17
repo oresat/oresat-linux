@@ -161,7 +161,7 @@ struct sCO_OD_RAM CO_OD_RAM = {
 /*1A0F*/ {0x0L, 0x0000L, 0x0000L, 0x0000L, 0x0000L, 0x0000L, 0x0000L, 0x0000L, 0x0000L}},
 /*1F80*/ 0x0001L,
 /*2100*/ {0x0L},
-/*2101*/ 0x20L,
+/*2101*/ 0x11L,
 /*2102*/ 0xFA,
 /*2103*/ 0x00,
 /*2104*/ 0x00,
@@ -239,6 +239,7 @@ struct sCO_OD_RAM CO_OD_RAM = {
 /*241E*/ {0x6L, 0x0000L, 0x0000L, 0x0000L, 0x0000L, 0, 0x0000L},
 /*241F*/ {0x6L, 0x0000L, 0x0000L, 0x0000L, 0x0000L, 0, 0x0000L},
 /*2420*/ {0x6L, 0x0000L, 0x0000L, 0x0000L, 0x0000L, 0, 0x0000L}},
+/*3000*/ {0x9L, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
 /*3100*/ {0x9L, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
 /*6000*/ {0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L},
 /*6200*/ {0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L},
@@ -1646,6 +1647,19 @@ struct sCO_OD_EEPROM CO_OD_EEPROM = {
            {(void*)&CO_OD_RAM.trace[31].triggerTime, 0x9E, 0x4 },
 };
 
+/*0x3000*/ const CO_OD_entryRecord_t OD_record3000[10] = {
+           {(void*)&CO_OD_RAM.GPS_StateVectiorGlobal.maxSubIndex, 0x06, 0x1 },
+           {(void*)&CO_OD_RAM.GPS_StateVectiorGlobal.positionX, 0xBE, 0x2 },
+           {(void*)&CO_OD_RAM.GPS_StateVectiorGlobal.positionY, 0xBE, 0x2 },
+           {(void*)&CO_OD_RAM.GPS_StateVectiorGlobal.positionZ, 0xBE, 0x2 },
+           {(void*)&CO_OD_RAM.GPS_StateVectiorGlobal.velocityX, 0xBE, 0x2 },
+           {(void*)&CO_OD_RAM.GPS_StateVectiorGlobal.velocityY, 0xBE, 0x2 },
+           {(void*)&CO_OD_RAM.GPS_StateVectiorGlobal.velocityZ, 0xBE, 0x2 },
+           {(void*)&CO_OD_RAM.GPS_StateVectiorGlobal.accelerationX, 0xBE, 0x2 },
+           {(void*)&CO_OD_RAM.GPS_StateVectiorGlobal.accelerationY, 0xBE, 0x2 },
+           {(void*)&CO_OD_RAM.GPS_StateVectiorGlobal.accelerationZ, 0xBE, 0x2 },
+};
+
 /*0x3100*/ const CO_OD_entryRecord_t OD_record3100[10] = {
            {(void*)&CO_OD_RAM.GPS_StateVector.maxSubIndex, 0x06, 0x1 },
            {(void*)&CO_OD_RAM.GPS_StateVector.positionX, 0xBE, 0x2 },
@@ -1828,6 +1842,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 {0x241E, 0x06, 0x00,  0, (void*)&OD_record241E},
 {0x241F, 0x06, 0x00,  0, (void*)&OD_record241F},
 {0x2420, 0x06, 0x00,  0, (void*)&OD_record2420},
+{0x3000, 0x09, 0x00,  1, (void*)&OD_record3000},
 {0x3100, 0x09, 0x00,  1, (void*)&OD_record3100},
 {0x6000, 0x08, 0x0E,  1, (void*)&CO_OD_RAM.readInput8Bit[0]},
 {0x6200, 0x08, 0x0E,  1, (void*)&CO_OD_RAM.writeOutput8Bit[0]},

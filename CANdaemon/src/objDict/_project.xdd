@@ -4621,7 +4621,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="0x20" />
+            <defaultValue value="0x11" />
           </parameter>
           <parameter uniqueID="UID_PARAM_2102" access="readWrite">
             <label lang="en">CAN bit rate</label>
@@ -10031,6 +10031,94 @@
             </denotation>
             <defaultValue value="0" />
           </parameter>
+          <parameter uniqueID="UID_PARAM_3000" access="readWrite">
+            <label lang="en">GPS State Vectior Global</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300000" access="read">
+            <label lang="en">max sub-index</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="9" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300001" access="readWrite">
+            <label lang="en">Position X</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="0" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300002" access="readWrite">
+            <label lang="en">Position Y</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="0" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300003" access="readWrite">
+            <label lang="en">Position Z</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="0" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300004" access="readWrite">
+            <label lang="en">Velocity X</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="0" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300005" access="readWrite">
+            <label lang="en">Velocity Y</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="0" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300006" access="readWrite">
+            <label lang="en">Velocity Z</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="0" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300007" access="readWrite">
+            <label lang="en">Acceleration X</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="0" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300008" access="readWrite">
+            <label lang="en">Acceleration Y</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="0" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300009" access="readWrite">
+            <label lang="en">Acceleration Z</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="0" />
+          </parameter>
           <parameter uniqueID="UID_PARAM_3100" access="readWrite">
             <label lang="en">GPS State Vector</label>
             <description lang="en" />
@@ -11883,6 +11971,18 @@
             <CANopenSubObject subIndex="0004" name="Max" objectType="7" dataType="0004" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="RPDO" uniqueIDRef="UID_PARAM_242004" />
             <CANopenSubObject subIndex="0005" name="Plot" objectType="7" dataType="000F" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_242005" />
             <CANopenSubObject subIndex="0006" name="Trigger time" objectType="7" dataType="0007" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="RPDO" uniqueIDRef="UID_PARAM_242006" />
+          </CANopenObject>
+          <CANopenObject index="3000" name="GPS State Vectior Global" objectType="9" dataType="0005" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3000" subNumber="10">
+            <CANopenSubObject subIndex="0000" name="max sub-index" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300000" />
+            <CANopenSubObject subIndex="0001" name="Position X" objectType="7" dataType="0003" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="optional" uniqueIDRef="UID_PARAM_300001" />
+            <CANopenSubObject subIndex="0002" name="Position Y" objectType="7" dataType="0003" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="optional" uniqueIDRef="UID_PARAM_300002" />
+            <CANopenSubObject subIndex="0003" name="Position Z" objectType="7" dataType="0003" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="optional" uniqueIDRef="UID_PARAM_300003" />
+            <CANopenSubObject subIndex="0004" name="Velocity X" objectType="7" dataType="0003" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="optional" uniqueIDRef="UID_PARAM_300004" />
+            <CANopenSubObject subIndex="0005" name="Velocity Y" objectType="7" dataType="0003" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="optional" uniqueIDRef="UID_PARAM_300005" />
+            <CANopenSubObject subIndex="0006" name="Velocity Z" objectType="7" dataType="0003" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="optional" uniqueIDRef="UID_PARAM_300006" />
+            <CANopenSubObject subIndex="0007" name="Acceleration X" objectType="7" dataType="0003" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="optional" uniqueIDRef="UID_PARAM_300007" />
+            <CANopenSubObject subIndex="0008" name="Acceleration Y" objectType="7" dataType="0003" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="optional" uniqueIDRef="UID_PARAM_300008" />
+            <CANopenSubObject subIndex="0009" name="Acceleration Z" objectType="7" dataType="0003" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="optional" uniqueIDRef="UID_PARAM_300009" />
           </CANopenObject>
           <CANopenObject index="3100" name="GPS State Vector" objectType="9" dataType="0005" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3100" subNumber="10">
             <CANopenSubObject subIndex="0000" name="max sub-index" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_310000" />

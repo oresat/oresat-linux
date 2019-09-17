@@ -834,7 +834,7 @@
       <description />
       <accessFunctionPreCode />
     </CANopenObject>
-    <CANopenObject index="2101" name="CAN node ID" objectType="VAR" memoryType="RAM" dataType="0x05" accessType="rw" PDOmapping="no" defaultValue="0x20" subNumber="0" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+    <CANopenObject index="2101" name="CAN node ID" objectType="VAR" memoryType="RAM" dataType="0x05" accessType="rw" PDOmapping="no" defaultValue="0x11" subNumber="0" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
       <description />
       <accessFunctionPreCode />
     </CANopenObject>
@@ -1743,6 +1743,20 @@
       <CANopenSubObject subIndex="04" name="Max" objectType="VAR" dataType="0x04" accessType="rww" PDOmapping="optional" defaultValue="0" TPDOdetectCOS="false" />
       <CANopenSubObject subIndex="05" name="Plot" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
       <CANopenSubObject subIndex="06" name="Trigger time" objectType="VAR" dataType="0x07" accessType="rww" PDOmapping="optional" defaultValue="0" TPDOdetectCOS="false" />
+      <accessFunctionPreCode />
+    </CANopenObject>
+    <CANopenObject index="3000" name="GPS State Vectior Global" objectType="REC" memoryType="RAM" dataType="0x05" accessType="rw" PDOmapping="no" defaultValue="" subNumber="10" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+      <description />
+      <CANopenSubObject subIndex="00" name="max sub-index" objectType="VAR" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="9" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="01" name="Position X" objectType="VAR" dataType="0x03" accessType="rw" PDOmapping="optional" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="02" name="Position Y" objectType="VAR" dataType="0x03" accessType="rw" PDOmapping="optional" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="03" name="Position Z" objectType="VAR" dataType="0x03" accessType="rw" PDOmapping="optional" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="04" name="Velocity X" objectType="VAR" dataType="0x03" accessType="rw" PDOmapping="optional" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="05" name="Velocity Y" objectType="VAR" dataType="0x03" accessType="rw" PDOmapping="optional" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="06" name="Velocity Z" objectType="VAR" dataType="0x03" accessType="rw" PDOmapping="optional" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="07" name="Acceleration X" objectType="VAR" dataType="0x03" accessType="rw" PDOmapping="optional" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="08" name="Acceleration Y" objectType="VAR" dataType="0x03" accessType="rw" PDOmapping="optional" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="09" name="Acceleration Z" objectType="VAR" dataType="0x03" accessType="rw" PDOmapping="optional" defaultValue="0" TPDOdetectCOS="false" />
       <accessFunctionPreCode />
     </CANopenObject>
     <CANopenObject index="3100" name="GPS State Vector" objectType="REC" memoryType="RAM" dataType="0x05" accessType="rw" PDOmapping="no" defaultValue="" subNumber="10" accessFunctionName="" disabled="false" TPDOdetectCOS="false">

@@ -5458,7 +5458,7 @@ DefaultValue=0
 PDOMapping=1
 
 [ManufacturerObjects]
-SupportedObjects=80
+SupportedObjects=81
 1=0x2100
 2=0x2101
 3=0x2102
@@ -5538,7 +5538,8 @@ SupportedObjects=80
 77=0x241E
 78=0x241F
 79=0x2420
-80=0x3100
+80=0x3000
+81=0x3100
 
 [2100]
 ParameterName=Error status bits
@@ -5555,7 +5556,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0005
 AccessType=rw
-DefaultValue=0x20
+DefaultValue=0x11
 PDOMapping=0
 
 [2102]
@@ -11423,6 +11424,102 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rww
+DefaultValue=0
+PDOMapping=1
+
+[3000]
+ParameterName=GPS State Vectior Global
+ObjectType=0x9
+;StorageLocation=RAM
+SubNumber=0xA
+
+[3000sub0]
+ParameterName=max sub-index
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x0005
+AccessType=ro
+DefaultValue=9
+PDOMapping=0
+
+[3000sub1]
+ParameterName=Position X
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x0003
+AccessType=rw
+DefaultValue=0
+PDOMapping=1
+
+[3000sub2]
+ParameterName=Position Y
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x0003
+AccessType=rw
+DefaultValue=0
+PDOMapping=1
+
+[3000sub3]
+ParameterName=Position Z
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x0003
+AccessType=rw
+DefaultValue=0
+PDOMapping=1
+
+[3000sub4]
+ParameterName=Velocity X
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x0003
+AccessType=rw
+DefaultValue=0
+PDOMapping=1
+
+[3000sub5]
+ParameterName=Velocity Y
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x0003
+AccessType=rw
+DefaultValue=0
+PDOMapping=1
+
+[3000sub6]
+ParameterName=Velocity Z
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x0003
+AccessType=rw
+DefaultValue=0
+PDOMapping=1
+
+[3000sub7]
+ParameterName=Acceleration X
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x0003
+AccessType=rw
+DefaultValue=0
+PDOMapping=1
+
+[3000sub8]
+ParameterName=Acceleration Y
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x0003
+AccessType=rw
+DefaultValue=0
+PDOMapping=1
+
+[3000sub9]
+ParameterName=Acceleration Z
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x0003
+AccessType=rw
 DefaultValue=0
 PDOMapping=1
 

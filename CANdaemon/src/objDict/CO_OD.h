@@ -129,7 +129,7 @@
 /*******************************************************************************
    OBJECT DICTIONARY
 *******************************************************************************/
-   #define CO_OD_NoOfElements             170
+   #define CO_OD_NoOfElements             171
 
 
 /*******************************************************************************
@@ -223,6 +223,18 @@
                DOMAIN         plot;
                UNSIGNED32     triggerTime;
                }              OD_trace_t;
+/*3000      */ typedef struct {
+               UNSIGNED8      maxSubIndex;
+               INTEGER16      positionX;
+               INTEGER16      positionY;
+               INTEGER16      positionZ;
+               INTEGER16      velocityX;
+               INTEGER16      velocityY;
+               INTEGER16      velocityZ;
+               INTEGER16      accelerationX;
+               INTEGER16      accelerationY;
+               INTEGER16      accelerationZ;
+               }              OD_GPS_StateVectiorGlobal_t;
 /*3100      */ typedef struct {
                UNSIGNED8      maxSubIndex;
                INTEGER16      positionX;
@@ -1965,6 +1977,20 @@
         #define OD_2420_5_trace_plot                                5
         #define OD_2420_6_trace_triggerTime                         6
 
+/*3000 */
+        #define OD_3000_GPS_StateVectiorGlobal                      0x3000
+
+        #define OD_3000_0_GPS_StateVectiorGlobal_maxSubIndex        0
+        #define OD_3000_1_GPS_StateVectiorGlobal_positionX          1
+        #define OD_3000_2_GPS_StateVectiorGlobal_positionY          2
+        #define OD_3000_3_GPS_StateVectiorGlobal_positionZ          3
+        #define OD_3000_4_GPS_StateVectiorGlobal_velocityX          4
+        #define OD_3000_5_GPS_StateVectiorGlobal_velocityY          5
+        #define OD_3000_6_GPS_StateVectiorGlobal_velocityZ          6
+        #define OD_3000_7_GPS_StateVectiorGlobal_accelerationX      7
+        #define OD_3000_8_GPS_StateVectiorGlobal_accelerationY      8
+        #define OD_3000_9_GPS_StateVectiorGlobal_accelerationZ      9
+
 /*3100 */
         #define OD_3100_GPS_StateVector                             0x3100
 
@@ -2095,6 +2121,7 @@ struct sCO_OD_RAM{
 /*2301      */ OD_traceConfig_t traceConfig[32];
 /*2400      */ UNSIGNED8      traceEnable;
 /*2401      */ OD_trace_t      trace[32];
+/*3000      */ OD_GPS_StateVectiorGlobal_t GPS_StateVectiorGlobal;
 /*3100      */ OD_GPS_StateVector_t GPS_StateVector;
 /*6000      */ UNSIGNED8       readInput8Bit[8];
 /*6200      */ UNSIGNED8       writeOutput8Bit[8];
@@ -2285,6 +2312,9 @@ extern struct sCO_OD_EEPROM CO_OD_EEPROM;
 
 /*2401, Data Type: trace_t */
         #define OD_trace                                            CO_OD_RAM.trace
+
+/*3000, Data Type: GPS_StateVectiorGlobal_t */
+        #define OD_GPS_StateVectiorGlobal                           CO_OD_RAM.GPS_StateVectiorGlobal
 
 /*3100, Data Type: GPS_StateVector_t */
         #define OD_GPS_StateVector                                  CO_OD_RAM.GPS_StateVector
