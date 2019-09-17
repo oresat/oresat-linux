@@ -239,6 +239,71 @@ void send_SDO(uint16_t idx, uint8_t subidx, char* input_data, uint32_t len) {
     */
 }
 
+
+int8_t OD_get_i8(const uint16_t idx, const uint8_t subidx) {
+    int err = 0; /* syntax or other error, true or false */
+    respErrorCode_t respErrorCode = respErrorNone;
+    uint32_t SDOabortCode = 1;
+    uint8_t dataTx[SDO_BUFFER_SIZE]; /* SDO transmit buffer */
+    uint32_t dataTxLen = 0;  /* Length of data to transmit. */
+    int8_t rv;
+
+    /* Make CANopen SDO transfer */
+    err = sdoClientDownload(
+        CO->SDOclient[0],
+        OD_CANNodeID,
+        idx,
+        subidx,
+        dataTx,
+        dataTxLen,
+        &SDOabortCode,
+        SDOtimeoutTime,
+        blockTransferEnable);
+
+
+    if(err != 0){
+        respErrorCode = respErrorInternalState;
+        printf("SDO download err: %d\n", respErrorCode);
+    }
+
+    memcpy(&rv, &dataTx, dataTxLen);
+
+    return rv;
+}
+
+
+int16_t OD_get_i16(const uint16_t idx, const uint8_t subidx) {
+    int err = 0; /* syntax or other error, true or false */
+    respErrorCode_t respErrorCode = respErrorNone;
+    uint32_t SDOabortCode = 1;
+    uint8_t dataTx[SDO_BUFFER_SIZE]; /* SDO transmit buffer */
+    uint32_t dataTxLen = 0;  /* Length of data to transmit. */
+    int16_t rv;
+
+    /* Make CANopen SDO transfer */
+    err = sdoClientDownload(
+        CO->SDOclient[0],
+        OD_CANNodeID,
+        idx,
+        subidx,
+        dataTx,
+        dataTxLen,
+        &SDOabortCode,
+        SDOtimeoutTime,
+        blockTransferEnable);
+
+
+    if(err != 0){
+        respErrorCode = respErrorInternalState;
+        printf("SDO download err: %d\n", respErrorCode);
+    }
+
+    memcpy(&rv, &dataTx, dataTxLen);
+
+    return rv;
+}
+
+
 int32_t OD_get_i32(const uint16_t idx, const uint8_t subidx) {
     int err = 0; /* syntax or other error, true or false */
     respErrorCode_t respErrorCode = respErrorNone;
@@ -246,6 +311,166 @@ int32_t OD_get_i32(const uint16_t idx, const uint8_t subidx) {
     uint8_t dataTx[SDO_BUFFER_SIZE]; /* SDO transmit buffer */
     uint32_t dataTxLen = 0;  /* Length of data to transmit. */
     int32_t rv;
+
+    /* Make CANopen SDO transfer */
+    err = sdoClientDownload(
+        CO->SDOclient[0],
+        OD_CANNodeID,
+        idx,
+        subidx,
+        dataTx,
+        dataTxLen,
+        &SDOabortCode,
+        SDOtimeoutTime,
+        blockTransferEnable);
+
+
+    if(err != 0){
+        respErrorCode = respErrorInternalState;
+        printf("SDO download err: %d\n", respErrorCode);
+    }
+
+    memcpy(&rv, &dataTx, dataTxLen);
+
+    return rv;
+}
+
+
+int64_t OD_get_i64(const uint16_t idx, const uint8_t subidx) {
+    int err = 0; /* syntax or other error, true or false */
+    respErrorCode_t respErrorCode = respErrorNone;
+    uint32_t SDOabortCode = 1;
+    uint8_t dataTx[SDO_BUFFER_SIZE]; /* SDO transmit buffer */
+    uint32_t dataTxLen = 0;  /* Length of data to transmit. */
+    int64_t rv;
+
+    /* Make CANopen SDO transfer */
+    err = sdoClientDownload(
+        CO->SDOclient[0],
+        OD_CANNodeID,
+        idx,
+        subidx,
+        dataTx,
+        dataTxLen,
+        &SDOabortCode,
+        SDOtimeoutTime,
+        blockTransferEnable);
+
+
+    if(err != 0){
+        respErrorCode = respErrorInternalState;
+        printf("SDO download err: %d\n", respErrorCode);
+    }
+
+    memcpy(&rv, &dataTx, dataTxLen);
+
+    return rv;
+}
+
+
+uint8_t OD_get_u8(const uint16_t idx, const uint8_t subidx) {
+    int err = 0; /* syntax or other error, true or false */
+    respErrorCode_t respErrorCode = respErrorNone;
+    uint32_t SDOabortCode = 1;
+    uint8_t dataTx[SDO_BUFFER_SIZE]; /* SDO transmit buffer */
+    uint32_t dataTxLen = 0;  /* Length of data to transmit. */
+    uint8_t rv;
+
+    /* Make CANopen SDO transfer */
+    err = sdoClientDownload(
+        CO->SDOclient[0],
+        OD_CANNodeID,
+        idx,
+        subidx,
+        dataTx,
+        dataTxLen,
+        &SDOabortCode,
+        SDOtimeoutTime,
+        blockTransferEnable);
+
+
+    if(err != 0){
+        respErrorCode = respErrorInternalState;
+        printf("SDO download err: %d\n", respErrorCode);
+    }
+
+    memcpy(&rv, &dataTx, dataTxLen);
+
+    return rv;
+}
+
+
+uint16_t OD_get_u16(const uint16_t idx, const uint8_t subidx) {
+    int err = 0; /* syntax or other error, true or false */
+    respErrorCode_t respErrorCode = respErrorNone;
+    uint32_t SDOabortCode = 1;
+    uint8_t dataTx[SDO_BUFFER_SIZE]; /* SDO transmit buffer */
+    uint32_t dataTxLen = 0;  /* Length of data to transmit. */
+    uint16_t rv;
+
+    /* Make CANopen SDO transfer */
+    err = sdoClientDownload(
+        CO->SDOclient[0],
+        OD_CANNodeID,
+        idx,
+        subidx,
+        dataTx,
+        dataTxLen,
+        &SDOabortCode,
+        SDOtimeoutTime,
+        blockTransferEnable);
+
+
+    if(err != 0){
+        respErrorCode = respErrorInternalState;
+        printf("SDO download err: %d\n", respErrorCode);
+    }
+
+    memcpy(&rv, &dataTx, dataTxLen);
+
+    return rv;
+}
+
+
+uint32_t OD_get_u32(const uint16_t idx, const uint8_t subidx) {
+    int err = 0; /* syntax or other error, true or false */
+    respErrorCode_t respErrorCode = respErrorNone;
+    uint32_t SDOabortCode = 1;
+    uint8_t dataTx[SDO_BUFFER_SIZE]; /* SDO transmit buffer */
+    uint32_t dataTxLen = 0;  /* Length of data to transmit. */
+    uint32_t rv;
+
+    /* Make CANopen SDO transfer */
+    err = sdoClientDownload(
+        CO->SDOclient[0],
+        OD_CANNodeID,
+        idx,
+        subidx,
+        dataTx,
+        dataTxLen,
+        &SDOabortCode,
+        SDOtimeoutTime,
+        blockTransferEnable);
+
+
+    if(err != 0){
+        respErrorCode = respErrorInternalState;
+        printf("SDO download err: %d\n", respErrorCode);
+    }
+
+    memcpy(&rv, &dataTx, dataTxLen);
+
+    return rv;
+}
+
+
+uint64_t OD_get_u64(const uint16_t idx, const uint8_t subidx) {
+    int err = 0; /* syntax or other error, true or false */
+    respErrorCode_t respErrorCode = respErrorNone;
+    uint32_t SDOabortCode = 1;
+    uint8_t dataTx[SDO_BUFFER_SIZE]; /* SDO transmit buffer */
+    uint32_t dataTxLen = 0;  /* Length of data to transmit. */
+    uint64_t rv;
 
     /* Make CANopen SDO transfer */
     err = sdoClientDownload(
