@@ -60,11 +60,11 @@ SOURCES =	$(STACKDRV_SRC)/CO_driver.c         \
 		$(OBJDICT_SRC)/CO_OD.c              \
 		$(CANDAEMON_SRC)/main.c
 
-DBUS_SOURCES = 	$(CANDAEMON_SRC)/dbus.c             \
-		$(CANDAEMON_SRC)/dbus_helpers.c
-
 COMM_SOURCES =	$(CANDAEMON_SRC)/CO_command.c       \
 		$(CANDAEMON_SRC)/CO_comm_helpers.c
+
+DBUS_SOURCES = 	$(CANDAEMON_SRC)/dbus.c             \
+		$(CANDAEMON_SRC)/dbus_helpers.c
 
 GPS_SOURCES = 	$(GPS_SRC)/GPS_interface.c
 
@@ -74,20 +74,20 @@ ST_SOURCES = 	$(ST_SRC)/ST_interface.c
 ##############################################################################
 # Handle Settings
 
+CANDAEMON_SOURCES = $(SOURCES) $(DBUS_SOURCES)
 
 ifeq ($(GPS_INTERFACE), 1)
-CANDAEMON_SOURCES = $(SOURCES) $(GPS_SOURCES) $(DBUS_SOURCES)
+CANDAEMON_SOURCES += $(GPS_SOURCES)
 CFLAGS += $(CFLAGS_DBUS) -DGPS_INTERFACE
 endif
 
 ifeq ($(ST_INTERFACE), 1)
-CANDAEMON_SOURCES = $(SOURCES) $(STARTACKER_SOURCES) $(DBUS_SOURCES)
+CANDAEMON_SOURCES += $(STARTACKER_SOURCES)
 CFLAGS += $(CFLAGS_DBUS) -DST_INTERFACE
 endif
 
 ifeq ($(MASTER_NODE), 1)
     CANDAEMON_SOURCES += $(COMM_SOURCES)
-    CANOPEND_SOURCES += $(COMM_SOURCES)
     CFLAGS += -DMASTER_NODE
 endif
 
@@ -106,12 +106,12 @@ CANOPEND_OBJS = $(CANOPEND_SOURCES:%.c=%.o)
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@
 
-all: candaemon candopend canopencomm
+all: candaemon canopend canopencomm
 
 candaemon: $(CANDAEMON_OBJS)
 	$(CC) $(CFLAGS) $(LDFLAGS) $^  -o $@
 
-canopend: $(CANOPEND_OBJS)
+canopend: $(SOURCES) $(COMM_SOURCES)
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ -DCANOPEND_ONLY
 
 canopencomm:

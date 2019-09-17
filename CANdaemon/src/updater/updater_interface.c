@@ -40,7 +40,7 @@ int Updater_interface_init(void) {
     dbusErrorExit(r, "Failed to connect to system bus.");
 
     pthread_attr_setstacksize(&signal_thread_attr, SIGNAL_THREAD_STACK_SIZE);
-    r = pthread_create(&signal_thread_id, &signal_thread_attr, Updater_signalThread, NULL)
+    r = pthread_create(&signal_thread_id, &signal_thread_attr, Updater_signalThread, NULL);
     dbusError(-r, "dbus_init - signal thread creation failed");
     
     return r;

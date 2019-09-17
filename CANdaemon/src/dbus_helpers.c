@@ -242,7 +242,6 @@ void send_SDO(uint16_t idx, uint8_t subidx, char* input_data, uint32_t len) {
 int32_t OD_get_i32(const uint16_t idx, const uint8_t subidx) {
     int err = 0; /* syntax or other error, true or false */
     respErrorCode_t respErrorCode = respErrorNone;
-    uint32_t sequence = 0;
     uint32_t SDOabortCode = 1;
     uint8_t dataTx[SDO_BUFFER_SIZE]; /* SDO transmit buffer */
     uint32_t dataTxLen = 0;  /* Length of data to transmit. */

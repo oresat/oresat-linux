@@ -29,16 +29,18 @@
 
 /* Static Variables */
 static pthread_t        method_thread_id;
+static int endProgram = 0;
 
 /* Static Functions */
 static void* method_thread(void *);
+static void CANdaemon_allMethods(void);
 
 
 int dbus_init(void) {
     int r;
 
     /* Create the objDict to DBus method thread */
-    r = pthread_create(&method_thread_id, NULL, method_thread, NULL)
+    r = pthread_create(&method_thread_id, NULL, method_thread, NULL);
     dbusError(-r, "dbus_init - method thread creation failed");
     
     /* Create all signal/property threads */
@@ -103,5 +105,5 @@ static void* method_thread(void *arg) {
 }
 
 static void CANdaemon_allMethods(void) {
-    return 1;
+    return;
 }
