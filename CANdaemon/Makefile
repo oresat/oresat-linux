@@ -8,7 +8,7 @@
 GPS_CANDAEMON ?= 1# GPS dbus interface
 ST_CANDAEMON ?= 0#Star Tracker dbus interface
 UPDATER_CANDAEMON ?= 0#Linux Updater dbus interface
-MASTER_NODE ?= 0#Network Manager Node
+MASTER_NODE ?= 1#Network Manager Node
 DEBUG ?= 1# Debug flags
 
 
@@ -85,11 +85,6 @@ CANDAEMON_SOURCES = $(SOURCES) $(STARTACKER_SOURCES) $(DBUS_SOURCES)
 CFLAGS += $(CFLAGS_DBUS) -DST_INTERFACE
 endif
 
-ifeq ($(DIUPDATER_INTERFACE), 1)
-SOURCES = $(STARTACKER_SOURCES) $(DBUS_SOURCES) $(CD_SOURCES)
-CFLAGS += $(CFLAGS_DBUS) -DUPDATER
-endif
-
 ifeq ($(MASTER_NODE), 1)
     CANDAEMON_SOURCES += $(COMM_SOURCES)
     CANOPEND_SOURCES += $(COMM_SOURCES)
@@ -114,10 +109,10 @@ CANOPEND_OBJS = $(CANOPEND_SOURCES:%.c=%.o)
 all: candaemon candopend canopencomm
 
 candaemon: $(CANDAEMON_OBJS)
-	$(CC) $(CFLAGS) $(LDFLAGS) $^ src/main.c -o $@
+	$(CC) $(CFLAGS) $(LDFLAGS) $^  -o $@
 
 canopend: $(CANOPEND_OBJS)
-	$(CC) $(CFLAGS) $(LDFLAGS) $^ src/main.c -o $@ -CANOPEND_ONLY
+	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ -DCANOPEND_ONLY
 
 canopencomm:
 	$(CC)  ./CANopenComm/CANopenCommand.c -o $@
