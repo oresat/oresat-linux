@@ -1,8 +1,7 @@
 /*
- * DBUS
+ * Main Process interface.
  *
  */
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,66 +9,48 @@
 #include <systemd/sd-bus.h>
 #include <pthread.h>
 
-
-#include "CANopen.h"
-#include "CO_master.h"
-#include "dbus.h"
+#include "ST_interface.h"
 #include "dbus_helpers.h"
 
-
-#define INTERFACE_NAME  "org.example.project.oresat"
+#define INTERFACE_NAME  "org.OreSat.StarTracker"
 #define BUS_NAME        INTERFACE_NAME
-#define OBJECT_PATH     "/org/example/project/oresat"
+#define OBJECT_PATH     "/org/OreSat/StarTracker"
 #define SIGNAL_THREAD_STACK_SIZE STRING_BUFFER_SIZE*3
-#define METHOD_THREAD_DELAY 1000000
 
-/* Variables */
+/* Static Variables */
 static pthread_t        signal_thread_id;
-static pthread_t        method_thread_id;
 static pthread_attr_t   signal_thread_attr;
 static volatile int     endProgram = 0;
 static sd_bus           *bus = NULL;
 
-/* static functions */
-static void* signal_thread(void *);
-static void* method_thread(void *);
-static void MP_update_state(void);
+/* Static Functions */
+static void* signal_thread(void *arg);
+static int status_signal_cb(sd_bus_message *, void *, sd_bus_error *);
 static int file_transfer_signal_cb(sd_bus_message *, void *, sd_bus_error *);
 static int data_signal_cb(sd_bus_message *, void *, sd_bus_error *);
+static void ST_updateState(void);
 
 
-int dbus_init(void) {
+int ST_interface_init(void) {
     int r;
+    endProgram = 0;
 
-    if(CO == NULL || CO->SDOclient == NULL){
-        CO_errExit("dbus_init - Wrong arguments");
-    }
-
-    /* Connect to the user bus */
+    /* Connect to the system bus */
     r = sd_bus_open_system(&bus);
     dbusErrorExit(r, "Failed to connect to system bus.");
 
-    /* Create thread */
-    endProgram = 0;
     pthread_attr_setstacksize(&signal_thread_attr, SIGNAL_THREAD_STACK_SIZE);
-    if(pthread_create(&signal_thread_id, &signal_thread_attr, signal_thread, NULL) != 0) {
-        CO_errExit("dbus_init - signal thread creation failed");
-    }
-    if(pthread_create(&method_thread_id, NULL, method_thread, NULL) != 0) {
-        CO_errExit("dbus_init - method thread creation failed");
-    }
-
-    return 0;
+    r = pthread_create(&signal_thread_id, &signal_thread_attr, ST_signalThread, NULL)
+    dbusError(-r, "dbus_init - signal thread creation failed");
+    
+    return r;
 }
 
 
-int dbus_clear(void) {
+int ST_interface_clear(void) {
     endProgram = 1;
 
-    /* Wait for thread to finish. */
-    if(pthread_join(signal_thread_id, NULL) != 0) {
-        return -1;
-    }
+    /* Wait for threads to finish. */
     if(pthread_join(method_thread_id, NULL) != 0) {
         return -1;
     }
@@ -87,7 +68,7 @@ int dbus_clear(void) {
 static void* signal_thread(void *arg) {
     int r;
 
-    /* add signal matches */
+    /* add signal matches here */
     r = sd_bus_match_signal(bus,
                             NULL,
                             NULL,
@@ -118,6 +99,8 @@ static void* signal_thread(void *arg) {
                             NULL);
     dbusErrorExit(r, "Add match error for file transfer signal.");
 
+    
+    /* wait for interupt and loop */
     while(endProgram == 0) {
         r = sd_bus_process(bus, NULL);
         dbusError(r, "Bus process failed.");
@@ -131,6 +114,8 @@ static void* signal_thread(void *arg) {
     return NULL;
 }
 
+
+/* callback for reading the status signal form the Star Tracker */
 static int status_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_error) {
     int r;
     int32_t state;
@@ -145,6 +130,8 @@ static int status_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *re
     return 0;
 }
 
+
+/* callback for handling file transfer from the Star Tracker */
 static int file_transfer_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_error) {
     int r;
     char *filepath = NULL;
@@ -162,44 +149,42 @@ static int file_transfer_signal_cb(sd_bus_message *m, void *user_data, sd_bus_er
 }
 
 
-// callback for reading the data signal
+/* callback for reading the data signal from the Star Tracker */
 static int data_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_error) {
     int r;
-    int16_t posX = 0;
-    int16_t posY = 0;
-    int16_t posZ = 0;
+    int16_t rotationY = 0; // roatation about the y axis
+    int16_t rotationZ = 0; // rotation about the z axis
+    int16_t orientation = 0; // rotation about the camera axis
 
-    r = sd_bus_message_read(m, "nnn", &posX, &posY, &posZ);
+    r = sd_bus_message_read(m, "nnn", &rotationY, &rotationZ, &orientation);
     dbusError(r, "Failed to parse data signal.");
 
     if (r > 0)
         return -1;
 
-    fprintf(stderr, "%d %d %d\n", posX, posY, posZ);
+    fprintf(stderr, "%d %d %d\n", rotationY, rotationZ, orienation);
 
-    OD_set(0x3000, 1, posX);
-    OD_set(0x3000, 2, posY);
-    OD_set(0x3000, 3, posZ);
+    OD_update(0x3000, 1, rotationY);
+    OD_update(0x3000, 2, rotationZ);
+    OD_update(0x3000, 3, orientation);
 
     return 0;
 }
 
 
 /****************************************************************************/
-/* methods */
+/* methods for main dbus interface thread to call */
 
 
-static void* method_thread(void *arg) {
-    while(endProgram == 0) {
-        MP_update_state();
-        usleep(METHOD_THREAD_DELAY);
-    }
-
-    return NULL;
+int ST_allMethods() {
+    ST_updateState();
+    /* Add other gps dbus method check funtions here */
+    return 1;
 }
 
 
-static void MP_update_state(void) {
+/* Handle new state change with dbus method call to Star Tracker process */
+static void ST_updateState(void) {
     int r;
     sd_bus_error error = SD_BUS_ERROR_NULL;
     sd_bus_message *m = NULL;
