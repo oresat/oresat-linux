@@ -112,7 +112,7 @@ uint8_t OD_get_u8(const uint16_t idx, const uint8_t subidx);
 *
 * @return value
 */
-uint16_t OD_get_i16(const uint16_t idx, const uint8_t subidx);
+uint16_t OD_get_u16(const uint16_t idx, const uint8_t subidx);
 
 
 /**
@@ -120,7 +120,7 @@ uint16_t OD_get_i16(const uint16_t idx, const uint8_t subidx);
 *
 * @return value
 */
-int32_t OD_get_i32(const uint16_t idx, const uint8_t subidx);
+uint32_t OD_get_u32(const uint16_t idx, const uint8_t subidx);
 
 
 /**
