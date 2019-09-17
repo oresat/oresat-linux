@@ -8,7 +8,7 @@
 GPS_CANDAEMON ?= 1# GPS dbus interface
 ST_CANDAEMON ?= 0#Star Tracker dbus interface
 UPDATER_CANDAEMON ?= 0#Linux Updater dbus interface
-MASTER_NODE ?= 1#Network Manager Node
+MASTER_NODE ?= 0#Network Manager Node
 DEBUG ?= 1# Debug flags
 
 
