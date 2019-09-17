@@ -84,16 +84,6 @@ static void* signal_thread(void *arg) {
                             NULL,
                             OBJECT_PATH,
                             INTERFACE_NAME,
-                            "DataSignal", 
-                            data_signal_cb, 
-                            NULL);
-    dbusErrorExit(r, "Add match error for data signal.");
-
-    r = sd_bus_match_signal(bus,
-                            NULL,
-                            NULL,
-                            OBJECT_PATH,
-                            INTERFACE_NAME,
                             "FileTransferSignal", 
                             file_transfer_signal_cb, 
                             NULL);
@@ -149,42 +139,19 @@ static int file_transfer_signal_cb(sd_bus_message *m, void *user_data, sd_bus_er
 }
 
 
-/* callback for reading the data signal from the Updater */
-static int data_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_error) {
-    int r;
-    int16_t posX = 0;
-    int16_t posY = 0;
-    int16_t posZ = 0;
-
-    r = sd_bus_message_read(m, "nnn", &posX, &posY, &posZ);
-    dbusError(r, "Failed to parse data signal.");
-
-    if (r > 0)
-        return -1;
-
-    fprintf(stderr, "%d %d %d\n", posX, posY, posZ);
-
-    OD_set(0x3000, 1, posX);
-    OD_set(0x3000, 2, posY);
-    OD_set(0x3000, 3, posZ);
-
-    return 0;
-}
-
-
 /****************************************************************************/
 /* methods for main dbus interface thread to call */
 
 
 int Updater_allMethods() {
-    Updater_updateState();
+    update();
     /* Add other gps dbus method check funtions here */
     return 1;
 }
 
 
 /* Handle new state change with dbus method call to Updater process */
-static void Updater_updateState(void) {
+static void update(void) {
     int r;
     sd_bus_error error = SD_BUS_ERROR_NULL;
     sd_bus_message *m = NULL;
@@ -199,7 +166,7 @@ static void Updater_updateState(void) {
                            BUS_NAME,
                            OBJECT_PATH,
                            INTERFACE_NAME,
-                           "ChangeState",
+                           "Update",
                            &error,
                            NULL,
                            "n",
