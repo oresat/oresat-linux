@@ -4,7 +4,8 @@
   </h1>
   <h4>
     <a href="#features">Features</a> |
-    <a href="../BBB_Notes.md">BBB Notes</a>
+    <a href="#dependices">Dependices</a> |
+    <a href="#settup">Settup</a>
   </h4>
 </div>
 
@@ -24,8 +25,15 @@ The CANdaemon is [CANopenSocket], but with dbus interfaces to commicate with oth
 - Multiple compile options for having multiple different versions; like a GPS version, StarTracker version, etc.
     - Each version has a directory under src/ that contains an unique Object Dictionary and all Object Dictionary to DBus interface threads/functions.
 
-## Dependices (for beaglebone black)
-- systemd-dev, make, gcc, pkg-source
+## Dependices
+- For beaglebone black: systemd-dev, make, gcc, pkg-source 
+
+## Settup
+- `git submodules init`
+- `git submodules update`
+- edit the makefile setting as needed
+- `make clean candaemon`
+- `./candaemon`
 
 ## Useful References
 - [CANopenSocket]
