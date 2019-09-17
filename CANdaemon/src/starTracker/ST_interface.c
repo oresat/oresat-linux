@@ -177,14 +177,14 @@ static int data_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_
 
 
 int ST_allMethods() {
-    ST_updateState();
+    updateState();
     /* Add other gps dbus method check funtions here */
     return 1;
 }
 
 
 /* Handle new state change with dbus method call to Star Tracker process */
-static void ST_updateState(void) {
+static void updateState(void) {
     int r;
     sd_bus_error error = SD_BUS_ERROR_NULL;
     sd_bus_message *m = NULL;
