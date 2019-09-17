@@ -8,7 +8,7 @@ VERSION ?= 1#
 
 #0 Not a master node
 #1 Is a master node
-MASTER ?= 1#
+MASTER ?= 0#
 
 #0 debug off
 #1 debug on
@@ -94,7 +94,7 @@ endif
 
 
 ifeq ($(DEBUG), 1)
-    DEBUG_FLAGS += -Wall -g -Werror -DDEBUG
+    DEBUG_FLAGS += -Wall -g #-Werror -DDEBUG
 endif
 
 
@@ -106,14 +106,14 @@ OBJS =	$(SOURCES:%.c=%.o)
 %.o: %.c
 	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(INCLUDE_DIRS) -c $< -o $@
 
-clean:
-	rm -rf $(OBJS)  linux-interface canopencomm
-
 linux-interface: $(OBJS)
 	$(CC) $(CFLAGS) $ $(DEBUG_FLAGS) $(LDFLAGS) $^ src/main.c -o $@
 
 canopencomm:
 	$(CC) $(DEBUG_FLAGS) ./CANopenComm/CANopenCommand.c -o $@
+
+clean:
+	rm -rf $(OBJS)  linux-interface canopencomm
 
 help:
 	$(info Make Options:)

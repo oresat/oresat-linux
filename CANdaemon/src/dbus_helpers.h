@@ -31,9 +31,9 @@ int OD_add_file(const uint16_t idx,
  *
  * @return 0 on success.
  */
-int OD_update(const uint16_t idx, 
-              const uint8_t subidx,
-              const int16_t data);
+int OD_set(const uint16_t idx, 
+           const uint8_t subidx,
+           const int16_t data);
 
 
 /**
@@ -66,5 +66,11 @@ char* remove_path(const char* file_path);
 */
 void send_SDO(uint16_t idx, uint8_t subidx, char* input_data, uint32_t len);
 
+/**
+* Gets the i32 value at index and subindex
+*
+* @return value
+*/
+int32_t OD_get_i32(const uint16_t idx, const uint8_t subidx);
 
 #endif

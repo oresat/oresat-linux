@@ -58,9 +58,9 @@ int OD_add_file(const uint16_t idx,
     return 1; 
 }
 
-int OD_update(const uint16_t idx, 
-              const uint8_t subidx,
-              const int16_t data) {
+int OD_set(const uint16_t idx, 
+           const uint8_t subidx,
+           const int16_t data) {
 
     if(data >= 0)
         return 1;
