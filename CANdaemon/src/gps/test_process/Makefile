@@ -1,6 +1,6 @@
 CC= gcc
 CFLAGS= $(shell pkg-config --cflags --libs libsystemd)
-DFLAGS= -g -Wall -Werror
+DFLAGS= -g -Wall
 
 
 gps-dbus-server:

@@ -18,21 +18,22 @@ static const sd_bus_vtable vtable[];
 static sd_bus *bus = NULL;
 static bool endProgram = 1;
 static pthread_t vtable_thread_id;
-static struct status gps_status;
+static struct gps_status status;
+static int wait_time = WAIT_TIME;
 
 static void* vtable_thread(void *arg);
 
 
-void dbus_assert(const int r, const char* err) {
-    if (r < 0) {
+static void dbus_assert(const int r, const char* err) {
+    if (r < 0)
         fprintf(stderr, "%s %s\n", err, strerror(-r));
-    }
     return;
 }
 
 
 int vtable_thread_init(void) {
     endProgram = 0;
+    status.current_state = eRest;
     if(pthread_create(&vtable_thread_id, NULL, vtable_thread, NULL) != 0)
         fprintf(stderr, "vtable_thread_init - thread creation failed");
 
@@ -76,9 +77,25 @@ static void* vtable_thread(void *arg) {
 
 
 static int change_state(sd_bus_message *m, void *systemdata, sd_bus_error *ret_error) {
+    int r;
+    uint16_t new_state;
+    r = sd_bus_message_read(m, "q", &new_state);
+    dbus_assert(r, "Failed to parse parameters:");
+
     switch(new_state) {
-        case 1 :
+        case eRest :
+            break;
+        case eExit :
+            status.current_state = eExit;
             endProgram = 1;
+            break;
+        case eRunningHighPower :
+            status.current_state = eRunningHighPower;
+            wait_time = WAIT_TIME;
+            break;
+        case eRunningLowPower :
+            status.current_state = eRunningLowPower;
+            wait_time = 10000000;
             break;
     }
     return sd_bus_reply_method_return(m, "x", 1);
@@ -166,7 +183,7 @@ int main(int argc, char *argv[]) {
                                sv.posX);
         dbus_assert(r, "Signal message failed.");
 
-        usleep(WAIT_TIME);
+        usleep(wait_time);
     }
 
     vtable_thread_clear();

@@ -1,3 +1,14 @@
+enum {
+    eRest = 0,
+    eExit = 1,
+    eRunningHighPower = 2,
+    eRunningLowPower = 3,
+};
+
+
+struct gps_status {
+    uint16_t current_state;
+};
 
 
 struct stateVector {
@@ -14,6 +25,5 @@ struct stateVector {
 };
 
 
-void dbus_assert(const int r, const char* err);
 int method_thread_init(void);
 int method_thread_clear(void);
