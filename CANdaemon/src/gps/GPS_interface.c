@@ -28,7 +28,7 @@ static void* signal_thread(void *arg);
 static int status_signal_cb(sd_bus_message *, void *, sd_bus_error *);
 static int file_transfer_signal_cb(sd_bus_message *, void *, sd_bus_error *);
 static int data_signal_cb(sd_bus_message *, void *, sd_bus_error *);
-static void GPS_updateState(void);
+static void updateState(void);
 
 
 int GPS_interface_init(void) {
@@ -155,8 +155,14 @@ static int data_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_
     int16_t posX = 0;
     int16_t posY = 0;
     int16_t posZ = 0;
+    int16_t velX = 0;
+    int16_t velY = 0;
+    int16_t velZ = 0;
+    int16_t accX = 0;
+    int16_t accY = 0;
+    int16_t accZ = 0;
 
-    r = sd_bus_message_read(m, "nnn", &posX, &posY, &posZ);
+    r = sd_bus_message_read(m, "nnnnnnnnn", &posX, &posY, &posZ, &velX. &velY, &velZ, &accX, &accY, &accZ);
     dbusError(r, "Failed to parse data signal.");
 
     if (r > 0)
@@ -167,6 +173,12 @@ static int data_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_
     OD_set(0x3000, 1, posX);
     OD_set(0x3000, 2, posY);
     OD_set(0x3000, 3, posZ);
+    OD_set(0x3000, 4, velX);
+    OD_set(0x3000, 5, velY);
+    OD_set(0x3000, 6, velZ);
+    OD_set(0x3000, 7, accX);
+    OD_set(0x3000, 8, accY);
+    OD_set(0x3000, 9, accZ);
 
     return 0;
 }
@@ -188,10 +200,9 @@ static void updateState(void) {
     int r;
     sd_bus_error error = SD_BUS_ERROR_NULL;
     sd_bus_message *m = NULL;
-    int32_t current_state = OD_get_i32(0x1203, 1);
     int32_t new_state = OD_get_i32(0x1202, 1);
 
-    if(new_state == current_state)
+    if(new_state == status.current_state)
         return; /* no need to change */
 
     /* Issue the method call and store the response message in m */
@@ -202,7 +213,7 @@ static void updateState(void) {
                            "ChangeState",
                            &error,
                            NULL,
-                           "n",
+                           "i",
                            new_state);
     dbusError(r, "Failed to issue method call.");
 

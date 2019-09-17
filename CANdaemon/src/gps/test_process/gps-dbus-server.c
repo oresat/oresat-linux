@@ -77,7 +77,7 @@ static void* vtable_thread(void *arg) {
 
 static int change_state(sd_bus_message *m, void *systemdata, sd_bus_error *ret_error) {
     int r;
-    uint16_t new_state;
+    int32_t new_state;
     r = sd_bus_message_read(m, "q", &new_state);
     dbus_assert(r, "Failed to parse parameters:");
 
@@ -96,6 +96,9 @@ static int change_state(sd_bus_message *m, void *systemdata, sd_bus_error *ret_e
             status.current_state = eRunningLowPower;
             wait_time = 10000000;
             break;
+        default :
+            dbus_assert(0, "Unkown State");
+            break;
     }
     return sd_bus_reply_method_return(m, "x", 1);
 }
@@ -104,7 +107,7 @@ static int change_state(sd_bus_message *m, void *systemdata, sd_bus_error *ret_e
 static const sd_bus_vtable vtable[] = {
         SD_BUS_VTABLE_START(0),
         /* key: SD_BUS_METHOD(dbus_method_name, inputs_types, return_types, function_name, flag), */
-        SD_BUS_METHOD("ChangeState", "q", NULL, change_state, SD_BUS_VTABLE_UNPRIVILEGED),
+        SD_BUS_METHOD("ChangeState", "i", NULL, change_state, SD_BUS_VTABLE_UNPRIVILEGED),
 	SD_BUS_PROPERTY("PositionX", "n", NULL, offsetof(struct stateVector, posX), 0),
 	SD_BUS_PROPERTY("PositionY", "n", NULL, offsetof(struct stateVector, posY), 0),
 	SD_BUS_PROPERTY("PositionZ", "n", NULL, offsetof(struct stateVector, posZ), 0),
@@ -168,11 +171,17 @@ int main(int argc, char *argv[]) {
         r = sd_bus_emit_signal(bus, 
                                OBJECT_PATH, 
                                INTERFACE_NAME,
-                               "DataSignal", 
-                               "nnn", 
+                               "StateVectorSignal", 
+                               "nnnnnnnnn", 
                                sv.posX,
                                sv.posY,
-                               sv.posZ);
+                               sv.posZ,
+                               sv.velX,
+                               sv.velY,
+                               sv.velZ,
+                               sv.accX,
+                               sv.accY,
+                               sv.accZ);
         dbus_assert(r, "Signal message failed.");
 
         /* send signal */
@@ -181,7 +190,7 @@ int main(int argc, char *argv[]) {
                                INTERFACE_NAME,
                                "StatusSignal", 
                                "i", 
-                               sv.posX);
+                                status.current_state);
         dbus_assert(r, "Signal message failed.");
 
         usleep(wait_time);

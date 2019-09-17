@@ -7,7 +7,7 @@ enum {
 
 
 struct gps_status {
-    uint16_t current_state;
+    int32_t current_state;
 };
 
 
