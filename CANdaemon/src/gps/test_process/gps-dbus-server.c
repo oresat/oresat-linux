@@ -9,9 +9,9 @@
 
 #include "gps-dbus-server.h"
 
-#define INTERFACE_NAME  "org.example.project.oresat"
+#define INTERFACE_NAME  "org.OreSat.GPS"
 #define BUS_NAME        INTERFACE_NAME
-#define OBJECT_PATH     "/org/example/project/oresat"
+#define OBJECT_PATH     "/org/OreSat/GPS"
 #define WAIT_TIME       500000 // mircroseconds
 
 static const sd_bus_vtable vtable[];
@@ -39,7 +39,6 @@ int vtable_thread_init(void) {
 
     return 1;
 }
-
 
 
 int vtable_thread_clear(void) {
@@ -148,6 +147,8 @@ int main(int argc, char *argv[]) {
     /* Take a well-known service name so that clients can find us */
     r = sd_bus_request_name(bus, BUS_NAME, SD_BUS_NAME_REPLACE_EXISTING);
     dbus_assert(r, "Failed to acquire service name.");
+    if( r < 0)
+        exit(1);
 
     vtable_thread_init();
 
