@@ -85,7 +85,10 @@ static void* method_thread(void *arg) {
     uint32_t delay = METHOD_THREAD_DELAY;
     endProgram = 0;
 
+
     while(endProgram == 0) {
+        usleep(delay);
+
         /* add all method function here as needed */
         CANdaemon_allMethods();
 #ifdef GPS_INTERFACE
@@ -97,8 +100,6 @@ static void* method_thread(void *arg) {
 #ifdef UPDATER_INTERFACE
         Updater_allMethods();
 #endif
-
-        usleep(delay);
     }
 
     return NULL;

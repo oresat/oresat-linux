@@ -5,10 +5,13 @@
 #ifndef DBUS_HELPERS_H
 #define DBUS_HELPERS_H
 
-#include <stdint.h>
 
-#define SDO_BUFFER_SIZE     100000000
-#define STRING_BUFFER_SIZE ((SDO_BUFFER_SIZE*4)+100)
+/* Maximum size of Object Dictionary variable transmitted via SDO. */
+#ifndef CO_COMMAND_SDO_BUFFER_SIZE
+#define CO_COMMAND_SDO_BUFFER_SIZE     1000000
+#endif
+
+
 
 /* Handle the dbus error */
 void dbusError(int r, char* err);
@@ -16,7 +19,7 @@ void dbusErrorExit(int r, char* err);
 
 
 /**
- * Initialize thread and create socket for dbus interface.
+ * Add file to object dictionay.
  *
  * @return 0 on success.
  */
@@ -26,108 +29,52 @@ int OD_add_file(const uint16_t idx,
                 const char* file_path);
 
 
-/**
- * Initialize thread and create socket for dbus interface.
- *
- * @return 0 on success.
- */
-int OD_set(const uint16_t idx, 
-           const uint8_t subidx,
-           const int16_t data);
-
 
 /**
- * Initialize thread and create socket for dbus interface.
+ * Read in file and gets its size.
  *
- * @return 0 on success.
+ * @return size on success, 0 for failure.
  */
 unsigned int get_file_size(const char* file_path);
 
 /**
-* Initialize thread and create socket for dbus interface.
+* Reads in file.
 *
-* @return 0 on success.
+* @return file_data
 */
 char* read_file(const char* file_path, unsigned int file_size);
 
 
 /**
-* Initialize thread and create socket for dbus interface.
+* Remove the path from the file path name.
 *
-* @return 0 on success.
+* @return file name without path.
 */
 char* remove_path(const char* file_path);
 
 
 /**
-* Initialize thread and create socket for dbus interface.
+* Update thes data in object dictiony by use of CANopenNode functions. The nodeID
+* is always itself, so no actual sdo message make it onto the CANbus.
 *
 * @return 0 on success.
 */
-void send_SDO(uint16_t idx, uint8_t subidx, char* input_data, uint32_t len);
+int OD_setData(uint16_t idx, uint8_t subidx, void* input_data, const uint32_t dataTxLen);
 
 
 /**
-* Gets the i8 value at index and subindex
+* Gets value at the index/subindex. Only use on non array data types; ints, floats, bools.
 *
-* @return value
+* @return 0 on success.
 */
-int8_t OD_get_i8(const uint16_t idx, const uint8_t subidx);
+int OD_getNonArrayData(const uint16_t idx, const uint8_t subidx, void* dataOut, const int dataLength);
 
 
 /**
-* Gets the i16 value at index and subindex
+* Gets value at the index/subindex. Only use on array data types; strings and domains.
 *
-* @return value
+* @return 0 on success.
 */
-int16_t OD_get_i16(const uint16_t idx, const uint8_t subidx);
-
-
-/**
-* Gets the i32 value at index and subindex
-*
-* @return value
-*/
-int32_t OD_get_i32(const uint16_t idx, const uint8_t subidx);
-
-
-/**
-* Gets the i64 value at index and subindex
-*
-* @return value
-*/
-int64_t OD_get_i64(const uint16_t idx, const uint8_t subidx);
-
-
-/**
-* Gets the u8 value at index and subindex
-*
-* @return value
-*/
-uint8_t OD_get_u8(const uint16_t idx, const uint8_t subidx);
-
-
-/**
-* Gets the u16 value at index and subindex
-*
-* @return value
-*/
-uint16_t OD_get_u16(const uint16_t idx, const uint8_t subidx);
-
-
-/**
-* Gets the u32 value at index and subindex
-*
-* @return value
-*/
-uint32_t OD_get_u32(const uint16_t idx, const uint8_t subidx);
-
-
-/**
-* Gets the u64 value at index and subindex
-*
-* @return value
-*/
-uint64_t OD_get_u64(const uint16_t idx, const uint8_t subidx);
+int OD_getArrayData(const uint16_t idx, const uint8_t subidx, char* dataOut, int32_t* dataLength);
 
 #endif
