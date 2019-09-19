@@ -1,14 +1,23 @@
 # Makefile for CANdaemon based off of CANopend
 
 ##############################################################################
-# Settings
+# Settings for CANdaemon compile
+
+
+#Which main process
+#0 no main process
+#1 GPS
+#2 Star Tracker
+MAIN_PROCESS_INTERFACE ?= 1#
+
+
+#Optional Interfaces
 #0 off
 #1 on
+UPDATER_INTERFACE ?= 0#Linux Updater dbus interface
 
-GPS_CANDAEMON ?= 1# GPS dbus interface
-ST_CANDAEMON ?= 0#Star Tracker dbus interface
-UPDATER_CANDAEMON ?= 0#Linux Updater dbus interface
-MASTER_NODE ?= 0#Network Manager Node
+
+#Other
 DEBUG ?= 1# Debug flags
 
 
@@ -17,9 +26,8 @@ DEBUG ?= 1# Debug flags
 
 
 CC ?= gcc
-CFLAGS_DBUS= $(shell pkg-config --cflags --libs libsystemd)
-CFLAGS = $(INCLUDE_DIRS)
-LDFLAGS = -lrt -pthread
+CFLAGS = -Wall $(shell pkg-config --cflags libsystemd)
+LDFLAGS = -lrt -pthread $(shell pkg-config --libs libsystemd)
 
 
 STACKDRV_SRC =		./CANopenNode/stack/socketCAN
@@ -56,9 +64,9 @@ SOURCES =	$(STACKDRV_SRC)/CO_driver.c         \
 		$(STACK_SRC)/CO_trace.c             \
 		$(CANOPENNODE_SRC)/CANopen.c        \
 		$(CANDAEMON_SRC)/CO_master.c        \
-		$(CANDAEMON_SRC)/CO_time.c          \
-		$(OBJDICT_SRC)/CO_OD.c              \
-		$(CANDAEMON_SRC)/main.c
+		$(CANDAEMON_SRC)/CO_time.c
+
+OBJDICT_SOURCES = $(OBJDICT_SRC)/CO_OD.c
 
 COMM_SOURCES =	$(CANDAEMON_SRC)/CO_command.c       \
 		$(CANDAEMON_SRC)/CO_comm_helpers.c
@@ -66,33 +74,34 @@ COMM_SOURCES =	$(CANDAEMON_SRC)/CO_command.c       \
 DBUS_SOURCES = 	$(CANDAEMON_SRC)/dbus.c             \
 		$(CANDAEMON_SRC)/dbus_helpers.c
 
-GPS_SOURCES = 	$(GPS_SRC)/GPS_interface.c
+GPS_SOURCES = 	$(DBUS_SOURCES)                     \
+		$(GPS_SRC)/GPS_interface.c	    \
+		$(OBJDICT_SRC)/CO_OD.c
 
-ST_SOURCES = 	$(ST_SRC)/ST_interface.c
+ST_SOURCES = 	$(DBUS_SOURCES)			    \
+		$(ST_SRC)/ST_interface.c            \
+		$(OBJDICT_SRC)/CO_OD.c
+
+CANDAEMON_SOURCES = $(SOURCES) $(DBUS_SOURCES)
+CANOPEND_SOURCES = $(SOURCES) $(COMM_SOURCES) $(OBJDICT_SOURCES)
 
 
 ##############################################################################
 # Handle Settings
 
-CANDAEMON_SOURCES = $(SOURCES) $(DBUS_SOURCES)
 
-ifeq ($(GPS_INTERFACE), 1)
+ifeq ($(MAIN_PROCESS_INTERFACE), 0)
+CANDAEMON_SOURCES += $(OBJDICT_SOURCES)
+else ifeq ($(MAIN_PROCESS_INTERFACE), 1)
 CANDAEMON_SOURCES += $(GPS_SOURCES)
-CFLAGS += $(CFLAGS_DBUS) -DGPS_INTERFACE
-endif
-
-ifeq ($(ST_INTERFACE), 1)
+CFLAGS += -DGPS_INTERFACE
+else ifeq ($(MAIN_PROCESS_INTERFACE), 2)
 CANDAEMON_SOURCES += $(STARTACKER_SOURCES)
-CFLAGS += $(CFLAGS_DBUS) -DST_INTERFACE
-endif
-
-ifeq ($(MASTER_NODE), 1)
-    CANDAEMON_SOURCES += $(COMM_SOURCES)
-    CFLAGS += -DMASTER_NODE
+CFLAGS += -DST_INTERFACE
 endif
 
 ifeq ($(DEBUG), 1)
-    CFLAGS += -Wall -g
+    CFLAGS += -g
 endif
 
 
@@ -109,13 +118,13 @@ CANOPEND_OBJS = $(CANOPEND_SOURCES:%.c=%.o)
 all: candaemon canopend canopencomm
 
 candaemon: $(CANDAEMON_OBJS)
-	$(CC) $(CFLAGS) $(LDFLAGS) $^  -o $@
+	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE_DIRS) $^ $(CANDAEMON_SRC)/main.c -o $@
 
-canopend: $(SOURCES) $(COMM_SOURCES)
-	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ -DCANOPEND_ONLY
+canopend: $(CANOPEND_OBJS)
+	$(CC) $(LDFLAGS) $(INCLUDE_DIRS) $^ $(CANDAEMON_SRC)/main.c -o $@ -DCANOPEND_ONLY
 
 canopencomm:
-	$(CC)  ./CANopenComm/CANopenCommand.c -o $@
+	$(CC) ./CANopenComm/CANopenCommand.c -o $@
 
 clean:
 	rm -rf $(CANDAEMON_OBJS) $(CANOPEND_OBJS) candaemon canopend canopencomm

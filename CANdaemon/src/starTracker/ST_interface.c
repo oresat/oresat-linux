@@ -125,7 +125,7 @@ static int status_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *re
     if (r > 0)
         return -1;
 
-    OD_set(0x1203, 1, state);
+    OD_set(0x3004, 1, state);
 
     return 0;
 }
@@ -141,7 +141,7 @@ static int file_transfer_signal_cb(sd_bus_message *m, void *user_data, sd_bus_er
     if (r > 0)
         return -1;
 
-    OD_add_file(0x1201, 1, 2, filepath);
+    OD_add_file(0x3009, 1, 2, filepath);
 
     free(filepath);
     filepath = NULL;
@@ -164,9 +164,9 @@ static int data_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_
 
     fprintf(stderr, "%d %d %d\n", rotationY, rotationZ, orienation);
 
-    OD_update(0x3000, 1, rotationY);
-    OD_update(0x3000, 2, rotationZ);
-    OD_update(0x3000, 3, orientation);
+    OD_update(0x3103, 1, rotationY);
+    OD_update(0x3103, 2, rotationZ);
+    OD_update(0x3103, 3, orientation);
 
     return 0;
 }

@@ -26,7 +26,6 @@ static sd_bus           *bus = NULL;
 /* Static Functions */
 static void* signal_thread(void *arg);
 static int status_signal_cb(sd_bus_message *, void *, sd_bus_error *);
-static int file_transfer_signal_cb(sd_bus_message *, void *, sd_bus_error *);
 static int data_signal_cb(sd_bus_message *, void *, sd_bus_error *);
 static void updateState(void);
 
@@ -40,7 +39,7 @@ int GPS_interface_init(void) {
     dbusErrorExit(r, "Failed to connect to system bus.");
 
     pthread_attr_setstacksize(&signal_thread_attr, SIGNAL_THREAD_STACK_SIZE);
-    r = pthread_create(&signal_thread_id, &signal_thread_attr, GPS_signalThread, NULL);
+    r = pthread_create(&signal_thread_id, &signal_thread_attr, signal_thread, NULL);
     dbusError(-r, "dbus_init - signal thread creation failed");
     
     return r;
@@ -51,7 +50,7 @@ int GPS_interface_clear(void) {
     endProgram = 1;
 
     /* Wait for threads to finish. */
-    if(pthread_join(method_thread_id, NULL) != 0) {
+    if(pthread_join(signal_thread_id, NULL) != 0) {
         return -1;
     }
 
@@ -84,20 +83,10 @@ static void* signal_thread(void *arg) {
                             NULL,
                             OBJECT_PATH,
                             INTERFACE_NAME,
-                            "DataSignal", 
+                            "StateVectorSignal", 
                             data_signal_cb, 
                             NULL);
     dbusErrorExit(r, "Add match error for data signal.");
-
-    r = sd_bus_match_signal(bus,
-                            NULL,
-                            NULL,
-                            OBJECT_PATH,
-                            INTERFACE_NAME,
-                            "FileTransferSignal", 
-                            file_transfer_signal_cb, 
-                            NULL);
-    dbusErrorExit(r, "Add match error for file transfer signal.");
 
     
     /* wait for interupt and loop */
@@ -121,30 +110,12 @@ static int status_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *re
     int32_t state;
 
     r = sd_bus_message_read(m, "i", &state);
-    dbusError(r, "Failed to parse file status signal.");
+    dbusError(r, "Failed to parse status signal.");
     if (r > 0)
         return -1;
 
-    OD_set(0x1203, 1, state);
+    OD_set(0x3002, 1, state);
 
-    return 0;
-}
-
-
-/* callback for handling file transfer from the GPS */
-static int file_transfer_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_error) {
-    int r;
-    char *filepath = NULL;
-
-    r = sd_bus_message_read(m, "s", &filepath);
-    dbusError(r, "Failed to parse file transfer signal.");
-    if (r > 0)
-        return -1;
-
-    OD_add_file(0x1201, 1, 2, filepath);
-
-    free(filepath);
-    filepath = NULL;
     return 0;
 }
 
@@ -162,7 +133,7 @@ static int data_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_
     int16_t accY = 0;
     int16_t accZ = 0;
 
-    r = sd_bus_message_read(m, "nnnnnnnnn", &posX, &posY, &posZ, &velX. &velY, &velZ, &accX, &accY, &accZ);
+    r = sd_bus_message_read(m, "nnnnnnnnn", &posX, &posY, &posZ, &velX, &velY, &velZ, &accX, &accY, &accZ);
     dbusError(r, "Failed to parse data signal.");
 
     if (r > 0)
@@ -170,15 +141,16 @@ static int data_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_
 
     fprintf(stderr, "%d %d %d\n", posX, posY, posZ);
 
-    OD_set(0x3000, 1, posX);
-    OD_set(0x3000, 2, posY);
-    OD_set(0x3000, 3, posZ);
-    OD_set(0x3000, 4, velX);
-    OD_set(0x3000, 5, velY);
-    OD_set(0x3000, 6, velZ);
-    OD_set(0x3000, 7, accX);
-    OD_set(0x3000, 8, accY);
-    OD_set(0x3000, 9, accZ);
+    OD_set(0x3101, 1, posX);
+    OD_set(0x3101, 2, posY);
+    OD_set(0x3101, 3, posZ);
+    OD_set(0x3101, 4, velX);
+    OD_set(0x3101, 5, velY);
+    OD_set(0x3101, 6, velZ);
+    OD_set(0x3101, 7, accX);
+    OD_set(0x3101, 8, accY);
+    OD_set(0x3101, 9, accZ);
+    dbusErrorExit(-1, "State vector.");
 
     return 0;
 }
@@ -200,9 +172,10 @@ static void updateState(void) {
     int r;
     sd_bus_error error = SD_BUS_ERROR_NULL;
     sd_bus_message *m = NULL;
-    int32_t new_state = OD_get_i32(0x1202, 1);
+    int32_t current_state = OD_get_i32(0x3002, 1);
+    int32_t new_state = OD_get_i32(0x3003, 1);
 
-    if(new_state == status.current_state)
+    if(new_state == current_state)
         return; /* no need to change */
 
     /* Issue the method call and store the response message in m */
