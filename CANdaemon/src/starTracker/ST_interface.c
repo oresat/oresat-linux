@@ -15,7 +15,7 @@
 #define INTERFACE_NAME  "org.OreSat.StarTracker"
 #define BUS_NAME        INTERFACE_NAME
 #define OBJECT_PATH     "/org/OreSat/StarTracker"
-#define SIGNAL_THREAD_STACK_SIZE STRING_BUFFER_SIZE*3
+#define SIGNAL_THREAD_STACK_SIZE CO_COMMAND_SDO_BUFFER_SIZE*3
 
 /* Static Variables */
 static pthread_t        signal_thread_id;
@@ -25,10 +25,8 @@ static sd_bus           *bus = NULL;
 
 /* Static Functions */
 static void* signal_thread(void *arg);
-static int status_signal_cb(sd_bus_message *, void *, sd_bus_error *);
 static int file_transfer_signal_cb(sd_bus_message *, void *, sd_bus_error *);
 static int data_signal_cb(sd_bus_message *, void *, sd_bus_error *);
-static void ST_updateState(void);
 
 
 int ST_interface_init(void) {
@@ -40,7 +38,7 @@ int ST_interface_init(void) {
     dbusErrorExit(r, "Failed to connect to system bus.");
 
     pthread_attr_setstacksize(&signal_thread_attr, SIGNAL_THREAD_STACK_SIZE);
-    r = pthread_create(&signal_thread_id, &signal_thread_attr, ST_signalThread, NULL);
+    r = pthread_create(&signal_thread_id, &signal_thread_attr, signal_thread, NULL);
     dbusError(-r, "dbus_init - signal thread creation failed");
     
     return r;
@@ -51,7 +49,7 @@ int ST_interface_clear(void) {
     endProgram = 1;
 
     /* Wait for threads to finish. */
-    if(pthread_join(method_thread_id, NULL) != 0) {
+    if(pthread_join(signal_thread_id, NULL) != 0) {
         return -1;
     }
 
@@ -69,16 +67,6 @@ static void* signal_thread(void *arg) {
     int r;
 
     /* add signal matches here */
-    r = sd_bus_match_signal(bus,
-                            NULL,
-                            NULL,
-                            OBJECT_PATH,
-                            INTERFACE_NAME,
-                            "StatusSignal", 
-                            status_signal_cb, 
-                            NULL);
-    dbusErrorExit(r, "Add match error for data signal.");
-
     r = sd_bus_match_signal(bus,
                             NULL,
                             NULL,
@@ -115,22 +103,6 @@ static void* signal_thread(void *arg) {
 }
 
 
-/* callback for reading the status signal form the Star Tracker */
-static int status_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_error) {
-    int r;
-    int32_t state;
-
-    r = sd_bus_message_read(m, "i", &state);
-    dbusError(r, "Failed to parse file status signal.");
-    if (r > 0)
-        return -1;
-
-    OD_set(0x3004, 1, state);
-
-    return 0;
-}
-
-
 /* callback for handling file transfer from the Star Tracker */
 static int file_transfer_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_error) {
     int r;
@@ -141,7 +113,7 @@ static int file_transfer_signal_cb(sd_bus_message *m, void *user_data, sd_bus_er
     if (r > 0)
         return -1;
 
-    OD_add_file(0x3009, 1, 2, filepath);
+    OD_add_file(0x3002, 1, 2, filepath);
 
     free(filepath);
     filepath = NULL;
@@ -162,11 +134,11 @@ static int data_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_
     if (r > 0)
         return -1;
 
-    fprintf(stderr, "%d %d %d\n", rotationY, rotationZ, orienation);
+    fprintf(stderr, "%d %d %d\n", rotationY, rotationZ, orientation);
 
-    OD_update(0x3103, 1, rotationY);
-    OD_update(0x3103, 2, rotationZ);
-    OD_update(0x3103, 3, orientation);
+    OD_setData(0x3001, 1, &rotationY, sizeof(rotationY));
+    OD_setData(0x3001, 2, &rotationZ, sizeof(rotationZ));
+    OD_setData(0x3001, 3, &orientation, sizeof(orientation));
 
     return 0;
 }
@@ -177,38 +149,8 @@ static int data_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_
 
 
 int ST_allMethods() {
-    updateState();
     /* Add other gps dbus method check funtions here */
     return 1;
-}
-
-
-/* Handle new state change with dbus method call to Star Tracker process */
-static void updateState(void) {
-    int r;
-    sd_bus_error error = SD_BUS_ERROR_NULL;
-    sd_bus_message *m = NULL;
-    int32_t current_state = OD_get_i32(0x1203, 1);
-    int32_t new_state = OD_get_i32(0x1202, 1);
-
-    if(new_state == current_state)
-        return; /* no need to change */
-
-    /* Issue the method call and store the response message in m */
-    r = sd_bus_call_method(bus,
-                           BUS_NAME,
-                           OBJECT_PATH,
-                           INTERFACE_NAME,
-                           "ChangeState",
-                           &error,
-                           NULL,
-                           "n",
-                           new_state);
-    dbusError(r, "Failed to issue method call.");
-
-    sd_bus_error_free(&error);
-    sd_bus_message_unref(m);
-    return;
 }
 
 
