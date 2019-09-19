@@ -65,28 +65,25 @@ int GPS_interface_clear(void) {
 
 
 static void* signal_thread(void *arg) {
+    sd_bus_slot *slot = NULL;
     int r;
 
     /* add signal matches here */
-    r = sd_bus_match_signal(bus,
-                            NULL,
-                            NULL,
-                            OBJECT_PATH,
-                            INTERFACE_NAME,
-                            "StatusSignal", 
-                            status_signal_cb, 
-                            NULL);
-    dbusErrorExit(r, "Add match error for data signal.");
+    /*
+    r = sd_bus_add_match(bus,
+                         slot,
+                        "type='signal', path='"OBJECT_PATH"', interface='"INTERFACE_NAME"', member='StatusSignal'", 
+                         status_signal_cb, 
+                         NULL);
+    dbusErrorExit(r, "Add match error for status signal.");
+    */
 
-    r = sd_bus_match_signal(bus,
-                            NULL,
-                            NULL,
-                            OBJECT_PATH,
-                            INTERFACE_NAME,
-                            "StateVectorSignal", 
-                            data_signal_cb, 
-                            NULL);
-    dbusErrorExit(r, "Add match error for data signal.");
+    r = sd_bus_add_match(bus,
+                         slot,
+                        "type='signal', path='"OBJECT_PATH"', interface='"INTERFACE_NAME"', member='StateVectorSignal'",
+                         data_signal_cb, 
+                         NULL);
+    dbusErrorExit(r, "Add match error for state vector signal.");
 
     
     /* wait for interupt and loop */
@@ -100,6 +97,7 @@ static void* signal_thread(void *arg) {
         dbusError(r, "Bus wait failed.");
     }
 
+    sd_bus_slot_unref(slot);
     return NULL;
 }
 
@@ -126,14 +124,15 @@ static int data_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_
     int16_t posX = 0;
     int16_t posY = 0;
     int16_t posZ = 0;
+    /*
     int16_t velX = 0;
     int16_t velY = 0;
     int16_t velZ = 0;
     int16_t accX = 0;
     int16_t accY = 0;
-    int16_t accZ = 0;
+    int16_t accZ = 0;*/
 
-    r = sd_bus_message_read(m, "nnnnnnnnn", &posX, &posY, &posZ, &velX, &velY, &velZ, &accX, &accY, &accZ);
+    r = sd_bus_message_read(m, "nnn", &posX, &posY, &posZ); //, &velX, &velY, &velZ, &accX, &accY, &accZ);
     dbusError(r, "Failed to parse data signal.");
 
     if (r > 0)
@@ -143,13 +142,13 @@ static int data_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_
 
     OD_setData(0x3101, 1, &posX, sizeof(posX));
     OD_setData(0x3101, 2, &posY, sizeof(posY));
-    OD_setData(0x3101, 3, &posZ, sizeof(posZ));
+    OD_setData(0x3101, 3, &posZ, sizeof(posZ));/*
     OD_setData(0x3101, 4, &velX, sizeof(velX));
     OD_setData(0x3101, 5, &velY, sizeof(velY));
     OD_setData(0x3101, 6, &velZ, sizeof(velZ));
     OD_setData(0x3101, 7, &accX, sizeof(accX));
     OD_setData(0x3101, 8, &accY, sizeof(accY));
-    OD_setData(0x3101, 9, &accZ, sizeof(accZ));
+    OD_setData(0x3101, 9, &accZ, sizeof(accZ));*/
     dbusErrorExit(-1, "State vector.");
 
     return 0;
@@ -172,16 +171,13 @@ static void updateState(void) {
     int r;
     sd_bus_error error = SD_BUS_ERROR_NULL;
     sd_bus_message *m = NULL;
-    int32_t current_state;
-    int32_t new_state;
+    int32_t current_state, new_state, return_int;
 
     OD_getNonArrayData(0x3000, 1, &new_state, sizeof(new_state));
     OD_getNonArrayData(0x3100, 1, &current_state, sizeof(current_state));
 
     if(new_state == current_state)
         return; /* no need to change */
-
-    return;// TODO remove this
 
     /* Issue the method call and store the response message in m */
     r = sd_bus_call_method(bus,
@@ -190,13 +186,16 @@ static void updateState(void) {
                            INTERFACE_NAME,
                            "ChangeState",
                            &error,
-                           NULL,
+                           &m,
                            "i",
                            new_state);
     dbusError(r, "Failed to issue method call.");
 
+    /* Parse the response message */
+    r = sd_bus_message_read(m, "i", &return_int);
+    dbusError(r, "Failed to parse response message.");
+
     sd_bus_error_free(&error);
-    sd_bus_message_unref(m);
     return;
 }
 

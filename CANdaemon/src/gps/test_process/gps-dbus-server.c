@@ -16,7 +16,7 @@
 
 static const sd_bus_vtable vtable[];
 static sd_bus *bus = NULL;
-static bool endProgram = 1;
+static bool endProgram = 0;
 static pthread_t vtable_thread_id;
 static struct gps_status status;
 static int wait_time = WAIT_TIME;
@@ -33,7 +33,7 @@ static void dbus_assert(const int r, const char* err) {
 
 int vtable_thread_init(void) {
     endProgram = 0;
-    status.current_state = eRest;
+    status.current_state = eRunningHighPower;
     if(pthread_create(&vtable_thread_id, NULL, vtable_thread, NULL) != 0)
         fprintf(stderr, "vtable_thread_init - thread creation failed");
 
@@ -78,16 +78,12 @@ static void* vtable_thread(void *arg) {
 static int change_state(sd_bus_message *m, void *systemdata, sd_bus_error *ret_error) {
     int r;
     int32_t new_state;
-    r = sd_bus_message_read(m, "q", &new_state);
+    r = sd_bus_message_read(m, "i", &new_state);
     dbus_assert(r, "Failed to parse parameters:");
+    
+    printf("chage state input %i.\n", new_state);
 
     switch(new_state) {
-        case eRest :
-            break;
-        case eExit :
-            status.current_state = eExit;
-            endProgram = 1;
-            break;
         case eRunningHighPower :
             status.current_state = eRunningHighPower;
             wait_time = WAIT_TIME;
@@ -96,18 +92,22 @@ static int change_state(sd_bus_message *m, void *systemdata, sd_bus_error *ret_e
             status.current_state = eRunningLowPower;
             wait_time = 10000000;
             break;
+        case eExit :
+            status.current_state = eExit;
+            endProgram = 1;
+            break;
         default :
-            dbus_assert(0, "Unkown State");
+            dbus_assert(-1, "Unkown State.");
             break;
     }
-    return sd_bus_reply_method_return(m, "x", 1);
+    return sd_bus_reply_method_return(m, "i", 1);
 }
 
 
 static const sd_bus_vtable vtable[] = {
         SD_BUS_VTABLE_START(0),
         /* key: SD_BUS_METHOD(dbus_method_name, inputs_types, return_types, function_name, flag), */
-        SD_BUS_METHOD("ChangeState", "i", NULL, change_state, SD_BUS_VTABLE_UNPRIVILEGED),
+        SD_BUS_METHOD("ChangeState", "i", "i", change_state, SD_BUS_VTABLE_UNPRIVILEGED),
 	SD_BUS_PROPERTY("PositionX", "n", NULL, offsetof(struct stateVector, posX), 0),
 	SD_BUS_PROPERTY("PositionY", "n", NULL, offsetof(struct stateVector, posY), 0),
 	SD_BUS_PROPERTY("PositionZ", "n", NULL, offsetof(struct stateVector, posZ), 0),
@@ -172,16 +172,10 @@ int main(int argc, char *argv[]) {
                                OBJECT_PATH, 
                                INTERFACE_NAME,
                                "StateVectorSignal", 
-                               "nnnnnnnnn", 
+                               "nnn", 
                                sv.posX,
                                sv.posY,
-                               sv.posZ,
-                               sv.velX,
-                               sv.velY,
-                               sv.velZ,
-                               sv.accX,
-                               sv.accY,
-                               sv.accZ);
+                               sv.posZ);
         dbus_assert(r, "Signal message failed.");
 
         /* send signal */

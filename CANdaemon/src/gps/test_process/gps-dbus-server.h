@@ -1,8 +1,7 @@
 enum {
-    eRest = 0,
-    eExit = 1,
-    eRunningHighPower = 2,
-    eRunningLowPower = 3,
+    eRunningHighPower,
+    eRunningLowPower,
+    eExit,
 };
 
 
