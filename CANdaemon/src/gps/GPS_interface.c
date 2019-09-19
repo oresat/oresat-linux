@@ -109,10 +109,10 @@ static int status_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *re
 
     r = sd_bus_message_read(m, "i", &state);
     dbusError(r, "Failed to parse status signal.");
-    if (r > 0)
+    if (r < 0)
         return -1;
 
-    OD_setData(0x3002, 1, &state, sizeof(state));
+    OD_setData(0x3001, 1, &state, sizeof(state));
 
     return 0;
 }
@@ -135,21 +135,18 @@ static int data_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_
     r = sd_bus_message_read(m, "nnn", &posX, &posY, &posZ); //, &velX, &velY, &velZ, &accX, &accY, &accZ);
     dbusError(r, "Failed to parse data signal.");
 
-    if (r > 0)
+    if (r < 0)
         return -1;
 
-    fprintf(stderr, "%d %d %d\n", posX, posY, posZ);
-
-    OD_setData(0x3101, 1, &posX, sizeof(posX));
-    OD_setData(0x3101, 2, &posY, sizeof(posY));
-    OD_setData(0x3101, 3, &posZ, sizeof(posZ));/*
-    OD_setData(0x3101, 4, &velX, sizeof(velX));
-    OD_setData(0x3101, 5, &velY, sizeof(velY));
-    OD_setData(0x3101, 6, &velZ, sizeof(velZ));
-    OD_setData(0x3101, 7, &accX, sizeof(accX));
-    OD_setData(0x3101, 8, &accY, sizeof(accY));
-    OD_setData(0x3101, 9, &accZ, sizeof(accZ));*/
-    dbusErrorExit(-1, "State vector.");
+    OD_setData(0x3003, 1, &posX, sizeof(posX));
+    OD_setData(0x3003, 2, &posY, sizeof(posY));
+    OD_setData(0x3003, 3, &posZ, sizeof(posZ));/*
+    OD_setData(0x3003, 4, &velX, sizeof(velX));
+    OD_setData(0x3003, 5, &velY, sizeof(velY));
+    OD_setData(0x3003, 6, &velZ, sizeof(velZ));
+    OD_setData(0x3003, 7, &accX, sizeof(accX));
+    OD_setData(0x3003, 8, &accY, sizeof(accY));
+    OD_setData(0x3003, 9, &accZ, sizeof(accZ));*/
 
     return 0;
 }
@@ -160,7 +157,7 @@ static int data_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_
 
 
 int GPS_allMethods() {
-    updateState();
+    //updateState();
     /* Add other gps dbus method check funtions here */
     return 1;
 }
@@ -174,7 +171,7 @@ static void updateState(void) {
     int32_t current_state, new_state, return_int;
 
     OD_getNonArrayData(0x3000, 1, &new_state, sizeof(new_state));
-    OD_getNonArrayData(0x3100, 1, &current_state, sizeof(current_state));
+    OD_getNonArrayData(0x3001, 1, &current_state, sizeof(current_state));
 
     if(new_state == current_state)
         return; /* no need to change */
