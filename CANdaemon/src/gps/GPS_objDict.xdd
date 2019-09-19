@@ -13,7 +13,7 @@
         <ProfileTechnology>Canopen</ProfileTechnology>
       </ISO15745Reference>
     </ProfileHeader>
-    <ProfileBody xsi:type="ProfileBody_Device_CANopen" formatName="CANopen" formatVersion="1.0" fileName="CANopenSocket.eds" fileCreator="JP" fileCreationDate="0001-01-01" fileCreationTime="00:00:00.0000000-07:00" fileModificationDate="2019-09-19" fileModificationTime="01:33:00.0000000-07:00" fileModifiedBy="" fileVersion="0" supportedLanguages="en">
+    <ProfileBody xsi:type="ProfileBody_Device_CANopen" formatName="CANopen" formatVersion="1.0" fileName="GPS_objDict.eds" fileCreator="JP" fileCreationDate="0001-01-01" fileCreationTime="00:00:00.0000000-07:00" fileModificationDate="2019-09-19" fileModificationTime="01:33:00.0000000-07:00" fileModifiedBy="" fileVersion="0" supportedLanguages="en">
       <DeviceIdentity>
         <vendorName readOnly="true">CANopenNode</vendorName>
         <vendorID>0</vendorID>
@@ -1109,7 +1109,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="0" />
+            <defaultValue value="4" />
           </parameter>
           <parameter uniqueID="UID_PARAM_160101" access="readWrite">
             <label lang="en">mapped object 1</label>
@@ -1117,7 +1117,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="0x00000000" />
+            <defaultValue value="0x30020110" />
           </parameter>
           <parameter uniqueID="UID_PARAM_160102" access="readWrite">
             <label lang="en">mapped object 2</label>
@@ -1125,7 +1125,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="0x00000000" />
+            <defaultValue value="0x30020210" />
           </parameter>
           <parameter uniqueID="UID_PARAM_160103" access="readWrite">
             <label lang="en">mapped object 3</label>
@@ -1133,7 +1133,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="0x00000000" />
+            <defaultValue value="0x30020310" />
           </parameter>
           <parameter uniqueID="UID_PARAM_160104" access="readWrite">
             <label lang="en">mapped object 4</label>
@@ -1141,7 +1141,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="0x00000000" />
+            <defaultValue value="0x30020410" />
           </parameter>
           <parameter uniqueID="UID_PARAM_160105" access="readWrite">
             <label lang="en">mapped object 5</label>
@@ -1189,7 +1189,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="0" />
+            <defaultValue value="2" />
           </parameter>
           <parameter uniqueID="UID_PARAM_160201" access="readWrite">
             <label lang="en">mapped object 1</label>
@@ -1197,7 +1197,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="0x00000000" />
+            <defaultValue value="0x30020510" />
           </parameter>
           <parameter uniqueID="UID_PARAM_160202" access="readWrite">
             <label lang="en">mapped object 2</label>
@@ -1205,7 +1205,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="0x00000000" />
+            <defaultValue value="0x30020610" />
           </parameter>
           <parameter uniqueID="UID_PARAM_160203" access="readWrite">
             <label lang="en">mapped object 3</label>
@@ -3413,7 +3413,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="0" />
+            <defaultValue value="4" />
           </parameter>
           <parameter uniqueID="UID_PARAM_1a0101" access="readWrite">
             <label lang="en">mapped object 1</label>
@@ -3421,7 +3421,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="0x00000000" />
+            <defaultValue value="0x30030110" />
           </parameter>
           <parameter uniqueID="UID_PARAM_1a0102" access="readWrite">
             <label lang="en">mapped object 2</label>
@@ -3429,7 +3429,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="0x00000000" />
+            <defaultValue value="0x30030210" />
           </parameter>
           <parameter uniqueID="UID_PARAM_1a0103" access="readWrite">
             <label lang="en">mapped object 3</label>
@@ -3437,7 +3437,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="0x00000000" />
+            <defaultValue value="0x30030310" />
           </parameter>
           <parameter uniqueID="UID_PARAM_1a0104" access="readWrite">
             <label lang="en">mapped object 4</label>
@@ -3445,7 +3445,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="0x00000000" />
+            <defaultValue value="0x30030410" />
           </parameter>
           <parameter uniqueID="UID_PARAM_1a0105" access="readWrite">
             <label lang="en">mapped object 5</label>
@@ -3493,7 +3493,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="0" />
+            <defaultValue value="2" />
           </parameter>
           <parameter uniqueID="UID_PARAM_1a0201" access="readWrite">
             <label lang="en">mapped object 1</label>
@@ -3501,7 +3501,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="0x00000000" />
+            <defaultValue value="0x30030510" />
           </parameter>
           <parameter uniqueID="UID_PARAM_1a0202" access="readWrite">
             <label lang="en">mapped object 2</label>
@@ -3509,7 +3509,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="0x00000000" />
+            <defaultValue value="0x30030610" />
           </parameter>
           <parameter uniqueID="UID_PARAM_1a0203" access="readWrite">
             <label lang="en">mapped object 3</label>
@@ -4605,7 +4605,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="0x00000000" />
+            <defaultValue value="0x00000001" />
           </parameter>
           <parameter uniqueID="UID_PARAM_2100" access="read">
             <label lang="en">Error status bits</label>
@@ -10624,7 +10624,7 @@
         <ProfileTechnology>Canopen</ProfileTechnology>
       </ISO15745Reference>
     </ProfileHeader>
-    <ProfileBody xsi:type="ProfileBody_CommunicationNetwork_CANopen" formatName="CANopen" formatVersion="1.0" fileName="CANopenSocket.eds" fileCreator="JP" fileCreationDate="0001-01-01" fileCreationTime="00:00:00.0000000-07:00" fileModificationDate="2019-09-19" fileVersion="0" supportedLanguages="en">
+    <ProfileBody xsi:type="ProfileBody_CommunicationNetwork_CANopen" formatName="CANopen" formatVersion="1.0" fileName="GPS_objDict.eds" fileCreator="JP" fileCreationDate="0001-01-01" fileCreationTime="00:00:00.0000000-07:00" fileModificationDate="2019-09-19" fileVersion="0" supportedLanguages="en">
       <ApplicationLayers>
         <CANopenObjectList>
           <CANopenObject index="1000" name="Device type" objectType="7" dataType="0007" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_1000" />

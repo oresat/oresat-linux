@@ -1,5 +1,5 @@
 [FileInfo]
-FileName=GPS.eds
+FileName=GPS_objDict.eds
 FileVersion=0
 FileRevision=0
 LastEDS=
@@ -1275,7 +1275,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0005
 AccessType=rw
-DefaultValue=0
+DefaultValue=4
 PDOMapping=0
 
 [1601sub1]
@@ -1284,7 +1284,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000000
+DefaultValue=0x30020110
 PDOMapping=0
 
 [1601sub2]
@@ -1293,7 +1293,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000000
+DefaultValue=0x30020210
 PDOMapping=0
 
 [1601sub3]
@@ -1302,7 +1302,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000000
+DefaultValue=0x30020310
 PDOMapping=0
 
 [1601sub4]
@@ -1311,7 +1311,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000000
+DefaultValue=0x30020410
 PDOMapping=0
 
 [1601sub5]
@@ -1362,7 +1362,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0005
 AccessType=rw
-DefaultValue=0
+DefaultValue=2
 PDOMapping=0
 
 [1602sub1]
@@ -1371,7 +1371,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000000
+DefaultValue=0x30020510
 PDOMapping=0
 
 [1602sub2]
@@ -1380,7 +1380,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000000
+DefaultValue=0x30020610
 PDOMapping=0
 
 [1602sub3]
@@ -3771,7 +3771,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0005
 AccessType=rw
-DefaultValue=0
+DefaultValue=4
 PDOMapping=0
 
 [1A01sub1]
@@ -3780,7 +3780,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000000
+DefaultValue=0x30030110
 PDOMapping=0
 
 [1A01sub2]
@@ -3789,7 +3789,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000000
+DefaultValue=0x30030210
 PDOMapping=0
 
 [1A01sub3]
@@ -3798,7 +3798,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000000
+DefaultValue=0x30030310
 PDOMapping=0
 
 [1A01sub4]
@@ -3807,7 +3807,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000000
+DefaultValue=0x30030410
 PDOMapping=0
 
 [1A01sub5]
@@ -3858,7 +3858,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0005
 AccessType=rw
-DefaultValue=0
+DefaultValue=2
 PDOMapping=0
 
 [1A02sub1]
@@ -3867,7 +3867,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000000
+DefaultValue=0x30030510
 PDOMapping=0
 
 [1A02sub2]
@@ -3876,7 +3876,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000000
+DefaultValue=0x30030610
 PDOMapping=0
 
 [1A02sub3]
@@ -5070,7 +5070,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000000
+DefaultValue=0x00000001
 PDOMapping=0
 
 [6000]
