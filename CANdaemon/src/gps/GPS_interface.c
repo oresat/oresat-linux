@@ -71,7 +71,7 @@ static void* signal_thread(void *arg) {
     /* add signal matches here */
     /*
     r = sd_bus_add_match(bus,
-                         slot,
+                         &slot,
                         "type='signal', path='"OBJECT_PATH"', interface='"INTERFACE_NAME"', member='StatusSignal'", 
                          status_signal_cb, 
                          NULL);
@@ -79,7 +79,7 @@ static void* signal_thread(void *arg) {
     */
 
     r = sd_bus_add_match(bus,
-                         slot,
+                         &slot,
                         "type='signal', path='"OBJECT_PATH"', interface='"INTERFACE_NAME"', member='StateVectorSignal'",
                          data_signal_cb, 
                          NULL);

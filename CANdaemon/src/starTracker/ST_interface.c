@@ -69,14 +69,14 @@ static void* signal_thread(void *arg) {
 
     /* add signal matches here */
     r = sd_bus_add_match(bus,
-                         slot,
+                         &slot,
                         "type='signal', path='"OBJECT_PATH"', interface='"INTERFACE_NAME"', member='OrientationSignal'",
                          data_signal_cb, 
                          NULL);
     dbusErrorExit(r, "Add match error for data signal.");
 
     r = sd_bus_add_match(bus,
-                         slot,
+                         &slot,
                         "type='signal', path='"OBJECT_PATH"', interface='"INTERFACE_NAME"', member='NewImageSignal'",
                          file_transfer_signal_cb, 
                          NULL);
