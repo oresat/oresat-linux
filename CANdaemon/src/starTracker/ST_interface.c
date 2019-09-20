@@ -39,7 +39,7 @@ int ST_interface_init(void) {
 
     pthread_attr_setstacksize(&signal_thread_attr, SIGNAL_THREAD_STACK_SIZE);
     r = pthread_create(&signal_thread_id, &signal_thread_attr, signal_thread, NULL);
-    dbusError(-r, "dbus_init - signal thread creation failed");
+    dbusError(-r, "dbus_init - signal thread creation failed"); // this r need to be negative
     
     return r;
 }
@@ -64,27 +64,22 @@ int ST_interface_clear(void) {
 
 
 static void* signal_thread(void *arg) {
+    sd_bus_slot *slot = NULL;
     int r;
 
     /* add signal matches here */
-    r = sd_bus_match_signal(bus,
-                            NULL,
-                            NULL,
-                            OBJECT_PATH,
-                            INTERFACE_NAME,
-                            "DataSignal", 
-                            data_signal_cb, 
-                            NULL);
+    r = sd_bus_add_match(bus,
+                         slot,
+                        "type='signal', path='"OBJECT_PATH"', interface='"INTERFACE_NAME"', member='OrientationSignal'",
+                         data_signal_cb, 
+                         NULL);
     dbusErrorExit(r, "Add match error for data signal.");
 
-    r = sd_bus_match_signal(bus,
-                            NULL,
-                            NULL,
-                            OBJECT_PATH,
-                            INTERFACE_NAME,
-                            "FileTransferSignal", 
-                            file_transfer_signal_cb, 
-                            NULL);
+    r = sd_bus_add_match(bus,
+                         slot,
+                        "type='signal', path='"OBJECT_PATH"', interface='"INTERFACE_NAME"', member='NewImageSignal'",
+                         file_transfer_signal_cb, 
+                         NULL);
     dbusErrorExit(r, "Add match error for file transfer signal.");
 
     
@@ -99,6 +94,7 @@ static void* signal_thread(void *arg) {
         dbusError(r, "Bus wait failed.");
     }
 
+    sd_bus_slot_unref(slot);
     return NULL;
 }
 
@@ -110,13 +106,12 @@ static int file_transfer_signal_cb(sd_bus_message *m, void *user_data, sd_bus_er
 
     r = sd_bus_message_read(m, "s", &filepath);
     dbusError(r, "Failed to parse file transfer signal.");
-    if (r > 0)
+
+    if (r < 0)
         return -1;
 
     OD_add_file(0x3002, 1, 2, filepath);
 
-    free(filepath);
-    filepath = NULL;
     return 0;
 }
 
@@ -131,10 +126,8 @@ static int data_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_
     r = sd_bus_message_read(m, "nnn", &rotationY, &rotationZ, &orientation);
     dbusError(r, "Failed to parse data signal.");
 
-    if (r > 0)
+    if (r < 0)
         return -1;
-
-    fprintf(stderr, "%d %d %d\n", rotationY, rotationZ, orientation);
 
     OD_setData(0x3001, 1, &rotationY, sizeof(rotationY));
     OD_setData(0x3001, 2, &rotationZ, sizeof(rotationZ));

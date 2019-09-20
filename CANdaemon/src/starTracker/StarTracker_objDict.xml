@@ -1756,16 +1756,16 @@
     <CANopenObject index="3001" name="Orientation" objectType="REC" memoryType="RAM" dataType="0x00" accessType="rw" PDOmapping="no" defaultValue="" subNumber="4" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
       <description />
       <CANopenSubObject subIndex="00" name="max sub-index" objectType="VAR" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="3" TPDOdetectCOS="false" />
-      <CANopenSubObject subIndex="01" name="Rotation Y" objectType="VAR" dataType="0x06" accessType="rw" PDOmapping="optional" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="01" name="Rotation Y" objectType="VAR" dataType="0x03" accessType="rw" PDOmapping="optional" defaultValue="0" TPDOdetectCOS="false" />
       <CANopenSubObject subIndex="02" name="Rotation Z" objectType="VAR" dataType="0x03" accessType="rw" PDOmapping="optional" defaultValue="0" TPDOdetectCOS="false" />
       <CANopenSubObject subIndex="03" name="Rotation Camera" objectType="VAR" dataType="0x03" accessType="rw" PDOmapping="optional" defaultValue="0" TPDOdetectCOS="false" />
       <accessFunctionPreCode />
     </CANopenObject>
-    <CANopenObject index="3002" name="File Transfer" objectType="REC" memoryType="RAM" dataType="0x05" accessType="rw" PDOmapping="no" defaultValue="" subNumber="7" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+    <CANopenObject index="3002" name="File Transfer" objectType="REC" memoryType="RAM" dataType="0x00" accessType="rw" PDOmapping="no" defaultValue="" subNumber="7" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
       <description />
       <CANopenSubObject subIndex="00" name="max sub-index" objectType="VAR" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="6" TPDOdetectCOS="false" />
-      <CANopenSubObject subIndex="01" name="File Name" objectType="VAR" dataType="0x09" accessType="rw" PDOmapping="no" defaultValue="ThisIsATEstFileName" TPDOdetectCOS="false" />
-      <CANopenSubObject subIndex="02" name="File Data" objectType="VAR" dataType="0x0f" accessType="rw" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="01" name="File Name" objectType="VAR" dataType="0x09" accessType="rw" PDOmapping="no" defaultValue="ThisIsATEstFileName1" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="02" name="File Data" objectType="VAR" dataType="0x0f" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
       <CANopenSubObject subIndex="03" name="Size" objectType="VAR" dataType="0x07" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
       <CANopenSubObject subIndex="04" name="Height" objectType="VAR" dataType="0x07" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
       <CANopenSubObject subIndex="05" name="Width" objectType="VAR" dataType="0x07" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />

@@ -11489,7 +11489,7 @@ PDOMapping=0
 ParameterName=Rotation Y
 ObjectType=0x7
 ;StorageLocation=RAM
-DataType=0x0006
+DataType=0x0003
 AccessType=rw
 DefaultValue=0
 PDOMapping=1
@@ -11533,7 +11533,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0009
 AccessType=rw
-DefaultValue=ThisIsATEstFileName
+DefaultValue=ThisIsATEstFileName1
 PDOMapping=0
 
 [3002sub2]
@@ -11542,7 +11542,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x000F
 AccessType=rw
-DefaultValue=
+DefaultValue=0
 PDOMapping=0
 
 [3002sub3]

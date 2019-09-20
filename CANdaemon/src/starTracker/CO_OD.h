@@ -231,13 +231,13 @@
                }              OD_orientationGlobal_t;
 /*3001      */ typedef struct {
                UNSIGNED8      maxSubIndex;
-               UNSIGNED16     rotationY;
+               INTEGER16      rotationY;
                INTEGER16      rotationZ;
                INTEGER16      rotationCamera;
                }              OD_orientation_t;
 /*3002      */ typedef struct {
                UNSIGNED8      maxSubIndex;
-               VISIBLE_STRING fileName[19];
+               VISIBLE_STRING fileName[20];
                DOMAIN         fileData;
                UNSIGNED32     size;
                UNSIGNED32     height;

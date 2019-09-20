@@ -137,8 +137,6 @@ char* remove_path(const char* file_path) {
     strncpy(file_name, &file_path[start], size_new-1);
     file_name[FILENAME_MAX_LENGTH] = '\0';
 
-    printf("%s;", file_name);
-
     return file_name;
 }
 

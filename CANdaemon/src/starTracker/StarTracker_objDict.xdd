@@ -10129,11 +10129,11 @@
           </parameter>
           <parameter uniqueID="UID_PARAM_300201" access="readWrite">
             <label lang="en">File Name</label>
-            <description lang="en" />
+            <description lang="en">This has a length of 20 bytes.</description>
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="ThisIsATEstFileName" />
+            <defaultValue value="ThisIsATEstFileName1" />
           </parameter>
           <parameter uniqueID="UID_PARAM_300202" access="readWrite">
             <label lang="en">File Data</label>
@@ -10141,7 +10141,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="" />
+            <defaultValue value="0" />
           </parameter>
           <parameter uniqueID="UID_PARAM_300203" access="readWrite">
             <label lang="en">Size</label>
@@ -11948,11 +11948,11 @@
           </CANopenObject>
           <CANopenObject index="3001" name="Orientation" objectType="9" dataType="0000" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3001" subNumber="4">
             <CANopenSubObject subIndex="0000" name="max sub-index" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300100" />
-            <CANopenSubObject subIndex="0001" name="Rotation Y" objectType="7" dataType="0006" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="optional" uniqueIDRef="UID_PARAM_300101" />
+            <CANopenSubObject subIndex="0001" name="Rotation Y" objectType="7" dataType="0003" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="optional" uniqueIDRef="UID_PARAM_300101" />
             <CANopenSubObject subIndex="0002" name="Rotation Z" objectType="7" dataType="0003" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="optional" uniqueIDRef="UID_PARAM_300102" />
             <CANopenSubObject subIndex="0003" name="Rotation Camera" objectType="7" dataType="0003" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="optional" uniqueIDRef="UID_PARAM_300103" />
           </CANopenObject>
-          <CANopenObject index="3002" name="File Transfer" objectType="9" dataType="0005" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3002" subNumber="7">
+          <CANopenObject index="3002" name="File Transfer" objectType="9" dataType="0000" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3002" subNumber="7">
             <CANopenSubObject subIndex="0000" name="max sub-index" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300200" />
             <CANopenSubObject subIndex="0001" name="File Name" objectType="7" dataType="0009" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300201" />
             <CANopenSubObject subIndex="0002" name="File Data" objectType="7" dataType="000F" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300202" />
