@@ -5,10 +5,9 @@
 
 
 #Which main process
-#0 no main process
-#1 GPS
-#2 Star Tracker
-MAIN_PROCESS_INTERFACE ?= 0#
+#0 GPS
+#1 Star Tracker
+MAIN_PROCESS_INTERFACE ?= 1#
 
 
 #Optional Interfaces
