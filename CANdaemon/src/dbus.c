@@ -11,6 +11,7 @@
 #include <pthread.h>
 
 
+#include "CO_driver.h"
 #include "dbus.h"
 #include "dbus_helpers.h"
 #ifdef GPS_INTERFACE

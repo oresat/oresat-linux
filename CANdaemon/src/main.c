@@ -44,8 +44,9 @@
 #include "CO_time.h"
 #ifndef CANOPEND_ONLY
 #include "dbus.h"
+#include "dbus_helpers.h"
 #endif
-#if defined(MASTER_NODE) || defined(CANOPEND_ONLY)
+#ifdef CANOPEND_ONLY
 #include "CO_command.h"
 #endif
 
@@ -72,6 +73,10 @@ static CO_OD_storage_t      odStor;             /* Object Dictionary storage obj
 static CO_OD_storage_t      odStorAuto;         /* Object Dictionary storage object for CO_OD_EEPROM */
 static char                *odStorFile_rom    = "od_storage";   /* Name of the od storage file */
 static char                *odStorFile_eeprom = "od_storage_auto";  /* Name of the od storage auto file */
+#ifndef CANOPEND_ONLY
+static CO_OD_file_data_t    odSendFileData;     /* Object Dictionary storage object for sending files over */
+static CO_OD_file_data_t    odReceiveFileData;  /* Object Dictionary storage object for recieving files over */
+#endif
 static CO_time_t            CO_time;            /* Object for current time */
 
 /* Realtime thread */
@@ -224,6 +229,10 @@ int main (int argc, char *argv[]) {
     /* initialize Object Dictionary storage */
     odStorStatus_rom = CO_OD_storage_init(&odStor, (uint8_t*) &CO_OD_ROM, sizeof(CO_OD_ROM), odStorFile_rom);
     odStorStatus_eeprom = CO_OD_storage_init(&odStorAuto, (uint8_t*) &CO_OD_EEPROM, sizeof(CO_OD_EEPROM), odStorFile_eeprom);
+#ifndef CANOPEND_ONLY
+    CO_OD_file_transfer_init(&odSendFileData);
+    CO_OD_file_transfer_init(&odReceiveFileData);
+#endif
 
 
     /* Catch signals SIGINT and SIGTERM */
@@ -283,6 +292,10 @@ int main (int argc, char *argv[]) {
             CO_errorReport(CO->em, CO_EM_NON_VOLATILE_MEMORY, CO_EMC_HARDWARE, (uint32_t)odStorStatus_eeprom + 1000);
         }
 
+#ifndef CANOPEND_ONLY
+        CO_OD_configure(CO->SDO[0], 0x3002, file_transfer, (void*)&odSendFileData, 0, 0U);
+        CO_OD_configure(CO->SDO[0], 0x3003, file_transfer, (void*)&odReceiveFileData, 0, 0U);
+#endif
 
         /* Configure callback functions for task control */
         CO_EM_initCallback(CO->em, taskMain_cbSignal);
@@ -336,7 +349,7 @@ int main (int argc, char *argv[]) {
             }
 #endif
 
-#if defined(MASTER_NODE) || defined(CANOPEND_ONLY)
+#ifdef CANOPEND_ONLY
             if(CO_command_init() != 0) {
                 CO_errExit("Socket command interface initialization failed");
             }
@@ -385,7 +398,7 @@ int main (int argc, char *argv[]) {
         CO_errExit("DBus interface removal failed");
     }
 #endif
-#if defined(MASTER_NODE) || defined(CANOPEND_ONLY)
+#ifdef CANOPEND_ONLY
     if(CO_command_clear() != 0) {
         CO_errExit("Socket command interface removal failed");
     }
@@ -399,6 +412,11 @@ int main (int argc, char *argv[]) {
     /* Store CO_OD_EEPROM */
     CO_OD_storage_autoSave(&odStorAuto, 0, 0);
     CO_OD_storage_autoSaveClose(&odStorAuto);
+
+#ifndef CANOPEND_ONLY
+    CO_OD_file_transfer_close(&odSendFileData);
+    CO_OD_file_transfer_close(&odReceiveFileData);
+#endif
 
     /* delete objects from memory */
     CANrx_taskTmr_close();
