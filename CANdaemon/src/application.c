@@ -122,27 +122,21 @@ void app_program1ms(void){
 
 /******************************************************************************/
 CO_SDO_abortCode_t file_transfer(CO_ODF_arg_t *ODF_arg) {
-    printf("File transfer started.%d\n", ODF_arg->offset);
-
     CO_OD_file_data_t *odFileData;
     CO_SDO_abortCode_t ret = CO_SDO_AB_NONE;
 
     odFileData = (CO_OD_file_data_t*) ODF_arg->object;
 
     if(ODF_arg->subIndex != 2) {
-        printf("wrong subidx\n");
         // nothing special
         ret = CO_SDO_AB_NO_DATA; 
         return ret;
     }
 
-    printf("RW %d\n", ODF_arg->reading);
     if(ODF_arg->reading) { 
-        printf("Reading\n");
         /* read parameters */
         if(odFileData->fileData == NULL || odFileData->fileSize == 0) {
             //error, no data to read
-            printf("No data\n\n");
             ret = CO_SDO_AB_NO_DATA; 
             return ret;
         }
@@ -164,22 +158,18 @@ CO_SDO_abortCode_t file_transfer(CO_ODF_arg_t *ODF_arg) {
         ++ODF_arg->offset;
     }
     else { 
-        printf("Writing\n");
         /* store parameters */
         if(ODF_arg->firstSegment) {
             /* 1st segment */
             if(odFileData->fileData != NULL) {
                 /* clear data for new transfer */
                 free(odFileData->fileData);
-                printf("clearing data\n");
             }
-            printf("Allocating data\n");
 
             /* allocate memory for new file */
             odFileData->fileSize = ODF_arg->dataLength;
             odFileData->fileData = (uint8_t *)malloc(odFileData->fileSize);
             ODF_arg->firstSegment = 0;
-            printf("Data size %d\n", ODF_arg->dataLength);
         }
         
         ODF_arg->lastSegment = 1;
@@ -188,7 +178,6 @@ CO_SDO_abortCode_t file_transfer(CO_ODF_arg_t *ODF_arg) {
         ++ODF_arg->offset;
     }
 
-    printf("\n");
     return ret;
 }
 
