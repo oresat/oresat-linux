@@ -11,8 +11,8 @@
 #include "CO_driver.h"
 #include "CO_OD.h"
 #include "CO_master.h"
-#include "dbus_helpers.h"
 #include "CO_comm_helpers.h"
+#include "dbus_helpers.h"
 
 
 #define FILENAME_MAX_LENGTH 20
@@ -21,6 +21,7 @@
 /* Variables */
 static uint16_t             SDOtimeoutTime = 500; /* Timeout time for SDO transfer in milliseconds, if no response */
 static uint8_t              blockTransferEnable = 1; /* SDO block transfer enabled? */
+
 
 void dbusError(int r, char* err) {
     if (r < 0)
@@ -264,66 +265,3 @@ int OD_getArrayData(const uint16_t idx, const uint8_t subidx, char *dataOut, int
 }
 
 
-CO_SDO_abortCode_t file_transfer(CO_ODF_arg_t *ODF_arg) {
-    CO_OD_file_data_t *odFileData;
-    CO_SDO_abortCode_t ret = CO_SDO_AB_NONE;
-
-    odFileData = (CO_OD_file_data_t*) ODF_arg->object;
-
-    if(ODF_arg->subIndex != 2) {
-        // nothing special
-        return ret;
-    }
-
-    if(ODF_arg->reading) { 
-        /* read parameters */
-        if(odFileData->fileData == NULL || odFileData->fileSize <= 0) {
-            //error, no data to read
-            ret = CO_SDO_AB_NO_DATA; 
-            return ret;
-        }
-
-        if(ODF_arg->offset == 0) {
-            /* 1st offset */
-            ODF_arg->dataLengthTotal = odFileData->fileSize;
-        }
-
-        memcpy(ODF_arg->data, &(odFileData->fileData[ODF_arg->offset]), ODF_arg->dataLength);
-        ++ODF_arg->offset;
-    }
-    else { 
-        /* store parameters */
-        if(ODF_arg->offset == 0) {
-            /* 1st offset */
-            if(odFileData->fileData != NULL) {
-                /* clear data for new transfer */
-                free(odFileData->fileData);
-            }
-
-            /* allocate memory for new file */
-            odFileData->fileSize = ODF_arg->dataLengthTotal;
-            odFileData->fileData = (uint8_t *)malloc(odFileData->fileSize);
-        }
-
-        memcpy(&(odFileData->fileData[ODF_arg->offset]), ODF_arg->data, ODF_arg->dataLength);
-        ++ODF_arg->offset;
-    }
-
-    return ret;
-}
-
-
-CO_ReturnError_t CO_OD_file_transfer_init(CO_OD_file_data_t *odFileData) {
-    odFileData->fileData = NULL;
-    odFileData->fileSize = 0;
-    return CO_ERROR_NO;
-}
-
-
-void CO_OD_file_transfer_close(CO_OD_file_data_t *odFileData) {
-    if(odFileData->fileData != NULL) {
-        free(odFileData->fileData);
-        odFileData = NULL;
-    }
-    return;
-}

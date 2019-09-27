@@ -82,33 +82,4 @@ int OD_getNonArrayData(const uint16_t idx, const uint8_t subidx, void* dataOut, 
 int OD_getArrayData(const uint16_t idx, const uint8_t subidx, char* dataOut, int32_t* dataLength);
 
 
-/**
- * Object Dictionary storage object.
- *
- * Object is used with CANopen OD objects that are for file transfer.
- */
-typedef struct {
-    uint8_t    *fileData;       /**< From CO_OD_file_transfer_init() */
-    uint32_t    fileSize;       /**< From CO_OD_file_transfer_init() */
-} CO_OD_file_data_t;
-
-
-/**
- * Callbacks for using inside @ref CO_OD_configure() function for OD DOMAIN objects.
- */
-CO_SDO_abortCode_t file_transfer(CO_ODF_arg_t *ODF_arg);
-
-
-/**
- * Constructor for data file struct.
- */
-CO_ReturnError_t CO_OD_file_transfer_init(CO_OD_file_data_t *odFileData);
-
-
-/**
- * Deconstructor for data file struct.
- */
-void CO_OD_file_transfer_close(CO_OD_file_data_t *odFileData);
-
-
 #endif

@@ -73,23 +73,21 @@ CANOPEND_SOURCES = $(SOURCES) $(COMM_SOURCES)
 
 ifeq ($(MAIN_PROCESS_INTERFACE), 0)
 CANDAEMON_SOURCES =	$(SOURCES)                          \
-			$(CANDAEMON_SRC)/dbus.c             \
 			$(CANDAEMON_SRC)/dbus_helpers.c     \
 			$(GPS_SRC)/GPS_interface.c	    \
 			$(GPS_SRC)/CO_OD.c
 CANOPEND_SOURCES += $(GPS_SRC)/CO_OD.c
 INCLUDE_DIRS += -I$(GPS_SRC) 
-CFLAGS += -DGPS_INTERFACE
+CFLAGS += -DCANDAEMON -DGPS_INTERFACE
 
 else ifeq ($(MAIN_PROCESS_INTERFACE), 1)
 CANDAEMON_SOURCES =	$(SOURCES)                          \
-			$(CANDAEMON_SRC)/dbus.c             \
 			$(CANDAEMON_SRC)/dbus_helpers.c     \
 			$(STARTACKER_SRC)/ST_interface.c    \
 			$(STARTACKER_SRC)/CO_OD.c
 CANOPEND_SOURCES += $(STARTACKER_SRC)/CO_OD.c
 INCLUDE_DIRS += -I$(STARTACKER_SRC)
-CFLAGS += -DST_INTERFACE
+CFLAGS += -DCANDAEMON -DST_INTERFACE
 
 endif
 
@@ -112,10 +110,10 @@ CANOPEND_OBJS = $(CANOPEND_SOURCES:%.c=%.o)
 all: candaemon canopend canopencomm
 
 candaemon: $(CANDAEMON_OBJS)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE_DIRS) $^ $(CANDAEMON_SRC)/main.c -o $@
+	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE_DIRS) $^ $(CANDAEMON_SRC)/main.c $(CANDAEMON_SRC)/application.c -o $@
 
 canopend: $(CANOPEND_OBJS)
-	$(CC) $(LDFLAGS) $(INCLUDE_DIRS) $^ $(CANDAEMON_SRC)/main.c -o $@ -DCANOPEND_ONLY
+	$(CC) $(LDFLAGS) $(INCLUDE_DIRS) $^ $(CANDAEMON_SRC)/main.c $(CANDAEMON_SRC)/application.c -o $@
 
 canopencomm:
 	$(CC) ./CANopenComm/CANopenCommand.c -o $@
