@@ -155,7 +155,6 @@ CO_SDO_abortCode_t file_transfer(CO_ODF_arg_t *ODF_arg) {
         ODF_arg->lastSegment = 1;
 
         memcpy(ODF_arg->data, odFileData->fileData, ODF_arg->dataLength);
-        ++ODF_arg->offset;
     }
     else { 
         /* store parameters */
@@ -175,7 +174,6 @@ CO_SDO_abortCode_t file_transfer(CO_ODF_arg_t *ODF_arg) {
         ODF_arg->lastSegment = 1;
 
         memcpy(odFileData->fileData, ODF_arg->data, ODF_arg->dataLength);
-        ++ODF_arg->offset;
     }
 
     return ret;
