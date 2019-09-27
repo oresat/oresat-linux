@@ -34,7 +34,6 @@
 
 #include "CANopen.h"
 #include "CO_driver.h"
-#include "dbus.h"
 #include "application.h"
 #ifdef GPS_INTERFACE
 #include "GPS_interface.h"
@@ -149,16 +148,19 @@ CO_SDO_abortCode_t file_transfer(CO_ODF_arg_t *ODF_arg) {
         }
 
         if(ODF_arg->firstSegment) {
-            printf("start reading 1st seg\n");
             /* 1st offset */
-            ODF_arg->dataLengthTotal = odFileData->fileSize;
+            ODF_arg->dataLength = odFileData->fileSize;
             ODF_arg->firstSegment = 0;
+
+            if(ODF_arg->dataLength > CO_COMMAND_SDO_BUFFER_SIZE) {
+                ret = CO_SDO_AB_NO_DATA; 
+                return ret;
+            }
         }
 
-        if(ODF_arg->dataLength < CO_COMMAND_SDO_BUFFER_SIZE)
-            ODF_arg->lastSegment = 1;
+        ODF_arg->lastSegment = 1;
 
-        memcpy(ODF_arg->data, &(odFileData->fileData[ODF_arg->offset]), ODF_arg->dataLength);
+        memcpy(ODF_arg->data, odFileData->fileData, ODF_arg->dataLength);
         ++ODF_arg->offset;
     }
     else { 
@@ -173,27 +175,16 @@ CO_SDO_abortCode_t file_transfer(CO_ODF_arg_t *ODF_arg) {
             }
             printf("Allocating data\n");
 
-            /* figure out data length */
-            if(ODF_arg->dataLengthTotal > 0) {
-                /* dataLengthTotal was set */
-                odFileData->fileSize = ODF_arg->dataLengthTotal;
-            }
-            else {
-                /* dataLengthTotal was not set */
-                odFileData->fileSize = ODF_arg->dataLength;
-                ODF_arg->dataLengthTotal = ODF_arg->dataLength; 
-            }
-
             /* allocate memory for new file */
+            odFileData->fileSize = ODF_arg->dataLength;
             odFileData->fileData = (uint8_t *)malloc(odFileData->fileSize);
             ODF_arg->firstSegment = 0;
-            printf("Data size %d\n", ODF_arg->dataLengthTotal);
+            printf("Data size %d\n", ODF_arg->dataLength);
         }
         
-        if(ODF_arg->dataLength < CO_COMMAND_SDO_BUFFER_SIZE)
-            ODF_arg->lastSegment = 1;
+        ODF_arg->lastSegment = 1;
 
-        memcpy(&(odFileData->fileData[ODF_arg->offset]), ODF_arg->data, ODF_arg->dataLength);
+        memcpy(odFileData->fileData, ODF_arg->data, ODF_arg->dataLength);
         ++ODF_arg->offset;
     }
 
