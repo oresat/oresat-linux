@@ -163,6 +163,7 @@ int main (int argc, char *argv[]) {
         fprintf(stderr, "Usage: %s <CAN device name>\n", argv[0]);
         exit(EXIT_SUCCESS);
     }
+    nodeId = 0x12;
 #else
     if(argc < 2 || strcmp(argv[1], "--help") == 0){
         printUsage(argv[0]);
