@@ -135,7 +135,7 @@ CO_SDO_abortCode_t file_transfer(CO_ODF_arg_t *ODF_arg) {
 
     if(ODF_arg->reading) { 
         /* read parameters */
-        if(odFileData->fileData == NULL || odFileData->fileSize == 0) {
+        if(odFileData->fileSize == 0) {
             //error, no data to read
             ret = CO_SDO_AB_NO_DATA; 
             return ret;
@@ -150,10 +150,11 @@ CO_SDO_abortCode_t file_transfer(CO_ODF_arg_t *ODF_arg) {
                 ret = CO_SDO_AB_OUT_OF_MEM; 
                 return ret;
             }
+            else
+                ODF_arg->dataLengthTotal = odFileData->fileSize;
         }
 
         ODF_arg->lastSegment = 1;
-
         memcpy(ODF_arg->data, odFileData->fileData, ODF_arg->dataLength);
     }
     else { 
@@ -162,10 +163,14 @@ CO_SDO_abortCode_t file_transfer(CO_ODF_arg_t *ODF_arg) {
             /* 1st segment */
             odFileData->fileSize = ODF_arg->dataLength;
             ODF_arg->firstSegment = 0;
-        }
-        
-        ODF_arg->lastSegment = 1;
 
+            if(ODF_arg->dataLength > CO_COMMAND_SDO_BUFFER_SIZE) {
+                ret = CO_SDO_AB_OUT_OF_MEM; 
+                return ret;
+            }
+        }
+
+        ODF_arg->lastSegment = 1;
         memcpy(odFileData->fileData, ODF_arg->data, ODF_arg->dataLength);
     }
 
