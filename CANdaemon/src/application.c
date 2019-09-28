@@ -129,7 +129,7 @@ CO_SDO_abortCode_t file_transfer(CO_ODF_arg_t *ODF_arg) {
 
     if(ODF_arg->subIndex != 2) {
         // nothing special
-        ret = CO_SDO_AB_NO_DATA; 
+        ret = CO_SDO_AB_SUB_UNKNOWN; 
         return ret;
     }
 
@@ -147,7 +147,7 @@ CO_SDO_abortCode_t file_transfer(CO_ODF_arg_t *ODF_arg) {
             ODF_arg->firstSegment = 0;
 
             if(ODF_arg->dataLength > CO_COMMAND_SDO_BUFFER_SIZE) {
-                ret = CO_SDO_AB_NO_DATA; 
+                ret = CO_SDO_AB_OUT_OF_MEM; 
                 return ret;
             }
         }
@@ -160,14 +160,7 @@ CO_SDO_abortCode_t file_transfer(CO_ODF_arg_t *ODF_arg) {
         /* store parameters */
         if(ODF_arg->firstSegment) {
             /* 1st segment */
-            if(odFileData->fileData != NULL) {
-                /* clear data for new transfer */
-                free(odFileData->fileData);
-            }
-
-            /* allocate memory for new file */
             odFileData->fileSize = ODF_arg->dataLength;
-            odFileData->fileData = (uint8_t *)malloc(odFileData->fileSize);
             ODF_arg->firstSegment = 0;
         }
         
@@ -181,7 +174,7 @@ CO_SDO_abortCode_t file_transfer(CO_ODF_arg_t *ODF_arg) {
 
 
 CO_ReturnError_t CO_OD_file_transfer_init(CO_OD_file_data_t *odFileData) {
-    odFileData->fileData = NULL;
+    odFileData->fileData = (uint8_t *)malloc(CO_COMMAND_SDO_BUFFER_SIZE);
     odFileData->fileSize = 0;
     return CO_ERROR_NO;
 }
