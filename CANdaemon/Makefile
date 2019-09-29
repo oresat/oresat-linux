@@ -59,6 +59,7 @@ SOURCES =	$(STACKDRV_SRC)/CO_driver.c         \
 		$(STACK_SRC)/CO_trace.c             \
 		$(CANOPENNODE_SRC)/CANopen.c        \
 		$(CANDAEMON_SRC)/CO_master.c        \
+		$(CANDAEMON_SRC)/app_OD_functions.c \
 		$(CANDAEMON_SRC)/CO_time.c
 
 COMM_SOURCES =	$(CANDAEMON_SRC)/CO_command.c       \
