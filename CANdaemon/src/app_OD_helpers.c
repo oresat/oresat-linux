@@ -68,8 +68,8 @@ uint32_t app_readOD(uint16_t entryNo, uint16_t subIndex, uint8_t *data, uint16_t
     }
     else if(object->attribute != 0U){ /* Object type is Array */
         ODattribute = object->attribute;
-        ODlength = object->maxSubIndex;
-        ODdata = object->pData;
+        ODlength = object->length;
+        ODdata = object->pData[subIndex];
     }
     else{                            /* Object type is Record */
         ODattribute = object->pData[subIndex].attribute;
@@ -88,9 +88,7 @@ uint32_t app_readOD(uint16_t entryNo, uint16_t subIndex, uint8_t *data, uint16_t
 
         /* copy data */
         *length = ODlength;
-        while(ODlength--){
-            *(data++) = *(ODdata++);
-        }
+        memcpy(data, ODdata, ODlength);
 
         CO_UNLOCK_OD();
     }
@@ -125,8 +123,8 @@ uint32_t app_writeOD(uint16_t entryNo, uint16_t subIndex, uint8_t *data, uint16_
     }
     else if(object->attribute != 0U){ /* Object type is Array */
         ODattribute = object->attribute;
-        ODlength = object->maxSubIndex;
-        ODdata = object->pData;
+        ODlength = object->length;
+        ODdata = object->pData[subIndex];
     }
     else{                            /* Object type is Record */
         ODattribute = object->pData[subIndex].attribute;
@@ -149,9 +147,7 @@ uint32_t app_writeOD(uint16_t entryNo, uint16_t subIndex, uint8_t *data, uint16_
 
         /* copy data  */
         ODlength = length;
-        while(length--){
-            *(ODdata++) = *(data++);
-        }
+        memcpy(ODdata, data, length);
 
         CO_UNLOCK_OD();
     }
