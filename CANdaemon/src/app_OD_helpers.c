@@ -46,12 +46,18 @@ uint16_t app_OD_find(uint16_t index){
 
 
 /******************************************************************************/
-uint32_t app_readOD(uint16_t entryNo, uint16_t subIndex, uint8_t *data, uint16_t *length){
+uint32_t app_readOD(uint16_t index, uint16_t subIndex, uint8_t *data, uint16_t *length){
     CO_OD_entry_t* object = NULL;
     uint8_t *ODdata = NULL;
     uint16_t ODlength;
     uint16_t ODattribute;
 
+    /* get object location */
+    uint16_t entryNo = CO_OD_find(index);
+    if(entryNo == 0xFFFE) {
+        return CO_OD_AB_NOT_EXIST;  /* index not found */
+    }
+    
     /* get object */
     object = &CO_OD[entryNo];
 
@@ -101,11 +107,16 @@ uint32_t app_readOD(uint16_t entryNo, uint16_t subIndex, uint8_t *data, uint16_t
 
 
 /******************************************************************************/
-uint32_t app_writeOD(uint16_t entryNo, uint16_t subIndex, uint8_t *data, uint16_t length){
+uint32_t app_writeOD(uint16_t index, uint16_t subIndex, uint8_t *data, uint16_t length){
     CO_OD_entry_t* object = NULL;
     uint8_t *ODdata = NULL;
     uint16_t ODlength;
     uint16_t ODattribute;
+
+    uint16_t entryNo = CO_OD_find(index);
+    if(entryNo == 0xFFFE) {
+        return CO_OD_AB_NOT_EXIST;  /* index not found */
+    }
 
     /* get object */
     object = &CO_OD[entryNo];
@@ -156,83 +167,5 @@ uint32_t app_writeOD(uint16_t entryNo, uint16_t subIndex, uint8_t *data, uint16_
     }
 
     return 0;
-}
-
-
-uint32_t app_readOD(uint16_t index, uint16_t subIndex, void *data){
-    if(data = NULL)
-        return -1;
-
-    uint16_t length = sizeof(data);
-    uint8_t buf[length];
-    int32_t rv;
-
-    /* get object location */
-    uint16_t entryNo = CO_OD_find(index);
-    if(entryNo == 0xFFFE) {
-        return CO_OD_AB_NOT_EXIST;  /* index not found */
-    }
-
-    rv = app_readOD(index, subIndex, buf, &length);
-
-    memcpy(&buf, data, length);
-
-    return rv;
-}
-
-
-uint32_t app_writeOD(uint16_t index, uint16_t subIndex, void *data){
-    if(data = NULL)
-        return -1;
-
-    uint16_t length = sizeof(data);
-    uint8_t buf[length];
-    int32_t rv;
-
-    /* get object location */
-    uint16_t entryNo = CO_OD_find(index);
-    if(entryNo == 0xFFFE) {
-        return CO_OD_AB_NOT_EXIST;  /* index not found */
-    }
-    
-    rv = app_writeOD(entryNo, subIndex, buf, length);
-
-    memcpy(&buf, data, length);
-
-    return rv;
-}
-
-
-uint32_t app_readOD_array(uint16_t index, uint16_t subIndex, void *data, uint16_t *dataLength){
-    if(data = NULL)
-        return -1;
-
-    uint16_t length = sizeof(data);
-    uint8_t buf[length];
-    int32_t rv = app_readOD(index, subIndex, buf, &length);
-
-    /* get object location */
-    uint16_t entryNo = CO_OD_find(index);
-    if(entryNo == 0xFFFE) {
-        return CO_OD_AB_NOT_EXIST;  /* index not found */
-    }
-    
-    rv = app_writeOD(entryNo, subIndex, buf, length);
-
-    memcpy(&buf, data, length);
-    return rv;
-}
-
-
-uint32_t app_writeOD_array(uint16_t index, uint16_t subIndex, void *data, uint16_t dataLength){
-    if(data = NULL)
-        return -1;
-
-    uint16_t length = sizeof(data);
-    uint8_t buf[length];
-    int32_t rv = app_writeOD(index, subIndex, buf, length);
-    memcpy(&buf, data, length);
-
-    return rv;
 }
 

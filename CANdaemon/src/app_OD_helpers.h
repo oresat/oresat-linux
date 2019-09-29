@@ -9,7 +9,7 @@
 
 
 /**
- * Find the location in the OD array from the OD entryNo value.
+ * Find the location in the OD array from the OD index value.
  *
  * @param index OD index for OD entry
  *
@@ -19,29 +19,29 @@ uint16_t app_OD_find(uint16_t index);
 
 
 /**
- * Find the location in the OD array from the OD entryNo value.
+ * Find the location in the OD array from the OD index value.
  *
- * @param entryNo OD entryNo in CO_OD array
- * @param subIndex OD sub-entryNo for OD entry
+ * @param index OD index for OD entry
+ * @param subIndex OD sub-index for OD entry
  * @param data Buffer for copy data from OD
  * @param length Legth of data buffer
  *
  * @return 0 on success.
  */
-uint32_t app_readOD(uint16_t entryNo, uint16_t subIndex, uint8_t *data, uint16_t *length);
+uint32_t app_readOD(uint16_t index, uint16_t subIndex, uint8_t *data, uint16_t *length);
 
 
 /**
- * Find the location in the OD array from the OD entryNo value.
+ * Find the location in the OD array from the OD index value.
  *
- * @param entryNo OD entryNo in CO_OD array
- * @param subIndex OD sub-entryNo for OD entry
+ * @param index OD index for OD entry
+ * @param subIndex OD sub-index for OD entry
  * @param data Data buffer to copy into OD
  * @param length Legth of data buffer
  *
  * @return 0 on success.
  */
-uint32_t app_writeOD(uint16_t entryNo, uint16_t subIndex, uint8_t *data, uint16_t length);
+uint32_t app_writeOD(uint16_t index, uint16_t subIndex, uint8_t *data, uint16_t length);
 
 
 #endif
