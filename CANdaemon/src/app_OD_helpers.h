@@ -24,11 +24,11 @@ uint16_t app_OD_find(uint16_t index);
  * @param index OD index for OD entry
  * @param subIndex OD sub-index for OD entry
  * @param data Buffer for copy data from OD
- * @param length Legth of data buffer
+ * @param length Length of data buffer in bytes
  *
  * @return 0 on success.
  */
-uint32_t app_readOD(uint16_t index, uint16_t subIndex, uint8_t *data, uint16_t *length);
+uint32_t app_readOD(uint16_t index, uint16_t subIndex, void *data, uint16_t *length);
 
 
 /**
@@ -37,11 +37,11 @@ uint32_t app_readOD(uint16_t index, uint16_t subIndex, uint8_t *data, uint16_t *
  * @param index OD index for OD entry
  * @param subIndex OD sub-index for OD entry
  * @param data Data buffer to copy into OD
- * @param length Legth of data buffer
+ * @param length Length of data buffer in bytes
  *
  * @return 0 on success.
  */
-uint32_t app_writeOD(uint16_t index, uint16_t subIndex, uint8_t *data, uint16_t length);
+uint32_t app_writeOD(uint16_t index, uint16_t subIndex, void *data, uint16_t length);
 
 
 #endif

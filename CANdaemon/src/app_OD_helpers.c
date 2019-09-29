@@ -46,11 +46,15 @@ uint16_t app_OD_find(uint16_t index){
 
 
 /******************************************************************************/
-uint32_t app_readOD(uint16_t index, uint16_t subIndex, uint8_t *data, uint16_t *length){
+uint32_t app_readOD(uint16_t index, uint16_t subIndex, void *data, uint16_t *length){
     CO_OD_entry_t* object = NULL;
     uint8_t *ODdata = NULL;
     uint16_t ODlength;
     uint16_t ODattribute;
+
+    if(data == NULL) {
+        return CO_SDO_AB_NO_DATA; 
+    }
 
     /* get object location */
     uint16_t entryNo = CO_OD_find(index);
@@ -107,11 +111,15 @@ uint32_t app_readOD(uint16_t index, uint16_t subIndex, uint8_t *data, uint16_t *
 
 
 /******************************************************************************/
-uint32_t app_writeOD(uint16_t index, uint16_t subIndex, uint8_t *data, uint16_t length){
+uint32_t app_writeOD(uint16_t index, uint16_t subIndex, void *data, uint16_t length){
     CO_OD_entry_t* object = NULL;
     uint8_t *ODdata = NULL;
     uint16_t ODlength;
     uint16_t ODattribute;
+
+    if(data == NULL) {
+        return CO_SDO_AB_NO_DATA; 
+    }
 
     uint16_t entryNo = CO_OD_find(index);
     if(entryNo == 0xFFFE) {
