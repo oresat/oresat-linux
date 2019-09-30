@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <systemd/sd-bus.h>
 #include <pthread.h>
-
+#include <signal.h>
 #include "ST_interface.h"
 #include "dbus_helpers.h"
 #include "app_OD_functions.h"
@@ -68,6 +68,12 @@ int ST_interface_clear(void) {
 static void* signal_thread(void *arg) {
     sd_bus_slot *slot = NULL;
     int r;
+
+    /* Catch signals SIGINT and SIGTERM */
+    if(signal(SIGINT, NULL) == SIG_ERR)
+        dbusErrorExit(0, "Program init - SIGINIT handler creation failed");
+    if(signal(SIGTERM, NULL) == SIG_ERR)
+        dbusErrorExit(0, "Program init - SIGTERM handler creation failed");
 
     /* add signal matches here */
     r = sd_bus_add_match(bus,
