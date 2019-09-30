@@ -40,7 +40,7 @@ STARTACKER_SRC =	./src/starTracker
 INCLUDE_DIRS =	-I$(STACKDRV_SRC)	\
 		-I$(STACK_SRC)		\
 		-I$(CANOPENNODE_SRC)	\
-		-I$(CANDAEMON_SRC)      \
+		-I$(CANDAEMON_SRC)
 
 
 SOURCES =	$(STACKDRV_SRC)/CO_driver.c         \
@@ -58,11 +58,12 @@ SOURCES =	$(STACKDRV_SRC)/CO_driver.c         \
 		$(STACK_SRC)/CO_LSSslave.c          \
 		$(STACK_SRC)/CO_trace.c             \
 		$(CANOPENNODE_SRC)/CANopen.c        \
-		$(CANDAEMON_SRC)/CO_master.c        \
+		$(CANDAEMON_SRC)/CO_time.c          \
 		$(CANDAEMON_SRC)/app_OD_functions.c \
-		$(CANDAEMON_SRC)/CO_time.c
+		$(CANDAEMON_SRC)/app_OD_helpers.c
 
 COMM_SOURCES =	$(CANDAEMON_SRC)/CO_command.c       \
+		$(CANDAEMON_SRC)/CO_master.c        \
 		$(CANDAEMON_SRC)/CO_comm_helpers.c
 
 CANOPEND_SOURCES = $(SOURCES) $(COMM_SOURCES)

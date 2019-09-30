@@ -28,7 +28,9 @@
 #ifndef CO_APPLICATION_H
 #define CO_APPLICATION_H
 
-#include "stdint.h"
+
+#include <stdint.h>
+
 
 /**
  * Function is called on program startup.

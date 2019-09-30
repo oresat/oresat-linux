@@ -24,7 +24,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "stdint.h"
 #include "application.h"
 #include "app_OD_functions.h"
 #ifdef GPS_INTERFACE
@@ -36,6 +35,7 @@
 #ifdef UPDATER_INTERFACE
 #include "Updaer_interface.h"
 #endif
+#include <stdint.h>
 
 
 /******************************************************************************/

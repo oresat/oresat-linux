@@ -2,12 +2,15 @@
  *
  *
  */
-
-#include "CO_OD.h"
+#include "CANopen.h"
 #include "CO_SDO.h" /* only for return codes*/
 #include "app_OD_helpers.h"
+#include <stdbool.h>
+#include <stdint.h>
+#include <stddef.h>
+#include <string.h>
 
-extern const CO_OD_entry_t CO_OD[CO_OD_NoOfElements];
+extern CO_OD_entry_t CO_OD[CO_OD_NoOfElements];
 
 /******************************************************************************/
 uint16_t app_OD_find(uint16_t index){
@@ -48,7 +51,7 @@ uint16_t app_OD_find(uint16_t index){
 /******************************************************************************/
 uint32_t app_readOD(uint16_t index, uint16_t subIndex, void *data, uint16_t *length){
     CO_OD_entry_t* object = NULL;
-    uint8_t *ODdata = NULL;
+    int8_t *ODdata = NULL;
     uint16_t ODlength;
     uint16_t ODattribute;
 
@@ -57,16 +60,16 @@ uint32_t app_readOD(uint16_t index, uint16_t subIndex, void *data, uint16_t *len
     }
 
     /* get object location */
-    uint16_t entryNo = CO_OD_find(index);
+    uint16_t entryNo = app_OD_find(index);
     if(entryNo == 0xFFFE) {
-        return CO_OD_AB_NOT_EXIST;  /* index not found */
+        return CO_SDO_AB_NOT_EXIST;  /* index not found */
     }
     
     /* get object */
     object = &CO_OD[entryNo];
 
     /* check if sub index is valid */
-    if(subIndex >= object->maxSubIndex)
+    if(subIndex >= object->maxSubIndex) {
         return CO_SDO_AB_SUB_UNKNOWN;     /* Sub index does not exist  */
     }
 
@@ -78,13 +81,22 @@ uint32_t app_readOD(uint16_t index, uint16_t subIndex, void *data, uint16_t *len
     }
     else if(object->attribute != 0U){ /* Object type is Array */
         ODattribute = object->attribute;
-        ODlength = object->length;
-        ODdata = object->pData[subIndex];
+        if(subIndex == 0) {
+            /* First subIndex is readonly, it holds the length of Array */
+            ODattribute &= ~(CO_ODA_WRITEABLE | CO_ODA_RPDO_MAPABLE);
+            ODattribute |= CO_ODA_READABLE;
+            ODlength = sizeof(object->maxSubIndex);
+            ODdata = &object->maxSubIndex;
+        }
+        else { /* array data */
+            ODlength = object->length;
+            ODdata = ((int8_t*)object->pData) + ((subIndex-1) * object->length);
+        }
     }
     else{                            /* Object type is Record */
-        ODattribute = object->pData[subIndex].attribute;
-        ODlength = object->pData[subIndex].length;
-        ODdata = object->pData[subIndex].pData;
+        ODattribute = ((const CO_OD_entryRecord_t*)(object->pData))[subIndex].attribute;
+        ODlength = ((const CO_OD_entryRecord_t*)(object->pData))[subIndex].length;
+        ODdata = ((const CO_OD_entryRecord_t*)(object->pData))[subIndex].pData;
     }
 
     /* is object readable? */
@@ -113,7 +125,7 @@ uint32_t app_readOD(uint16_t index, uint16_t subIndex, void *data, uint16_t *len
 /******************************************************************************/
 uint32_t app_writeOD(uint16_t index, uint16_t subIndex, void *data, uint16_t length){
     CO_OD_entry_t* object = NULL;
-    uint8_t *ODdata = NULL;
+    int8_t *ODdata = NULL;
     uint16_t ODlength;
     uint16_t ODattribute;
 
@@ -121,16 +133,16 @@ uint32_t app_writeOD(uint16_t index, uint16_t subIndex, void *data, uint16_t len
         return CO_SDO_AB_NO_DATA; 
     }
 
-    uint16_t entryNo = CO_OD_find(index);
+    uint16_t entryNo = app_OD_find(index);
     if(entryNo == 0xFFFE) {
-        return CO_OD_AB_NOT_EXIST;  /* index not found */
+        return CO_SDO_AB_NOT_EXIST;  /* index not found */
     }
 
     /* get object */
     object = &CO_OD[entryNo];
 
     /* check if sub index is valid */
-    if(subIndex >= object->maxSubIndex)
+    if(subIndex >= object->maxSubIndex) {
         return CO_SDO_AB_SUB_UNKNOWN;     /* Sub index does not exist  */
     }
 
@@ -142,13 +154,23 @@ uint32_t app_writeOD(uint16_t index, uint16_t subIndex, void *data, uint16_t len
     }
     else if(object->attribute != 0U){ /* Object type is Array */
         ODattribute = object->attribute;
-        ODlength = object->length;
-        ODdata = object->pData[subIndex];
+        if(subIndex == 0) {
+            /* First subIndex is readonly, it holds the length of Array */
+            ODattribute &= ~(CO_ODA_WRITEABLE | CO_ODA_RPDO_MAPABLE);
+            ODattribute |= CO_ODA_READABLE;
+            ODlength = sizeof(object->maxSubIndex);
+            ODdata = &object->maxSubIndex;
+        }
+        else { /* array data */
+            ODlength = object->length;
+            ODdata = ((int8_t*)object->pData) + ((subIndex-1) * object->length);
+        }
     }
     else{                            /* Object type is Record */
-        ODattribute = object->pData[subIndex].attribute;
-        ODlength = object->pData[subIndex].length;
-        ODdata = object->pData[subIndex].pData;
+        CO_OD_entryRecord_t *temp = (CO_OD_entryRecord_t *)object->pData;
+        ODattribute = temp[subIndex].attribute;
+        ODlength = temp[subIndex].length;
+        ODdata = temp[subIndex].pData;
     }
 
     /* is object writeable? */
