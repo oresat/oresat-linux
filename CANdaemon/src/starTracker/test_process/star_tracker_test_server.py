@@ -35,11 +35,11 @@ class Server_XML(object):
 def send_data():
     """Generate random integer between 0 and 100 and emit over System D-Bus
     return True to keep the GLib timer calling this function once a second."""
-    rotationY = random.randint(0,1000)
-    rotationZ = random.randint(0,1000)
-    rotationCamera = random.randint(0,1000)
+    rotationY = random.randint(-1000,1000)
+    rotationZ = random.randint(-1000,1000)
+    rotationCamera = random.randint(-1000,1000)
 
-    print(rotationY, rotationY, rotationZ)
+    print(rotationY, rotationZ, rotationCamera)
     
     emit.OrientationSignal(rotationY, rotationZ, rotationCamera)
     return True
