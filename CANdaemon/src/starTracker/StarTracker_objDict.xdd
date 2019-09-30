@@ -10125,18 +10125,18 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="6" />
+            <defaultValue value="4" />
           </parameter>
           <parameter uniqueID="UID_PARAM_300201" access="readWrite">
-            <label lang="en">File Name</label>
-            <description lang="en">This has a length of 20 bytes.</description>
+            <label lang="en">File Size</label>
+            <description lang="en" />
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="ThisIsATEstFileName1" />
+            <defaultValue value="0" />
           </parameter>
           <parameter uniqueID="UID_PARAM_300202" access="readWrite">
-            <label lang="en">File Data</label>
+            <label lang="en">File data</label>
             <description lang="en" />
             <denotation>
               <label lang="en" />
@@ -10144,7 +10144,7 @@
             <defaultValue value="0" />
           </parameter>
           <parameter uniqueID="UID_PARAM_300203" access="readWrite">
-            <label lang="en">Size</label>
+            <label lang="en">File Name Length</label>
             <description lang="en" />
             <denotation>
               <label lang="en" />
@@ -10152,23 +10152,7 @@
             <defaultValue value="0" />
           </parameter>
           <parameter uniqueID="UID_PARAM_300204" access="readWrite">
-            <label lang="en">Height</label>
-            <description lang="en" />
-            <denotation>
-              <label lang="en" />
-            </denotation>
-            <defaultValue value="0" />
-          </parameter>
-          <parameter uniqueID="UID_PARAM_300205" access="readWrite">
-            <label lang="en">Width</label>
-            <description lang="en" />
-            <denotation>
-              <label lang="en" />
-            </denotation>
-            <defaultValue value="0" />
-          </parameter>
-          <parameter uniqueID="UID_PARAM_300206" access="readWrite">
-            <label lang="en">Avalible</label>
+            <label lang="en">File Name</label>
             <description lang="en" />
             <denotation>
               <label lang="en" />
@@ -11952,14 +11936,12 @@
             <CANopenSubObject subIndex="0002" name="Rotation Z" objectType="7" dataType="0003" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="optional" uniqueIDRef="UID_PARAM_300102" />
             <CANopenSubObject subIndex="0003" name="Rotation Camera" objectType="7" dataType="0003" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="optional" uniqueIDRef="UID_PARAM_300103" />
           </CANopenObject>
-          <CANopenObject index="3002" name="File Transfer" objectType="9" dataType="0000" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3002" subNumber="7">
+          <CANopenObject index="3002" name="File Transfer" objectType="9" dataType="0000" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3002" subNumber="5">
             <CANopenSubObject subIndex="0000" name="max sub-index" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300200" />
-            <CANopenSubObject subIndex="0001" name="File Name" objectType="7" dataType="0009" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300201" />
-            <CANopenSubObject subIndex="0002" name="File Data" objectType="7" dataType="000F" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300202" />
-            <CANopenSubObject subIndex="0003" name="Size" objectType="7" dataType="0007" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300203" />
-            <CANopenSubObject subIndex="0004" name="Height" objectType="7" dataType="0007" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300204" />
-            <CANopenSubObject subIndex="0005" name="Width" objectType="7" dataType="0007" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300205" />
-            <CANopenSubObject subIndex="0006" name="Avalible" objectType="7" dataType="0002" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300206" />
+            <CANopenSubObject subIndex="0001" name="File Size" objectType="7" dataType="0004" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300201" />
+            <CANopenSubObject subIndex="0002" name="File data" objectType="7" dataType="000F" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300202" />
+            <CANopenSubObject subIndex="0003" name="File Name Length" objectType="7" dataType="0003" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300203" />
+            <CANopenSubObject subIndex="0004" name="File Name" objectType="7" dataType="000F" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300204" />
           </CANopenObject>
           <CANopenObject index="6000" name="Read input 8 bit" objectType="8" dataType="0005" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_6000" subNumber="9">
             <CANopenSubObject subIndex="0000" name="max sub-index" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_600000" />

@@ -237,12 +237,10 @@
                }              OD_orientation_t;
 /*3002      */ typedef struct {
                UNSIGNED8      maxSubIndex;
-               VISIBLE_STRING fileName[20];
+               INTEGER32      fileSize;
                DOMAIN         fileData;
-               UNSIGNED32     size;
-               UNSIGNED32     height;
-               UNSIGNED32     width;
-               INTEGER8       avalible;
+               INTEGER16      fileNameLength;
+               DOMAIN         fileName;
                }              OD_fileTransfer_t;
 
 /*******************************************************************************
@@ -1994,12 +1992,10 @@
         #define OD_3002_fileTransfer                                0x3002
 
         #define OD_3002_0_fileTransfer_maxSubIndex                  0
-        #define OD_3002_1_fileTransfer_fileName                     1
+        #define OD_3002_1_fileTransfer_fileSize                     1
         #define OD_3002_2_fileTransfer_fileData                     2
-        #define OD_3002_3_fileTransfer_size                         3
-        #define OD_3002_4_fileTransfer_height                       4
-        #define OD_3002_5_fileTransfer_width                        5
-        #define OD_3002_6_fileTransfer_avalible                     6
+        #define OD_3002_3_fileTransfer_fileNameLength               3
+        #define OD_3002_4_fileTransfer_fileName                     4
 
 /*6000 */
         #define OD_6000_readInput8Bit                               0x6000

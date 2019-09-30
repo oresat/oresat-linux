@@ -10,7 +10,7 @@
 #include "CO_driver.h"
 
 #define FILE_TRANSFER_MAX_SIZE 1000000
-#define FILE_NAME_MAX_LENGTH 20
+#define FILE_NAME_MAX_LENGTH 50
 
 
 /**
@@ -24,8 +24,10 @@ void app_ODF_configure(void);
  * Object is used with CANopen OD objects that are for file transfer.
  */
 typedef struct {
-    uint8_t     fileData[FILE_TRANSFER_MAX_SIZE];       /**< From CO_OD_file_transfer_init() */
+    int8_t      fileName[FILE_NAME_MAX_LENGTH];         /**< From CO_OD_file_transfer_init() */
+    int8_t      fileData[FILE_TRANSFER_MAX_SIZE];       /**< From CO_OD_file_transfer_init() */
     uint32_t    fileSize;                               /**< From CO_OD_file_transfer_init() */
+    uint16_t    fileNameSize;                           /**< From CO_OD_file_transfer_init() */
 } CO_OD_file_data_t;
 
 
@@ -44,27 +46,19 @@ uint32_t APP_ODF_3002(const char* filePath);
 
 
 /**
- * Read in file and gets its size.
- *
- * @return size on success, 0 for failure.
- */
-uint16_t get_file_size(const char* filePath);
-
-
-/**
 * Remove the path from the file path name.
 *
 * @return 0 on success
 */
-int32_t remove_path(const char *filePath, uint8_t *fileName);
+int32_t get_file_name(const char *filePath, int8_t *fileName, uint16_t *fileNameSize);
 
 
 /**
-* Reads in file.
+* Read in file and gets its size.
 *
 * @return 0 on success
 */
-int32_t read_file(const char *filePath, uint8_t *fileData,  uint16_t fileSize);
+int32_t get_file_data(const char *filePath, int8_t *fileData,  uint32_t *fileSize);
 
 
 #endif

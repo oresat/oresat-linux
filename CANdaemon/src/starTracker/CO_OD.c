@@ -241,7 +241,7 @@ struct sCO_OD_RAM CO_OD_RAM = {
 /*2420*/ {0x6L, 0x0000L, 0x0000L, 0x0000L, 0x0000L, 0, 0x0000L}},
 /*3000*/ {0x3L, 0x00, 0x00, 0x00},
 /*3001*/ {0x3L, 0x00, 0x00, 0x00},
-/*3002*/ {0x6L, {'T', 'h', 'i', 's', 'I', 's', 'A', 'T', 'E', 's', 't', 'F', 'i', 'l', 'e', 'N', 'a', 'm', 'e', '1'}, 0, 0x0000L, 0x0000L, 0x0000L, 0x0},
+/*3002*/ {0x4L, 0x0000L, 0, 0x00, 0},
 /*6000*/ {0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L},
 /*6200*/ {0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L},
 /*6401*/ {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
@@ -1662,14 +1662,12 @@ struct sCO_OD_EEPROM CO_OD_EEPROM = {
            {(void*)&CO_OD_RAM.orientation.rotationCamera, 0xBE, 0x2 },
 };
 
-/*0x3002*/ const CO_OD_entryRecord_t OD_record3002[7] = {
+/*0x3002*/ const CO_OD_entryRecord_t OD_record3002[5] = {
            {(void*)&CO_OD_RAM.fileTransfer.maxSubIndex, 0x06, 0x1 },
-           {(void*)&CO_OD_RAM.fileTransfer.fileName, 0x0E, 0x14 },
+           {(void*)&CO_OD_RAM.fileTransfer.fileSize, 0x8E, 0x4 },
            {(void*)0, 0x0E, 0x0 },
-           {(void*)&CO_OD_RAM.fileTransfer.size, 0x8E, 0x4 },
-           {(void*)&CO_OD_RAM.fileTransfer.height, 0x8E, 0x4 },
-           {(void*)&CO_OD_RAM.fileTransfer.width, 0x8E, 0x4 },
-           {(void*)&CO_OD_RAM.fileTransfer.avalible, 0x0E, 0x1 },
+           {(void*)&CO_OD_RAM.fileTransfer.fileNameLength, 0x8E, 0x2 },
+           {(void*)0, 0x0E, 0x0 },
 };
 
 /*******************************************************************************
@@ -1843,7 +1841,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 {0x2420, 0x06, 0x00,  0, (void*)&OD_record2420},
 {0x3000, 0x03, 0x00,  0, (void*)&OD_record3000},
 {0x3001, 0x03, 0x00,  0, (void*)&OD_record3001},
-{0x3002, 0x06, 0x00,  0, (void*)&OD_record3002},
+{0x3002, 0x04, 0x00,  0, (void*)&OD_record3002},
 {0x6000, 0x08, 0x0E,  1, (void*)&CO_OD_RAM.readInput8Bit[0]},
 {0x6200, 0x08, 0x0E,  1, (void*)&CO_OD_RAM.writeOutput8Bit[0]},
 {0x6401, 0x0C, 0x8E,  2, (void*)&CO_OD_RAM.readAnalogueInput16Bit[0]},

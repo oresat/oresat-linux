@@ -11516,7 +11516,7 @@ PDOMapping=1
 ParameterName=File Transfer
 ObjectType=0x9
 ;StorageLocation=RAM
-SubNumber=0x7
+SubNumber=0x5
 
 [3002sub0]
 ParameterName=max sub-index
@@ -11524,20 +11524,20 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0005
 AccessType=ro
-DefaultValue=6
+DefaultValue=4
 PDOMapping=0
 
 [3002sub1]
-ParameterName=File Name
+ParameterName=File Size
 ObjectType=0x7
 ;StorageLocation=RAM
-DataType=0x0009
+DataType=0x0004
 AccessType=rw
-DefaultValue=ThisIsATEstFileName1
+DefaultValue=0
 PDOMapping=0
 
 [3002sub2]
-ParameterName=File Data
+ParameterName=File data
 ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x000F
@@ -11546,37 +11546,19 @@ DefaultValue=0
 PDOMapping=0
 
 [3002sub3]
-ParameterName=Size
+ParameterName=File Name Length
 ObjectType=0x7
 ;StorageLocation=RAM
-DataType=0x0007
+DataType=0x0003
 AccessType=rw
 DefaultValue=0
 PDOMapping=0
 
 [3002sub4]
-ParameterName=Height
+ParameterName=File Name
 ObjectType=0x7
 ;StorageLocation=RAM
-DataType=0x0007
-AccessType=rw
-DefaultValue=0
-PDOMapping=0
-
-[3002sub5]
-ParameterName=Width
-ObjectType=0x7
-;StorageLocation=RAM
-DataType=0x0007
-AccessType=rw
-DefaultValue=0
-PDOMapping=0
-
-[3002sub6]
-ParameterName=Avalible
-ObjectType=0x7
-;StorageLocation=RAM
-DataType=0x0002
+DataType=0x000F
 AccessType=rw
 DefaultValue=0
 PDOMapping=0
