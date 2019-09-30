@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <systemd/sd-bus.h>
 #include <pthread.h>
-
+#include <signal.h>
 #include "Updater_interface.h"
 #include "dbus_helpers.h"
 
@@ -68,6 +68,12 @@ int Updater_interface_clear(void) {
 static void* signal_thread(void *arg) {
     int r;
 
+    /* Catch signals SIGINT and SIGTERM */
+    if(signal(SIGINT, NULL) == SIG_ERR)
+        dbusErrorExit(0, "Program init - SIGINIT handler creation failed");
+    if(signal(SIGTERM, NULL) == SIG_ERR)
+        dbusErrorExit(0, "Program init - SIGTERM handler creation failed");
+
     /* add signal matches here */
     r = sd_bus_match_signal(bus,
                             NULL,
@@ -115,7 +121,7 @@ static int status_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *re
     if (r > 0)
         return -1;
 
-    OD_set(0x1203, 1, state);
+    //OD_set(0x1203, 1, state);
 
     return 0;
 }
@@ -131,7 +137,7 @@ static int file_transfer_signal_cb(sd_bus_message *m, void *user_data, sd_bus_er
     if (r > 0)
         return -1;
 
-    OD_add_file(0x1201, 1, 2, filepath);
+    //OD_add_file(0x1201, 1, 2, filepath);
 
     free(filepath);
     filepath = NULL;

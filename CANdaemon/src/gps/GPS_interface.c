@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <systemd/sd-bus.h>
 #include <pthread.h>
-
+#include <signal.h>
 #include "GPS_interface.h"
 #include "dbus_helpers.h"
 
@@ -68,6 +68,12 @@ static void* signal_thread(void *arg) {
     sd_bus_slot *slot = NULL;
     int r;
 
+    /* Catch signals SIGINT and SIGTERM */
+    if(signal(SIGINT, NULL) == SIG_ERR)
+        dbusErrorExit(0, "Program init - SIGINIT handler creation failed");
+    if(signal(SIGTERM, NULL) == SIG_ERR)
+        dbusErrorExit(0, "Program init - SIGTERM handler creation failed");
+
     /* add signal matches here */
     /*
     r = sd_bus_add_match(bus,
@@ -112,7 +118,7 @@ static int status_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *re
     if (r < 0)
         return -1;
 
-    OD_setData(0x3001, 1, &state, sizeof(state));
+    app_writeOD(0x3001, 1, &state, sizeof(state));
 
     return 0;
 }
@@ -138,15 +144,15 @@ static int data_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_
     if (r < 0)
         return -1;
 
-    OD_setData(0x3003, 1, &posX, sizeof(posX));
-    OD_setData(0x3003, 2, &posY, sizeof(posY));
-    OD_setData(0x3003, 3, &posZ, sizeof(posZ));/*
-    OD_setData(0x3003, 4, &velX, sizeof(velX));
-    OD_setData(0x3003, 5, &velY, sizeof(velY));
-    OD_setData(0x3003, 6, &velZ, sizeof(velZ));
-    OD_setData(0x3003, 7, &accX, sizeof(accX));
-    OD_setData(0x3003, 8, &accY, sizeof(accY));
-    OD_setData(0x3003, 9, &accZ, sizeof(accZ));*/
+    app_writeOD(0x3003, 1, &posX, sizeof(posX));
+    app_writeOD(0x3003, 2, &posY, sizeof(posY));
+    app_writeOD(0x3003, 3, &posZ, sizeof(posZ));/*
+    app_writeOD(0x3003, 4, &velX, sizeof(velX));
+    app_writeOD(0x3003, 5, &velY, sizeof(velY));
+    app_writeOD(0x3003, 6, &velZ, sizeof(velZ));
+    app_writeOD(0x3003, 7, &accX, sizeof(accX));
+    app_writeOD(0x3003, 8, &accY, sizeof(accY));
+    app_writeOD(0x3003, 9, &accZ, sizeof(accZ));*/
 
     return 0;
 }
