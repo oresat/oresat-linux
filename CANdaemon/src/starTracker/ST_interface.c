@@ -118,7 +118,7 @@ static int file_transfer_signal_cb(sd_bus_message *m, void *user_data, sd_bus_er
     if (r < 0)
         return -1;
 
-    //APP_ODF_3002(filepath);
+    APP_ODF_3002(filepath);
 
     return 0;
 }

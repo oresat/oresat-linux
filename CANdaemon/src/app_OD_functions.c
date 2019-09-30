@@ -36,40 +36,50 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
 
     odFileData = (CO_OD_file_data_t*) ODF_arg->object;
 
-    if(ODF_arg->subIndex != 2)
-        return  CO_SDO_AB_SUB_UNKNOWN; 
-
     APP_LOCK_ODF();
 
-    if(ODF_arg->reading) { /* read parameters */
-        if(odFileData->fileSize == 0) /* error, no data to read */
-            return CO_SDO_AB_NO_DATA; 
-
-        if(ODF_arg->firstSegment) { /* 1st offset */
-            ODF_arg->dataLength = odFileData->fileSize;
-
-            /* check if new data will fit in struct */
-            if(ODF_arg->dataLength > FILE_TRANSFER_MAX_SIZE)
-                return CO_SDO_AB_OUT_OF_MEM; 
-
-            ODF_arg->dataLengthTotal = odFileData->fileSize;
+    if(ODF_arg->subIndex == 1) {
+        if(ODF_arg->reading) { /* read parameters */
+            ODF_arg->lastSegment = true;
+            ODF_arg->dataLength = sizeof(odFileData->fileSize);
+            memcpy(ODF_arg->data, &(odFileData->fileSize), ODF_arg->dataLength);
         }
-
-        ODF_arg->lastSegment = true;
-        memcpy(ODF_arg->data, odFileData->fileData, ODF_arg->dataLength);
+        else 
+            return CO_SDO_AB_SUB_UNKNOWN; 
     }
-    else { /* write parameters */
-        if(ODF_arg->firstSegment) { /* 1st segment */
-            odFileData->fileSize = ODF_arg->dataLength;
+    else if(ODF_arg->subIndex == 2) {
+        if(ODF_arg->reading) { /* read parameters */
+            if(odFileData->fileSize == 0) /* error, no data to read */
+                return CO_SDO_AB_NO_DATA; 
 
-            /* check if new data will fit in struct */
-            if(ODF_arg->dataLength > FILE_TRANSFER_MAX_SIZE)
-                return CO_SDO_AB_OUT_OF_MEM; 
+            if(ODF_arg->firstSegment) { /* 1st offset */
+                ODF_arg->dataLength = odFileData->fileSize;
+
+                /* check if new data will fit in struct */
+                if(ODF_arg->dataLength > FILE_TRANSFER_MAX_SIZE)
+                    return CO_SDO_AB_OUT_OF_MEM; 
+
+                ODF_arg->dataLengthTotal = odFileData->fileSize;
+            }
+
+            ODF_arg->lastSegment = true;
+            memcpy(ODF_arg->data, odFileData->fileData, ODF_arg->dataLength);
         }
+        else { /* write parameters */
+            if(ODF_arg->firstSegment) { /* 1st segment */
+                odFileData->fileSize = ODF_arg->dataLength;
 
-        ODF_arg->lastSegment = true;
-        memcpy(odFileData->fileData, ODF_arg->data, ODF_arg->dataLength);
+                /* check if new data will fit in struct */
+                if(ODF_arg->dataLength > FILE_TRANSFER_MAX_SIZE)
+                    return CO_SDO_AB_OUT_OF_MEM; 
+            }
+
+            ODF_arg->lastSegment = true;
+            memcpy(odFileData->fileData, ODF_arg->data, ODF_arg->dataLength);
+        }
     }
+    else 
+        return CO_SDO_AB_SUB_UNKNOWN; 
 
     APP_UNLOCK_ODF();
 
@@ -89,7 +99,7 @@ uint32_t APP_ODF_3002(const char *filePath) {
     odSendFileData.fileSize = get_file_size(filePath);
     ret = remove_path(filePath, fileName);
     ret = read_file(filePath, odSendFileData.fileData, odSendFileData.fileSize);
-    app_writeOD(3002, 1, fileName, strlen((char *)fileName)); // don't send '\0'
+    //app_writeOD(3002, 1, fileName, strlen((char *)fileName)); // don't send '\0'
     
     APP_UNLOCK_ODF();
 
