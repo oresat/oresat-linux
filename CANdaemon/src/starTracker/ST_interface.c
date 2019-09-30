@@ -11,11 +11,13 @@
 
 #include "ST_interface.h"
 #include "dbus_helpers.h"
+#include "app_OD_functions.h"
+#include "app_OD_helpers.h"
 
 #define INTERFACE_NAME  "org.OreSat.StarTracker"
 #define BUS_NAME        INTERFACE_NAME
 #define OBJECT_PATH     "/org/OreSat/StarTracker"
-#define SIGNAL_THREAD_STACK_SIZE CO_COMMAND_SDO_BUFFER_SIZE*3
+#define SIGNAL_THREAD_STACK_SIZE FILE_TRANSFER_MAX_SIZE*3
 
 /* Static Variables */
 static pthread_t        signal_thread_id;
@@ -110,7 +112,7 @@ static int file_transfer_signal_cb(sd_bus_message *m, void *user_data, sd_bus_er
     if (r < 0)
         return -1;
 
-    OD_add_file(0x3002, 1, 2, filepath);
+    //APP_ODF_3002(filepath);
 
     return 0;
 }
@@ -129,9 +131,9 @@ static int data_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_
     if (r < 0)
         return -1;
 
-    OD_setData(0x3001, 1, &rotationY, sizeof(rotationY));
-    OD_setData(0x3001, 2, &rotationZ, sizeof(rotationZ));
-    OD_setData(0x3001, 3, &orientation, sizeof(orientation));
+    app_writeOD(0x3001, 1, &rotationY, sizeof(rotationY));
+    app_writeOD(0x3001, 2, &rotationZ, sizeof(rotationZ));
+    app_writeOD(0x3001, 3, &orientation, sizeof(orientation));
 
     return 0;
 }
