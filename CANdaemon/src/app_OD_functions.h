@@ -9,7 +9,7 @@
 #include "CANopen.h"
 #include "CO_driver.h"
 
-#define FILE_TRANSFER_MAX_SIZE 1000000
+#define FILE_TRANSFER_MAX_SIZE 6000
 #define FILE_NAME_MAX_LENGTH 50
 
 

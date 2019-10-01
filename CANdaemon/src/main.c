@@ -154,8 +154,10 @@ int main (int argc, char *argv[]) {
     bool_t nodeIdFromArgs = false;  /* True, if program arguments are used for CANopen Node Id */
     int nodeId = -1;                /* Use value from Object Dictionary or set to 1..127 by arguments */
     bool_t rebootEnable = false;    /* Configurable by arguments */
+#ifndef CANDAEMON
 #ifndef CO_SINGLE_THREAD
     bool_t commandEnable = false;   /* Configurable by arguments */
+#endif
 #endif
 
 #ifdef CANDAEMON

@@ -52,11 +52,11 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
             /* check if new data will fit in struct */
             if(odFileData->fileSize > FILE_TRANSFER_MAX_SIZE)
                 return CO_SDO_AB_OUT_OF_MEM; 
+            ODF_arg->lastSegment = true;
 
             ODF_arg->dataLength = odFileData->fileSize;
             ODF_arg->dataLengthTotal = odFileData->fileSize;
 
-            ODF_arg->lastSegment = true;
             memcpy(ODF_arg->data, &(odFileData->fileData[0]), ODF_arg->dataLength);
         }
         else if(ODF_arg->subIndex == 3) { /* filename size */

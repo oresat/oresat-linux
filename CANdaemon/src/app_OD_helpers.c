@@ -86,7 +86,7 @@ uint32_t app_readOD(uint16_t index, uint16_t subIndex, void *data, uint16_t *len
             ODattribute &= ~(CO_ODA_WRITEABLE | CO_ODA_RPDO_MAPABLE);
             ODattribute |= CO_ODA_READABLE;
             ODlength = sizeof(object->maxSubIndex);
-            ODdata = &object->maxSubIndex;
+            memcpy(&object->maxSubIndex, ODdata, sizeof(object->maxSubIndex));
         }
         else { /* array data */
             ODlength = object->length;
@@ -159,7 +159,7 @@ uint32_t app_writeOD(uint16_t index, uint16_t subIndex, void *data, uint16_t len
             ODattribute &= ~(CO_ODA_WRITEABLE | CO_ODA_RPDO_MAPABLE);
             ODattribute |= CO_ODA_READABLE;
             ODlength = sizeof(object->maxSubIndex);
-            ODdata = &object->maxSubIndex;
+            memcpy(ODdata, &object->maxSubIndex, sizeof(object->maxSubIndex));
         }
         else { /* array data */
             ODlength = object->length;
