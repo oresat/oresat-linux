@@ -78,7 +78,7 @@ int32_t get_file_data(const char *filePath, int8_t *fileData,  uint32_t *fileSiz
 *
 * @return 0 on sucess, and sets filePath,
 */
-int32_t get_file_path(char *directory, char *filePath);
+int32_t find_file(char *directory, char *filePath);
 
 
 #endif

@@ -11,6 +11,11 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <sys/sendfile.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 pthread_mutex_t APP_ODF_mtx;
 #define APP_LOCK_ODF()            {if(pthread_mutex_lock(&APP_ODF_mtx) != 0) CO_errExit("Mutex lock CO_OD_mtx failed");}
@@ -151,16 +156,16 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
                 return CO_SDO_AB_NO_DATA;
 
             /* get file path if a file is in the send folder */
-            char filePath[] = FILE_SEND_FOLDER;
-            strcat(filePath, odFileBuffer->fileName);
-            if(get_file_path(FILE_SEND_FOLDER, filePath) == 0) { /* files found */
+            char filePath[FILE_PATH_MAX_LENGTH];
+            if(find_file(FILE_SEND_FOLDER, filePath) == 0) { /* files found */
+                /* read in file info into buffers */
                 get_file_name(filePath, odFileBuffer->fileName);
                 get_file_data(filePath, odFileBuffer->fileData, &odFileBuffer->fileSize);
                 --odFileBuffer->filesAvalible;
                 printf("%s\n", filePath);
                 printf("%s\n", odFileBuffer->fileName);
             }
-            else
+            else /* no files */
                 ret = CO_SDO_AB_NO_DATA;
 
             ODF_arg->dataLength = sizeof(odFileBuffer->filesAvalible);
@@ -179,37 +184,45 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
     return ret;
 }
 
-int32_t get_file_path(char *directory, char *filePath){
-    int32_t ret = 0;
+int32_t find_file(char *directory, char *filePath){
+    int32_t ret = 1;
     DIR *d;
     struct dirent *dir;
+    int a, b;
 
     d = opendir(directory);
     if(d != NULL) { /* directory found */
-        dir = readdir(d);
-        
-        if(dir != NULL)
-            strncpy(filePath, dir->d_name, strlen(dir->d_name) + 1);
-        else { /* no files */
-            filePath[0] = '\0';
-            ret = 1;
-        }
+        while((dir = readdir(d)) != NULL) {
+            a = strncmp(dir->d_name, ".", sizeof(dir->d_name));
+            b = strncmp(dir->d_name, "..", sizeof(dir->d_name));
 
+            if(a == 0 && b == 0) {
+                /* file found, make path */
+                strncpy(filePath, directory, strlen(directory) + 1);
+                strncat(filePath, dir->d_name, strlen(dir->d_name) + 1);
+                ret = 0;
+                break;
+            }
+        }
+        
         closedir(d);
     }
-    else {/* directory not found */
-        filePath[0] = '\0';
+    else /* directory not found */
         ret = 1;
-    }
+
+    printf("file found: %s\n", filePath);
 
     return ret;
 }
+
 
 
 int32_t APP_ODF_3002(const char *filePath) {
     int32_t ret = 0;
     char fileName[FILE_PATH_MAX_LENGTH];
     char newFilePath[FILE_PATH_MAX_LENGTH] = FILE_SEND_FOLDER;
+    int source, dest;
+    struct stat stat_source;
 
     get_file_name(filePath, fileName);
     strcat(newFilePath, fileName);
@@ -218,17 +231,19 @@ int32_t APP_ODF_3002(const char *filePath) {
     printf("file removed: %s\n", filePath);
     printf("file add to: %s\n", newFilePath);
 
-    if(filePath == NULL || filePath[0] == '\0') {
+    if(filePath == NULL || filePath[0] == '\0')
         ret = 1;
-        printf("no data\n");
-    }
     else {
-        /* move file into send folder */
-        if(rename (filePath, newFilePath)) {
-            /* rename failed */
-            ret = 2;
-            printf("error rename failed\n");
-        }
+        /* copy file into send folder */
+
+        source = open(filePath, O_RDONLY, 0);
+        dest = open(newFilePath, O_WRONLY | O_CREAT, 0644);
+
+        fstat(source, &stat_source);
+        sendfile(dest, source, 0, stat_source.st_size);
+
+        close(source);
+        close(dest);
     }
 
     ++odSendFileBuffer.filesAvalible;
