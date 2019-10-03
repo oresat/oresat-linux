@@ -8,8 +8,8 @@ Description=Open Source CANopen implementation
 CreationTime=12:00AM
 CreationDate=01-01-0001
 CreatedBy=JP
-ModificationTime=1:33AM
-ModificationDate=09-19-2019
+ModificationTime=11:17AM
+ModificationDate=10-02-2019
 ModifiedBy=
 
 [DeviceInfo]
@@ -348,7 +348,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0009
 AccessType=const
-DefaultValue=OreSat Star Tracker
+DefaultValue=CANopenNode
 PDOMapping=0
 
 [1009]
@@ -357,7 +357,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0009
 AccessType=const
-DefaultValue=0
+DefaultValue=3.00
 PDOMapping=0
 
 [100A]
@@ -366,7 +366,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0009
 AccessType=const
-DefaultValue=0
+DefaultValue=3.00
 PDOMapping=0
 
 [1010]
@@ -1275,7 +1275,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0005
 AccessType=rw
-DefaultValue=3
+DefaultValue=0
 PDOMapping=0
 
 [1601sub1]
@@ -1284,7 +1284,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x30000110
+DefaultValue=0x00000000
 PDOMapping=0
 
 [1601sub2]
@@ -1293,7 +1293,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x30000210
+DefaultValue=0x00000000
 PDOMapping=0
 
 [1601sub3]
@@ -1302,7 +1302,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x30000310
+DefaultValue=0x00000000
 PDOMapping=0
 
 [1601sub4]
@@ -3771,7 +3771,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0005
 AccessType=rw
-DefaultValue=3
+DefaultValue=0
 PDOMapping=0
 
 [1A01sub1]
@@ -3780,7 +3780,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x30010110
+DefaultValue=0x00000000
 PDOMapping=0
 
 [1A01sub2]
@@ -3789,7 +3789,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x30010210
+DefaultValue=0x00000000
 PDOMapping=0
 
 [1A01sub3]
@@ -3798,7 +3798,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x30010310
+DefaultValue=0x00000000
 PDOMapping=0
 
 [1A01sub4]
@@ -3858,7 +3858,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0005
 AccessType=rw
-DefaultValue=2
+DefaultValue=0
 PDOMapping=0
 
 [1A02sub1]
@@ -3867,7 +3867,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x30030510
+DefaultValue=0x00000000
 PDOMapping=0
 
 [1A02sub2]
@@ -3876,7 +3876,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x30030610
+DefaultValue=0x00000000
 PDOMapping=0
 
 [1A02sub3]
@@ -5538,9 +5538,9 @@ SupportedObjects=82
 77=0x241E
 78=0x241F
 79=0x2420
-80=0x3000
-81=0x3001
-82=0x3002
+80=0x3001
+81=0x3002
+82=0x3100
 
 [2100]
 ParameterName=Error status bits
@@ -11428,53 +11428,11 @@ AccessType=rww
 DefaultValue=0
 PDOMapping=1
 
-[3000]
-ParameterName=Orientation Global
-ObjectType=0x9
-;StorageLocation=RAM
-SubNumber=0x4
-
-[3000sub0]
-ParameterName=max sub-index
-ObjectType=0x7
-;StorageLocation=RAM
-DataType=0x0005
-AccessType=ro
-DefaultValue=3
-PDOMapping=0
-
-[3000sub1]
-ParameterName=Rotation Y
-ObjectType=0x7
-;StorageLocation=RAM
-DataType=0x0003
-AccessType=rw
-DefaultValue=0
-PDOMapping=1
-
-[3000sub2]
-ParameterName=Rotation Z
-ObjectType=0x7
-;StorageLocation=RAM
-DataType=0x0003
-AccessType=rw
-DefaultValue=0
-PDOMapping=1
-
-[3000sub3]
-ParameterName=Rotation Camera
-ObjectType=0x7
-;StorageLocation=RAM
-DataType=0x0003
-AccessType=rw
-DefaultValue=0
-PDOMapping=1
-
 [3001]
-ParameterName=Orientation
+ParameterName=Receive File
 ObjectType=0x9
 ;StorageLocation=RAM
-SubNumber=0x4
+SubNumber=0x5
 
 [3001sub0]
 ParameterName=max sub-index
@@ -11482,38 +11440,47 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0005
 AccessType=ro
-DefaultValue=3
+DefaultValue=4
 PDOMapping=0
 
 [3001sub1]
-ParameterName=Rotation Y
+ParameterName=File Name
 ObjectType=0x7
 ;StorageLocation=RAM
-DataType=0x0003
-AccessType=rw
+DataType=0x000F
+AccessType=wo
 DefaultValue=0
-PDOMapping=1
+PDOMapping=0
 
 [3001sub2]
-ParameterName=Rotation Z
+ParameterName=File Data
 ObjectType=0x7
 ;StorageLocation=RAM
-DataType=0x0003
-AccessType=rw
+DataType=0x000F
+AccessType=wo
 DefaultValue=0
-PDOMapping=1
+PDOMapping=0
 
 [3001sub3]
-ParameterName=Rotation Camera
+ParameterName=Files Avalible
 ObjectType=0x7
 ;StorageLocation=RAM
-DataType=0x0003
-AccessType=rw
+DataType=0x0005
+AccessType=wo
 DefaultValue=0
-PDOMapping=1
+PDOMapping=0
+
+[3001sub4]
+ParameterName=Save File
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x0005
+AccessType=wo
+DefaultValue=0
+PDOMapping=0
 
 [3002]
-ParameterName=File Transfer
+ParameterName=Send File
 ObjectType=0x9
 ;StorageLocation=RAM
 SubNumber=0x5
@@ -11528,25 +11495,58 @@ DefaultValue=4
 PDOMapping=0
 
 [3002sub1]
-ParameterName=File Size
+ParameterName=File Name
 ObjectType=0x7
 ;StorageLocation=RAM
-DataType=0x0004
-AccessType=rw
+DataType=0x000F
+AccessType=ro
 DefaultValue=0
 PDOMapping=0
 
 [3002sub2]
-ParameterName=File data
+ParameterName=File Data
 ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x000F
-AccessType=rw
+AccessType=ro
 DefaultValue=0
 PDOMapping=0
 
 [3002sub3]
-ParameterName=File Name Length
+ParameterName=Files Avalible
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x0005
+AccessType=ro
+DefaultValue=0
+PDOMapping=0
+
+[3002sub4]
+ParameterName=Load file
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x0005
+AccessType=ro
+DefaultValue=0
+PDOMapping=0
+
+[3100]
+ParameterName=Orienation
+ObjectType=0x9
+;StorageLocation=RAM
+SubNumber=0x4
+
+[3100sub0]
+ParameterName=max sub-index
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x0005
+AccessType=ro
+DefaultValue=3
+PDOMapping=0
+
+[3100sub1]
+ParameterName=Rotation Y
 ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0003
@@ -11554,11 +11554,20 @@ AccessType=rw
 DefaultValue=0
 PDOMapping=0
 
-[3002sub4]
-ParameterName=File Name
+[3100sub2]
+ParameterName=Rotation Z
 ObjectType=0x7
 ;StorageLocation=RAM
-DataType=0x000F
+DataType=0x0003
+AccessType=rw
+DefaultValue=0
+PDOMapping=0
+
+[3100sub3]
+ParameterName=Rotation Camera
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x0003
 AccessType=rw
 DefaultValue=0
 PDOMapping=0

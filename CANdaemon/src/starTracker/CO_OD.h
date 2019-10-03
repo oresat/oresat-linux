@@ -223,25 +223,26 @@
                DOMAIN         plot;
                UNSIGNED32     triggerTime;
                }              OD_trace_t;
-/*3000      */ typedef struct {
-               UNSIGNED8      maxSubIndex;
-               INTEGER16      rotationY;
-               INTEGER16      rotationZ;
-               INTEGER16      rotationCamera;
-               }              OD_orientationGlobal_t;
 /*3001      */ typedef struct {
                UNSIGNED8      maxSubIndex;
+               DOMAIN         fileName;
+               DOMAIN         fileData;
+               UNSIGNED8      filesAvalible;
+               UNSIGNED8      saveFile;
+               }              OD_receiveFile_t;
+/*3002      */ typedef struct {
+               UNSIGNED8      maxSubIndex;
+               DOMAIN         fileName;
+               DOMAIN         fileData;
+               UNSIGNED8      filesAvalible;
+               UNSIGNED8      loadFile;
+               }              OD_sendFile_t;
+/*3100      */ typedef struct {
+               UNSIGNED8      maxSubIndex;
                INTEGER16      rotationY;
                INTEGER16      rotationZ;
                INTEGER16      rotationCamera;
-               }              OD_orientation_t;
-/*3002      */ typedef struct {
-               UNSIGNED8      maxSubIndex;
-               INTEGER32      fileSize;
-               DOMAIN         fileData;
-               INTEGER16      fileNameLength;
-               DOMAIN         fileName;
-               }              OD_fileTransfer_t;
+               }              OD_orienation_t;
 
 /*******************************************************************************
    TYPE DEFINITIONS FOR OBJECT DICTIONARY INDEXES
@@ -1972,30 +1973,31 @@
         #define OD_2420_5_trace_plot                                5
         #define OD_2420_6_trace_triggerTime                         6
 
-/*3000 */
-        #define OD_3000_orientationGlobal                           0x3000
-
-        #define OD_3000_0_orientationGlobal_maxSubIndex             0
-        #define OD_3000_1_orientationGlobal_rotationY               1
-        #define OD_3000_2_orientationGlobal_rotationZ               2
-        #define OD_3000_3_orientationGlobal_rotationCamera          3
-
 /*3001 */
-        #define OD_3001_orientation                                 0x3001
+        #define OD_3001_receiveFile                                 0x3001
 
-        #define OD_3001_0_orientation_maxSubIndex                   0
-        #define OD_3001_1_orientation_rotationY                     1
-        #define OD_3001_2_orientation_rotationZ                     2
-        #define OD_3001_3_orientation_rotationCamera                3
+        #define OD_3001_0_receiveFile_maxSubIndex                   0
+        #define OD_3001_1_receiveFile_fileName                      1
+        #define OD_3001_2_receiveFile_fileData                      2
+        #define OD_3001_3_receiveFile_filesAvalible                 3
+        #define OD_3001_4_receiveFile_saveFile                      4
 
 /*3002 */
-        #define OD_3002_fileTransfer                                0x3002
+        #define OD_3002_sendFile                                    0x3002
 
-        #define OD_3002_0_fileTransfer_maxSubIndex                  0
-        #define OD_3002_1_fileTransfer_fileSize                     1
-        #define OD_3002_2_fileTransfer_fileData                     2
-        #define OD_3002_3_fileTransfer_fileNameLength               3
-        #define OD_3002_4_fileTransfer_fileName                     4
+        #define OD_3002_0_sendFile_maxSubIndex                      0
+        #define OD_3002_1_sendFile_fileName                         1
+        #define OD_3002_2_sendFile_fileData                         2
+        #define OD_3002_3_sendFile_filesAvalible                    3
+        #define OD_3002_4_sendFile_loadFile                         4
+
+/*3100 */
+        #define OD_3100_orienation                                  0x3100
+
+        #define OD_3100_0_orienation_maxSubIndex                    0
+        #define OD_3100_1_orienation_rotationY                      1
+        #define OD_3100_2_orienation_rotationZ                      2
+        #define OD_3100_3_orienation_rotationCamera                 3
 
 /*6000 */
         #define OD_6000_readInput8Bit                               0x6000
@@ -2077,9 +2079,9 @@ struct sCO_OD_RAM{
 /*1005      */ UNSIGNED32     COB_ID_SYNCMessage;
 /*1006      */ UNSIGNED32     communicationCyclePeriod;
 /*1007      */ UNSIGNED32     synchronousWindowLength;
-/*1008      */ VISIBLE_STRING manufacturerDeviceName[19];
-/*1009      */ VISIBLE_STRING manufacturerHardwareVersion[1];
-/*100A      */ VISIBLE_STRING manufacturerSoftwareVersion[1];
+/*1008      */ VISIBLE_STRING manufacturerDeviceName[11];
+/*1009      */ VISIBLE_STRING manufacturerHardwareVersion[4];
+/*100A      */ VISIBLE_STRING manufacturerSoftwareVersion[4];
 /*1010      */ UNSIGNED32      storeParameters[1];
 /*1011      */ UNSIGNED32      restoreDefaultParameters[1];
 /*1014      */ UNSIGNED32     COB_ID_EMCY;
@@ -2113,9 +2115,9 @@ struct sCO_OD_RAM{
 /*2301      */ OD_traceConfig_t traceConfig[32];
 /*2400      */ UNSIGNED8      traceEnable;
 /*2401      */ OD_trace_t      trace[32];
-/*3000      */ OD_orientationGlobal_t orientationGlobal;
-/*3001      */ OD_orientation_t orientation;
-/*3002      */ OD_fileTransfer_t fileTransfer;
+/*3001      */ OD_receiveFile_t receiveFile;
+/*3002      */ OD_sendFile_t   sendFile;
+/*3100      */ OD_orienation_t orienation;
 /*6000      */ UNSIGNED8       readInput8Bit[8];
 /*6200      */ UNSIGNED8       writeOutput8Bit[8];
 /*6401      */ INTEGER16       readAnalogueInput16Bit[12];
@@ -2167,15 +2169,15 @@ extern struct sCO_OD_EEPROM CO_OD_EEPROM;
 
 /*1008, Data Type: VISIBLE_STRING */
         #define OD_manufacturerDeviceName                           CO_OD_RAM.manufacturerDeviceName
-        #define ODL_manufacturerDeviceName_stringLength             19
+        #define ODL_manufacturerDeviceName_stringLength             11
 
 /*1009, Data Type: VISIBLE_STRING */
         #define OD_manufacturerHardwareVersion                      CO_OD_RAM.manufacturerHardwareVersion
-        #define ODL_manufacturerHardwareVersion_stringLength        1
+        #define ODL_manufacturerHardwareVersion_stringLength        4
 
 /*100A, Data Type: VISIBLE_STRING */
         #define OD_manufacturerSoftwareVersion                      CO_OD_RAM.manufacturerSoftwareVersion
-        #define ODL_manufacturerSoftwareVersion_stringLength        1
+        #define ODL_manufacturerSoftwareVersion_stringLength        4
 
 /*1010, Data Type: UNSIGNED32, Array[1] */
         #define OD_storeParameters                                  CO_OD_RAM.storeParameters
@@ -2306,14 +2308,14 @@ extern struct sCO_OD_EEPROM CO_OD_EEPROM;
 /*2401, Data Type: trace_t */
         #define OD_trace                                            CO_OD_RAM.trace
 
-/*3000, Data Type: orientationGlobal_t */
-        #define OD_orientationGlobal                                CO_OD_RAM.orientationGlobal
+/*3001, Data Type: receiveFile_t */
+        #define OD_receiveFile                                      CO_OD_RAM.receiveFile
 
-/*3001, Data Type: orientation_t */
-        #define OD_orientation                                      CO_OD_RAM.orientation
+/*3002, Data Type: sendFile_t */
+        #define OD_sendFile                                         CO_OD_RAM.sendFile
 
-/*3002, Data Type: fileTransfer_t */
-        #define OD_fileTransfer                                     CO_OD_RAM.fileTransfer
+/*3100, Data Type: orienation_t */
+        #define OD_orienation                                       CO_OD_RAM.orienation
 
 /*6000, Data Type: UNSIGNED8, Array[8] */
         #define OD_readInput8Bit                                    CO_OD_RAM.readInput8Bit
