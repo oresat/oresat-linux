@@ -137,9 +137,9 @@ static int data_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_
     if (r < 0)
         return -1;
 
-    app_writeOD(0x3100, 1, &rotationY, sizeof(rotationY));
-    app_writeOD(0x3100, 2, &rotationZ, sizeof(rotationZ));
-    app_writeOD(0x3100, 3, &orientation, sizeof(orientation));
+    app_writeOD(0x3101, 1, &rotationY, sizeof(rotationY));
+    app_writeOD(0x3101, 2, &rotationZ, sizeof(rotationZ));
+    app_writeOD(0x3101, 3, &orientation, sizeof(orientation));
 
     return 0;
 }

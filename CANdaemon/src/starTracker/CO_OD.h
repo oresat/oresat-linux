@@ -129,7 +129,7 @@
 /*******************************************************************************
    OBJECT DICTIONARY
 *******************************************************************************/
-   #define CO_OD_NoOfElements             172
+   #define CO_OD_NoOfElements             173
 
 
 /*******************************************************************************
@@ -238,6 +238,11 @@
                UNSIGNED8      loadFile;
                }              OD_sendFile_t;
 /*3100      */ typedef struct {
+               UNSIGNED8      maxSubIndex;
+               INTEGER8       currentState;
+               INTEGER8       getLatestImage;
+               }              OD_starTrackerStatusControl_t;
+/*3101      */ typedef struct {
                UNSIGNED8      maxSubIndex;
                INTEGER16      rotationY;
                INTEGER16      rotationZ;
@@ -1992,12 +1997,19 @@
         #define OD_3002_4_sendFile_loadFile                         4
 
 /*3100 */
-        #define OD_3100_orienation                                  0x3100
+        #define OD_3100_starTrackerStatusControl                    0x3100
 
-        #define OD_3100_0_orienation_maxSubIndex                    0
-        #define OD_3100_1_orienation_rotationY                      1
-        #define OD_3100_2_orienation_rotationZ                      2
-        #define OD_3100_3_orienation_rotationCamera                 3
+        #define OD_3100_0_starTrackerStatusControl_maxSubIndex      0
+        #define OD_3100_1_starTrackerStatusControl_currentState     1
+        #define OD_3100_2_starTrackerStatusControl_getLatestImage   2
+
+/*3101 */
+        #define OD_3101_orienation                                  0x3101
+
+        #define OD_3101_0_orienation_maxSubIndex                    0
+        #define OD_3101_1_orienation_rotationY                      1
+        #define OD_3101_2_orienation_rotationZ                      2
+        #define OD_3101_3_orienation_rotationCamera                 3
 
 /*6000 */
         #define OD_6000_readInput8Bit                               0x6000
@@ -2117,7 +2129,8 @@ struct sCO_OD_RAM{
 /*2401      */ OD_trace_t      trace[32];
 /*3001      */ OD_receiveFile_t receiveFile;
 /*3002      */ OD_sendFile_t   sendFile;
-/*3100      */ OD_orienation_t orienation;
+/*3100      */ OD_starTrackerStatusControl_t starTrackerStatusControl;
+/*3101      */ OD_orienation_t orienation;
 /*6000      */ UNSIGNED8       readInput8Bit[8];
 /*6200      */ UNSIGNED8       writeOutput8Bit[8];
 /*6401      */ INTEGER16       readAnalogueInput16Bit[12];
@@ -2314,7 +2327,10 @@ extern struct sCO_OD_EEPROM CO_OD_EEPROM;
 /*3002, Data Type: sendFile_t */
         #define OD_sendFile                                         CO_OD_RAM.sendFile
 
-/*3100, Data Type: orienation_t */
+/*3100, Data Type: starTrackerStatusControl_t */
+        #define OD_starTrackerStatusControl                         CO_OD_RAM.starTrackerStatusControl
+
+/*3101, Data Type: orienation_t */
         #define OD_orienation                                       CO_OD_RAM.orienation
 
 /*6000, Data Type: UNSIGNED8, Array[8] */

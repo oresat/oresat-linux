@@ -1763,7 +1763,14 @@
       <CANopenSubObject subIndex="04" name="Load file" objectType="VAR" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
       <accessFunctionPreCode />
     </CANopenObject>
-    <CANopenObject index="3100" name="Orienation" objectType="REC" memoryType="RAM" dataType="0x00" accessType="rw" PDOmapping="no" defaultValue="" subNumber="4" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+    <CANopenObject index="3100" name="Star Tracker Status/Control" objectType="REC" memoryType="RAM" dataType="0x03" accessType="rw" PDOmapping="no" defaultValue="" subNumber="3" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+      <description />
+      <CANopenSubObject subIndex="00" name="max sub-index" objectType="VAR" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="2" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="01" name="Current State" objectType="VAR" dataType="0x02" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="02" name="Get Latest Image" objectType="VAR" dataType="0x02" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <accessFunctionPreCode />
+    </CANopenObject>
+    <CANopenObject index="3101" name="Orienation" objectType="REC" memoryType="RAM" dataType="0x05" accessType="rw" PDOmapping="no" defaultValue="" subNumber="4" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
       <description />
       <CANopenSubObject subIndex="00" name="max sub-index" objectType="VAR" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="3" TPDOdetectCOS="false" />
       <CANopenSubObject subIndex="01" name="Rotation Y" objectType="VAR" dataType="0x03" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
