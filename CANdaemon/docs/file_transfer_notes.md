@@ -2,7 +2,7 @@
 For the linux cards on OreSat there are two object dictionary entry to help with file transfer. The 0x3001 record deals with receiving files to the CANdaemon and the 0x3002 record deals with sending files from the CANdaemon.
 
 ## Send a file (OD entry 0x3001)
-Subindexes for record
+### Subindexes for record
 - 0: Default. Size of record.
 - 1: File name as a DOMAIN type.
 - 2: File data as a DOMAIN type.
@@ -14,7 +14,7 @@ Anything that wants a file sent to the master node would call APP_ODF_3002() and
 
 
 ## Recieve a file (OD entry 0x3002)
-Subindexes for record
+### Subindexes for record
 - 0: Default. Size of record.
 - 1: File name as a DOMAIN type
 - 2: File data as a DOMAIN type
