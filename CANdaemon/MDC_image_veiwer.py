@@ -36,6 +36,7 @@ def readFileName():
     fileNameRaw = reg.group(1)
     fileNameRaw = fileNameRaw[:-2] # remove trailing 00 from '\0'
     fileNameRaw = fileNameRaw.replace(" ","") # remove all spaces
+    fileNameRaw = fileNameRaw.split() # remove any trailing whitespace
     fileNameRaw = binascii.unhexlify(fileNameRaw) #make binary char string
 
     fileName = fileNameRaw.decode('ascii') # make string
