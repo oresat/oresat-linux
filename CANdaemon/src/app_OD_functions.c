@@ -190,13 +190,16 @@ int32_t find_file(char *directory, char *filePath){
     struct dirent *dir;
     int a, b;
 
+    printf("looking in directory: %s\n", directory);
+
     d = opendir(directory);
     if(d != NULL) { /* directory found */
         while((dir = readdir(d)) != NULL) {
+            printf("file found\n");
             a = strncmp(dir->d_name, ".", sizeof(dir->d_name));
             b = strncmp(dir->d_name, "..", sizeof(dir->d_name));
 
-            if(a == 0 && b == 0) {
+            if(a != 0 && b != 0) {
                 /* file found, make path */
                 strncpy(filePath, directory, strlen(directory) + 1);
                 strncat(filePath, dir->d_name, strlen(dir->d_name) + 1);
