@@ -162,8 +162,6 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
                 get_file_name(filePath, odFileBuffer->fileName);
                 get_file_data(filePath, odFileBuffer->fileData, &odFileBuffer->fileSize);
                 --odFileBuffer->filesAvalible;
-                printf("%s\n", filePath);
-                printf("%s\n", odFileBuffer->fileName);
             }
             else /* no files */
                 ret = CO_SDO_AB_NO_DATA;
@@ -190,12 +188,9 @@ int32_t find_file(char *directory, char *filePath){
     struct dirent *dir;
     int a, b;
 
-    printf("looking in directory: %s\n", directory);
-
     d = opendir(directory);
     if(d != NULL) { /* directory found */
         while((dir = readdir(d)) != NULL) {
-            printf("file found\n");
             a = strncmp(dir->d_name, ".", sizeof(dir->d_name));
             b = strncmp(dir->d_name, "..", sizeof(dir->d_name));
 
@@ -213,8 +208,6 @@ int32_t find_file(char *directory, char *filePath){
     else /* directory not found */
         ret = 1;
 
-    printf("file found: %s\n", filePath);
-
     return ret;
 }
 
@@ -229,10 +222,6 @@ int32_t APP_ODF_3002(const char *filePath) {
 
     get_file_name(filePath, fileName);
     strcat(newFilePath, fileName);
-
-    printf("file name: %s\n", fileName);
-    printf("file removed: %s\n", filePath);
-    printf("file add to: %s\n", newFilePath);
 
     if(filePath == NULL || filePath[0] == '\0')
         ret = 1;
