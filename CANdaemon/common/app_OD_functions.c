@@ -86,13 +86,10 @@ CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg) {
             /* save file to recieve folder */
             char filePath[] = FILE_RECEIVE_FOLDER;
             strcat(filePath, odFileBuffer->fileName);
-            printf("%s\n", filePath);
             FILE *f = fopen(filePath, "wb");
             if(f != NULL) {
                 uint32_t temp = fwrite(odFileBuffer->fileData, sizeof(char), odFileBuffer->fileSize, f);
                 fclose(f);
-
-                printf("%d\n", temp);
 
                 /* clear buffer */
                 odFileBuffer->fileSize = 0;

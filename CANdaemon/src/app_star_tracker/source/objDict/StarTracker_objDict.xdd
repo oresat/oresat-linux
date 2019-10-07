@@ -4605,7 +4605,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="0x00000000" />
+            <defaultValue value="0x00000001" />
           </parameter>
           <parameter uniqueID="UID_PARAM_2100" access="read">
             <label lang="en">Error status bits</label>

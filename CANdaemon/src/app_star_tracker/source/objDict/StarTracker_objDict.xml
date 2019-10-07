@@ -826,7 +826,7 @@
       <CANopenSubObject subIndex="08" name="mapped object 8" objectType="VAR" dataType="0x07" accessType="rw" PDOmapping="no" defaultValue="0x00000000" TPDOdetectCOS="false" />
       <accessFunctionPreCode />
     </CANopenObject>
-    <CANopenObject index="1f80" name="NMT startup" objectType="VAR" memoryType="RAM" dataType="0x07" accessType="rw" PDOmapping="no" defaultValue="0x00000000" subNumber="0" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+    <CANopenObject index="1f80" name="NMT startup" objectType="VAR" memoryType="RAM" dataType="0x07" accessType="rw" PDOmapping="no" defaultValue="0x00000001" subNumber="0" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
       <description />
       <accessFunctionPreCode />
     </CANopenObject>
