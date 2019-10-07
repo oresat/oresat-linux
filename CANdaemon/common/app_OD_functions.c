@@ -58,12 +58,12 @@ CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg) {
             if(ODF_arg->dataLength > FILE_PATH_MAX_LENGTH)
                 return CO_SDO_AB_OUT_OF_MEM; 
 
-            /* no null pointer */
-            if(ODF_arg->data[ODF_arg->dataLength-1] != '\0')
-                return CO_SDO_AB_GENERAL; 
-
             /* write data */
             memcpy(odFileBuffer->fileName, ODF_arg->data, ODF_arg->dataLength);
+
+            /* no null char */
+            if(ODF_arg->data[ODF_arg->dataLength-1] != '\0')
+                ODF_arg->data[ODF_arg->dataLength] = '\0';
         }
         else if(ODF_arg->subIndex == 2) { /* file data */
             /* check if new data will fit in struct */
@@ -80,20 +80,23 @@ CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg) {
         else if(ODF_arg->subIndex == 4) { /* save file */
             /* error, no data to save */
             if(odFileBuffer->fileSize == 0 || odFileBuffer->fileName[0] == '\0') 
-                return CO_SDO_AB_NO_DATA; 
+                return CO_SDO_AB_NO_DATA;
+
 
             /* save file to recieve folder */
             char filePath[] = FILE_RECEIVE_FOLDER;
             strcat(filePath, odFileBuffer->fileName);
-            FILE *f = fopen(odFileBuffer->fileName, "wb");
+            printf("%s\n", filePath);
+            FILE *f = fopen(filePath, "wb");
             if(f != NULL) {
-                fwrite(odFileBuffer->fileData, sizeof(char), odFileBuffer->fileSize, f);
+                uint32_t temp = fwrite(odFileBuffer->fileData, sizeof(char), odFileBuffer->fileSize, f);
                 fclose(f);
+
+                printf("%d\n", temp);
 
                 /* clear buffer */
                 odFileBuffer->fileSize = 0;
                 odFileBuffer->fileName[0] = '\0';
-                ++odFileBuffer->filesAvalible;
             }
             else
                 return CO_SDO_AB_GENERAL; 
