@@ -29,7 +29,7 @@
 #include "CO_OD_storage.h"
 #include "CO_Linux_tasks.h"
 #include "CO_time.h"
-#include "application.h"
+#include "candaemon.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -255,13 +255,11 @@ int main (int argc, char *argv[]) {
                     CO_errExit("Program init - rt_thread set scheduler failed");
             }
 
-            /* Execute optional additional application code */
-            app_programStart();
+            CD_programStart();
         }
 
 
-        /* Execute optional additional application code */
-        app_communicationReset();
+        CD_communicationReset();
 
 
         /* start CAN */
@@ -297,8 +295,7 @@ int main (int argc, char *argv[]) {
 
                 /* code was processed in the above function. Additional code process below */
 
-                /* Execute optional additional application code */
-                app_programAsync(timer1msDiff);
+                CD_programAsync(timer1msDiff);
 
                 CO_OD_storage_autoSave(&odStorAuto, CO_timer1ms, 60000);
             }
@@ -318,8 +315,7 @@ int main (int argc, char *argv[]) {
         CO_errExit("Program end - pthread_join failed");
     }
 
-    /* Execute optional additional application code */
-    app_programEnd();
+    CD_programEnd();
 
     /* Store CO_OD_EEPROM */
     CO_OD_storage_autoSave(&odStorAuto, 0, 0);
@@ -372,8 +368,7 @@ static void* rt_thread(void* arg) {
             }
 #endif
 
-            /* Execute optional additional application code */
-            app_program1ms();
+            CD_program1ms();
 
             /* Detect timer large overflow */
             if(OD_performance[ODA_performance_timerCycleMaxTime] > TMR_TASK_OVERFLOW_US && rtPriority > 0 && CO->CANmodule[0]->CANnormal) {

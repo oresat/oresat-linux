@@ -58,9 +58,7 @@ SOURCES =	$(COMMON_SRC)/CO_driver.c           \
 		$(STACK_SRC)/CO_LSSslave.c          \
 		$(STACK_SRC)/CO_trace.c             \
 		$(CANOPENNODE_SRC)/CANopen.c        \
-		$(COMMON_SRC)/CO_time.c             \
-		$(COMMON_SRC)/app_OD_functions.c    \
-		$(COMMON_SRC)/app_OD_helpers.c
+		$(COMMON_SRC)/CO_time.c
 
 CANOPENCOMM_SOURCES = $(CANOPENCOMM_SRC)/CO_command.c        \
 		      $(CANOPENCOMM_SRC)/CO_master.c         \
@@ -73,6 +71,9 @@ CANOPEND_SOURCES = $(SOURCES)                       \
 
 CANDAEMON_SOURCES = $(SOURCES)                      \
 		    $(APP_SRC)/application.c        \
+		    $(COMMON_SRC)/candaemon.c        \
+		    $(COMMON_SRC)/app_OD_functions.c \
+		    $(COMMON_SRC)/app_OD_helpers.c   \
 		    $(OBJDICT_SRC)/CO_OD.c          \
 		    $(COMMON_SRC)/main.c
 
