@@ -18,12 +18,11 @@ The CANdaemon is [CANopenSocket], but with dbus interfaces to commicate with oth
 - Easy to add more DBus clients to control new processes.
 
 ## Additions to CANopenSocket
-- The Network Manager Node is now a option; normally turn off now, but for testing, it can be useful to turn on.
+- The Network Manager Node is now off;
 - DBus interface (use sd-bus; systemd dbus system)
     - Has a extra thread for reading from data from the CAN Object Dictionary and interfacing with all other processes/daemons over DBus. 
     - For each process that the CANdaemon will interface with, there is a thread to read signals/properties from that dbus service and add that data to the CAN Object Dictionary.
-- Multiple compile options for having multiple different versions; like a GPS version, StarTracker version, etc.
-    - Each version has a directory under src/ that contains an unique Object Dictionary and all Object Dictionary to DBus interface threads/functions.
+    - Each app has a directory under src/ that contains the makefile, an unique Object Dictionary, and all Object Dictionary to DBus interface threads/functions.
 
 ## Dependices
 - For beaglebone black: systemd-dev, make, gcc, pkg-source 
@@ -31,9 +30,13 @@ The CANdaemon is [CANopenSocket], but with dbus interfaces to commicate with oth
 ## Settup
 - `git submodules init`
 - `git submodules update`
-- edit the makefile setting as needed
+- `cd src/<app folder>`
 - `make clean candaemon`
 - `./candaemon`
+
+## Making a new app
+- `cp -r src/app_template src/app_<new_app_name>`
+- modify appilcation.* as needed
 
 ## Useful References
 - [CANopenSocket]
