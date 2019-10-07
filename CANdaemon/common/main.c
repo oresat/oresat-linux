@@ -41,13 +41,7 @@
 #include <net/if.h>
 #include <linux/reboot.h>
 #include <sys/reboot.h>
-
-#ifndef CO_SINGLE_THREAD
-#ifndef CANDAEMON
-#include "CO_command.h"
-#endif
 #include <pthread.h>
-#endif
 
 
 #define NSEC_PER_SEC            (1000000000)    /* The number of nanoseconds per second. */
@@ -62,9 +56,7 @@ volatile uint16_t           CO_timer1ms = 0U;
 
 /* Mutex is locked, when CAN is not valid (configuration state). May be used
  *  from other threads. RT threads may use CO->CANmodule[0]->CANnormal instead. */
-#ifndef CO_SINGLE_THREAD
 pthread_mutex_t             CO_CAN_VALID_mtx = PTHREAD_MUTEX_INITIALIZER;
-#endif
 
 /* Other variables and objects */
 static int                  rtPriority = -1;    /* Real time priority, configurable by arguments. (-1=RT disabled) */
@@ -103,41 +95,6 @@ void CO_error(const uint32_t info) {
 }
 
 
-#ifndef CANDAEMON
-static void printUsage(char *progName) {
-fprintf(stderr,
-"Usage: %s <CAN device name> [options]\n", progName);
-fprintf(stderr,
-"\n"
-"Options:\n"
-"  -i <Node ID>        CANopen Node-id (1..127). If not specified, value from\n"
-"                      Object dictionary (0x2101) is used.\n"
-"  -p <RT priority>    Realtime priority of RT task (RT disabled by default).\n"
-"  -r                  Enable reboot on CANopen NMT reset_node command. \n"
-"  -s <ODstorage file> Set Filename for OD storage ('od_storage' is default).\n"
-"  -a <ODstorageAuto>  Set Filename for automatic storage variables from\n"
-"                      Object dictionary. ('od_storage_auto' is default).\n");
-#ifndef CO_SINGLE_THREAD
-fprintf(stderr,
-"  -c <Socket path>    Enable command interface for master functionality. \n"
-"                      If socket path is specified as empty string \"\",\n"
-"                      default '%s' will be used.\n"
-"                      Note that location of socket path may affect security.\n"
-"                      See 'canopencomm/canopencomm --help' for more info.\n"
-, CO_command_socketPath);
-#endif
-fprintf(stderr,
-"\n"
-"LICENSE\n"
-"    This program is part of CANopenSocket and can be downloaded from:\n"
-"    https://github.com/CANopenNode/CANopenSocket\n"
-"    Permission is granted to copy, distribute and/or modify this document\n"
-"    under the terms of the GNU General Public License, Version 2.\n"
-"\n");
-}
-#endif
-
-
 /******************************************************************************/
 /** Mainline and RT thread                                                   **/
 /******************************************************************************/
@@ -145,67 +102,22 @@ int main (int argc, char *argv[]) {
     CO_NMT_reset_cmd_t reset = CO_RESET_NOT;
     CO_ReturnError_t odStorStatus_rom, odStorStatus_eeprom;
     int CANdevice0Index = 0;
-#ifndef CANDAEMON
-    int opt;
-#endif
     bool_t firstRun = true;
 
     char* CANdevice = NULL;         /* CAN device, configurable by arguments. */
-    bool_t nodeIdFromArgs = false;  /* True, if program arguments are used for CANopen Node Id */
-    int nodeId = -1;                /* Use value from Object Dictionary or set to 1..127 by arguments */
-    bool_t rebootEnable = false;    /* Configurable by arguments */
-#ifndef CANDAEMON
-#ifndef CO_SINGLE_THREAD
-    bool_t commandEnable = false;   /* Configurable by arguments */
-#endif
-#endif
+    int nodeId = OD_CANNodeID;      /* Use value from Object Dictionary or set to 1..127 by arguments */
 
-#ifdef CANDAEMON
     if(argc < 2 || strcmp(argv[1], "--help") == 0){
         fprintf(stderr, "Usage: %s <CAN device name>\n", argv[0]);
         exit(EXIT_SUCCESS);
     }
-    nodeId = OD_CANNodeID;
-#else
-    if(argc < 2 || strcmp(argv[1], "--help") == 0){
-        printUsage(argv[0]);
-        exit(EXIT_SUCCESS);
-    }
-
-
-    /* Get program options */
-    while((opt = getopt(argc, argv, "i:p:rc:s:a:")) != -1) {
-        switch (opt) {
-            case 'i':
-                nodeId = strtol(optarg, NULL, 0);
-                nodeIdFromArgs = true;
-                break;
-            case 'p': rtPriority = strtol(optarg, NULL, 0); break;
-            case 'r': rebootEnable = true;                  break;
-#ifndef CO_SINGLE_THREAD
-            case 'c':
-                /* In case of empty string keep default name, just enable interface. */
-                if(strlen(optarg) != 0) {
-                    CO_command_socketPath = optarg;
-                }
-                commandEnable = true;
-                break;
-#endif
-            case 's': odStorFile_rom = optarg;              break;
-            case 'a': odStorFile_eeprom = optarg;           break;
-            default:
-                printUsage(argv[0]);
-                exit(EXIT_FAILURE);
-        }
-    }
-#endif
 
     if(optind < argc) {
         CANdevice = argv[optind];
         CANdevice0Index = if_nametoindex(CANdevice);
     }
 
-    if(nodeIdFromArgs && (nodeId < 1 || nodeId > 127)) {
+    if(nodeId < 1 || nodeId > 127) {
         fprintf(stderr, "Wrong node ID (%d)\n", nodeId);
         exit(EXIT_FAILURE);
     }
@@ -263,10 +175,8 @@ int main (int argc, char *argv[]) {
         printf("%s - communication reset ...\n", argv[0]);
 
 
-#ifndef CO_SINGLE_THREAD
         /* Wait other threads (command interface). */
         pthread_mutex_lock(&CO_CAN_VALID_mtx);
-#endif
 
         /* Wait rt_thread. */
         if(!firstRun) {
@@ -281,10 +191,6 @@ int main (int argc, char *argv[]) {
 
 
         /* initialize CANopen */
-        if(!nodeIdFromArgs) {
-            /* use value from Object dictionary, if not set by program arguments */
-            nodeId = OD_CANNodeID;
-        }
         err = CO_init(CANdevice0Index, nodeId, 0);
         if(err != CO_ERROR_NO) {
             char s[120];
@@ -307,7 +213,7 @@ int main (int argc, char *argv[]) {
         /* Configure callback functions for task control */
         CO_EM_initCallback(CO->em, taskMain_cbSignal);
         CO_SDO_initCallback(CO->SDO[0], taskMain_cbSignal);
-        CO_SDOclient_initCallback(CO->SDOclient[0], taskMain_cbSignal); //TODO fix this
+        CO_SDOclient_initCallback(CO->SDOclient[0], taskMain_cbSignal);
 
 
         /* Initialize time */
@@ -326,22 +232,6 @@ int main (int argc, char *argv[]) {
             /* Init mainline */
             taskMain_init(mainline_epoll_fd, &OD_performance[ODA_performance_mainCycleMaxTime]);
 
-
-#ifdef CO_SINGLE_THREAD
-            /* Init taskRT */
-            CANrx_taskTmr_init(mainline_epoll_fd, TMR_TASK_INTERVAL_NS, &OD_performance[ODA_performance_timerCycleMaxTime]);
-
-            OD_performance[ODA_performance_timerCycleTime] = TMR_TASK_INTERVAL_NS/1000; /* informative */
-
-            /* Set priority for mainline */
-            if(rtPriority > 0) {
-                struct sched_param param;
-
-                param.sched_priority = rtPriority;
-                if(sched_setscheduler(0, SCHED_FIFO, &param) != 0)
-                    CO_errExit("Program init - mainline set scheduler failed");
-            }
-#else
             /* Configure epoll for rt_thread */
             rt_thread_epoll_fd = epoll_create(2);
             if(rt_thread_epoll_fd == -1)
@@ -364,19 +254,6 @@ int main (int argc, char *argv[]) {
                 if(pthread_setschedparam(rt_thread_id, SCHED_FIFO, &param) != 0)
                     CO_errExit("Program init - rt_thread set scheduler failed");
             }
-#endif
-
-#ifndef CO_SINGLE_THREAD
-#ifndef CANDAEMON
-            /* Initialize socket command interface */
-            if(commandEnable) {
-                if(CO_command_init() != 0) {
-                    CO_errExit("Socket command interface initialization failed");
-                }
-                printf("%s - Command interface on socket '%s' started ...\n", argv[0], CO_command_socketPath);
-            }
-#endif
-#endif
 
             /* Execute optional additional application code */
             app_programStart();
@@ -389,9 +266,7 @@ int main (int argc, char *argv[]) {
 
         /* start CAN */
         CO_CANsetNormalMode(CO->CANmodule[0]);
-#ifndef CO_SINGLE_THREAD
         pthread_mutex_unlock(&CO_CAN_VALID_mtx);
-#endif
 
 
         reset = CO_RESET_NOT;
@@ -411,17 +286,6 @@ int main (int argc, char *argv[]) {
                     CO_error(0x11100000L + errno);
                 }
             }
-
-#ifdef CO_SINGLE_THREAD
-            else if(CANrx_taskTmr_process(ev.data.fd)) {
-                /* code was processed in the above function. Additional code process below */
-                INCREMENT_1MS(CO_timer1ms);
-                /* Detect timer large overflow */
-                if(OD_performance[ODA_performance_timerCycleMaxTime] > TMR_TASK_OVERFLOW_US && rtPriority > 0) {
-                    CO_errorReport(CO->em, CO_EM_ISR_TIMER_OVERFLOW, CO_EMC_SOFTWARE_INTERNAL, 0x22400000L | OD_performance[ODA_performance_timerCycleMaxTime]);
-                }
-            }
-#endif
 
             else if(taskMain_process(ev.data.fd, &reset, CO_timer1ms)) {
                 uint16_t timer1msDiff;
@@ -449,22 +313,10 @@ int main (int argc, char *argv[]) {
 
 /* program exit ***************************************************************/
     /* join threads */
-#ifndef CO_SINGLE_THREAD
-#ifndef CANDAEMON
-    if(commandEnable) {
-        if(CO_command_clear() != 0) {
-            CO_errExit("Socket command interface removal failed");
-        }
-    }
-#endif
-#endif
-
     CO_endProgram = 1;
-#ifndef CO_SINGLE_THREAD
     if(pthread_join(rt_thread_id, NULL) != 0) {
         CO_errExit("Program end - pthread_join failed");
     }
-#endif
 
     /* Execute optional additional application code */
     app_programEnd();
@@ -481,7 +333,7 @@ int main (int argc, char *argv[]) {
     printf("%s on %s (nodeId=0x%02X) - finished.\n\n", argv[0], CANdevice, nodeId);
 
     /* Flush all buffers (and reboot) */
-    if(rebootEnable && reset == CO_RESET_APP) {
+    if(reset == CO_RESET_APP) {
         sync();
         if(reboot(LINUX_REBOOT_CMD_RESTART) != 0) {
             CO_errExit("Program end - reboot failed");
@@ -492,7 +344,6 @@ int main (int argc, char *argv[]) {
 }
 
 
-#ifndef CO_SINGLE_THREAD
 /* Realtime thread for CAN receive and taskTmr ********************************/
 static void* rt_thread(void* arg) {
 
@@ -538,4 +389,3 @@ static void* rt_thread(void* arg) {
 
     return NULL;
 }
-#endif
