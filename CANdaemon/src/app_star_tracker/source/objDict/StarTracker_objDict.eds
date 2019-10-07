@@ -5070,7 +5070,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000001
+DefaultValue=0x00000000
 PDOMapping=0
 
 [6000]

@@ -29,7 +29,6 @@
 #include "CO_OD_storage.h"
 #include "CO_Linux_tasks.h"
 #include "CO_time.h"
-#include "CO_command.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -43,6 +42,7 @@
 #include <sys/reboot.h>
 
 #ifndef CO_SINGLE_THREAD
+#include "CO_command.h"
 #include <pthread.h>
 #endif
 
@@ -190,12 +190,14 @@ int main (int argc, char *argv[]) {
 
     if(nodeIdFromArgs && (nodeId < 1 || nodeId > 127)) {
         fprintf(stderr, "Wrong node ID (%d)\n", nodeId);
+        printUsage(argv[0]);
         exit(EXIT_FAILURE);
     }
 
     if(rtPriority != -1 && (rtPriority < sched_get_priority_min(SCHED_FIFO)
                          || rtPriority > sched_get_priority_max(SCHED_FIFO))) {
         fprintf(stderr, "Wrong RT priority (%d)\n", rtPriority);
+        printUsage(argv[0]);
         exit(EXIT_FAILURE);
     }
 
@@ -290,7 +292,7 @@ int main (int argc, char *argv[]) {
         /* Configure callback functions for task control */
         CO_EM_initCallback(CO->em, taskMain_cbSignal);
         CO_SDO_initCallback(CO->SDO[0], taskMain_cbSignal);
-        CO_SDOclient_initCallback(CO->SDOclient[0], taskMain_cbSignal); //TODO fix this
+        CO_SDOclient_initCallback(CO->SDOclient[0], taskMain_cbSignal);
 
 
         /* Initialize time */
@@ -400,6 +402,15 @@ int main (int argc, char *argv[]) {
 #endif
 
             else if(taskMain_process(ev.data.fd, &reset, CO_timer1ms)) {
+                uint16_t timer1msDiff;
+                static uint16_t tmr1msPrev = 0;
+
+                /* Calculate time difference */
+                timer1msDiff = CO_timer1ms - tmr1msPrev;
+                tmr1msPrev = CO_timer1ms;
+
+                /* code was processed in the above function. Additional code process below */
+
                 CO_OD_storage_autoSave(&odStorAuto, CO_timer1ms, 60000);
             }
 
@@ -469,13 +480,15 @@ static void* rt_thread(void* arg) {
         }
 
         else if(CANrx_taskTmr_process(ev.data.fd)) {
+            int i;
+
             /* code was processed in the above function. Additional code process below */
             INCREMENT_1MS(CO_timer1ms);
 
             /* Monitor variables with trace objects */
             CO_time_process(&CO_time);
 #if CO_NO_TRACE > 0
-            for(int i=0; i<OD_traceEnable && i<CO_NO_TRACE; i++) {
+            for(i=0; i<OD_traceEnable && i<CO_NO_TRACE; i++) {
                 CO_trace_process(CO->trace[i], *CO_time.epochTimeOffsetMs);
             }
 #endif

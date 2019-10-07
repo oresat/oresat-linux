@@ -826,7 +826,7 @@
       <CANopenSubObject subIndex="08" name="mapped object 8" objectType="VAR" dataType="0x07" accessType="rw" PDOmapping="no" defaultValue="0x00000000" TPDOdetectCOS="false" />
       <accessFunctionPreCode />
     </CANopenObject>
-    <CANopenObject index="1f80" name="NMT startup" objectType="VAR" memoryType="RAM" dataType="0x07" accessType="rw" PDOmapping="no" defaultValue="0x00000001" subNumber="0" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+    <CANopenObject index="1f80" name="NMT startup" objectType="VAR" memoryType="RAM" dataType="0x07" accessType="rw" PDOmapping="no" defaultValue="0x00000000" subNumber="0" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
       <description />
       <accessFunctionPreCode />
     </CANopenObject>
@@ -1763,14 +1763,14 @@
       <CANopenSubObject subIndex="04" name="Load file" objectType="VAR" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
       <accessFunctionPreCode />
     </CANopenObject>
-    <CANopenObject index="3100" name="Star Tracker Status/Control" objectType="REC" memoryType="RAM" dataType="0x03" accessType="rw" PDOmapping="no" defaultValue="" subNumber="3" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+    <CANopenObject index="3100" name="Star Tracker Status/Control" objectType="REC" memoryType="RAM" dataType="0x00" accessType="rw" PDOmapping="no" defaultValue="" subNumber="3" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
       <description />
       <CANopenSubObject subIndex="00" name="max sub-index" objectType="VAR" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="2" TPDOdetectCOS="false" />
       <CANopenSubObject subIndex="01" name="Current State" objectType="VAR" dataType="0x02" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
       <CANopenSubObject subIndex="02" name="Get Latest Image" objectType="VAR" dataType="0x02" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
       <accessFunctionPreCode />
     </CANopenObject>
-    <CANopenObject index="3101" name="Orienation" objectType="REC" memoryType="RAM" dataType="0x05" accessType="rw" PDOmapping="no" defaultValue="" subNumber="4" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+    <CANopenObject index="3101" name="Orienation" objectType="REC" memoryType="RAM" dataType="0x00" accessType="rw" PDOmapping="no" defaultValue="" subNumber="4" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
       <description />
       <CANopenSubObject subIndex="00" name="max sub-index" objectType="VAR" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="3" TPDOdetectCOS="false" />
       <CANopenSubObject subIndex="01" name="Rotation Y" objectType="VAR" dataType="0x03" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
@@ -1836,7 +1836,7 @@
     </CANopenObject>
   </CANopenObjectList>
   <other>
-    <file fileName="StarTracker_objDict.xml" fileCreator="JP" fileCreationDate="01-01-0001" fileCreationTime="12:00AM" fileModifedBy="" fileMotifcationDate="10-02-2019" fileModificationTime="11:17AM" fileVersion="0" fileRevision="0" exportFolder="/home/ryan/PSAS/oresat-linux/CANdaemon/src/starTracker" EdsFile="/home/ryan/PSAS/oresat-linux/CANdaemon/src/starTracker/StarTracker_objDict.eds" />
+    <file fileName="StarTracker_objDict.xml" fileCreator="JP" fileCreationDate="01-01-0001" fileCreationTime="12:00AM" fileModifedBy="" fileMotifcationDate="10-02-2019" fileModificationTime="11:17AM" fileVersion="0" fileRevision="0" exportFolder="/home/ryan/PSAS/oresat-linux/CANdaemon/src/app_star_tracker/source/ObjDict" EdsFile="/home/ryan/PSAS/oresat-linux/CANdaemon/src/app_star_tracker/source/ObjDict/StarTracker_objDict.eds" />
     <DeviceIdentity>
       <vendorName>CANopenNode</vendorName>
       <vendorNumber>0</vendorNumber>

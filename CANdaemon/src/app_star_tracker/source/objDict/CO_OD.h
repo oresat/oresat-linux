@@ -122,7 +122,7 @@
   #define CO_NO_LSS_CLIENT               0   //LSS Master
   #define CO_NO_RPDO                     16   //Associated objects: 14xx, 16xx
   #define CO_NO_TPDO                     16   //Associated objects: 18xx, 1Axx
-  #define CO_NO_NMT_MASTER               1
+  #define CO_NO_NMT_MASTER               0
   #define CO_NO_TRACE                    0
 
 

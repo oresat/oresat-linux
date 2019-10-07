@@ -4605,7 +4605,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="0x00000001" />
+            <defaultValue value="0x00000000" />
           </parameter>
           <parameter uniqueID="UID_PARAM_2100" access="read">
             <label lang="en">Error status bits</label>
@@ -11978,12 +11978,12 @@
             <CANopenSubObject subIndex="0003" name="Files Avalible" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300203" />
             <CANopenSubObject subIndex="0004" name="Load file" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300204" />
           </CANopenObject>
-          <CANopenObject index="3100" name="Star Tracker Status/Control" objectType="9" dataType="0003" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3100" subNumber="3">
+          <CANopenObject index="3100" name="Star Tracker Status/Control" objectType="9" dataType="0000" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3100" subNumber="3">
             <CANopenSubObject subIndex="0000" name="max sub-index" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_310000" />
             <CANopenSubObject subIndex="0001" name="Current State" objectType="7" dataType="0002" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_310001" />
             <CANopenSubObject subIndex="0002" name="Get Latest Image" objectType="7" dataType="0002" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_310002" />
           </CANopenObject>
-          <CANopenObject index="3101" name="Orienation" objectType="9" dataType="0005" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3101" subNumber="4">
+          <CANopenObject index="3101" name="Orienation" objectType="9" dataType="0000" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3101" subNumber="4">
             <CANopenSubObject subIndex="0000" name="max sub-index" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_310100" />
             <CANopenSubObject subIndex="0001" name="Rotation Y" objectType="7" dataType="0003" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_310101" />
             <CANopenSubObject subIndex="0002" name="Rotation Z" objectType="7" dataType="0003" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_310102" />

@@ -31,7 +31,8 @@ CANOPENNODE_SRC = 	../../CANopenNode
 CANOPENCOMM_SRC = 	../../CANopenComm
 COMMON_SRC = 		../../common
 APP_SRC =		./source
-OBJDICT_SRC =           ./source/ObjDict
+OBJDICT_SRC =           ./source/objDict
+
 
 
 INCLUDE_DIRS =	-I$(STACKDRV_SRC)	            \
