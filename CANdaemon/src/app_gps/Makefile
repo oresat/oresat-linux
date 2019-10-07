@@ -4,19 +4,15 @@
 # Settings for CANdaemon compile
 
 
-#Which main process
-#0 GPS
-#1 Star Tracker
-MAIN_PROCESS_INTERFACE ?= 1#
-
-
 #Optional Interfaces
 #0 off
 #1 on
 UPDATER_INTERFACE ?= 0#Linux Updater dbus interface
 
 
-#Other
+#Debug flags
+#0 off
+#1 on
 DEBUG ?= 1# Debug flags
 
 
@@ -24,26 +20,30 @@ DEBUG ?= 1# Debug flags
 # General and files
 
 
-CC ?= gcc
+CC = gcc
 CFLAGS = -Wall $(shell pkg-config --cflags libsystemd)
 LDFLAGS = -lrt -pthread $(shell pkg-config --libs libsystemd)
 
 
-STACKDRV_SRC =		./CANopenNode/stack/socketCAN
-STACK_SRC =     	./CANopenNode/stack
-CANOPENNODE_SRC = 	./CANopenNode
-CANDAEMON_SRC = 	./src
-GPS_SRC =		./src/gps
-STARTACKER_SRC =	./src/starTracker
+STACKDRV_SRC =		../../CANopenNode/stack/socketCAN
+STACK_SRC =     	../../CANopenNode/stack
+CANOPENNODE_SRC = 	../../CANopenNode
+CANOPENCOMM_SRC = 	../../CANopenComm
+COMMON_SRC = 		../../common
+APP_SRC =		./source
+OBJDICT_SRC =           ./source/ObjDict
 
 
-INCLUDE_DIRS =	-I$(STACKDRV_SRC)	\
-		-I$(STACK_SRC)		\
-		-I$(CANOPENNODE_SRC)	\
-		-I$(CANDAEMON_SRC)
+INCLUDE_DIRS =	-I$(STACKDRV_SRC)	            \
+		-I$(STACK_SRC)		            \
+		-I$(CANOPENNODE_SRC)	            \
+		-I$(CANOPENCOMM_SRC)                \
+		-I$(COMMON_SRC)                     \
+		-I$(APP_SRC)                        \
+		-I$(OBJDICT_SRC)
 
 
-SOURCES =	$(CANDAEMON_SRC)/CO_driver.c        \
+SOURCES =	$(COMMON_SRC)/CO_driver.c           \
 		$(STACKDRV_SRC)/CO_OD_storage.c     \
 		$(STACKDRV_SRC)/CO_Linux_tasks.c    \
 		$(STACK_SRC)/crc16-ccitt.c          \
@@ -58,44 +58,35 @@ SOURCES =	$(CANDAEMON_SRC)/CO_driver.c        \
 		$(STACK_SRC)/CO_LSSslave.c          \
 		$(STACK_SRC)/CO_trace.c             \
 		$(CANOPENNODE_SRC)/CANopen.c        \
-		$(CANDAEMON_SRC)/CO_time.c          \
-		$(CANDAEMON_SRC)/app_OD_functions.c \
-		$(CANDAEMON_SRC)/app_OD_helpers.c
+		$(COMMON_SRC)/CO_time.c             \
+		$(COMMON_SRC)/app_OD_functions.c    \
+		$(COMMON_SRC)/app_OD_helpers.c
 
-COMM_SOURCES =	$(CANDAEMON_SRC)/CO_command.c       \
-		$(CANDAEMON_SRC)/CO_master.c        \
-		$(CANDAEMON_SRC)/CO_comm_helpers.c
+CANOPENCOMM_SOURCES = $(CANOPENCOMM_SRC)/CO_command.c        \
+		      $(CANOPENCOMM_SRC)/CO_master.c         \
+		      $(CANOPENCOMM_SRC)/CO_comm_helpers.c
 
-CANOPEND_SOURCES = $(SOURCES) $(COMM_SOURCES)
+CANOPEND_SOURCES = $(SOURCES)                       \
+		   $(CANOPENCOMM_SOURCES)           \
+		   $(OBJDICT_SRC)/CO_OD.c           \
+		   $(CANOPENCOMM_SRC)/main.c
+
+CANDAEMON_SOURCES = $(SOURCES)                      \
+		    $(APP_SRC)/application.c        \
+		    $(OBJDICT_SRC)/CO_OD.c          \
+		    $(COMMON_SRC)/main.c
 
 
 ##############################################################################
-# Handle Settings
-
-
-ifeq ($(MAIN_PROCESS_INTERFACE), 0)
-CANDAEMON_SOURCES =	$(SOURCES)                          \
-			$(CANDAEMON_SRC)/dbus_helpers.c     \
-			$(GPS_SRC)/GPS_interface.c	    \
-			$(GPS_SRC)/CO_OD.c
-CANOPEND_SOURCES += $(GPS_SRC)/CO_OD.c
-INCLUDE_DIRS += -I$(GPS_SRC) 
-CFLAGS += -DCANDAEMON -DGPS_INTERFACE
-
-else ifeq ($(MAIN_PROCESS_INTERFACE), 1)
-CANDAEMON_SOURCES =	$(SOURCES)                          \
-			$(CANDAEMON_SRC)/dbus_helpers.c     \
-			$(STARTACKER_SRC)/ST_interface.c    \
-			$(STARTACKER_SRC)/CO_OD.c
-CANOPEND_SOURCES += $(STARTACKER_SRC)/CO_OD.c
-INCLUDE_DIRS += -I$(STARTACKER_SRC)
-CFLAGS += -DCANDAEMON -DST_INTERFACE
-
-endif
+# Options
 
 
 ifeq ($(DEBUG), 1)
     CFLAGS += -g
+endif
+
+ifeq ($(UPDATER_INTERFACE), 1)
+    CFLAGS += -DUPDATER
 endif
 
 
@@ -112,19 +103,20 @@ CANOPEND_OBJS = $(CANOPEND_SOURCES:%.c=%.o)
 all: candaemon canopend canopencomm
 
 candaemon: $(CANDAEMON_OBJS)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE_DIRS) $^ $(CANDAEMON_SRC)/main.c $(CANDAEMON_SRC)/application.c -o $@
+	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE_DIRS) $^ -o $@
 
 canopend: $(CANOPEND_OBJS)
-	$(CC) $(LDFLAGS) $(INCLUDE_DIRS) $^ $(CANDAEMON_SRC)/main.c $(CANDAEMON_SRC)/application.c -o $@
+	$(CC) $(LDFLAGS) $(INCLUDE_DIRS) $^ -o $@
 
 canopencomm:
-	$(CC) ./CANopenComm/CANopenCommand.c -o $@
+	$(CC) $(CANOPENCOMM_SRC)/CANopenCommand.c -o $@
 
 clean:
 	rm -rf $(CANDAEMON_OBJS) $(CANOPEND_OBJS) candaemon canopend canopencomm
 
 help:
 	$(info Make Options:)
-	$(info - linux-interface: )
-	$(info - canopencomm: default canopencomm using candaemon object dictionary)
+	$(info - candaeamon: canopend with dbus interfaces)
+	$(info - canopend: default canopend using candaemon object dictionary)
+	$(info - canopencomm: default canopencomm from canopen)
 	$(info - clean: remove all .o files and binaries)

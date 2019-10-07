@@ -1,27 +1,54 @@
 /*
- * Main Process interface.
+ * Application interface for CANopenSocket.
  *
+ * @file        application.c
+ * @author      Janez Paternoster
+ * @copyright   2016 Janez Paternoster
+ *
+ * This file is part of CANopenSocket, a Linux implementation of CANopen
+ * stack with master functionality. Project home page is
+ * <https://github.com/CANopenNode/CANopenSocket>. CANopenSocket is based
+ * on CANopenNode: <https://github.com/CANopenNode/CANopenNode>.
+ *
+ * CANopenSocket is free and open source software: you can redistribute
+ * it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+#include "application.h"
+#include "app_OD_functions.h"
+#include "app_OD_helpers.h"
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <systemd/sd-bus.h>
 #include <pthread.h>
 #include <signal.h>
-#include "GPS_interface.h"
-#include "dbus_helpers.h"
+
 
 #define INTERFACE_NAME  "org.OreSat.GPS"
 #define BUS_NAME        INTERFACE_NAME
 #define OBJECT_PATH     "/org/OreSat/GPS"
-#define SIGNAL_THREAD_STACK_SIZE CO_COMMAND_SDO_BUFFER_SIZE*3
+#define SIGNAL_THREAD_STACK_SIZE FILE_TRANSFER_MAX_SIZE*3
+
 
 /* Static Variables */
 static pthread_t        signal_thread_id;
 static pthread_attr_t   signal_thread_attr;
 static volatile int     endProgram = 0;
 static sd_bus           *bus = NULL;
+
 
 /* Static Functions */
 static void* signal_thread(void *arg);
@@ -30,7 +57,25 @@ static int data_signal_cb(sd_bus_message *, void *, sd_bus_error *);
 static void updateState(void);
 
 
-int GPS_interface_init(void) {
+/******************************************************************************/
+void dbusError(int r, char* err) {
+    if (r < 0)
+        fprintf(stderr, "%s %s\n", err, strerror(-r));
+    return;
+}
+
+
+void dbusErrorExit(int r, char* err) {
+    if (r < 0) {
+        fprintf(stderr, "%s %s\n", err, strerror(-r));
+        exit(0);
+    }
+    return;
+}
+
+
+/******************************************************************************/
+void app_programStart(void){
     int r;
     endProgram = 0;
 
@@ -40,30 +85,45 @@ int GPS_interface_init(void) {
 
     pthread_attr_setstacksize(&signal_thread_attr, SIGNAL_THREAD_STACK_SIZE);
     r = pthread_create(&signal_thread_id, &signal_thread_attr, signal_thread, NULL);
-    dbusError(-r, "dbus_init - signal thread creation failed");
-    
-    return r;
+    dbusError(-r, "signal thread creation failed"); // this r need to be negative
+
+    return;
 }
 
 
-int GPS_interface_clear(void) {
+/******************************************************************************/
+void app_communicationReset(void){
+
+}
+
+
+/******************************************************************************/
+void app_programEnd(void){
     endProgram = 1;
 
     /* Wait for threads to finish. */
-    if(pthread_join(signal_thread_id, NULL) != 0) {
-        return -1;
-    }
+    int r = pthread_join(signal_thread_id, NULL);
+    dbusError(-r, "signal thread join failed"); // this r need to be negative
 
     sd_bus_unref(bus);
 
-    return 0;
+    return;
+}
+
+
+/******************************************************************************/
+void app_programAsync(uint16_t timer1msDiff){
+
+}
+
+
+/******************************************************************************/
+void app_program1ms(void){
+
 }
 
 
 /****************************************************************************/
-/* singals / properties */
-
-
 static void* signal_thread(void *arg) {
     sd_bus_slot *slot = NULL;
     int r;
@@ -161,28 +221,21 @@ static int data_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_
 /****************************************************************************/
 /* methods for main dbus interface thread to call */
 
-
-int GPS_allMethods() {
-    //updateState();
-    /* Add other gps dbus method check funtions here */
-    return 1;
-}
-
-
-/* Handle new state change with dbus method call to GPS process */
+/*
+/ * Handle new state change with dbus method call to GPS process * /
 static void updateState(void) {
     int r;
     sd_bus_error error = SD_BUS_ERROR_NULL;
     sd_bus_message *m = NULL;
     int32_t current_state, new_state, return_int;
 
-    OD_getNonArrayData(0x3000, 1, &new_state, sizeof(new_state));
-    OD_getNonArrayData(0x3001, 1, &current_state, sizeof(current_state));
+    app_readOD(0x3000, 1, &new_state, sizeof(new_state));
+    app_readOD(0x3001, 1, &current_state, sizeof(current_state));
 
     if(new_state == current_state)
-        return; /* no need to change */
+        return; / * no need to change * /
 
-    /* Issue the method call and store the response message in m */
+    / * Issue the method call and store the response message in m * /
     r = sd_bus_call_method(bus,
                            BUS_NAME,
                            OBJECT_PATH,
@@ -194,12 +247,12 @@ static void updateState(void) {
                            new_state);
     dbusError(r, "Failed to issue method call.");
 
-    /* Parse the response message */
+    / * Parse the response message * /
     r = sd_bus_message_read(m, "i", &return_int);
     dbusError(r, "Failed to parse response message.");
 
     sd_bus_error_free(&error);
     return;
 }
-
+*/
 
