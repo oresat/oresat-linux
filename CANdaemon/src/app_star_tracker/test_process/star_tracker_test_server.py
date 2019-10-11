@@ -45,7 +45,7 @@ def send_data():
     return True
 
 def send_file_path():
-    filepath = "./src/starTracker/test_process/psas.jpg" #TODO should be an absoult path
+    filepath = "./test_process/psas.jpg" #TODO should be an absoult path
     emit.NewImageSignal(filepath)
     print(filepath)
     return True

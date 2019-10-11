@@ -3,18 +3,17 @@ For the linux cards on OreSat there are two object dictionary entry to help with
 
 ## Write a file (OD entry 0x3001)
 ### Subindexes for record
-- 0: Default. Size of record.
-- 1: File name as a DOMAIN type
-- 2: File data as a DOMAIN type
-- 3: Files available as a 8 bit unsigned interger
-- 4: Save file. Represented as a 8 bit unsigned interger
+- 0: Default. Size of record. (read only)
+- 1: File name as a DOMAIN type (write only)
+- 2: File data as a DOMAIN type (write only)
+- 3: Save file. Represented as a 8 bit unsigned interger (write only)
 
 ### How file receiving works:
 The master node can write data to both file name and file data indexes and then write any 8 bit number to the Save file index to save the file into CANdaemon's receive directory. 
 
 
 ## Read a file (OD entry 0x3002)
-### Subindexes for record
+### Subindexes for record (all read only)
 - 0: Default. Size of record.
 - 1: File name as a DOMAIN type.
 - 2: File data as a DOMAIN type.

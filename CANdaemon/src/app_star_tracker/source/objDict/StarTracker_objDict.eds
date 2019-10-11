@@ -6306,7 +6306,7 @@ PDOMapping=1
 ParameterName=Receive File
 ObjectType=0x9
 ;StorageLocation=RAM
-SubNumber=0x5
+SubNumber=0x4
 
 [3001sub0]
 ParameterName=max sub-index
@@ -6314,7 +6314,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0005
 AccessType=ro
-DefaultValue=4
+DefaultValue=3
 PDOMapping=0
 
 [3001sub1]
@@ -6336,15 +6336,6 @@ DefaultValue=0
 PDOMapping=0
 
 [3001sub3]
-ParameterName=Files Avalible
-ObjectType=0x7
-;StorageLocation=RAM
-DataType=0x0005
-AccessType=wo
-DefaultValue=0
-PDOMapping=0
-
-[3001sub4]
 ParameterName=Save File
 ObjectType=0x7
 ;StorageLocation=RAM
@@ -6387,7 +6378,7 @@ DefaultValue=0
 PDOMapping=0
 
 [3002sub3]
-ParameterName=Files Avalible
+ParameterName=Load file
 ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0005
@@ -6396,7 +6387,7 @@ DefaultValue=0
 PDOMapping=0
 
 [3002sub4]
-ParameterName=Load file
+ParameterName=Files Avalible
 ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0005
