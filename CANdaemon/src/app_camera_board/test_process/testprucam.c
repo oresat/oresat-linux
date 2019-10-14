@@ -36,7 +36,7 @@ int get_image(char name[20]) {
   //for(int i = 0 ; i < 9999999 ; i++) {
   struct timeval before, after;
 
-  printf("Starting device test code example...\n");
+  //printf("Starting device test code example...\n");
   fd = open("/dev/prucam", O_RDWR);             // Open the device with read/write access
   if (fd < 0){
     perror("Failed to open the device...");
@@ -48,7 +48,7 @@ int get_image(char name[20]) {
 
   gettimeofday(&before , NULL);
 
-  printf("Reading from the device...\n");
+  //printf("Reading from the device...\n");
   ret = read(fd, buf, PIXELS);        // Read the response from the LKM
   if (ret < 0){
     perror("Failed to read the message from the device.");
@@ -60,7 +60,7 @@ int get_image(char name[20]) {
   if(uSecs < 0) //occaisionally this number is 1000000 off??
     uSecs += 1000000;
 
-  printf("Elapsed time: %ld uSec\n", uSecs);
+  //printf("Elapsed time: %ld uSec\n", uSecs);
 
   //writePgmFile(buf);
   BMP* bmp;

@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
     method_thread_init();
 
     while(endProgram == 0) {
-        sprintf(name, "capture_%03d.bmp", capture_num);
+        sprintf(name, "captures/capture_%03d.bmp", capture_num);
         get_image(name);
 
         /* send signal */
