@@ -104,16 +104,20 @@ CANOPEND_OBJS = $(CANOPEND_SOURCES:%.c=%.o)
 all: candaemon canopend canopencomm
 
 candaemon: $(CANDAEMON_OBJS)
+	bash -c "echo - > od_storage"
+	bash -c "echo - > od_storage_auto"
 	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE_DIRS) $^ -o $@
 
 canopend: $(CANOPEND_OBJS)
+	bash -c "echo - > od_storage"
+	bash -c "echo - > od_storage_auto"
 	$(CC) $(LDFLAGS) $(INCLUDE_DIRS) $^ -o $@
 
 canopencomm:
 	$(CC) $(CANOPENCOMM_SRC)/CANopenCommand.c -o $@
 
 clean:
-	rm -rf $(CANDAEMON_OBJS) $(CANOPEND_OBJS) candaemon canopend canopencomm
+	rm -rf $(CANDAEMON_OBJS) $(CANOPEND_OBJS) candaemon canopend canopencomm od_storage od_storage_auto
 
 help:
 	$(info Make Options:)

@@ -58,9 +58,8 @@ SOURCES =	$(COMMON_SRC)/CO_driver.c           \
 		$(STACK_SRC)/CO_LSSslave.c          \
 		$(STACK_SRC)/CO_trace.c             \
 		$(CANOPENNODE_SRC)/CANopen.c        \
-		$(COMMON_SRC)/CO_time.c             \
 		$(COMMON_SRC)/app_OD_functions.c    \
-		$(COMMON_SRC)/app_OD_helpers.c
+		$(COMMON_SRC)/CO_time.c
 
 CANOPENCOMM_SOURCES = $(CANOPENCOMM_SRC)/CO_command.c        \
 		      $(CANOPENCOMM_SRC)/CO_master.c         \
@@ -73,6 +72,8 @@ CANOPEND_SOURCES = $(SOURCES)                       \
 
 CANDAEMON_SOURCES = $(SOURCES)                      \
 		    $(APP_SRC)/application.c        \
+		    $(COMMON_SRC)/candaemon.c       \
+		    $(COMMON_SRC)/app_OD_helpers.c  \
 		    $(OBJDICT_SRC)/CO_OD.c          \
 		    $(COMMON_SRC)/main.c
 
@@ -103,16 +104,20 @@ CANOPEND_OBJS = $(CANOPEND_SOURCES:%.c=%.o)
 all: candaemon canopend canopencomm
 
 candaemon: $(CANDAEMON_OBJS)
+	bash -c "echo - > od_storage"
+	bash -c "echo - > od_storage_auto"
 	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE_DIRS) $^ -o $@
 
 canopend: $(CANOPEND_OBJS)
+	bash -c "echo - > od_storage"
+	bash -c "echo - > od_storage_auto"
 	$(CC) $(LDFLAGS) $(INCLUDE_DIRS) $^ -o $@
 
 canopencomm:
 	$(CC) $(CANOPENCOMM_SRC)/CANopenCommand.c -o $@
 
 clean:
-	rm -rf $(CANDAEMON_OBJS) $(CANOPEND_OBJS) candaemon canopend canopencomm
+	rm -rf $(CANDAEMON_OBJS) $(CANOPEND_OBJS) candaemon canopend canopencomm od_storage od_storage_auto
 
 help:
 	$(info Make Options:)
