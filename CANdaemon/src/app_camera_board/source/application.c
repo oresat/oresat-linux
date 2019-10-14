@@ -33,8 +33,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <systemd/sd-bus.h>
-#include <pthread.h>
-#include <signal.h>
 
 
 #define INTERFACE_NAME  "org.OreSat.CameraBoard"
@@ -44,15 +42,12 @@
 
 
 /* Static Variables */
-static pthread_t        signal_thread_id;
-static pthread_attr_t   signal_thread_attr;
 static volatile int     endProgram = 0;
-static sd_bus           *bus = NULL;
+static sd_bus          *bus = NULL;
+static sd_bus_error     error = SD_BUS_ERROR_NULL;
 
 
 /* Static Functions */
-static void* signal_thread(void *arg);
-static int file_transfer_signal_cb(sd_bus_message *, void *, sd_bus_error *);
 
 
 /******************************************************************************/
@@ -75,15 +70,12 @@ void dbusErrorExit(int r, char* err) {
 /******************************************************************************/
 void app_programStart(void){
     int r;
-    endProgram = 0;
 
-    /* Connect to the system bus */
+    /* Connect to the bus */
     r = sd_bus_open_system(&bus);
-    dbusErrorExit(r, "Failed to connect to system bus.");
+    dbusError(r, "Failed to connect to system bus:");
 
-    pthread_attr_setstacksize(&signal_thread_attr, SIGNAL_THREAD_STACK_SIZE);
-    r = pthread_create(&signal_thread_id, &signal_thread_attr, signal_thread, NULL);
-    dbusError(-r, "signal thread creation failed"); // this r need to be negative
+    CO_OD_configure(CO->SDO[0], 0x3100, CB_ODF_3100, NULL, 0, 0U);
 
     return;
 }
@@ -97,12 +89,7 @@ void app_communicationReset(void){
 
 /******************************************************************************/
 void app_programEnd(void){
-    endProgram = 1;
-
-    /* Wait for threads to finish. */
-    int r = pthread_join(signal_thread_id, NULL);
-    dbusError(-r, "signal thread join failed"); // this r need to be negative
-
+    sd_bus_error_free(&error);
     sd_bus_unref(bus);
 
     return;
@@ -121,55 +108,51 @@ void app_program1ms(void){
 }
 
 
-/****************************************************************************/
-static void* signal_thread(void *arg) {
-    sd_bus_slot *slot = NULL;
-    int r;
+/******************************************************************************/
 
-    /* Catch signals SIGINT and SIGTERM */
-    if(signal(SIGINT, NULL) == SIG_ERR)
-        dbusErrorExit(0, "Program init - SIGINIT handler creation failed");
-    if(signal(SIGTERM, NULL) == SIG_ERR)
-        dbusErrorExit(0, "Program init - SIGTERM handler creation failed");
 
-    /* add signal matches here */
-    r = sd_bus_add_match(bus,
-                         &slot,
-                        "type='signal', path='"OBJECT_PATH"', interface='"INTERFACE_NAME"', member='NewImageSignal'",
-                         file_transfer_signal_cb, 
-                         NULL);
-    dbusErrorExit(r, "Add match error for file transfer signal.");
-    
-    /* wait for interupt and loop */
-    while(endProgram == 0) {
-        r = sd_bus_process(bus, NULL);
-        dbusError(r, "Bus process failed.");
-        if(r > 0)
-            continue;
+CO_SDO_abortCode_t CB_ODF_3100(CO_ODF_arg_t *ODF_arg) {
+    file_buffer_t *odFileBuffer;
+    CO_SDO_abortCode_t ret = CO_SDO_AB_NONE;
+    uint8_t temp = 0;
+    char *file_path;
 
-        r = sd_bus_wait(bus, (uint64_t)-1);
-        dbusError(r, "Bus wait failed.");
+    APP_LOCK_ODF();
+
+    if(ODF_arg->subIndex == 1) { /* get latest image */
+        if(ODF_arg->reading == false) { /* write parameters */
+            ODF_arg->dataLength = sizeof(temp);
+            memcpy(ODF_arg->data, &temp, ODF_arg->dataLength);
+        }
+
+        /* Issue the method call and store the response message in m */
+        r = sd_bus_call_method(bus,
+                               BUS_NAME,
+                               OBJECT_PATH,
+                               INTERFACE_NAME,
+                               "LatestImage",
+                               &error,
+                               &m,
+                               NULL);
+        dbusError(r, "Failed to issue method call:");
+
+        /* Parse the response message */
+        r = sd_bus_message_read(m, "s", &file_path);
+        dbusError(r, "Failed to parse response message:");
+
+        if(file_path != NULL)
+            APP_ODF_3002(file_path);
+
+        sd_bus_message_unref(m);
+
     }
+    else 
+        ret = CO_SDO_AB_SUB_UNKNOWN; 
 
-    sd_bus_slot_unref(slot);
-    return NULL;
+    ODF_arg->lastSegment = true;
+
+    APP_UNLOCK_ODF();
+
+    return ret;
 }
-
-
-/* callback for handling file transfer from the Camera Board process */
-static int file_transfer_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_error) {
-    int r;
-    char *filepath = NULL;
-
-    r = sd_bus_message_read(m, "s", &filepath);
-    dbusError(r, "Failed to parse file transfer signal.");
-
-    if (r < 0)
-        return -1;
-
-    APP_ODF_3002(filepath);
-
-    return 0;
-}
-
 

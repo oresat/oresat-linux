@@ -73,4 +73,10 @@ void app_programAsync(uint16_t timer1msDiff);
 void app_program1ms(void);
 
 
+/**
+ * Callbacks for getting the latest image from the test camera process and adding to the send bufffer.
+ */
+CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg);
+
+
 #endif
