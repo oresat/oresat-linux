@@ -42,6 +42,9 @@
 #include <linux/reboot.h>
 #include <sys/reboot.h>
 #include <pthread.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 
 #define NSEC_PER_SEC            (1000000000)    /* The number of nanoseconds per second. */
@@ -49,6 +52,12 @@
 #define TMR_TASK_INTERVAL_NS    (1000000)       /* Interval of taskTmr in nanoseconds */
 #define TMR_TASK_OVERFLOW_US    (5000)          /* Overflow detect limit for taskTmr in microseconds */
 #define INCREMENT_1MS(var)      (var++)         /* Increment 1ms variable in taskTmr */
+#ifndef FILE_RECEIVE_FOLDER 
+#define FILE_RECEIVE_FOLDER "/tmp/received_files/"
+#endif
+#ifndef FILE_SEND_FOLDER
+#define FILE_SEND_FOLDER "/tmp/send_files/"
+#endif
 
 
 /* Global variable increments each millisecond. */
@@ -133,6 +142,12 @@ int main (int argc, char *argv[]) {
         snprintf(s, 120, "Can't find CAN device \"%s\"", CANdevice);
         CO_errExit(s);
     }
+
+    struct stat st = {0};
+    if(stat(FILE_RECEIVE_FOLDER, &st) == -1)
+        mkdir(FILE_RECEIVE_FOLDER, 0700);
+    if(stat(FILE_SEND_FOLDER, &st) == -1)
+        mkdir(FILE_SEND_FOLDER, 0700);
 
 
     printf("%s - starting CANopen device with Node ID %d(0x%02X)", argv[0], nodeId, nodeId);
