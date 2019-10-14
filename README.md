@@ -1,6 +1,6 @@
 <div align="center">
   <h1>
-  <br> CANdaemon for OreSat-Linux </br>
+  <br> OreSat-Linux </br>
   </h1>
 </div>
 
