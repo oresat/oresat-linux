@@ -12,7 +12,7 @@
 #define INTERFACE_NAME  "org.OreSat.CameraBoard"
 #define BUS_NAME        INTERFACE_NAME
 #define OBJECT_PATH     "/org/OreSat/CameraBoard"
-#define WAIT_TIME       500000 // mircroseconds
+#define WAIT_TIME       1000000 // mircroseconds
 
 
 /* static data */
