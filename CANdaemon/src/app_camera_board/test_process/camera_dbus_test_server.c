@@ -27,6 +27,9 @@ static char name[50];
 
 /* static functions */
 static void* method_thread(void *arg);
+int method_thread_init(void);
+int method_thread_clear(void);
+static int lastest_image(sd_bus_message *m, void *systemdata, sd_bus_error *ret_error);
 
 
 static void dbus_assert(const int r, const char* err) {
