@@ -17,6 +17,7 @@
 
 /* static data */
 static const sd_bus_vtable method_vtable[];
+static sd_bus_slot *slot = NULL;
 static sd_bus *bus = NULL;
 static bool endProgram = 0;
 static int wait_time = WAIT_TIME;
@@ -114,6 +115,8 @@ int method_thread_clear(void) {
         fprintf(stderr, "method_thread_clear - thread join failed.\n");
         return -1;
     }
+
+    sd_bus_slot_unref(slot);
 
     return 1;
 }
