@@ -1,3 +1,13 @@
+#!/bin/bash
+
+user=`id -u`
+
+if [ $user -ne 0 ]
+    then 
+        echo "Most be root"
+        exit
+fi
+
 $Camera_PID = pgrep camera
 $CANdaemon_PID = pgrep candaemon
 
