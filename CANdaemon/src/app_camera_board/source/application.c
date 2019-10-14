@@ -53,7 +53,6 @@ static sd_bus           *bus = NULL;
 /* Static Functions */
 static void* signal_thread(void *arg);
 static int file_transfer_signal_cb(sd_bus_message *, void *, sd_bus_error *);
-static int data_signal_cb(sd_bus_message *, void *, sd_bus_error *);
 
 
 /******************************************************************************/

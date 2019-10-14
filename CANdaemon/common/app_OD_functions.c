@@ -88,7 +88,7 @@ CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg) {
             strcat(filePath, odFileBuffer->fileName);
             FILE *f = fopen(filePath, "wb");
             if(f != NULL) {
-                uint32_t temp = fwrite(odFileBuffer->fileData, sizeof(char), odFileBuffer->fileSize, f);
+                fwrite(odFileBuffer->fileData, sizeof(char), odFileBuffer->fileSize, f);
                 fclose(f);
 
                 /* clear buffer */
