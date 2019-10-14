@@ -1,2 +1,3 @@
 *.o
 mono_crash.*
+nohub.out
