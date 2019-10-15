@@ -110,12 +110,19 @@ def read_list(computer_name, file_path, file_contents, instruction):
         return 1
         
 
+
 def prepare_tar(file_path, computer):
     bashCommand = "tar -zcvf " + computer + "-completed.tar.gz ./" + file_path
     output = subprocess.check_call(['bash','-c', bashCommand])
 
-if(len(sys.argv) == ARGS+1):
-    file_read(sys.argv[1], sys.argv[2], sys.argv[3])
-else:
-    print("Error: updater.py function called with incorrect # of args")
+
+def main():
+    if(len(sys.argv) == ARGS+1):
+        file_read(sys.argv[1], sys.argv[2], sys.argv[3])
+    else:
+        print("Error: updater.py function called with incorrect # of args")
+
+
+if __name__=="__main__":
+    main()
 
