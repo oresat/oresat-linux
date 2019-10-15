@@ -12,5 +12,5 @@ sd-bus-signal-example:
 
 
 clean:
-	rm -f sd-bus-method-example
+	rm -f sd-bus-method-example sd-bus-signal-example
 
