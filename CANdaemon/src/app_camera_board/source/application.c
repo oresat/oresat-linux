@@ -112,12 +112,11 @@ void app_program1ms(void){
 
 
 CO_SDO_abortCode_t CB_ODF_3100(CO_ODF_arg_t *ODF_arg) {
-    file_buffer_t *odFileBuffer;
     CO_SDO_abortCode_t ret = CO_SDO_AB_NONE;
+    sd_bus_message *m = NULL;
     uint8_t temp = 0;
     char *file_path;
-
-    APP_LOCK_ODF();
+    int r;
 
     if(ODF_arg->subIndex == 1) { /* get latest image */
         if(ODF_arg->reading == false) { /* write parameters */
@@ -150,8 +149,6 @@ CO_SDO_abortCode_t CB_ODF_3100(CO_ODF_arg_t *ODF_arg) {
         ret = CO_SDO_AB_SUB_UNKNOWN; 
 
     ODF_arg->lastSegment = true;
-
-    APP_UNLOCK_ODF();
 
     return ret;
 }
