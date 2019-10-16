@@ -29,6 +29,8 @@
 #define CO_APPLICATION_H
 
 
+#include "CANopen.h"
+#include "CO_driver.h"
 #include <stdint.h>
 
 
