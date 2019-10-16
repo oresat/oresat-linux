@@ -25,9 +25,11 @@
  */
 
 
-#include "application.h"
+#include "CANopen.h"
+#include "CO_driver.h"
 #include "app_OD_functions.h"
 #include "app_OD_helpers.h"
+#include "application.h"
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
