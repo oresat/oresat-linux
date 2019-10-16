@@ -176,8 +176,7 @@ struct sCO_OD_RAM CO_OD_RAM = {
 /*2130*/ {0x3L, {'-'}, 0x00000000L, 0x0000L},
 /*3001*/ {0x3L, 0, 0, 0x0L},
 /*3002*/ {0x4L, 0, 0, 0x0L, 0x0L},
-/*3100*/ {0x2L, 0x0, 0x0},
-/*3101*/ {0x3L, 0x00, 0x00, 0x00},
+/*3100*/ 0x0,
 /*6000*/ {0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L},
 /*6200*/ {0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L, 0x0L},
 /*6401*/ {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
@@ -886,23 +885,10 @@ struct sCO_OD_EEPROM CO_OD_EEPROM = {
            {(void*)&CO_OD_RAM.sendFile.filesAvalible, 0x06, 0x1 },
 };
 
-/*0x3100*/ const CO_OD_entryRecord_t OD_record3100[3] = {
-           {(void*)&CO_OD_RAM.starTrackerStatusControl.maxSubIndex, 0x06, 0x1 },
-           {(void*)&CO_OD_RAM.starTrackerStatusControl.currentState, 0x0e, 0x1 },
-           {(void*)&CO_OD_RAM.starTrackerStatusControl.getLatestImage, 0x0e, 0x1 },
-};
-
-/*0x3101*/ const CO_OD_entryRecord_t OD_record3101[4] = {
-           {(void*)&CO_OD_RAM.orienation.maxSubIndex, 0x06, 0x1 },
-           {(void*)&CO_OD_RAM.orienation.rotationY, 0x8e, 0x2 },
-           {(void*)&CO_OD_RAM.orienation.rotationZ, 0x8e, 0x2 },
-           {(void*)&CO_OD_RAM.orienation.rotationCamera, 0x8e, 0x2 },
-};
-
 /*******************************************************************************
    OBJECT DICTIONARY
 *******************************************************************************/
-const CO_OD_entry_t CO_OD[107] = {
+const CO_OD_entry_t CO_OD[106] = {
 
 {0x1000, 0x00, 0x86, 4, (void*)&CO_OD_RAM.deviceType},
 {0x1001, 0x00, 0x26, 1, (void*)&CO_OD_RAM.errorRegister},
@@ -1005,8 +991,7 @@ const CO_OD_entry_t CO_OD[107] = {
 {0x2130, 0x03, 0x00, 0, (void*)&OD_record2130},
 {0x3001, 0x03, 0x00, 0, (void*)&OD_record3001},
 {0x3002, 0x04, 0x00, 0, (void*)&OD_record3002},
-{0x3100, 0x02, 0x00, 0, (void*)&OD_record3100},
-{0x3101, 0x03, 0x00, 0, (void*)&OD_record3101},
+{0x3100, 0x00, 0x0e, 1, (void*)&CO_OD_RAM.getLatestImage},
 {0x6000, 0x08, 0x0e, 1, (void*)&CO_OD_RAM.readInput8Bit[0]},
 {0x6200, 0x08, 0x0e, 1, (void*)&CO_OD_RAM.writeOutput8Bit[0]},
 {0x6401, 0x0c, 0x8e, 2, (void*)&CO_OD_RAM.readAnalogueInput16Bit[0]},

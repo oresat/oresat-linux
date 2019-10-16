@@ -1,5 +1,5 @@
 [FileInfo]
-FileName=StarTracker_objDict.eds
+FileName=CameraBoard_objDict.eds
 FileVersion=0
 FileRevision=0
 LastEDS=
@@ -5458,7 +5458,7 @@ DefaultValue=0
 PDOMapping=1
 
 [ManufacturerObjects]
-SupportedObjects=17
+SupportedObjects=16
 1=0x2100
 2=0x2101
 3=0x2102
@@ -5475,7 +5475,6 @@ SupportedObjects=17
 14=0x3001
 15=0x3002
 16=0x3100
-17=0x3101
 
 [2100]
 ParameterName=Error status bits
@@ -6396,76 +6395,10 @@ DefaultValue=0
 PDOMapping=0
 
 [3100]
-ParameterName=Star Tracker Status/Control
-ObjectType=0x9
-;StorageLocation=RAM
-SubNumber=0x3
-
-[3100sub0]
-ParameterName=max sub-index
-ObjectType=0x7
-;StorageLocation=RAM
-DataType=0x0005
-AccessType=ro
-DefaultValue=2
-PDOMapping=0
-
-[3100sub1]
-ParameterName=Current State
-ObjectType=0x7
-;StorageLocation=RAM
-DataType=0x0002
-AccessType=rw
-DefaultValue=0
-PDOMapping=0
-
-[3100sub2]
 ParameterName=Get Latest Image
 ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0002
-AccessType=rw
-DefaultValue=0
-PDOMapping=0
-
-[3101]
-ParameterName=Orienation
-ObjectType=0x9
-;StorageLocation=RAM
-SubNumber=0x4
-
-[3101sub0]
-ParameterName=max sub-index
-ObjectType=0x7
-;StorageLocation=RAM
-DataType=0x0005
-AccessType=ro
-DefaultValue=3
-PDOMapping=0
-
-[3101sub1]
-ParameterName=Rotation Y
-ObjectType=0x7
-;StorageLocation=RAM
-DataType=0x0003
-AccessType=rw
-DefaultValue=0
-PDOMapping=0
-
-[3101sub2]
-ParameterName=Rotation Z
-ObjectType=0x7
-;StorageLocation=RAM
-DataType=0x0003
-AccessType=rw
-DefaultValue=0
-PDOMapping=0
-
-[3101sub3]
-ParameterName=Rotation Camera
-ObjectType=0x7
-;StorageLocation=RAM
-DataType=0x0003
 AccessType=rw
 DefaultValue=0
 PDOMapping=0

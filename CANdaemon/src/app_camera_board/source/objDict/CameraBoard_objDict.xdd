@@ -5448,71 +5448,7 @@
             <defaultValue value="0" />
           </parameter>
           <parameter uniqueID="UID_PARAM_3100" access="readWrite">
-            <label lang="en">Star Tracker Status/Control</label>
-            <description lang="en" />
-            <denotation>
-              <label lang="en" />
-            </denotation>
-            <defaultValue value="" />
-          </parameter>
-          <parameter uniqueID="UID_PARAM_310000" access="read">
-            <label lang="en">max sub-index</label>
-            <description lang="en" />
-            <denotation>
-              <label lang="en" />
-            </denotation>
-            <defaultValue value="2" />
-          </parameter>
-          <parameter uniqueID="UID_PARAM_310001" access="readWrite">
-            <label lang="en">Current State</label>
-            <description lang="en" />
-            <denotation>
-              <label lang="en" />
-            </denotation>
-            <defaultValue value="0" />
-          </parameter>
-          <parameter uniqueID="UID_PARAM_310002" access="readWrite">
             <label lang="en">Get Latest Image</label>
-            <description lang="en" />
-            <denotation>
-              <label lang="en" />
-            </denotation>
-            <defaultValue value="0" />
-          </parameter>
-          <parameter uniqueID="UID_PARAM_3101" access="readWrite">
-            <label lang="en">Orienation</label>
-            <description lang="en" />
-            <denotation>
-              <label lang="en" />
-            </denotation>
-            <defaultValue value="" />
-          </parameter>
-          <parameter uniqueID="UID_PARAM_310100" access="read">
-            <label lang="en">max sub-index</label>
-            <description lang="en" />
-            <denotation>
-              <label lang="en" />
-            </denotation>
-            <defaultValue value="3" />
-          </parameter>
-          <parameter uniqueID="UID_PARAM_310101" access="readWrite">
-            <label lang="en">Rotation Y</label>
-            <description lang="en" />
-            <denotation>
-              <label lang="en" />
-            </denotation>
-            <defaultValue value="0" />
-          </parameter>
-          <parameter uniqueID="UID_PARAM_310102" access="readWrite">
-            <label lang="en">Rotation Z</label>
-            <description lang="en" />
-            <denotation>
-              <label lang="en" />
-            </denotation>
-            <defaultValue value="0" />
-          </parameter>
-          <parameter uniqueID="UID_PARAM_310103" access="readWrite">
-            <label lang="en">Rotation Camera</label>
             <description lang="en" />
             <denotation>
               <label lang="en" />
@@ -6648,17 +6584,7 @@
             <CANopenSubObject subIndex="0003" name="Load file" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300203" />
             <CANopenSubObject subIndex="0004" name="Files Avalible" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300204" />
           </CANopenObject>
-          <CANopenObject index="3100" name="Star Tracker Status/Control" objectType="9" dataType="0000" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3100" subNumber="3">
-            <CANopenSubObject subIndex="0000" name="max sub-index" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_310000" />
-            <CANopenSubObject subIndex="0001" name="Current State" objectType="7" dataType="0002" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_310001" />
-            <CANopenSubObject subIndex="0002" name="Get Latest Image" objectType="7" dataType="0002" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_310002" />
-          </CANopenObject>
-          <CANopenObject index="3101" name="Orienation" objectType="9" dataType="0000" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3101" subNumber="4">
-            <CANopenSubObject subIndex="0000" name="max sub-index" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_310100" />
-            <CANopenSubObject subIndex="0001" name="Rotation Y" objectType="7" dataType="0003" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_310101" />
-            <CANopenSubObject subIndex="0002" name="Rotation Z" objectType="7" dataType="0003" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_310102" />
-            <CANopenSubObject subIndex="0003" name="Rotation Camera" objectType="7" dataType="0003" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_310103" />
-          </CANopenObject>
+          <CANopenObject index="3100" name="Get Latest Image" objectType="7" dataType="0002" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3100" />
           <CANopenObject index="6000" name="Read input 8 bit" objectType="8" dataType="0005" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_6000" subNumber="9">
             <CANopenSubObject subIndex="0000" name="max sub-index" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_600000" />
             <CANopenSubObject subIndex="0001" name="Input" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="optional" uniqueIDRef="UID_PARAM_600001" />
