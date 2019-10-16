@@ -120,35 +120,30 @@ CO_SDO_abortCode_t CB_ODF_3100(CO_ODF_arg_t *ODF_arg) {
     char *file_path;
     int r;
 
-    if(ODF_arg->subIndex == 1) { /* get latest image */
-        if(ODF_arg->reading == false) { /* write parameters */
-            ODF_arg->dataLength = sizeof(temp);
-            memcpy(ODF_arg->data, &temp, ODF_arg->dataLength);
-        }
-
-        /* Issue the method call and store the response message in m */
-        r = sd_bus_call_method(bus,
-                               BUS_NAME,
-                               OBJECT_PATH,
-                               INTERFACE_NAME,
-                               "LatestImage",
-                               &error,
-                               &m,
-                               NULL);
-        dbusError(r, "Failed to issue method call:");
-
-        /* Parse the response message */
-        r = sd_bus_message_read(m, "s", &file_path);
-        dbusError(r, "Failed to parse response message:");
-
-        if(file_path != NULL)
-            APP_ODF_3002(file_path);
-
-        sd_bus_message_unref(m);
-
+    if(ODF_arg->reading == false) { /* write parameters */
+        ODF_arg->dataLength = sizeof(temp);
+        memcpy(ODF_arg->data, &temp, ODF_arg->dataLength);
     }
-    else 
-        ret = CO_SDO_AB_SUB_UNKNOWN; 
+
+    /* Issue the method call and store the response message in m */
+    r = sd_bus_call_method(bus,
+                           BUS_NAME,
+                           OBJECT_PATH,
+                           INTERFACE_NAME,
+                           "LatestImage",
+                           &error,
+                           &m,
+                           NULL);
+    dbusError(r, "Failed to issue method call:");
+
+    /* Parse the response message */
+    r = sd_bus_message_read(m, "s", &file_path);
+    dbusError(r, "Failed to parse response message:");
+
+    if(file_path != NULL)
+        APP_ODF_3002(file_path);
+
+    sd_bus_message_unref(m);
 
     ODF_arg->lastSegment = true;
 
