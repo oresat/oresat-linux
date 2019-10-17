@@ -75,7 +75,7 @@ void app_programStart(void){
 
     /* Connect to the bus */
     r = sd_bus_open_system(&bus);
-    dbusError(r, "Failed to connect to system bus:");
+    dbusError(r, "Failed to connect to system bus.");
 
     CO_OD_configure(CO->SDO[0], 0x3100, CB_ODF_3100, NULL, 0, 0U);
 
@@ -134,11 +134,11 @@ CO_SDO_abortCode_t CB_ODF_3100(CO_ODF_arg_t *ODF_arg) {
                            &error,
                            &m,
                            NULL);
-    dbusError(r, "Failed to issue method call:");
+    dbusError(r, "Failed to issue method call.");
 
     /* Parse the response message */
     r = sd_bus_message_read(m, "s", &file_path);
-    dbusError(r, "Failed to parse response message:");
+    dbusError(r, "Failed to parse response message.");
 
     if(file_path != NULL)
         APP_ODF_3002(file_path);
