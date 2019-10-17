@@ -17,6 +17,9 @@ static sd_bus_slot *slot = NULL;
 static sd_bus *bus = NULL;
 
 
+/*****************************************************************************/
+
+
 void dbusError(int r, char* err) {
     if (r < 0)
         fprintf(stderr, "%s %s\n", err, strerror(-r));
@@ -35,6 +38,21 @@ void dbusErrorExit(int r, char* err) {
 
 /*****************************************************************************/
 /* client */
+
+
+// callback for reading the data signal
+static int hello_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_error) {
+    int r;
+    char * message_string = NULL;
+
+    r = sd_bus_message_read(m, "s", &message_string);
+    dbusError(r, "Failed to parse hello signal");
+
+    printf("%s\n", message_string);
+
+    return 0;
+}
+
 
 
 // callback for reading the data signal
@@ -58,6 +76,13 @@ int client(void) {
     /* Connect to the bus */
     r = sd_bus_open_system(&bus);
     dbusErrorExit(r, "Failed to connect to system bus.");
+
+    r = sd_bus_add_match(bus,
+                         &slot,
+                         "type='signal', path='"OBJECT_PATH"', interface='"INTERFACE_NAME"', member='HelloSignal'", 
+                         hello_signal_cb, 
+                         NULL);
+    dbusErrorExit(r, "Add data signal match error.");
 
     r = sd_bus_add_match(bus,
                          &slot,
@@ -100,7 +125,7 @@ int server(void) {
 
     /* Take a well-known service name so that clients can find us */
     r = sd_bus_request_name(bus, BUS_NAME, SD_BUS_NAME_ALLOW_REPLACEMENT);
-    dbusErrorExit(r, "Failed to acquire service name. \nIs org.example.project.oresat.conf in /etc/dbus-1/system.d/ or /usr/share/dbus-1/system.d/ ?");
+    dbusError(r, "Failed to acquire service name. \nIs "INTERFACE_NAME".conf in /etc/dbus-1/system.d/ ?");
 
     while(1) {
         //send messages
@@ -139,7 +164,7 @@ int server(void) {
 
 
 static void print_input_error(void) {
-    printf("Input error \nsudo ./sd-dbus-method-example <Mode> \nWhere <Mode> is server or client.\n");
+    printf("Input error \nsudo ./sd-dbus-signal-example <Mode> \nWhere <Mode> is server or client.\n");
 }
 
 
@@ -149,9 +174,9 @@ int main(int argc, char *argv[]) {
     if(argc != 2)
         print_input_error();
 
-    if(strncmp(argv[1], "server", strlen(argv[1]) == 0))
+    if(strncmp(argv[1], "server", strlen(argv[1])) == 0)
         ret = server();
-    else if(strncmp(argv[1], "client", strlen(argv[1]) == 0))
+    else if(strncmp(argv[1], "client", strlen(argv[1])) == 0)
         ret = client();
     else
         print_input_error();
