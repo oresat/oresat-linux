@@ -25,7 +25,7 @@ def client():
     reply = the_object.Multiply(14, 23)
     print("Returned: {}\n".format(reply))
 
-    print("Quit Method Called\n")
+    print("Quit Method Called")
     the_object.Quit()
 
 

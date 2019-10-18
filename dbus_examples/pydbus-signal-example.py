@@ -80,7 +80,8 @@ def server():
     bus.publish(INTERFACE_NAME, emit)
 
     # loop signal emit
-    GLib.timeout_add_seconds(interval=1, function=send_signals) 
+    GLib.timeout_add_seconds(interval=1, function=send_Hello_signal) 
+    GLib.timeout_add_seconds(interval=3, function=send_data_signal) 
 
     # Run loop with graceful ctrl C exiting.
     try:

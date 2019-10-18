@@ -46,6 +46,8 @@ int call_hello_method(sd_bus *bus) {
     char *return_string;
     int r;
 
+    printf("Calling Hello method\n");
+
     if(bus == NULL)
         return -1;
 
@@ -64,7 +66,7 @@ int call_hello_method(sd_bus *bus) {
     r = sd_bus_message_read(m, "s", &return_string);
     dbusError(r, "Failed to parse response message:");
 
-    printf("%s\n", return_string);
+    printf("Returned: %s\n\n", return_string);
 
     sd_bus_error_free(&error);
     sd_bus_message_unref(m);
@@ -77,6 +79,8 @@ int call_multiply_method(sd_bus *bus) {
     sd_bus_message *m = NULL;
     int32_t return_int;
     int r;
+
+    printf("Calling Multiply method\n");
 
     if(bus == NULL)
         return -1;
@@ -97,7 +101,7 @@ int call_multiply_method(sd_bus *bus) {
     r = sd_bus_message_read(m, "i", &return_int);
     dbusError(r, "Failed to parse response message.");
 
-    printf("%d\n", return_int);
+    printf("Returned: %d\n\n", return_int);
 
     sd_bus_error_free(&error);
     sd_bus_message_unref(m);
@@ -109,6 +113,8 @@ int call_quit_method(sd_bus *bus) {
     sd_bus_error error = SD_BUS_ERROR_NULL;
     sd_bus_message *m = NULL;
     int r;
+
+    printf("Quit Method Called\n");
 
     if(bus == NULL)
         return -1;
@@ -138,6 +144,7 @@ int client(void) {
     dbusError(r, "Failed to connect to system bus:");
 
     /* Call methods */
+
     r = call_hello_method(bus);
     dbusError(r, "Hello Method call failed");
 
