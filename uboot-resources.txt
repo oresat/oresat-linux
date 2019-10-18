@@ -1,0 +1,16 @@
+Links for U-Boot:
+
+Because BBB is arm based, to learn what arm expects from boot loader:
+https://wiki.osdev.org/ARM_Overview
+
+Crash course on boot loaders:
+https://manybutfinite.com/post/kernel-boot-process/
+
+This guy does a lot of examples and such for low level programming/bootloaders:
+https://github.com/cirosantilli/x86-bare-metal-examples
+
+Resource that OSDev.org refers to read often:
+https://software.intel.com/en-us/download/intel-64-and-ia-32-architectures-sdm-combined-volumes-1-2a-2b-2c-2d-3a-3b-3c-3d-and-4
+
+Overall goto resource:
+https://wiki.osdev.org/Expanded_Main_Page
