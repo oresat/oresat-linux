@@ -1,3 +1,3 @@
-sd-bus-method-client 
-sd-bus-signal-client
-sd-bus-property-client
+sd-bus-method-example
+sd-bus-property-example
+sd-bus-signal-example
