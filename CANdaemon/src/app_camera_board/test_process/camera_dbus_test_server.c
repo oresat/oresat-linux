@@ -59,7 +59,7 @@ static int lastest_image(sd_bus_message *m, void *systemdata, sd_bus_error *ret_
 
 static const sd_bus_vtable method_vtable[] = {
         SD_BUS_VTABLE_START(0),
-        SD_BUS_METHOD("LastestImage", NULL, "s", lastest_image, SD_BUS_VTABLE_UNPRIVILEGED),
+        SD_BUS_METHOD("LatestImage", NULL, "s", lastest_image, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_VTABLE_END
 };
 
