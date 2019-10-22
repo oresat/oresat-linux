@@ -16,6 +16,12 @@ UPDATER_INTERFACE ?= 0#Linux Updater dbus interface
 DEBUG ?= 1# Debug flags
 
 
+#System Setting
+DFLAGS= -DFILE_TRANSFER_MAX_SIZE=5000000    \
+       	-DCO_SDO_BUFFER_SIZE=65535          \
+	-DFILE_PATH_MAX_LENGTH=200
+
+
 ##############################################################################
 # General and files
 
@@ -97,7 +103,7 @@ CANDAEMON_OBJS = $(CANDAEMON_SOURCES:%.c=%.o)
 CANOPEND_OBJS = $(CANOPEND_SOURCES:%.c=%.o)
 
 %.o: %.c
-	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@ $(DFLAGS)
 
 all: candaemon canopend canopencomm
 
