@@ -46,7 +46,6 @@
 /* Static Variables */
 static volatile int     endProgram = 0;
 static sd_bus          *bus = NULL;
-static sd_bus_error     error = SD_BUS_ERROR_NULL;
 
 
 /* Static Functions */
@@ -115,6 +114,7 @@ void app_program1ms(void){
 
 CO_SDO_abortCode_t CB_ODF_3100(CO_ODF_arg_t *ODF_arg) {
     CO_SDO_abortCode_t ret = CO_SDO_AB_NONE;
+    sd_bus_error err = SD_BUS_ERROR_NULL;
     sd_bus_message *m = NULL;
     uint8_t temp = 0;
     char *file_path;
@@ -131,7 +131,7 @@ CO_SDO_abortCode_t CB_ODF_3100(CO_ODF_arg_t *ODF_arg) {
                            OBJECT_PATH,
                            INTERFACE_NAME,
                            "LatestImage",
-                           &error,
+                           &err,
                            &m,
                            NULL);
     dbusError(r, "Failed to issue method call.");
@@ -143,6 +143,7 @@ CO_SDO_abortCode_t CB_ODF_3100(CO_ODF_arg_t *ODF_arg) {
     if(file_path != NULL)
         APP_ODF_3002(file_path);
 
+    sd_bus_error_free(&err;
     sd_bus_message_unref(m);
 
     ODF_arg->lastSegment = true;
