@@ -22,10 +22,9 @@ DEBUG ?= 1# Debug flags
 
 CC = gcc
 CFLAGS = -Wall $(shell pkg-config --cflags libsystemd)
-LDFLAGS = -lrt -pthread $(shell pkg-config --libs libsystemd)
+LFLAGS = -lrt -pthread $(shell pkg-config --libs libsystemd)
 
 
-STACKDRV_SRC =		../../CANopenNode/stack/socketCAN
 STACK_SRC =     	../../CANopenNode/stack
 CANOPENNODE_SRC = 	../../CANopenNode
 CANOPENCOMM_SRC = 	../../CANopenComm
@@ -34,8 +33,7 @@ APP_SRC =		./source
 OBJDICT_SRC =           ./source/objDict
 
 
-INCLUDE_DIRS =	-I$(STACKDRV_SRC)	            \
-		-I$(STACK_SRC)		            \
+INCLUDE_DIRS =	-I$(STACK_SRC)		            \
 		-I$(CANOPENNODE_SRC)	            \
 		-I$(CANOPENCOMM_SRC)                \
 		-I$(COMMON_SRC)                     \
@@ -44,8 +42,8 @@ INCLUDE_DIRS =	-I$(STACKDRV_SRC)	            \
 
 
 SOURCES =	$(COMMON_SRC)/CO_driver.c           \
-		$(STACKDRV_SRC)/CO_OD_storage.c     \
-		$(STACKDRV_SRC)/CO_Linux_tasks.c    \
+		$(COMMON_SRC)/CO_OD_storage.c       \
+		$(COMMON_SRC)/CO_Linux_tasks.c      \
 		$(STACK_SRC)/crc16-ccitt.c          \
 		$(STACK_SRC)/CO_SDO.c               \
 		$(STACK_SRC)/CO_Emergency.c         \
@@ -106,12 +104,12 @@ all: candaemon canopend canopencomm
 candaemon: $(CANDAEMON_OBJS)
 	bash -c "echo - > od_storage"
 	bash -c "echo - > od_storage_auto"
-	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE_DIRS) $^ -o $@
+	$(CC) $(CFLAGS) $(LFLAGS) $(INCLUDE_DIRS) $^ -o $@
 
 canopend: $(CANOPEND_OBJS)
 	bash -c "echo - > od_storage"
 	bash -c "echo - > od_storage_auto"
-	$(CC) $(LDFLAGS) $(INCLUDE_DIRS) $^ -o $@
+	$(CC) $(LFLAGS) $(INCLUDE_DIRS) $^ -o $@
 
 canopencomm:
 	$(CC) $(CANOPENCOMM_SRC)/CANopenCommand.c -o $@
