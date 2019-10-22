@@ -17,14 +17,51 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+
 pthread_mutex_t APP_ODF_mtx;
 #define APP_LOCK_ODF()            {if(pthread_mutex_lock(&APP_ODF_mtx) != 0) CO_errExit("Mutex lock CO_OD_mtx failed");}
 #define APP_UNLOCK_ODF()          {if(pthread_mutex_unlock(&APP_ODF_mtx) != 0) CO_errExit("Mutex unlock CO_OD_mtx failed");}
 
+#ifndef FILE_RECEIVE_FOLDER 
+    #define FILE_RECEIVE_FOLDER "/tmp/received_files/"
+#endif
+#ifndef FILE_SEND_FOLDER
+    #define FILE_SEND_FOLDER "/tmp/send_files/"
+#endif
+#ifndef FILE_TRANSFER_MAX_SIZE
+    #define FILE_TRANSFER_MAX_SIZE 6000
+#endif
+#ifndef FILE_PATH_MAX_LENGTH 
+    #define FILE_PATH_MAX_LENGTH 100
+#endif
 
+
+/******************************************************************************/
+/* data structures */
+
+
+/**
+ * Object Dictionary storage object for receiving files.
+ *
+ * Object is used with CANopen OD objects that are for file transfer.
+ */
+typedef struct {
+    char        fileName[FILE_PATH_MAX_LENGTH];
+    uint32_t    fileSize;
+    int8_t      fileData[FILE_TRANSFER_MAX_SIZE];
+    uint8_t     filesAvalible;
+} file_buffer_t;
+
+
+/******************************************************************************/
 /* Static Variables */
+
+
 static file_buffer_t odReceiveFileBuffer;     /* for OD entry 0x3001 */
 static file_buffer_t odSendFileBuffer;        /* for OD entry 0x3002 */
+
+
+/******************************************************************************/
 
 
 void app_ODF_configure(void){
@@ -37,7 +74,8 @@ void app_ODF_configure(void){
 
 
 /******************************************************************************/
-/* receiveing incoming file, OD entry 3001 */
+/* Receiveing incoming file, OD entry 3001 */
+
 
 CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg) {
     file_buffer_t *odFileBuffer;
@@ -113,7 +151,168 @@ CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg) {
 
 
 /******************************************************************************/
-/* send file, OD entry 3002 */
+/* Send file, OD entry 3002 */
+
+
+/**
+* Wrapper funciton for CO_ODF_3002. Checks the directory for any files.
+*
+* @return 0 on sucess, and sets filePath,
+*/
+static int32_t find_file(char *directory, char *filePath){
+    int32_t ret = 1;
+    DIR *d;
+    struct dirent *dir;
+    int a, b;
+
+    d = opendir(directory);
+    if(d != NULL) { /* directory found */
+        while((dir = readdir(d)) != NULL) {
+            a = strncmp(dir->d_name, ".", sizeof(dir->d_name));
+            b = strncmp(dir->d_name, "..", sizeof(dir->d_name));
+
+            if(a != 0 && b != 0) {
+                /* file found, make path */
+                strncpy(filePath, directory, strlen(directory) + 1);
+                strncat(filePath, dir->d_name, strlen(dir->d_name) + 1);
+                ret = 0;
+                break;
+            }
+        }
+        
+        closedir(d);
+    }
+    else /* directory not found */
+        ret = 1;
+
+    return ret;
+}
+
+
+/**
+* Wrapper funciton for CO_ODF_3002. Remove the path from the file path name.
+*
+* @return 0 on success, and sets fileName.
+*/
+static int32_t get_file_name(const char *filePath, char *fileName) {
+    int32_t ret = 0;
+    uint16_t size;
+    uint16_t size_new;
+    uint16_t start;
+
+    if(filePath == NULL || filePath[0] == '\0')
+        return 1;
+
+    size = strlen(filePath) + 1;
+    size_new = size;
+    start = size - 1;
+    
+    /* find right most '/' */
+    while(start > 0) {
+        if(filePath[start] == '/') {
+            ++start;
+            size_new = size - start;
+            break;
+        }
+        --start;
+    }
+
+    if(size_new <= FILE_PATH_MAX_LENGTH) {
+        /* copy only file name */
+        strncpy(fileName, &filePath[start], size_new);
+        fileName[size_new] = '\0';
+    }
+    else
+        ret = 1; /* error, data too big for buffer */
+
+    return ret;
+}
+
+
+/**
+* Wrapper funciton for CO_ODF_3002. Read in file and gets its size.
+*
+* @return 0 on sucess, and sets fileData and fileSize.
+*/
+static int32_t get_file_data(const char *filePath, int8_t *fileData,  uint32_t *fileSize) {
+    uint32_t ret = 0;
+    uint32_t size = 0;
+    FILE *f;
+
+    if(filePath == NULL || filePath[0] == '\0')
+        return 1;
+
+    f = fopen(filePath, "r");
+    if(f != NULL) {
+        fseek(f, 0, SEEK_END);
+        size = ftell(f);
+        *fileSize = size;
+
+        if(size != 0) {
+            fseek(f, 0, 0);
+
+            // read into buffer
+            fread(fileData, size, 1, f);
+        }
+        else
+            ret = 1; /* error data too big for buffer */
+
+        fclose(f);
+    }
+    else 
+        ret = 2; /* file not found */
+
+    return ret;
+}
+
+
+/**
+ * Wrapper function used by CP_ODF_3002 to write file data into SDO buffer from struct. 
+ * It can handle spilting large data files into multiple segments.
+ * */
+static CO_SDO_abortCode_t read_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *odFileBuffer) {
+    if( ODF_arg == NULL || odFileBuffer == NULL)
+        return CO_SDO_AB_NO_DATA;
+
+    if(ODF_arg->offset == 0) { /* 1st segment */
+        if(odFileBuffer->fileSize > FILE_TRANSFER_MAX_SIZE) 
+            return CO_SDO_AB_OUT_OF_MEM; /* file is larger than domain buffer */
+        
+        ODF_arg->dataLengthTotal = odFileBuffer->fileSize;
+
+        if(odFileBuffer->fileSize <= CO_SDO_BUFFER_SIZE) {
+            /* only need 1 segment */
+            ODF_arg->lastSegment = true;
+            ODF_arg->dataLength = odFileBuffer->fileSize;
+        }
+        else { 
+            /* multiple segments needed */
+            ODF_arg->dataLength = CO_SDO_BUFFER_SIZE;
+            ODF_arg->dataLengthTotal = odFileBuffer->fileSize;
+        }
+    }
+    else { /* not 1st segment */
+        uint32_t next_seg_len = ODF_arg->dataLengthTotal - ODF_arg->offset;
+        if(next_seg_len > CO_SDO_BUFFER_SIZE) {
+            /* more segments needed */
+            ODF_arg->dataLength = CO_SDO_BUFFER_SIZE;
+        }
+        else {
+            /* last segement */
+            ODF_arg->lastSegment = true;
+            ODF_arg->dataLength = next_seg_len;
+        }
+    }
+
+    /* copy data */
+    memcpy(ODF_arg->data, &odFileBuffer->fileData[ODF_arg->offset], ODF_arg->dataLength);
+
+    /* update offset for next call */
+    ODF_arg->offset += ODF_arg->dataLength; 
+
+    return CO_SDO_AB_NONE;
+}
+
 
 CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
     file_buffer_t *odFileBuffer;
@@ -190,36 +389,6 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
     return ret;
 }
 
-int32_t find_file(char *directory, char *filePath){
-    int32_t ret = 1;
-    DIR *d;
-    struct dirent *dir;
-    int a, b;
-
-    d = opendir(directory);
-    if(d != NULL) { /* directory found */
-        while((dir = readdir(d)) != NULL) {
-            a = strncmp(dir->d_name, ".", sizeof(dir->d_name));
-            b = strncmp(dir->d_name, "..", sizeof(dir->d_name));
-
-            if(a != 0 && b != 0) {
-                /* file found, make path */
-                strncpy(filePath, directory, strlen(directory) + 1);
-                strncat(filePath, dir->d_name, strlen(dir->d_name) + 1);
-                ret = 0;
-                break;
-            }
-        }
-        
-        closedir(d);
-    }
-    else /* directory not found */
-        ret = 1;
-
-    return ret;
-}
-
-
 
 int32_t APP_ODF_3002(const char *filePath) {
     int32_t ret = 0;
@@ -252,71 +421,5 @@ int32_t APP_ODF_3002(const char *filePath) {
 }
 
 
-int32_t get_file_name(const char *filePath, char *fileName) {
-    int32_t ret = 0;
-    uint16_t size;
-    uint16_t size_new;
-    uint16_t start;
-
-    if(filePath == NULL || filePath[0] == '\0')
-        return 1;
-
-    size = strlen(filePath) + 1;
-    size_new = size;
-    start = size - 1;
-    
-    /* find right most '/' */
-    while(start > 0) {
-        if(filePath[start] == '/') {
-            ++start;
-            size_new = size - start;
-            break;
-        }
-        --start;
-    }
-
-    if(size_new <= FILE_PATH_MAX_LENGTH) {
-        /* copy only file name */
-        strncpy(fileName, &filePath[start], size_new);
-        fileName[size_new] = '\0';
-    }
-    else
-        ret = 1; /* error, data too big for buffer */
-
-    return ret;
-}
-
-
-int32_t get_file_data(const char *filePath, int8_t *fileData,  uint32_t *fileSize) {
-    uint32_t ret = 0;
-    uint32_t size = 0;
-    FILE *f;
-
-    if(filePath == NULL || filePath[0] == '\0')
-        return 1;
-
-    f = fopen(filePath, "r");
-    if(f != NULL) {
-        fseek(f, 0, SEEK_END);
-        size = ftell(f);
-        *fileSize = size;
-
-        if(size != 0) {
-            fseek(f, 0, 0);
-
-            // read into buffer
-            fread(fileData, size, 1, f);
-        }
-        else
-            ret = 1; /* error data too big for buffer */
-
-        fclose(f);
-    }
-    else 
-        ret = 2; /* file not found */
-
-    return ret;
-}
-
-
 /******************************************************************************/
+/* TBD */
