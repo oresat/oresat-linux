@@ -344,7 +344,7 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
                 return CO_SDO_AB_NO_DATA; 
             }
             
-            ret = read_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *odFileBuffer);
+            ret = read_file_data(ODF_arg, odFileBuffer);
         }
         else if(ODF_arg->subIndex == 3) { /* load file from folder */
             if(odFileBuffer->filesAvalible == 0) {
