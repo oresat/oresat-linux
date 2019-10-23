@@ -1,14 +1,14 @@
-# Installing arch linux on beaglebone
+# Installing Arch Linux on beaglebone 
 
-## Making u-boot file for beaglebone on arch host machine
+## Making u-boot files for beaglebone on host machine running Arch
 - Get arm compiler
     - `pacman -S arm-none-eabi-gdb arm-none-eabi-gcc arm-none-eabi-binutils`
 - Get uboot
-    - `git clone https://github.com/u-boot/u-boot`
+    - `git clone https://github.com/u-boot/u-boot.git`
 - Make MLO and u-boot.img
     - `cd u-boot`
     - `make am335x_evm_defconfig`
-    - `ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- make`
+    - `ARCH=arm CROSS_COMPILE=arm-none-eabi- make`
 
 ## SD card with arch linux:
 Replace **sdX** with device name. The `lsblk` command can be used to find the device name. Run all command commands as root. Based off of [armlinuxarm guide](https://archlinuxarm.org/platforms/armv7/ti/beaglebone-black).
