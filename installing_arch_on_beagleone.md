@@ -31,8 +31,8 @@ Replace **sdX** with device name. The `lsblk` command can be used to find the de
     - `bsdtar -xpf ArchLinuxARM-am33x-latest.tar.gz -C mnt`
     - `sync`
 - Install the U-Boot bootloader:
-    - `dd if=mnt/boot/MLO of=/dev/sdX count=1 seek=1 conv=notrunc bs=128k`
-    - `dd if=mnt/boot/u-boot.img of=/dev/sdX count=2 seek=1 conv=notrunc bs=384k`
+    - `dd if=MLO of=/dev/sdX count=1 seek=1 conv=notrunc bs=128k`
+    - `dd if=u-boot.img of=/dev/sdX count=2 seek=1 conv=notrunc bs=384k`
     - `cp MLO mnt/boot/MLO`
     - `cp u-boot.img mnt/boot/u-boot.img`
     - `umount mnt`
