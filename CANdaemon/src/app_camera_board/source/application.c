@@ -90,7 +90,6 @@ void app_communicationReset(void){
 
 /******************************************************************************/
 void app_programEnd(void){
-    sd_bus_error_free(&error);
     sd_bus_unref(bus);
 
     return;
@@ -143,7 +142,7 @@ CO_SDO_abortCode_t CB_ODF_3100(CO_ODF_arg_t *ODF_arg) {
     if(file_path != NULL)
         APP_ODF_3002(file_path);
 
-    sd_bus_error_free(&err;
+    sd_bus_error_free(&err);
     sd_bus_message_unref(m);
 
     ODF_arg->lastSegment = true;

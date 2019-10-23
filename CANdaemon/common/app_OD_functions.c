@@ -267,7 +267,7 @@ static int32_t get_file_data(const char *filePath, int8_t *fileData,  uint32_t *
 
 
 /**
- * Wrapper function used by CP_ODF_3002 to write file data into SDO buffer from struct. 
+ * Wrapper function used by CP_ODF_3002 to read file data into SDO buffer from struct. 
  * It can handle spilting large data files into multiple segments.
  * */
 static CO_SDO_abortCode_t read_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *odFileBuffer) {
@@ -338,18 +338,13 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
             }
         }
         else if(ODF_arg->subIndex == 2) { /* file data */
+
             if(odFileBuffer->fileSize == 0) { /* error, no data to read */
                 APP_UNLOCK_ODF();
                 return CO_SDO_AB_NO_DATA; 
             }
-
-            /* check if new data will fit in struct */
-            if(odFileBuffer->fileSize > FILE_TRANSFER_MAX_SIZE)
-                ret = CO_SDO_AB_OUT_OF_MEM; 
-            else {
-                ODF_arg->dataLength = odFileBuffer->fileSize;
-                memcpy(ODF_arg->data, odFileBuffer->fileData, ODF_arg->dataLength);
-            }
+            
+            ret = read_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *odFileBuffer);
         }
         else if(ODF_arg->subIndex == 3) { /* load file from folder */
             if(odFileBuffer->filesAvalible == 0) {
