@@ -37,4 +37,3 @@ Replace **sdX** with device name. The `lsblk` command can be used to find the de
     - `cp u-boot.img mnt/boot/u-boot.img`
     - `umount mnt`
     - `sync`
-- 
