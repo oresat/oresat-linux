@@ -1,10 +1,5 @@
-<div align="center">
-  <h1>
-  <br> OreSat-Linux </br>
-  </h1>
-</div>
-
-This repo has all the general design and code for all 4 linux boards on OreSat. :qThe four boards being [GPS], [StarTracker], [OreSatLive], and Cirrus Flux Camera (CFC).
+# OreSat-Linux
+This repo has all the general design and code for all 4 linux boards on OreSat. The four boards being [GPS], [StarTracker], [OreSatLive], and Cirrus Flux Camera (CFC).
 
 All A8 onboard OreSat will run 3 process; the CANdaemon, the updater, and the main process.
 
