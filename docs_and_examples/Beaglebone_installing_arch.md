@@ -1,10 +1,11 @@
 # Installing Arch Linux on Beaglebone 
+This guide will make a bootable Arch linux sd card for Beaglebone Blacks and pocketbeagels. There is [archlinuxarm guide] for getting Arch to work on the Beaglebone Black, but it will not work on the pocketbeagle. The pocketbeagle requires a newer u-boot.
 
 ## Making u-boot files for Beaglebone
 Follow [Uboot Notes](uboot-resources.md) to make MLO and u-boot.img files.
 
 ## SD card with Arch linux:
-Replace **sdX** with device name. The `lsblk` command can be used to find the device name. Run all command commands as root. Based off of [armlinuxarm guide](https://archlinuxarm.org/platforms/armv7/ti/beaglebone-black).
+Replace **sdX** with device name. The `lsblk` command can be used to find the device name. Run all command commands as root. Mostly a copy of [archlinuxarm guide]
 
 - Zero the SD card:
     - `dd if=/dev/zero of=/dev/sdX bs=1M count=8`
@@ -67,3 +68,5 @@ Mostly likely the Beaglebone will have some hardware clock / passwd error. So a 
 - `usermod -G wheel alarm` Add alarm to wheel group.
 - `groups alarm` Check if alarm is in the wheel group.
 
+<!-- References --> 
+[archlinuxarm guide]:https://archlinuxarm.org/platforms/armv7/ti/beaglebone-black
