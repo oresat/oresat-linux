@@ -51,6 +51,7 @@ void dbusAssertFailure(int r, char* err) {
 
 
 static int lastest_image(sd_bus_message *m, void *systemdata, sd_bus_error *ret_error) {
+    int r;
     sprintf(file_name, "captures/capture_%03d.bmp", capture_num);
     get_image(file_name);
     ++capture_num;
