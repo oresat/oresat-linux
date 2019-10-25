@@ -39,9 +39,9 @@ Replace **sdX** with device name. The `lsblk` command can be used to find the de
     - `sync`
 
 ## Powering on Beaglebone Black
-- On a Linux laptop run `ls /dev`
+- On a Linux laptop run `ls /dev/tty*`
 - Using a serial to usb cable connect a Beaglebone Black to latop running Linux.
-- On the Linux laptop run `ls /dev` again, you should see a new entry like ttyUSB0
+- On the Linux laptop run `ls /dev/tty*` again, you should see a new entry like ttyUSB0
 - connect power usb to Beaglebone black
 - Run `screen ttyUSB0 115200` on the laptop to connected to the Beaglebone.
 - Use the user: alarm and password: alarm
