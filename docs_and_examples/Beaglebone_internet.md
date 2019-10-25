@@ -1,4 +1,4 @@
-# BeagleBone Notes
+# Beaglebone internet notes
 
 ## Routing Internet to Beaglebone from a linux host laptop
 - On the Beaglebone terminal
@@ -10,18 +10,4 @@
     - `sudo sysctl net.ipv4.ip_forward=1`
     - `iptables --table nat --append POSTROUTING --out-interface <INTERNET_INTERFACE> -j MASQUERADE`
     - `iptables --append FORWARD --in-interface <BBB_INTERFACE> -j ACCEPT`
-
-## Enabling CANbus on the BeagleBone
-- Edit /boot/uEnt.txt
-    - add line `dtb-overlay=/lib/firmware/BB-CAN1-00A0.dtbo` under Custom Cape
-    - comment out `enable_uboot_cape_universal=1`
-    - reboot BeagleBone
-- Turn on CAN0
-    - `sudo ip link set can0 up type can bitrate 1000000`
-
-## DBus dependencies on BeagleBone
-### For sd-bus
-- gcc, make, libsystemd-dev, pkg-source
-### For pydbus
-- python3, gbus, python-pydbus, gbus-gLib, glib2, glibc
 

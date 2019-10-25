@@ -7,21 +7,13 @@
 
 ## System vs User Bus
  - There is only one system bus, while every user has a user (also called session) bus.
- - To use the system dbus add a dbus config file to /etc/dbus-1/sytem.d/. This file will define who can access that dbus interface. [example conf] (./CANdaemon/dbus_examples/org.example.project.oresat.conf)
+ - To use the system dbus add a dbus config file to /etc/dbus-1/sytem.d/ or /usr/shar/dbus-1/system.d/. This file will define who can access that dbus interface. [example conf] (./dbus_examples/org.example.project.oreSat.conf)
 
 ## busctl
  - busctl is a way to monitor dbus interfaces in a terminal
  - To list all system dbus interfaces `busctl`
  - To list all session (user) dbus interfaces `busctl --user`
  - To show all methods, signals, and properties for that dbus interface. `busctl introspect <DBUS-INTERFACE> <DBUS-PATH>`
-
-## Enabling CANbus on the BeagleBone
-- Edit /boot/uEnt.txt
-    - add line `dtb-overlay=/lib/firmware/BB-CAN1-00A0.dtbo` under Custom Cape
-    - comment out `enable_uboot_cape_universal=1`
-    - reboot BeagleBone
-- Turn on CAN0
-    - `sudo ip link set can0 up type can bitrate 1000000`
 
 ## DBus dependencies on BeagleBone
 ### For sd-bus
