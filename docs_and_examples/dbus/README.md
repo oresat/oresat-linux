@@ -15,11 +15,13 @@
  - To list all session (user) dbus interfaces `busctl --user`
  - To show all methods, signals, and properties for that dbus interface. `busctl introspect <DBUS-INTERFACE> <DBUS-PATH>`
 
-## DBus dependencies on BeagleBone
-### For sd-bus
-- gcc, make, libsystemd-dev, pkg-source
-### For pydbus
-- python3, gbus, python-pydbus, gbus-gLib, glib2, glibc
+## Example depenedices for debian
+- For the sd-bus version: `apt install gcc make libsystemd-dev pkg-source`
+- For the Python version: `apt install python3 python-pydbus libglib2.0`
+
+## Example depenedices for arch
+- For the sd-bus version: `pacman -S gcc make pkg-source`
+- For the Python version: `pacman -S python3 python-pydbus glib-dbus`
 
 ## Usefull Links
  -  [DBus-Specs](https://dbus.freedesktop.org/doc/dbus-specification.html)
