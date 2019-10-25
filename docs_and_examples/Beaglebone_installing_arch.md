@@ -66,7 +66,11 @@ Replace **sdX** with device name. The `lsblk` command can be used to find the de
     - `pacman-key --init`
     - `pacman-key --populate archlinuxarm`
 - `pacman -Syu` to update system
-- `pacman -S make gcc python3 git pkg-config dtc` Install usefull packages as needed.
+- `pacman -S make vim gcc python3 git pkg-config dtc` Install usefull packages as needed.
 
-
+# Make alarm user a sudoer
+- `pacman -S sudo`
+- `EDITOR=vim visudo` and Uncomment out `%wheel ALL=(ALL) ALL`
+- `usermod -G wheel alarm` Add alarm to wheel group.
+- `groups alarm` Check if alarm is in the wheel group.
 
