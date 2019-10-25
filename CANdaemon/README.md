@@ -9,7 +9,7 @@
   </h4>
 </div>
 
-The CANdaemon is [CANopenSocket], but with dbus interfaces to commicate with other process. Currently, the CANdaemon can commicate with main process ([GPS], [StarTracker], OreSat Live, or the Cirrus Flux Camera process) and the Linux Updater.
+The CANdaemon is [CANopenSocket], but with dbus interfaces to commicate with other process. Currently, the CANdaemon can commicate with main process ([GPS], [StarTracker], [OreSatLive], or the Cirrus Flux Camera process) and the Linux Updater.
 
 ## Features
 - Follows the CiA (CAN-in-Automation) specs for [CANopen-Specs]. 
@@ -47,6 +47,7 @@ The CANdaemon is [CANopenSocket], but with dbus interfaces to commicate with oth
 <!-- Other oresat repos -->
 [GPS]:https://github.com/oresat/oresat-gps-software
 [StarTracker]:https://github.com/oresat/oresat-star-tracker
+[OreSatLive]:https://github.com/oresat/oresat-dxwifi-software
 
 <!-- References --> 
 [CANopenSocket]:https://github.com/CANopenNode/CANopenSocket
