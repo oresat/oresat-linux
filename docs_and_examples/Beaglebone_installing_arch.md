@@ -44,7 +44,7 @@ Replace **sdX** with device name. The `lsblk` command can be used to find the de
 - On the Linux laptop run `ls /dev` again, you should see a new entry like ttyUSB0
 - connect power usb to Beaglebone black
 - Run `screen ttyUSB0 115200` on the laptop to connected to the Beaglebone.
-= Use the user: alarm and password: alarm
+- Use the user: alarm and password: alarm
 - Swap to root `su -` password: root. Sudo is not installed, so alarm user can't do much.
 
 ## Fixing hwclock
@@ -52,11 +52,11 @@ Replace **sdX** with device name. The `lsblk` command can be used to find the de
 - Run `systemctl --failed` to see if shadow.service has failed
 - If both pwck and shadow.service are working skip this section. 
     - Mostly likely they failed to the hardware clock being in the past with passwd set times in the future. 
-    - Run `hwclock --set --date='DD/MM/YYYY HH:MM:SS'` to set the hardware clock (use **UTC** time). 
-    - Run `hwclock -s` to override the system time with the hardware time.
+    - `hwclock --set --date='DD/MM/YYYY HH:MM:SS'` to set the hardware clock (use **UTC** time). 
+    - `hwclock -s` to override the system clock with the hardware clock.
 
 ## Connecting Beaglebone to the internet
-- plug in the Beagle into a router with a ethernet cable
+- plug in the Beaglebone into a router with a ethernet cable
 - `systemctl enable dhcpcd` to enable dhcp client daemon on startup
 - `systemctl start dhcpcd` to start dhcp client daemon
 - `ping www.google.com` to test connection. May need to do a reboot.
@@ -70,7 +70,7 @@ Replace **sdX** with device name. The `lsblk` command can be used to find the de
 
 ## Make alarm user a sudoer
 - `pacman -S sudo`
-- `EDITOR=vim visudo` and Uncomment out `%wheel ALL=(ALL) ALL`
+- run `EDITOR=vim visudo` and uncomment out `%wheel ALL=(ALL) ALL`
 - `usermod -G wheel alarm` Add alarm to wheel group.
 - `groups alarm` Check if alarm is in the wheel group.
 
