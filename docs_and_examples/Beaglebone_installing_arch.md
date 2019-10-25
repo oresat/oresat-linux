@@ -38,7 +38,9 @@ Replace **sdX** with device name. The `lsblk` command can be used to find the de
     - `umount mnt`
     - `sync`
 
-## Powering on Beaglebone Black
+Mostly likely the Beaglebone will have some hardware clock / passwd error. So a lot of stuff like ssh will not work.
+
+## Fixing hwclock
 - On a Linux laptop run `ls /dev/tty*`
 - Using a serial to usb cable connect a Beaglebone Black to latop running Linux.
 - On the Linux laptop run `ls /dev/tty*` again, you should see a new entry like ttyUSB0
@@ -46,20 +48,18 @@ Replace **sdX** with device name. The `lsblk` command can be used to find the de
 - Run `screen ttyUSB0 115200` on the laptop to connected to the Beaglebone.
 - Use the user: alarm and password: alarm
 - Swap to root `su -` password: root. Sudo is not installed, so alarm user can't do much.
-
-## Fixing hwclock
 - Run `pwck` short for passwd check. Will return nothing if it passes.
 - Run `systemctl --failed` to see if shadow.service has failed
 - If both pwck and shadow.service are working skip this section. 
-    - Mostly likely they failed to the hardware clock being in the past with passwd set times in the future. 
     - `hwclock --set --date='DD/MM/YYYY HH:MM:SS'` to set the hardware clock (use **UTC** time). 
     - `hwclock -s` to override the system clock with the hardware clock.
 
 ## Connecting Beaglebone to the internet
-- plug in the Beaglebone into a router with a ethernet cable
+- Plug in the Beaglebone into a router with a ethernet cable
 - `systemctl enable dhcpcd` to enable dhcp client daemon on startup
 - `systemctl start dhcpcd` to start dhcp client daemon
 - `ping www.google.com` to test connection. May need to do a reboot.
+- You should be able swap from serial to ssh now. Run `ip a` on beaglebone to ip address or get info from router.
 
 ## Update system
 - Intialize pacman keyring
