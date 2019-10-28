@@ -347,10 +347,11 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
             ret = read_file_data(ODF_arg, odFileBuffer);
         }
         else if(ODF_arg->subIndex == 3) { /* load file from folder */
+            /*
             if(odFileBuffer->filesAvalible == 0) {
                 APP_UNLOCK_ODF();
                 return CO_SDO_AB_NO_DATA;
-            }
+            }*/
 
             /* get file path if a file is in the send folder */
             char filePath[FILE_PATH_MAX_LENGTH];
@@ -359,7 +360,7 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
                 get_file_name(filePath, odFileBuffer->fileName);
                 get_file_data(filePath, odFileBuffer->fileData, &odFileBuffer->fileSize);
                 fprintf(stderr, "%d", odFileBuffer->fileSize);
-                --odFileBuffer->filesAvalible;
+                //--odFileBuffer->filesAvalible;
             }
             else /* no files */
                 ret = CO_SDO_AB_NO_DATA;
