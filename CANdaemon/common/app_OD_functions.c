@@ -157,13 +157,15 @@ CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg) {
 /**
 * Wrapper funciton for CO_ODF_3002. Checks the directory for any files.
 *
-* @return 0 on sucess, and sets filePath,
+* @return # of file availibe on sucess, and sets filePath if more than 0
+* files are available.
 */
 static int32_t find_file(char *directory, char *filePath){
-    int32_t ret = 1;
+    int32_t totalFiles = 0;
     DIR *d;
     struct dirent *dir;
     int a, b;
+    bool fileFound = 0;
 
     d = opendir(directory);
     if(d != NULL) { /* directory found */
@@ -172,20 +174,21 @@ static int32_t find_file(char *directory, char *filePath){
             b = strncmp(dir->d_name, "..", sizeof(dir->d_name));
 
             if(a != 0 && b != 0) {
-                /* file found, make path */
-                strncpy(filePath, directory, strlen(directory) + 1);
-                strncat(filePath, dir->d_name, strlen(dir->d_name) + 1);
-                ret = 0;
-                break;
+                if(fileFound == 1) {
+                    /* file found, make path */
+                    strncpy(filePath, directory, strlen(directory) + 1);
+                    strncat(filePath, dir->d_name, strlen(dir->d_name) + 1);
+                }
+                ++totalFiles;
             }
         }
         
         closedir(d);
     }
     else /* directory not found */
-        ret = 1;
+        totalFiles = 0;
 
-    return ret;
+    return totalFiles;
 }
 
 
@@ -274,11 +277,12 @@ static CO_SDO_abortCode_t read_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *o
     if( ODF_arg == NULL || odFileBuffer == NULL)
         return CO_SDO_AB_NO_DATA;
 
-    if(ODF_arg->offset == 0) { /* 1st segment */
+    if(ODF_arg->firstSegment == 1) { /* 1st segment */
         if(odFileBuffer->fileSize > FILE_TRANSFER_MAX_SIZE) 
             return CO_SDO_AB_OUT_OF_MEM; /* file is larger than domain buffer */
         
         ODF_arg->dataLengthTotal = odFileBuffer->fileSize;
+        ODF_arg->offset = 0;
 
         if(odFileBuffer->fileSize <= CO_SDO_BUFFER_SIZE) {
             /* only need 1 segment */
@@ -288,7 +292,6 @@ static CO_SDO_abortCode_t read_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *o
         else { 
             /* multiple segments needed */
             ODF_arg->dataLength = CO_SDO_BUFFER_SIZE;
-            ODF_arg->dataLengthTotal = odFileBuffer->fileSize;
         }
     }
     else { /* not 1st segment */
@@ -317,6 +320,7 @@ static CO_SDO_abortCode_t read_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *o
 CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
     file_buffer_t *odFileBuffer;
     CO_SDO_abortCode_t ret = CO_SDO_AB_NONE;
+    char filePath[FILE_PATH_MAX_LENGTH];
 
     odFileBuffer = (file_buffer_t*) ODF_arg->object;
 
@@ -347,20 +351,14 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
             ret = read_file_data(ODF_arg, odFileBuffer);
         }
         else if(ODF_arg->subIndex == 3) { /* load file from folder */
-            /*
-            if(odFileBuffer->filesAvalible == 0) {
-                APP_UNLOCK_ODF();
-                return CO_SDO_AB_NO_DATA;
-            }*/
-
             /* get file path if a file is in the send folder */
-            char filePath[FILE_PATH_MAX_LENGTH];
-            if(find_file(FILE_SEND_FOLDER, filePath) == 0) { /* files found */
+            odFileBuffer->filesAvalible = find_file(FILE_SEND_FOLDER, filePath);
+            if(odFileBuffer->fileData != 0) { /* files found */
                 /* read in file info into buffers */
-                get_file_name(filePath, odFileBuffer->fileName);
-                get_file_data(filePath, odFileBuffer->fileData, &odFileBuffer->fileSize);
-                fprintf(stderr, "%d", odFileBuffer->fileSize);
-                //--odFileBuffer->filesAvalible;
+                int32_t a = get_file_name(filePath, odFileBuffer->fileName);
+                int32_t b = get_file_data(filePath, odFileBuffer->fileData, &odFileBuffer->fileSize);
+                if(a != 0 || b != 0)
+                    ret = CO_SDO_AB_GENERAL; 
             }
             else /* no files */
                 ret = CO_SDO_AB_NO_DATA;
@@ -410,8 +408,6 @@ int32_t APP_ODF_3002(const char *filePath) {
         close(source);
         close(dest);
     }
-
-    ++odSendFileBuffer.filesAvalible;
 
     return ret; 
 }
