@@ -203,8 +203,8 @@ static uint32_t get_file_name(const char *filePath, char *fileName) {
     if(filePath == NULL || filePath[0] == '\0')
         return 0; /* error, input(s) invaild */
 
-    size = strlen(filePath);
-    pathNameSize = size + 1;
+    start = strlen(filePath);
+    pathNameSize = start + 1;
     
     /* find right most '/' */
     while(start > 0) {
