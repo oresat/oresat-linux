@@ -174,10 +174,11 @@ static int32_t find_file(char *directory, char *filePath){
             b = strncmp(dir->d_name, "..", sizeof(dir->d_name));
 
             if(a != 0 && b != 0) {
-                if(fileFound == 1) {
+                if(fileFound != 1) {
                     /* file found, make path */
                     strncpy(filePath, directory, strlen(directory) + 1);
                     strncat(filePath, dir->d_name, strlen(dir->d_name) + 1);
+                    fileFound = 1;
                 }
                 ++totalFiles;
             }
@@ -185,8 +186,10 @@ static int32_t find_file(char *directory, char *filePath){
         
         closedir(d);
     }
-    else /* directory not found */
+    else { /* directory not found */
+        fprintf(stderr, "dir not found find_file \n");
         totalFiles = 0;
+    }
 
     return totalFiles;
 }
@@ -200,8 +203,10 @@ static int32_t find_file(char *directory, char *filePath){
 static uint32_t get_file_name(const char *filePath, char *fileName) {
     uint32_t pathNameSize, start, fileNameSize = 0;
 
-    if(filePath == NULL || filePath[0] == '\0')
+    if(filePath == NULL || filePath[0] == '\0') {
+        fprintf(stderr, "input error get_file_name\n");
         return 0; /* error, input(s) invaild */
+    }
 
     start = strlen(filePath);
     pathNameSize = start + 1;
@@ -221,8 +226,10 @@ static uint32_t get_file_name(const char *filePath, char *fileName) {
         strncpy(fileName, &filePath[start], fileNameSize);
         fileName[fileNameSize] = '\0';
     }
-    else
+    else {
         fileNameSize = 0; /* error, data too big for buffer */
+        fprintf(stderr, "files too big\n");
+    }
 
     return fileNameSize;
 }
@@ -237,8 +244,10 @@ static uint32_t get_file_data(const char *filePath, int8_t *fileData) {
     uint32_t fileSize = 0;
     FILE *f;
 
-    if(filePath == NULL || filePath[0] == '\0')
+    if(filePath == NULL || filePath[0] == '\0') {
+        fprintf(stderr, "input error get file data\n");
         return 1;
+    }
 
     f = fopen(filePath, "r");
     if(f != NULL) {
@@ -343,15 +352,21 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
         else if(ODF_arg->subIndex == 3) { /* load file from folder */
             /* get file path if a file is in the send folder */
             odFileBuffer->filesAvalible = find_file(FILE_SEND_FOLDER, filePath);
+            fprintf(stderr, "%d file avalible\n", odFileBuffer->filesAvalible);
             if(odFileBuffer->filesAvalible != 0) { /* file(s) found */
+                fprintf(stderr, "%s avalible\n", filePath);
                 /* get the file name */
-                if(get_file_name(filePath, odFileBuffer->fileName) == 0)
+                if(get_file_name(filePath, odFileBuffer->fileName) == 0) {
+                    fprintf(stderr, "file name buffer size is 0\n");
                     ret = CO_SDO_AB_GENERAL; /* error with file */
+                }
 
                 /* get the file data */
                 odFileBuffer->fileSize = get_file_data(filePath, odFileBuffer->fileData);
-                if(odFileBuffer->fileSize == 0)
+                if(odFileBuffer->fileSize == 0) {
+                    fprintf(stderr, "file data buffer size is 0\n");
                     ret = CO_SDO_AB_GENERAL; /* error with file */
+                }
             }
             else /* no files */
                 ret = CO_SDO_AB_NO_DATA;
