@@ -343,7 +343,7 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
         else if(ODF_arg->subIndex == 3) { /* load file from folder */
             /* get file path if a file is in the send folder */
             odFileBuffer->filesAvalible = find_file(FILE_SEND_FOLDER, filePath);
-            if(odFileBuffer->fileData != 0) { /* file(s) found */
+            if(odFileBuffer->filesAvalible != 0) { /* file(s) found */
                 /* get the file name */
                 if(get_file_name(filePath, odFileBuffer->fileName) == 0)
                     ret = CO_SDO_AB_GENERAL; /* error with file */
