@@ -195,51 +195,46 @@ static int32_t find_file(char *directory, char *filePath){
 /**
 * Wrapper funciton for CO_ODF_3002. Remove the path from the file path name.
 *
-* @return 0 on success, and sets fileName.
+* @return the length of the file name without '\0' or 0 on failure.
 */
-static int32_t get_file_name(const char *filePath, char *fileName) {
-    int32_t ret = 0;
-    uint16_t size;
-    uint16_t size_new;
-    uint16_t start;
+static uint32_t get_file_name(const char *filePath, char *fileName) {
+    uint32_t pathNameSize, start, fileNameSize = 0;
 
     if(filePath == NULL || filePath[0] == '\0')
-        return 1;
+        return 0; /* error, input(s) invaild */
 
-    size = strlen(filePath) + 1;
-    size_new = size;
-    start = size - 1;
+    pathNameSize = strlen(filePath) + 1;
+    start = pathNameSize - 1;
     
     /* find right most '/' */
     while(start > 0) {
         if(filePath[start] == '/') {
             ++start;
-            size_new = size - start;
+            fileNameSize = pathNameSize - start;
             break;
         }
         --start;
     }
 
-    if(size_new <= FILE_PATH_MAX_LENGTH) {
+    if(fileNameSize <= FILE_PATH_MAX_LENGTH) {
         /* copy only file name */
-        strncpy(fileName, &filePath[start], size_new);
-        fileName[size_new] = '\0';
+        strncpy(fileName, &filePath[start], fileNameSize);
+        fileName[fileNameSize] = '\0';
     }
     else
-        ret = 1; /* error, data too big for buffer */
+        fileNameSize = 0; /* error, data too big for buffer */
 
-    return ret;
+    return fileNameSize;
 }
 
 
 /**
-* Wrapper funciton for CO_ODF_3002. Read in file and gets its size.
+* Wrapper funciton for CO_ODF_3002. Read in file data.
 *
-* @return 0 on sucess, and sets fileData and fileSize.
+* @return file size or 0 on failure.
 */
-static int32_t get_file_data(const char *filePath, int8_t *fileData,  uint32_t *fileSize) {
-    uint32_t ret = 0;
-    uint32_t size = 0;
+static uint32_t get_file_data(const char *filePath, int8_t *fileData) {
+    uint32_t fileSize = 0;
     FILE *f;
 
     if(filePath == NULL || filePath[0] == '\0')
@@ -248,24 +243,19 @@ static int32_t get_file_data(const char *filePath, int8_t *fileData,  uint32_t *
     f = fopen(filePath, "r");
     if(f != NULL) {
         fseek(f, 0, SEEK_END);
-        size = ftell(f);
-        *fileSize = size;
+        fileSize = ftell(f);
 
-        if(size != 0) {
+        if(fileSize != 0) {
             fseek(f, 0, 0);
 
             // read into buffer
-            fread(fileData, size, 1, f);
+            fread(fileData, fileSize, 1, f);
         }
-        else
-            ret = 1; /* error data too big for buffer */
 
         fclose(f);
     }
-    else 
-        ret = 2; /* file not found */
 
-    return ret;
+    return fileSize;
 }
 
 
@@ -353,12 +343,15 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
         else if(ODF_arg->subIndex == 3) { /* load file from folder */
             /* get file path if a file is in the send folder */
             odFileBuffer->filesAvalible = find_file(FILE_SEND_FOLDER, filePath);
-            if(odFileBuffer->fileData != 0) { /* files found */
-                /* read in file info into buffers */
-                int32_t a = get_file_name(filePath, odFileBuffer->fileName);
-                int32_t b = get_file_data(filePath, odFileBuffer->fileData, &odFileBuffer->fileSize);
-                if(a != 0 || b != 0)
-                    ret = CO_SDO_AB_GENERAL; 
+            if(odFileBuffer->fileData != 0) { /* file(s) found */
+                /* get the file name */
+                if(get_file_name(filePath, odFileBuffer->fileName) != 0)
+                    ret = CO_SDO_AB_GENERAL; /* error with file */
+
+                /* get the file data */
+                odFileBuffer->fileSize = get_file_data(filePath, odFileBuffer->fileData);
+                if(odFileBuffer->fileSize != 0)
+                    ret = CO_SDO_AB_GENERAL; /* error with file */
             }
             else /* no files */
                 ret = CO_SDO_AB_NO_DATA;
