@@ -82,7 +82,7 @@ void app_ODF_configure(void){
  * It can handle spilting large data files into multiple segments.
  * */
 static CO_SDO_abortCode_t save_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *odFileBuffer) {
-    if(ODF_arg == NULL || odFileBuffer == NULL)
+    if(ODF_arg == NULL || odFileBuffer == NULL || ODF_arg->data == NULL)
         return CO_SDO_AB_NO_DATA;
 
     if(ODF_arg->firstSegment == 1) { /* 1st segment only */
@@ -98,8 +98,9 @@ static CO_SDO_abortCode_t save_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *o
      * check if there are more segements comming. This will also check if 
      * dataLengthTotal in not set (is 0).
      * */
-    if((odFileBuffer->fileSize + ODF_arg->dataLength) >= ODF_arg->dataLengthTotal) 
+    if((odFileBuffer->fileSize + ODF_arg->dataLength) >= ODF_arg->dataLengthTotal) {
         ODF_arg->lastSegment = true;
+    }
 
     /* update fileSize */
     odFileBuffer->fileSize += ODF_arg->dataLength;
@@ -140,6 +141,8 @@ CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg) {
                 if(ODF_arg->data[ODF_arg->dataLength-1] != '\0')
                     ODF_arg->data[ODF_arg->dataLength] = '\0';
             }
+
+            ODF_arg->lastSegment = true;
         }
         else if(ODF_arg->subIndex == 2) { /* file data */
             ret = save_file_data(ODF_arg, odFileBuffer);
@@ -165,14 +168,14 @@ CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg) {
             }
             else
                 ret = CO_SDO_AB_GENERAL; 
+
+            ODF_arg->lastSegment = true;
         }
         else 
             ret = CO_SDO_AB_SUB_UNKNOWN; 
     }
     else 
         ret = CO_SDO_AB_READONLY; 
-
-    ODF_arg->lastSegment = true;
 
     APP_UNLOCK_ODF();
 
@@ -366,6 +369,7 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
                 ODF_arg->dataLength = strlen(odFileBuffer->fileName) + 1;
                 memcpy(ODF_arg->data, odFileBuffer->fileName, ODF_arg->dataLength);
             }
+            ODF_arg->lastSegment = true;
         }
         else if(ODF_arg->subIndex == 2) { /* file data */
 
@@ -400,18 +404,18 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
 
             ODF_arg->dataLength = sizeof(odFileBuffer->filesAvalible);
             memcpy(ODF_arg->data, &odFileBuffer->filesAvalible, ODF_arg->dataLength);
+            ODF_arg->lastSegment = true;
         }
         else if(ODF_arg->subIndex == 4) { /* # of files avalible */
             ODF_arg->dataLength = sizeof(odFileBuffer->filesAvalible);
             memcpy(ODF_arg->data, &odFileBuffer->filesAvalible, ODF_arg->dataLength);
+            ODF_arg->lastSegment = true;
         }
         else
             ret = CO_SDO_AB_SUB_UNKNOWN; 
     }
     else 
         ret = CO_SDO_AB_WRITEONLY; 
-
-    ODF_arg->lastSegment = true;
 
     APP_UNLOCK_ODF();
 
