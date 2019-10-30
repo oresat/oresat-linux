@@ -77,6 +77,42 @@ void app_ODF_configure(void){
 /* Receiveing incoming file, OD entry 3001 */
 
 
+/**
+ * Wrapper function used by CP_ODF_3001 to save file data into SDO buffer from struct. 
+ * It can handle spilting large data files into multiple segments.
+ * */
+static CO_SDO_abortCode_t save_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *odFileBuffer) {
+    if(ODF_arg == NULL || odFileBuffer == NULL)
+        return CO_SDO_AB_NO_DATA;
+
+    if(ODF_arg->firstSegment == 1) { /* 1st segment only */
+        if(ODF_arg->dataLengthTotal > FILE_TRANSFER_MAX_SIZE) {
+            return CO_SDO_AB_OUT_OF_MEM; /* file is larger than domain buffer */
+        }
+        
+        odFileBuffer->fileSize = ODF_arg->dataLengthTotal;
+        ODF_arg->offset = 0;
+    }
+
+    /* dataLengthTotal was not set */
+    if(ODF_arg->dataLengthTotal == 0) {
+        /* update fileSize */
+        odFileBuffer->fileSize += ODF_arg->dataLength;
+    }
+
+    /* this must be set to stop calling this function, otherwise this will segfault */
+    ODF_arg->lastSegment = true;
+
+    /* copy data */
+    memcpy(&odFileBuffer->fileData[ODF_arg->offset], ODF_arg->data, ODF_arg->dataLength);
+
+    /* update offset for next call */
+    ODF_arg->offset += ODF_arg->dataLength; 
+
+    return CO_SDO_AB_NONE;
+}
+
+
 CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg) {
     file_buffer_t *odFileBuffer;
     CO_SDO_abortCode_t ret = CO_SDO_AB_NONE;
@@ -105,14 +141,7 @@ CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg) {
             }
         }
         else if(ODF_arg->subIndex == 2) { /* file data */
-            /* check if new data will fit in struct */
-            if(ODF_arg->dataLength > FILE_TRANSFER_MAX_SIZE)
-                ret = CO_SDO_AB_OUT_OF_MEM; 
-            else {
-                /* write data */
-                odFileBuffer->fileSize = ODF_arg->dataLength;
-                memcpy(odFileBuffer->fileData, ODF_arg->data, ODF_arg->dataLength);
-            }
+            ret = save_file_data(ODF_arg, odFileBuffer);
         }
         else if(ODF_arg->subIndex == 3) { /* save file */
             /* error, no data to save */
