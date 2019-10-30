@@ -90,18 +90,19 @@ static CO_SDO_abortCode_t save_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *o
             return CO_SDO_AB_OUT_OF_MEM; /* file is larger than domain buffer */
         }
         
-        odFileBuffer->fileSize = ODF_arg->dataLengthTotal;
+        odFileBuffer->fileSize = 0; 
         ODF_arg->offset = 0;
     }
 
-    /* dataLengthTotal was not set */
-    if(ODF_arg->dataLengthTotal == 0) {
-        /* update fileSize */
-        odFileBuffer->fileSize += ODF_arg->dataLength;
-    }
+    /** 
+     * check if there are more segements comming. This will also check if 
+     * dataLengthTotal in not set (is 0).
+     * */
+    if((odFileBuffer->fileSize + ODF_arg->dataLength) >= ODF_arg->dataLengthTotal) 
+        ODF_arg->lastSegment = true;
 
-    /* this must be set to stop calling this function, otherwise this will segfault */
-    ODF_arg->lastSegment = true;
+    /* update fileSize */
+    odFileBuffer->fileSize += ODF_arg->dataLength;
 
     /* copy data */
     memcpy(&odFileBuffer->fileData[ODF_arg->offset], ODF_arg->data, ODF_arg->dataLength);
@@ -389,6 +390,10 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
                 if(odFileBuffer->fileSize == 0) {
                     ret = CO_SDO_AB_GENERAL; /* error with file */
                 }
+
+                /* remove file after file is sent */
+                // if(remove(filePath) != 0)
+                //    ret = CO_SDO_AB_GENERAL; /* delete failed */
             }
             else /* no files */
                 ret = CO_SDO_AB_NO_DATA;
