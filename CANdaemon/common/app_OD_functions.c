@@ -187,7 +187,6 @@ static int32_t find_file(char *directory, char *filePath){
         closedir(d);
     }
     else { /* directory not found */
-        fprintf(stderr, "dir not found find_file \n");
         totalFiles = 0;
     }
 
@@ -204,7 +203,6 @@ static uint32_t get_file_name(const char *filePath, char *fileName) {
     uint32_t pathNameSize, start, fileNameSize = 0;
 
     if(filePath == NULL || filePath[0] == '\0') {
-        fprintf(stderr, "input error get_file_name\n");
         return 0; /* error, input(s) invaild */
     }
 
@@ -228,7 +226,6 @@ static uint32_t get_file_name(const char *filePath, char *fileName) {
     }
     else {
         fileNameSize = 0; /* error, data too big for buffer */
-        fprintf(stderr, "files too big\n");
     }
 
     return fileNameSize;
@@ -245,7 +242,6 @@ static uint32_t get_file_data(const char *filePath, int8_t *fileData) {
     FILE *f;
 
     if(filePath == NULL || filePath[0] == '\0') {
-        fprintf(stderr, "input error get file data\n");
         return 1;
     }
 
@@ -277,8 +273,9 @@ static CO_SDO_abortCode_t read_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *o
         return CO_SDO_AB_NO_DATA;
 
     if(ODF_arg->firstSegment == 1) { /* 1st segment */
-        if(odFileBuffer->fileSize > FILE_TRANSFER_MAX_SIZE) 
+        if(odFileBuffer->fileSize > FILE_TRANSFER_MAX_SIZE) {
             return CO_SDO_AB_OUT_OF_MEM; /* file is larger than domain buffer */
+        }
         
         ODF_arg->dataLengthTotal = odFileBuffer->fileSize;
         ODF_arg->offset = 0;
@@ -352,19 +349,15 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
         else if(ODF_arg->subIndex == 3) { /* load file from folder */
             /* get file path if a file is in the send folder */
             odFileBuffer->filesAvalible = find_file(FILE_SEND_FOLDER, filePath);
-            fprintf(stderr, "%d file avalible\n", odFileBuffer->filesAvalible);
             if(odFileBuffer->filesAvalible != 0) { /* file(s) found */
-                fprintf(stderr, "%s avalible\n", filePath);
                 /* get the file name */
                 if(get_file_name(filePath, odFileBuffer->fileName) == 0) {
-                    fprintf(stderr, "file name buffer size is 0\n");
                     ret = CO_SDO_AB_GENERAL; /* error with file */
                 }
 
                 /* get the file data */
                 odFileBuffer->fileSize = get_file_data(filePath, odFileBuffer->fileData);
                 if(odFileBuffer->fileSize == 0) {
-                    fprintf(stderr, "file data buffer size is 0\n");
                     ret = CO_SDO_AB_GENERAL; /* error with file */
                 }
             }
