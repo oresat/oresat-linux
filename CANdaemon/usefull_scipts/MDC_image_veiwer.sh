@@ -1,5 +1,7 @@
 #! /bin/bash
 
+firstImage=0
+
 a=1
 while [[ $a -eq 1 ]]; do
     fileAvalible=`./../src/app_star_tracker/canopencomm 0x12 r 0x3002 3 u8`
@@ -18,8 +20,11 @@ while [[ $a -eq 1 ]]; do
         fileData="\x"`echo $fileData | sed 's/ /\\\x/g'` # remove all spaces
 
         echo -e $fileData > $fileName # save to file
-        pidof feh && pkill feh # this will check if there's a process called feh and kill it
-        feh "$fileName" &
+
+        if [[ $firstImage -ne 1 ]]; then
+            feh "$fileName" -R 1 &
+            firstImage=1
+        fi
     fi
     
     sleep 60 
