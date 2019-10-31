@@ -385,19 +385,19 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
             odFileBuffer->filesAvalible = find_file(FILE_SEND_FOLDER, filePath);
             if(odFileBuffer->filesAvalible != 0) { /* file(s) found */
                 /* get the file name */
-                if(get_file_name(filePath, odFileBuffer->fileName) == 0) {
-                    ret = CO_SDO_AB_GENERAL; /* error with file */
-                }
+                uint32_t temp = get_file_name(filePath, odFileBuffer->fileName);
 
                 /* get the file data */
                 odFileBuffer->fileSize = get_file_data(filePath, odFileBuffer->fileData);
-                if(odFileBuffer->fileSize == 0) {
-                    ret = CO_SDO_AB_GENERAL; /* error with file */
+                
+                if(temp == 0 || odFileBuffer->fileSize == 0) { /* error with loading file into buffers */
+                    ret = CO_SDO_AB_GENERAL; 
                 }
-
-                /* remove file after file is sent */
-                // if(remove(filePath) != 0)
-                //    ret = CO_SDO_AB_GENERAL; /* delete failed */
+                else { /* no errors with file path */
+                    /* remove file after file is sent */
+                    if(remove(filePath) != 0)
+                        ret = CO_SDO_AB_GENERAL; /* delete failed */
+                }
             }
             else /* no files */
                 ret = CO_SDO_AB_NO_DATA;
