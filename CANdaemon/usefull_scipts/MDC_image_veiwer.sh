@@ -1,6 +1,7 @@
 #! /bin/bash
 
 firstImage=0
+outputImageName="latest_image"
 
 a=1
 while [[ $a -eq 1 ]]; do
@@ -22,13 +23,13 @@ while [[ $a -eq 1 ]]; do
             fileData="${fileData:3}" # remove starting 3 chars
             fileData="\x"`echo $fileData | sed 's/ /\\\x/g'` # remove all spaces
 
-            echo -e $fileData > latest_image # save to file
+            echo -e $fileData > $outputImageName # save to file
             
-            eval `convert latest_image -font Noto-Sans-Black  -fill black -pointsize 10 -annotate +50+50 "$fileName $(date)" latest_image`
+            eval `convert $outputImageName -font Noto-Sans-Black  -fill black -pointsize 10 -annotate +50+50 "$fileName $(date)" $outputImageName`
 
             # start feh on the first image
             if [[ $firstImage -ne 1 ]]; then
-                feh latest_image -R 1 &
+                feh $outputImageName -R 1 &
                 firstImage=1
             fi
         fi
