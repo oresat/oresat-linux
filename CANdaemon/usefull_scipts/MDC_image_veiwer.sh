@@ -23,6 +23,8 @@ while [[ $a -eq 1 ]]; do
             fileData="\x"`echo $fileData | sed 's/ /\\\x/g'` # remove all spaces
 
             echo -e $fileData > latest_image # save to file
+            
+            eval `convert latest_image -font Noto-Sans-Black  -fill black -pointsize 10 -annotate +50+50 "$fileName $(date)" latest_image`
 
             # start feh on the first image
             if [[ $firstImage -ne 1 ]]; then
