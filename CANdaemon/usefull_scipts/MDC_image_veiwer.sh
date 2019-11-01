@@ -16,13 +16,13 @@ while [[ $a -eq 1 ]]; do
         fileName=`echo $fileName | xxd -r -p` # conv2ert hex string into ascii string
         
         # check for image file types
-        if [[ *".bmp" == $fileName ]] || [[ *".jpg" == $fileName ]] || [[ *".png" == $fileName ]]; then 
+        if [[ $fileName =~ .*".bmp" ]] || [[ $fileName =~ .*".jpg" ]] || [[ $fileName =~ .*".jpeg" ]]; then 
 
             fileData=`./../src/app_star_tracker/canopencomm 0x12 r 0x3002 2 d`
             fileData="${fileData:3}" # remove starting 3 chars
             fileData="\x"`echo $fileData | sed 's/ /\\\x/g'` # remove all spaces
 
-            echo -e $fileData > lastest_image # save to file
+            echo -e $fileData > latest_image # save to file
 
             # start feh on the first image
             if [[ $firstImage -ne 1 ]]; then
