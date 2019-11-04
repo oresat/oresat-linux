@@ -25,7 +25,7 @@ while [[ $a -eq 1 ]]; do
 
             echo -e $fileData > $outputImageName # save to file
             
-            eval `convert $outputImageName -font Noto-Sans-Black  -fill black -pointsize 10 -annotate +50+50 "$fileName $(date)" $outputImageName`
+            eval `convert $outputImageName -font Noto-Sans-Black  -fill black -pointsize 10 -annotate +10+10 "$fileName $(date)" $outputImageName`
 
             # start feh on the first image
             if [[ $firstImage -ne 1 ]]; then
