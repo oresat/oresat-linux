@@ -42,8 +42,14 @@
 
 
 /* Maximum size of Object Dictionary variable transmitted via SDO. */
+#ifdef FILE_TRANSFER_MAX_SIZE
 #ifndef CO_COMMAND_SDO_BUFFER_SIZE
-    #define CO_COMMAND_SDO_BUFFER_SIZE     1000000
+    #define CO_COMMAND_SDO_BUFFER_SIZE FILE_TRANSFER_MAX_SIZE
+#endif
+#else
+#ifndef CO_COMMAND_SDO_BUFFER_SIZE
+    #define CO_COMMAND_SDO_BUFFER_SIZE 1000000
+#endif
 #endif
 
 #define STRING_BUFFER_SIZE  (CO_COMMAND_SDO_BUFFER_SIZE * 4 + 100)
