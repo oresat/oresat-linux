@@ -38,15 +38,15 @@
       <description />
       <accessFunctionPreCode />
     </CANopenObject>
-    <CANopenObject index="1008" name="Manufacturer device name" objectType="VAR" memoryType="RAM" dataType="0x09" accessType="const" PDOmapping="no" defaultValue="GPS" subNumber="0" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+    <CANopenObject index="1008" name="Manufacturer device name" objectType="VAR" memoryType="RAM" dataType="0x09" accessType="const" PDOmapping="no" defaultValue="CANopenNode" subNumber="0" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
       <description />
       <accessFunctionPreCode />
     </CANopenObject>
-    <CANopenObject index="1009" name="Manufacturer hardware version" objectType="VAR" memoryType="RAM" dataType="0x09" accessType="const" PDOmapping="no" defaultValue="0" subNumber="0" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+    <CANopenObject index="1009" name="Manufacturer hardware version" objectType="VAR" memoryType="RAM" dataType="0x09" accessType="const" PDOmapping="no" defaultValue="3.00" subNumber="0" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
       <description />
       <accessFunctionPreCode />
     </CANopenObject>
-    <CANopenObject index="100a" name="Manufacturer software version" objectType="VAR" memoryType="RAM" dataType="0x09" accessType="const" PDOmapping="no" defaultValue="0" subNumber="0" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+    <CANopenObject index="100a" name="Manufacturer software version" objectType="VAR" memoryType="RAM" dataType="0x09" accessType="const" PDOmapping="no" defaultValue="3.00" subNumber="0" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
       <description />
       <accessFunctionPreCode />
     </CANopenObject>
@@ -306,7 +306,7 @@
       <description />
       <accessFunctionPreCode />
     </CANopenObject>
-    <CANopenObject index="2101" name="CAN node ID" objectType="VAR" memoryType="RAM" dataType="0x05" accessType="rw" PDOmapping="no" defaultValue="0x11" subNumber="0" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+    <CANopenObject index="2101" name="CAN node ID" objectType="VAR" memoryType="RAM" dataType="0x05" accessType="rw" PDOmapping="no" defaultValue="0x12" subNumber="0" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
       <description />
       <accessFunctionPreCode />
     </CANopenObject>
@@ -375,14 +375,14 @@
     </CANopenObject>
   </CANopenObjectList>
   <other>
-    <file fileName="GPS_objDict.xml" fileCreator="Ryan Medick" fileCreationDate="11-07-2019" fileCreationTime="11:32AM" fileModifedBy="" fileMotifcationDate="11-07-2019" fileModificationTime="11:32AM" fileVersion="0" fileRevision="0" exportFolder="/home/ryan/PSAS/oresat-linux/CANdaemon/src/app_gps/source/objDict" EdsFile="/home/ryan/PSAS/oresat-linux/CANdaemon/src/app_gps/source/objDict/GPS_objDict.eds" />
+    <file fileName="Template_objDict.xml" fileCreator="Ryan Medick" fileCreationDate="11-07-2019" fileCreationTime="11:32AM" fileModifedBy="" fileMotifcationDate="11-07-2019" fileModificationTime="11:32AM" fileVersion="0" fileRevision="0" exportFolder="/home/ryan/PSAS/oresat-linux/CANdaemon/src/app_template/source/objDict" EdsFile="/home/ryan/PSAS/oresat-linux/CANdaemon/src/app_template/source/objDict/template_objDict.eds" />
     <DeviceIdentity>
       <vendorName>Portland State Aerospace Society</vendorName>
       <vendorNumber>0</vendorNumber>
-      <productName>GPS</productName>
+      <productName>Star Tracker</productName>
       <productNumber>0</productNumber>
       <productText>
-        <description>OreSat GPS Object Dictionary</description>
+        <description>OreSat Protocard Object Dictionary</description>
       </productText>
     </DeviceIdentity>
     <capabilities>
