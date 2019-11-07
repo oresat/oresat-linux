@@ -313,7 +313,7 @@ static CO_SDO_abortCode_t read_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *o
     if( ODF_arg == NULL || odFileBuffer == NULL)
         return CO_SDO_AB_NO_DATA;
 
-    if(ODF_arg->firstSegment == 1) { /* 1st segment */
+    if(ODF_arg->firstSegment == true) { /* 1st segment */
         if(odFileBuffer->fileSize > FILE_TRANSFER_MAX_SIZE) {
             return CO_SDO_AB_OUT_OF_MEM; /* file is larger than domain buffer */
         }
@@ -350,7 +350,7 @@ static CO_SDO_abortCode_t read_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *o
     memcpy(ODF_arg->data, &odFileBuffer->fileData[ODF_arg->offset], ODF_arg->dataLength);
 
     /* update offset for next call */
-    ODF_arg->offset += ODF_arg->dataLength; 
+    //ODF_arg->offset += ODF_arg->dataLength; 
 
     return CO_SDO_AB_NONE;
 }
