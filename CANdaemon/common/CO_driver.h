@@ -48,7 +48,7 @@
 
 /* general configuration */
 //    #define CO_LOG_CAN_MESSAGES   /* Call external function for each received or transmitted CAN message. */
-#define CO_SDO_BUFFER_SIZE           899    /* Override default SDO buffer size. */
+#define CO_SDO_BUFFER_SIZE           889    /* Override default SDO buffer size. */
 
 
 /* Critical sections */
