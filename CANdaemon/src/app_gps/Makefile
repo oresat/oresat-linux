@@ -18,7 +18,6 @@ DEBUG ?= 1# Debug flags
 
 #System Setting
 DFLAGS= -DFILE_TRANSFER_MAX_SIZE=5000000    \
-       	-DCO_SDO_BUFFER_SIZE=65535          \
 	-DFILE_PATH_MAX_LENGTH=200
 
 

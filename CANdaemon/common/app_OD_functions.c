@@ -35,6 +35,11 @@ pthread_mutex_t APP_ODF_mtx;
     #define FILE_PATH_MAX_LENGTH 100
 #endif
 
+#ifndef FILE_PATH_MAX_LENGTH 
+    #define CO_SDO_BUFFER_SIZE 889 // CO_SDO.* should define this
+#endif
+
+
 
 /******************************************************************************/
 /* data structures */
@@ -100,6 +105,9 @@ static CO_SDO_abortCode_t save_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *o
      * */
     if((odFileBuffer->fileSize + ODF_arg->dataLength) >= ODF_arg->dataLengthTotal) {
         ODF_arg->lastSegment = true;
+    }
+    else {
+        ODF_arg->lastSegment = false;
     }
 
     /* update fileSize */
@@ -320,6 +328,7 @@ static CO_SDO_abortCode_t read_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *o
         }
         else { 
             /* multiple segments needed */
+            ODF_arg->lastSegment = false;
             ODF_arg->dataLength = CO_SDO_BUFFER_SIZE;
         }
     }
@@ -327,6 +336,7 @@ static CO_SDO_abortCode_t read_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *o
         uint32_t next_seg_len = ODF_arg->dataLengthTotal - ODF_arg->offset;
         if(next_seg_len > CO_SDO_BUFFER_SIZE) {
             /* more segments needed */
+            ODF_arg->lastSegment = false;
             ODF_arg->dataLength = CO_SDO_BUFFER_SIZE;
         }
         else {
@@ -378,7 +388,7 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
                 return CO_SDO_AB_NO_DATA; 
             }
             
-            ret = read_file_data(ODF_arg, odFileBuffer);
+            ret = read_file_data(ODF_arg, odFileBuffer); /* sets lastSegment */
         }
         else if(ODF_arg->subIndex == 3) { /* load file from folder */
             /* get file path if a file is in the send folder */
