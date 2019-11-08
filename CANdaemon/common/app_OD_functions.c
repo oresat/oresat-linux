@@ -103,21 +103,16 @@ static CO_SDO_abortCode_t save_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *o
      * check if there are more segements comming. This will also check if 
      * dataLengthTotal in not set (is 0).
      * */
-    if((odFileBuffer->fileSize + ODF_arg->dataLength) >= ODF_arg->dataLengthTotal) {
+    if((odFileBuffer->fileSize + ODF_arg->dataLength) >= ODF_arg->dataLengthTotal)
         ODF_arg->lastSegment = true;
-    }
-    else {
+    else
         ODF_arg->lastSegment = false;
-    }
 
     /* update fileSize */
     odFileBuffer->fileSize += ODF_arg->dataLength;
 
     /* copy data */
     memcpy(&odFileBuffer->fileData[ODF_arg->offset], ODF_arg->data, ODF_arg->dataLength);
-
-    /* update offset for next call */
-    ODF_arg->offset += ODF_arg->dataLength; 
 
     return CO_SDO_AB_NONE;
 }
@@ -126,6 +121,8 @@ static CO_SDO_abortCode_t save_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *o
 CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg) {
     file_buffer_t *odFileBuffer;
     CO_SDO_abortCode_t ret = CO_SDO_AB_NONE;
+    char filePath[] = FILE_RECEIVE_FOLDER;
+    FILE *f;
 
     odFileBuffer = (file_buffer_t*) ODF_arg->object;
 
@@ -133,11 +130,14 @@ CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg) {
     if(ODF_arg->dataLength == 0)
         return CO_SDO_AB_NO_DATA; 
 
+    if(ODF_arg->reading == false) 
+        return CO_SDO_AB_READONLY; /* can't write parameters, read only */
+
     APP_LOCK_ODF();
 
-    /* write parameters */
-    if(ODF_arg->reading == false) { 
-        if(ODF_arg->subIndex == 1) { /* file name */
+    switch(ODF_arg->subIndex) {
+        case 1 : /* file name */
+            
             /* check if new data will fit in struct */
             if(ODF_arg->dataLength > FILE_PATH_MAX_LENGTH)
                 ret = CO_SDO_AB_OUT_OF_MEM; 
@@ -148,42 +148,42 @@ CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg) {
                 /* no null char */
                 if(ODF_arg->data[ODF_arg->dataLength-1] != '\0')
                     ODF_arg->data[ODF_arg->dataLength] = '\0';
-            }
 
-            ODF_arg->lastSegment = true;
-        }
-        else if(ODF_arg->subIndex == 2) { /* file data */
+                ODF_arg->lastSegment = true;
+            }
+            break;
+
+        case 2 : /* file data */
+            
             ret = save_file_data(ODF_arg, odFileBuffer);
-        }
-        else if(ODF_arg->subIndex == 3) { /* save file */
-            /* error, no data to save */
-            if(odFileBuffer->fileSize == 0 || odFileBuffer->fileName[0] == '\0') {
-                APP_UNLOCK_ODF();
-                return CO_SDO_AB_NO_DATA;
+            break;
+
+        case 3 : /* save file */
+            
+            if(odFileBuffer->fileSize == 0 || odFileBuffer->fileName[0] == '\0')
+                ret = CO_SDO_AB_NO_DATA; /* error, no data to save */
+            else { /* save file to recieve folder */
+                strcat(filePath, odFileBuffer->fileName);
+                
+                f = fopen(filePath, "wb");
+                if(f == NULL)
+                    ret = CO_SDO_AB_GENERAL; 
+                else {
+                    fwrite(odFileBuffer->fileData, sizeof(char), odFileBuffer->fileSize, f);
+                    fclose(f);
+
+                    /* clear buffer */
+                    odFileBuffer->fileSize = 0;
+                    odFileBuffer->fileName[0] = '\0';
+
+                    ODF_arg->lastSegment = true;
+                }
             }
+            break;
 
-            /* save file to recieve folder */
-            char filePath[] = FILE_RECEIVE_FOLDER;
-            strcat(filePath, odFileBuffer->fileName);
-            FILE *f = fopen(filePath, "wb");
-            if(f != NULL) {
-                fwrite(odFileBuffer->fileData, sizeof(char), odFileBuffer->fileSize, f);
-                fclose(f);
-
-                /* clear buffer */
-                odFileBuffer->fileSize = 0;
-                odFileBuffer->fileName[0] = '\0';
-            }
-            else
-                ret = CO_SDO_AB_GENERAL; 
-
-            ODF_arg->lastSegment = true;
-        }
-        else 
+        default :
             ret = CO_SDO_AB_SUB_UNKNOWN; 
     }
-    else 
-        ret = CO_SDO_AB_READONLY; 
 
     APP_UNLOCK_ODF();
 
@@ -227,9 +227,8 @@ static int32_t find_file(char *directory, char *filePath){
         
         closedir(d);
     }
-    else { /* directory not found */
+    else /* directory not found */
         totalFiles = 0;
-    }
 
     return totalFiles;
 }
@@ -243,9 +242,8 @@ static int32_t find_file(char *directory, char *filePath){
 static uint32_t get_file_name(const char *filePath, char *fileName) {
     uint32_t pathNameSize, start, fileNameSize = 0;
 
-    if(filePath == NULL || filePath[0] == '\0') {
+    if(filePath == NULL || filePath[0] == '\0')
         return 0; /* error, input(s) invaild */
-    }
 
     start = strlen(filePath);
     pathNameSize = start + 1;
@@ -265,9 +263,8 @@ static uint32_t get_file_name(const char *filePath, char *fileName) {
         strncpy(fileName, &filePath[start], fileNameSize);
         fileName[fileNameSize] = '\0';
     }
-    else {
+    else
         fileNameSize = 0; /* error, data too big for buffer */
-    }
 
     return fileNameSize;
 }
@@ -349,9 +346,6 @@ static CO_SDO_abortCode_t read_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *o
     /* copy data */
     memcpy(ODF_arg->data, &odFileBuffer->fileData[ODF_arg->offset], ODF_arg->dataLength);
 
-    /* update offset for next call */
-    //ODF_arg->offset += ODF_arg->dataLength; 
-
     return CO_SDO_AB_NONE;
 }
 
@@ -363,69 +357,68 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
 
     odFileBuffer = (file_buffer_t*) ODF_arg->object;
 
+    if(ODF_arg->reading == false) 
+        return CO_SDO_AB_WRITEONLY; /* can't read parameters, write only */
+
     APP_LOCK_ODF();
 
-    if(ODF_arg->reading) { /* read parameters */
-        if(ODF_arg->subIndex == 1) { /* filename */
-            if(strlen(odFileBuffer->fileName) == 0) { /* error, no data to read */
-                APP_UNLOCK_ODF();
-                return CO_SDO_AB_NO_DATA; 
-            }
+    switch(ODF_arg->subIndex) {
+        case 1 : /* filename */
 
-            /* check if new data will fit in struct */
-            if(strlen(odFileBuffer->fileName) > FILE_TRANSFER_MAX_SIZE)
-                ret = CO_SDO_AB_OUT_OF_MEM; 
+            if(strlen(odFileBuffer->fileName) == 0) 
+                ret = CO_SDO_AB_NO_DATA; /* error, no data to read */
+            else if(strlen(odFileBuffer->fileName) > FILE_TRANSFER_MAX_SIZE)
+                ret = CO_SDO_AB_OUT_OF_MEM; /* error, new data will not fit in buffer */
             else {
                 ODF_arg->dataLength = strlen(odFileBuffer->fileName) + 1;
                 memcpy(ODF_arg->data, odFileBuffer->fileName, ODF_arg->dataLength);
+                ODF_arg->lastSegment = true;
             }
-            ODF_arg->lastSegment = true;
-        }
-        else if(ODF_arg->subIndex == 2) { /* file data */
+            break;
 
-            if(odFileBuffer->fileSize == 0) { /* error, no data to read */
-                APP_UNLOCK_ODF();
-                return CO_SDO_AB_NO_DATA; 
-            }
-            
-            ret = read_file_data(ODF_arg, odFileBuffer); /* sets lastSegment */
-        }
-        else if(ODF_arg->subIndex == 3) { /* load file from folder */
+        case 2 : /* file data */
+
+            ret = odFileBuffer->fileSize == 0 ? CO_SDO_AB_NO_DATA : read_file_data(ODF_arg, odFileBuffer);
+            break;
+
+        case 3 : /* load file from send folder */
+
             /* get file path if a file is in the send folder */
             odFileBuffer->filesAvalible = find_file(FILE_SEND_FOLDER, filePath);
+
             if(odFileBuffer->filesAvalible != 0) { /* file(s) found */
                 /* get the file name */
                 if(get_file_name(filePath, odFileBuffer->fileName) == 0) {
                     ret = CO_SDO_AB_GENERAL; /* error with file */
+                    break;
                 }
 
                 /* get the file data */
                 odFileBuffer->fileSize = get_file_data(filePath, odFileBuffer->fileData);
                 if(odFileBuffer->fileSize == 0) {
                     ret = CO_SDO_AB_GENERAL; /* error with file */
+                    break;
                 }
 
                 /* remove file after file is sent */
                 // if(remove(filePath) != 0)
                 //    ret = CO_SDO_AB_GENERAL; /* delete failed */
+                //    break;
+                //  }
             }
-            else /* no files */
-                ret = CO_SDO_AB_NO_DATA;
+
+            /* no break, use case 4 to set dataLength */
+
+        case 4 : /* # of files avalible */
 
             ODF_arg->dataLength = sizeof(odFileBuffer->filesAvalible);
             memcpy(ODF_arg->data, &odFileBuffer->filesAvalible, ODF_arg->dataLength);
             ODF_arg->lastSegment = true;
-        }
-        else if(ODF_arg->subIndex == 4) { /* # of files avalible */
-            ODF_arg->dataLength = sizeof(odFileBuffer->filesAvalible);
-            memcpy(ODF_arg->data, &odFileBuffer->filesAvalible, ODF_arg->dataLength);
-            ODF_arg->lastSegment = true;
-        }
-        else
+            break;
+
+        default :
             ret = CO_SDO_AB_SUB_UNKNOWN; 
     }
-    else 
-        ret = CO_SDO_AB_WRITEONLY; 
 
     APP_UNLOCK_ODF();
 
