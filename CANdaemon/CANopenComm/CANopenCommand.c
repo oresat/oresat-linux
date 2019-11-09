@@ -30,10 +30,7 @@
 #include <sys/un.h>
 #include <sys/socket.h>
 
-
-#ifndef BUF_SIZE
-#define BUF_SIZE            1000000
-#endif
+#define BUF_SIZE (10000 * 4 + 100)
 
 /* Helper functions */
 void errExit(char* msg) {
@@ -208,7 +205,7 @@ int main (int argc, char *argv[]) {
     char *socketPath = "/tmp/CO_command_socket";  /* Name of the local domain socket, configurable by arguments. */
     char *inputFilePath = NULL;
 
-    char buf[BUF_SIZE];
+    char buf[200];
     int fd;
     struct sockaddr_un addr;
     int opt;

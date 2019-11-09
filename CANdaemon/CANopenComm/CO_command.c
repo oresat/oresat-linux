@@ -42,17 +42,20 @@
 
 
 /* Maximum size of Object Dictionary variable transmitted via SDO. */
-#ifdef FILE_TRANSFER_MAX_SIZE
 #ifndef CO_COMMAND_SDO_BUFFER_SIZE
     #define CO_COMMAND_SDO_BUFFER_SIZE FILE_TRANSFER_MAX_SIZE
-#endif
 #else
-#ifndef CO_COMMAND_SDO_BUFFER_SIZE
     #define CO_COMMAND_SDO_BUFFER_SIZE 1000000
 #endif
-#endif
 
-#define STRING_BUFFER_SIZE  (CO_COMMAND_SDO_BUFFER_SIZE * 4 + 100)
+/* Maximum size of CAN messages that will be sent to/received by CANopenComm. */
+#define MAX_CANOPENCOMM_SIZE 10000
+
+/* Maximum size of the string command message that will be sent to/received by CANopenComm. 
+ * CANopenComm buffer should be set the same size.
+ * */
+#define STRING_BUFFER_SIZE (MAX_CANOPENCOMM_SIZE * 4 + 100)
+
 #define LISTEN_BACKLOG      50
 
 
@@ -91,6 +94,7 @@ int CO_command_init(void) {
     addr.sun_family = AF_UNIX;
     strncpy(addr.sun_path, CO_command_socketPath, sizeof(addr.sun_path) - 1);
 
+    remove(CO_command_socketPath);
     if(bind(fdSocket, (struct sockaddr *) &addr, sizeof(struct sockaddr_un)) == -1) {
         fprintf(stderr, "Can't bind Socket to path '%s'\n", CO_command_socketPath);
         CO_errExit("CO_command_init");
@@ -102,7 +106,7 @@ int CO_command_init(void) {
 
     /* Create thread */
     endProgram = 0;
-    pthread_attr_setstacksize(&command_thread_attr, STRING_BUFFER_SIZE * 10);
+    pthread_attr_setstacksize(&command_thread_attr, CO_COMMAND_SDO_BUFFER_SIZE * 3);
     if(pthread_create(&command_thread_id, &command_thread_attr, command_thread, NULL) != 0) {
         CO_errExit("CO_command_init - thread creation failed");
     }
@@ -333,7 +337,12 @@ static void command_process(int fd, char* command, size_t commandLength) {
                 if(SDOabortCode == 0) {
                     respLen = sprintf(resp, "[%d] ", sequence);
 
-                    if(datatype == NULL || (datatype->length != 0 && datatype->length != dataRxLen)) {
+                    if(dataRxLen >= MAX_CANOPENCOMM_SIZE) {
+                        FILE* file = fopen( "/tmp/output.bin", "wb" );
+                        fwrite(dataRx, 1, dataRxLen, file);
+                        fclose(file);
+                    }
+                    else if(datatype == NULL || (datatype->length != 0 && datatype->length != dataRxLen)) {
                         respLen += dtpHex(resp+respLen, sizeof(resp)-respLen, (char*)dataRx, dataRxLen);
                     }
                     else {

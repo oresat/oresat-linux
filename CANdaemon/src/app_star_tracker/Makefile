@@ -17,7 +17,7 @@ DEBUG ?= 1# Debug flags
 
 
 #System Setting
-DFLAGS= -DFILE_TRANSFER_MAX_SIZE=5000000    \
+DFLAGS= -DFILE_TRANSFER_MAX_SIZE=1500000    \
 	-DFILE_PATH_MAX_LENGTH=200
 
 
@@ -117,7 +117,7 @@ canopend: $(CANOPEND_OBJS)
 	$(CC) $(LFLAGS) $(INCLUDE_DIRS) $^ -o $@
 
 canopencomm:
-	$(CC) $(CANOPENCOMM_SRC)/CANopenCommand.c -o $@
+	$(CC) $(CFLAGS) $(DFLAGS) $(CANOPENCOMM_SRC)/CANopenCommand.c -o $@
 
 clean:
 	rm -rf $(CANDAEMON_OBJS) $(CANOPEND_OBJS) candaemon canopend canopencomm od_storage od_storage_auto
