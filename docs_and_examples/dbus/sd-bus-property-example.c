@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stddef.h>
 #include <stdbool.h>
 #include <errno.h>
 #include <systemd/sd-bus.h>
@@ -9,7 +10,7 @@
 #define INTERFACE_NAME  "org.example.project.oresat"
 #define BUS_NAME        INTERFACE_NAME
 #define OBJECT_PATH     "/org/example/project/oresat"
-#define WAIT_TIME       500000 // mircroseconds
+#define WAIT_TIME       1 // seconds
 
 
 /* static data */
@@ -36,6 +37,20 @@ void dbusErrorExit(int r, char* err) {
 }
 
 
+typedef struct {
+    double test1;
+    uint32_t test2;
+} Object;
+
+
+static const sd_bus_vtable vtable[] = {
+    SD_BUS_VTABLE_START(0),
+    SD_BUS_PROPERTY("Test1", "d", NULL, offsetof(Object, test1), SD_BUS_VTABLE_PROPERTY_EMITS_CHANGE),
+    SD_BUS_WRITABLE_PROPERTY("Test2", "u", NULL, NULL, offsetof(Object, test2), 0),
+    SD_BUS_VTABLE_END
+};
+
+
 /*****************************************************************************/
 /* client */
 
@@ -56,7 +71,7 @@ int client(void) {
                             BUS_NAME,
                             OBJECT_PATH,
                             INTERFACE_NAME,
-                            "TestProp",
+                            "Test1",
                             &err,
                             &mess,
                             "d");
@@ -66,7 +81,12 @@ int client(void) {
         r = sd_bus_message_read(mess, "d", &test_double);
         dbusError(r, "Read message failed.");
 
+        /* free message */
+        sd_bus_message_unref(mess);
+        mess = NULL;
+
         printf("%f\n", test_double);
+        sleep(WAIT_TIME);
     }
 
     sd_bus_error_free(&err);
@@ -80,9 +100,14 @@ int client(void) {
 
 
 int server(void) {
-    sd_bus_error err = SD_BUS_ERROR_NULL;
+    sd_bus *bus = NULL;
+    sd_bus_slot *slot = NULL;
     int r;
     
+    Object testObj;
+    testObj.test1 = 12.3;
+    testObj.test2 = 1;
+
     /* Connect to the bus */
     r = sd_bus_open_system(&bus);
     dbusErrorExit(r, "Failed to connect to system bus.");
@@ -91,36 +116,32 @@ int server(void) {
     r = sd_bus_request_name(bus, BUS_NAME, SD_BUS_NAME_ALLOW_REPLACEMENT);
     dbusError(r, "Failed to acquire service name. \nIs "INTERFACE_NAME".conf in /etc/dbus-1/system.d/ ?");
 
+    /* Install the object */
+    r = sd_bus_add_object_vtable(bus,
+                                 &slot,
+                                 OBJECT_PATH,
+                                 INTERFACE_NAME,
+                                 vtable,
+                                 &testObj);
+    dbusError(r, "Failed to add vtable.");
 
-    while(endProgram == 0) {
-        // make dbus properties
-        r = sd_bus_set_property(bus,
-                            NULL,
-                            OBJECT_PATH,
-                            INTERFACE_NAME,
-                            "Test",
-                            &err,
-                            "s",
-                            "Hello");
-        dbusError(r, "Set property failed.");
+    for(;;) {
+        /* Process requests */
+        r = sd_bus_process(bus, NULL);
+        dbusError(r, "Failed to process bus.");
 
-        r = sd_bus_set_property(bus,
-                             BUS_NAME,
-                             OBJECT_PATH,
-                             INTERFACE_NAME,
-                             "TestProp",
-                             &err,
-                             "d",
-                             10.0);
-        dbusErrorExit(r, "Set property error");
+        if (r > 0) /* we processed a request, try to process another one, right-away */
+            continue;
 
-        usleep(WAIT_TIME);
+        /* Wait for the next request to process */
+        r = sd_bus_wait(bus, (uint64_t) -1);
+        dbusError(r, "Failed to wait on bus.");
     }
 
     r = sd_bus_release_name(bus, BUS_NAME);
     dbusError(r, "Failed to release service name.");
 
-    sd_bus_error_free(&err);
+    sd_bus_slot_unref(slot);
     sd_bus_unref(bus);
     return 1;
 }
