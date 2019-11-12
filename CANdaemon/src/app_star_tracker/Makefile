@@ -32,7 +32,6 @@ LFLAGS = -lrt -pthread $(shell pkg-config --libs libsystemd)
 
 STACK_SRC =     	../../CANopenNode/stack
 CANOPENNODE_SRC = 	../../CANopenNode
-CANOPENCOMM_SRC = 	../../CANopenComm
 COMMON_SRC = 		../../common
 APP_SRC =		./source
 OBJDICT_SRC =           ./source/objDict
@@ -40,13 +39,17 @@ OBJDICT_SRC =           ./source/objDict
 
 INCLUDE_DIRS =	-I$(STACK_SRC)		            \
 		-I$(CANOPENNODE_SRC)	            \
-		-I$(CANOPENCOMM_SRC)                \
 		-I$(COMMON_SRC)                     \
 		-I$(APP_SRC)                        \
 		-I$(OBJDICT_SRC)
 
 
-SOURCES =	$(COMMON_SRC)/CO_driver.c           \
+SOURCES =	$(COMMON_SRC)/main.c                \
+		$(COMMON_SRC)/CO_driver.c           \
+		$(COMMON_SRC)/app_OD_functions.c    \
+		$(COMMON_SRC)/CO_time.c             \
+		$(COMMON_SRC)/candaemon.c           \
+		$(COMMON_SRC)/app_OD_helpers.c      \
 		$(COMMON_SRC)/CO_OD_storage.c       \
 		$(COMMON_SRC)/CO_Linux_tasks.c      \
 		$(STACK_SRC)/crc16-ccitt.c          \
@@ -61,24 +64,8 @@ SOURCES =	$(COMMON_SRC)/CO_driver.c           \
 		$(STACK_SRC)/CO_LSSslave.c          \
 		$(STACK_SRC)/CO_trace.c             \
 		$(CANOPENNODE_SRC)/CANopen.c        \
-		$(COMMON_SRC)/app_OD_functions.c    \
-		$(COMMON_SRC)/CO_time.c
-
-CANOPENCOMM_SOURCES = $(CANOPENCOMM_SRC)/CO_command.c        \
-		      $(CANOPENCOMM_SRC)/CO_master.c         \
-		      $(CANOPENCOMM_SRC)/CO_comm_helpers.c
-
-CANOPEND_SOURCES = $(SOURCES)                       \
-		   $(CANOPENCOMM_SOURCES)           \
-		   $(OBJDICT_SRC)/CO_OD.c           \
-		   $(CANOPENCOMM_SRC)/main.c
-
-CANDAEMON_SOURCES = $(SOURCES)                      \
-		    $(APP_SRC)/application.c        \
-		    $(COMMON_SRC)/candaemon.c       \
-		    $(COMMON_SRC)/app_OD_helpers.c  \
-		    $(OBJDICT_SRC)/CO_OD.c          \
-		    $(COMMON_SRC)/main.c
+		$(OBJDICT_SRC)/CO_OD.c              \
+		$(APP_SRC)/application.c
 
 
 ##############################################################################
@@ -97,30 +84,31 @@ endif
 ##############################################################################
 # Compile
 
+CANOPENCOMM_PATH="../../CANopenComm/"
 
-CANDAEMON_OBJS = $(CANDAEMON_SOURCES:%.c=%.o)
-CANOPEND_OBJS = $(CANOPEND_SOURCES:%.c=%.o)
+OBJS = $(SOURCES:%.c=%.o)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@ $(DFLAGS)
 
 all: candaemon canopend canopencomm
 
-candaemon: $(CANDAEMON_OBJS)
+candaemon: $(OBJS)
 	bash -c "echo - > od_storage"
 	bash -c "echo - > od_storage_auto"
 	$(CC) $(CFLAGS) $(LFLAGS) $(INCLUDE_DIRS) $^ -o $@
 
-canopend: $(CANOPEND_OBJS)
-	bash -c "echo - > od_storage"
-	bash -c "echo - > od_storage_auto"
-	$(CC) $(LFLAGS) $(INCLUDE_DIRS) $^ -o $@
+canopend:
+	$(MAKE) -C $(CANOPENCOMM_PATH) canopend
+	bash -c "cp $(CANOPENCOMM_PATH)canopend ."
 
 canopencomm:
-	$(CC) $(CFLAGS) $(DFLAGS) $(CANOPENCOMM_SRC)/CANopenCommand.c -o $@
+	$(MAKE) -C $(CANOPENCOMM_PATH) canopencomm
+	bash -c "cp $(CANOPENCOMM_PATH)canopencomm ."
 
 clean:
-	rm -rf $(CANDAEMON_OBJS) $(CANOPEND_OBJS) candaemon canopend canopencomm od_storage od_storage_auto
+	rm -rf $(OBJS) candaemon canopend canopencomm od_storage od_storage_auto
+	$(MAKE) -C $(CANOPENCOMM_PATH) clean
 
 help:
 	$(info Make Options:)
