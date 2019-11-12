@@ -5,6 +5,8 @@ outputImageName="latest_image"
 
 a=1
 while [[ $a -eq 1 ]]; do
+    eval `./../src/app_star_tracker/canopencomm 0x12 r 0x3100 0 u8` # capture new image
+
     fileAvalible=`./../src/app_star_tracker/canopencomm 0x12 r 0x3002 3 u8`
     fileAvalible="${fileAvalible:4}"
     
@@ -20,10 +22,8 @@ while [[ $a -eq 1 ]]; do
         if [[ $fileName =~ .*".bmp" ]] || [[ $fileName =~ .*".jpg" ]] || [[ $fileName =~ .*".jpeg" ]]; then 
 
             fileData=`./../src/app_star_tracker/canopencomm 0x12 r 0x3002 2 d`
-            fileData="${fileData:3}" # remove starting 3 chars
-            fileData="\x"`echo $fileData | sed 's/ /\\\x/g'` # remove all spaces
-
-            echo -e $fileData > $outputImageName # save to file
+            
+            outputImageName="/tmp/output.bin"
             
             eval `convert $outputImageName -font Noto-Sans-Black  -fill blue -pointsize 10 -annotate +10+10 "$fileName $(date)" $outputImageName`
 
@@ -35,5 +35,5 @@ while [[ $a -eq 1 ]]; do
         fi
     fi
     
-    sleep 60 
+    sleep 900 
 done
