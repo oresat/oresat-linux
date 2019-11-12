@@ -27,7 +27,7 @@ while [[ $a -eq 1 ]]; do
             
             outputImageName="/tmp/output.bin"
             
-            eval `convert $outputImageName -font Noto-Sans-Black  -fill white -pointsize 100 -annotate +10+10 "$fileName $(date)" $outputImageName`
+            eval `convert $outputImageName -fill white -pointsize 75 -annotate +75+75 "$fileName $(date)" $outputImageName`
 
             # start feh on the first image
             if [[ $firstImage -ne 1 ]]; then
