@@ -70,6 +70,8 @@ OBJS = $(SOURCES:%.c=%.o)
 all: clean_ofiles canopend canopencomm
 
 canopend: $(OBJS)
+	bash -c "echo - > od_storage"
+	bash -c "echo - > od_storage_auto"
 	$(CC) $(LFLAGS) $(INCLUDE_DIRS) $^ -o $@
 
 canopencomm: $(OBJS)
