@@ -401,7 +401,7 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
                 }
 
                 /* remove file after file is sent */
-                if(remove(filePath) != 0)
+                if(remove(filePath) != 0) {
                     ret = CO_SDO_AB_GENERAL; /* delete failed */
                     break;
                 }
