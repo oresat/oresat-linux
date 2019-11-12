@@ -5,7 +5,9 @@ outputImageName="latest_image"
 
 a=1
 while [[ $a -eq 1 ]]; do
-    eval `./../src/app_star_tracker/canopencomm 0x12 r 0x3100 0 u8` # capture new image
+    temp=`./../src/app_star_tracker/canopencomm 0x12 r 0x3100 0 u8` # capture new image
+    
+    sleep 5
 
     fileAvalible=`./../src/app_star_tracker/canopencomm 0x12 r 0x3002 3 u8`
     fileAvalible="${fileAvalible:4}"
