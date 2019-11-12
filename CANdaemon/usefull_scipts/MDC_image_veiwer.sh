@@ -27,11 +27,11 @@ while [[ $a -eq 1 ]]; do
             
             outputImageName="/tmp/output.bin"
             
-            eval `convert $outputImageName -fill white -pointsize 75 -annotate +75+75 "$fileName $(date)" $outputImageName`
+            eval `convert $outputImageName -fill white -pointsize 50 -annotate +50+50 "$fileName $(date)" $outputImageName`
 
             # start feh on the first image
             if [[ $firstImage -ne 1 ]]; then
-                feh $outputImageName -R 1 &
+                feh $outputImageName --scale-down --auto-zoom -R 1 &
                 firstImage=1
             fi
         fi
