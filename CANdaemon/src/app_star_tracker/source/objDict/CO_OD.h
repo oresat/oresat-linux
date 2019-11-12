@@ -97,9 +97,9 @@
    FILE INFO:
       FileName:     StarTracker_objDict.eds
       FileVersion:  0
-      CreationTime: 12:00AM
-      CreationDate: 01-01-0001
-      CreatedBy:    JP
+      CreationTime: 11:32AM
+      CreationDate: 11-07-2019
+      CreatedBy:    Ryan Medick
 ******************************************************************************/
 
 
@@ -123,7 +123,7 @@
   #define CO_NO_LSS_CLIENT               0   //LSS Master
   #define CO_NO_RPDO                     4   //Associated objects: 14xx, 16xx
   #define CO_NO_TPDO                     4   //Associated objects: 18xx, 1Axx
-  #define CO_NO_NMT_MASTER               1
+  #define CO_NO_NMT_MASTER               0
 
 
 /*******************************************************************************

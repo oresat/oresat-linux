@@ -91,20 +91,15 @@ OBJS = $(SOURCES:%.c=%.o)
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@ $(DFLAGS)
 
-all: candaemon canopend canopencomm
+all: candaemon
+	$(MAKE) -C $(CANOPENCOMM_PATH) all
+	bash -c "cp $(CANOPENCOMM_PATH)canopend ."
+	bash -c "cp $(CANOPENCOMM_PATH)canopencomm ."
 
 candaemon: $(OBJS)
 	bash -c "echo - > od_storage"
 	bash -c "echo - > od_storage_auto"
 	$(CC) $(CFLAGS) $(LFLAGS) $(INCLUDE_DIRS) $^ -o $@
-
-canopend:
-	$(MAKE) -C $(CANOPENCOMM_PATH) canopend
-	bash -c "cp $(CANOPENCOMM_PATH)canopend ."
-
-canopencomm:
-	$(MAKE) -C $(CANOPENCOMM_PATH) canopencomm
-	bash -c "cp $(CANOPENCOMM_PATH)canopencomm ."
 
 clean:
 	rm -rf $(OBJS) candaemon canopend canopencomm od_storage od_storage_auto

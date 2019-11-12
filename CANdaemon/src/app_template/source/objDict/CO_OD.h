@@ -95,7 +95,7 @@
 
 /*******************************************************************************
    FILE INFO:
-      FileName:     template_objDict.eds
+      FileName:     Template_objDict.eds
       FileVersion:  0
       CreationTime: 11:32AM
       CreationDate: 11-07-2019
@@ -107,7 +107,7 @@
    DEVICE INFO:
       VendorName:     Portland State Aerospace Society
       VendorNumber    0
-      ProductName:    Star Tracker
+      ProductName:    Template
       ProductNumber:  0
 ******************************************************************************/
 
@@ -123,7 +123,7 @@
   #define CO_NO_LSS_CLIENT               0   //LSS Master
   #define CO_NO_RPDO                     4   //Associated objects: 14xx, 16xx
   #define CO_NO_TPDO                     4   //Associated objects: 18xx, 1Axx
-  #define CO_NO_NMT_MASTER               1
+  #define CO_NO_NMT_MASTER               0
 
 
 /*******************************************************************************

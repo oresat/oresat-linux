@@ -50,35 +50,34 @@ SOURCES =	$(COMMON_SRC)/CO_driver.c           \
 		$(STACK_SRC)/CO_trace.c             \
 		$(CANOPENNODE_SRC)/CANopen.c        \
 		$(COMMON_SRC)/app_OD_functions.c    \
-		$(COMMON_SRC)/CO_time.c
-
-CANOPENCOMM_SOURCES = $(CANOPENCOMM_SRC)/CO_command.c        \
-		      $(CANOPENCOMM_SRC)/CO_master.c         \
-		      $(CANOPENCOMM_SRC)/CO_comm_helpers.c
-
-CANOPEND_SOURCES = $(SOURCES)                       \
-		   $(CANOPENCOMM_SOURCES)           \
-		   $(OBJDICT_SRC)/CO_OD.c           \
-		   $(CANOPENCOMM_SRC)/main.c
+		$(COMMON_SRC)/CO_time.c             \
+		$(CANOPENCOMM_SRC)/CO_command.c     \
+		$(CANOPENCOMM_SRC)/CO_master.c      \
+		$(CANOPENCOMM_SRC)/CO_comm_helpers.c   \
+		$(OBJDICT_SRC)/CO_OD.c              \
+		$(CANOPENCOMM_SRC)/main.c
 
 
 ##############################################################################
 # Compile
 
 
-CANOPEND_OBJS = $(CANOPEND_SOURCES:%.c=%.o)
+OBJS = $(SOURCES:%.c=%.o)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@ $(DFLAGS)
 
-all: canopend canopencomm
+all: clean_ofiles canopend canopencomm
 
-canopend: $(CANOPEND_OBJS)
+canopend: $(OBJS)
 	$(CC) $(LFLAGS) $(INCLUDE_DIRS) $^ -o $@
 
-canopencomm:
+canopencomm: $(OBJS)
 	$(CC) $(CFLAGS) $(DFLAGS) $(CANOPENCOMM_SRC)/CANopenCommand.c -o $@
 
-clean:
-	rm -rf $(CANOPEND_OBJS) canopend canopencomm od_storage od_storage_auto
+clean_ofiles:
+	rm -rf $(OBJS)
+
+clean: clean_ofiles
+	rm -rf canopend canopencomm
 

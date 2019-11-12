@@ -298,7 +298,7 @@
       <CANopenSubObject subIndex="08" name="mapped object 8" objectType="VAR" dataType="0x07" accessType="rw" PDOmapping="no" defaultValue="0x00000000" TPDOdetectCOS="false" />
       <accessFunctionPreCode />
     </CANopenObject>
-    <CANopenObject index="1f80" name="NMT startup" objectType="VAR" memoryType="RAM" dataType="0x07" accessType="rw" PDOmapping="no" defaultValue="0x00000001" subNumber="0" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+    <CANopenObject index="1f80" name="NMT startup" objectType="VAR" memoryType="RAM" dataType="0x07" accessType="rw" PDOmapping="no" defaultValue="0x00000000" subNumber="0" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
       <description />
       <accessFunctionPreCode />
     </CANopenObject>
@@ -375,14 +375,14 @@
     </CANopenObject>
   </CANopenObjectList>
   <other>
-    <file fileName="Template_objDict.xml" fileCreator="Ryan Medick" fileCreationDate="11-07-2019" fileCreationTime="11:32AM" fileModifedBy="" fileMotifcationDate="11-07-2019" fileModificationTime="11:32AM" fileVersion="0" fileRevision="0" exportFolder="/home/ryan/PSAS/oresat-linux/CANdaemon/src/app_template/source/objDict" EdsFile="/home/ryan/PSAS/oresat-linux/CANdaemon/src/app_template/source/objDict/template_objDict.eds" />
+    <file fileName="Template_objDict.xml" fileCreator="Ryan Medick" fileCreationDate="11-07-2019" fileCreationTime="11:32AM" fileModifedBy="" fileMotifcationDate="11-07-2019" fileModificationTime="11:32AM" fileVersion="0" fileRevision="0" exportFolder="/home/ryan/PSAS/oresat-linux/CANdaemon/src/app_template/source/objDict" EdsFile="/home/ryan/PSAS/oresat-linux/CANdaemon/src/app_template/source/objDict/Template_objDict.eds" />
     <DeviceIdentity>
       <vendorName>Portland State Aerospace Society</vendorName>
       <vendorNumber>0</vendorNumber>
-      <productName>Star Tracker</productName>
+      <productName>Template</productName>
       <productNumber>0</productNumber>
       <productText>
-        <description>OreSat Protocard Object Dictionary</description>
+        <description>OreSat Template Object Dictionary</description>
       </productText>
     </DeviceIdentity>
     <capabilities>
