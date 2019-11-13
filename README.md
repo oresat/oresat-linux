@@ -3,7 +3,7 @@ This repo has all the general design and code for all 4 linux boards on OreSat. 
 
 All A8 onboard OreSat will run 3 process; the CANdaemon, the updater, and the main process.
 
-![](https://github.com/oresat/oresat-linux/blob/master/docs_and_examples/OreSatLinuxDiagram.jpg)
+![](https://github.com/oresat/oresat-linux/blob/master/docs_and_examples/drawio/OreSatLinuxDiagram.jpg)
 
 ## CANdaemon
 The inferface between the CANbus and the any other processes on a linux board; including the main process and the Updater process. Uses DBus for IPC (inter-process communication). This based off of CANopenSocket but with multiple DBus interfaces.
