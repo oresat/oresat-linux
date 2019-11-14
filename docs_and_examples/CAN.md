@@ -21,19 +21,19 @@
 ## [CANable](https://canable.io/)
 
 ### enable the CANable using slcand firmware
--`sudo slcand -o -c -f -s8 <PATH_TO_CANABLE> can0`
--`sudo ip link set can0 up`
+- `sudo slcand -o -c -f -s8 <PATH_TO_CANABLE> can0`
+- `sudo ip link set can0 up`
 
 ### enable the CANable using candlelight firmware
--`sudo ip link set can0 up type can bitrate 1000000`
+- `sudo ip link set can0 up type can bitrate 1000000`
 
 
 ## Virtual CAN
 
 ### enable vcan
--`sudo ip link add dev vcan0 type vcan`
--`sudo ip link set vcan0 up`
+- `sudo ip link add dev vcan0 type vcan`
+- `sudo ip link set vcan0 up`
 
 ### disable vcan
--`sudo ip link set vcan0 down`
--`sudo ip link del dev vcan0`
+- `sudo ip link set vcan0 down`
+- `sudo ip link del dev vcan0`
