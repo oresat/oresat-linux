@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <errno.h>
 #include <systemd/sd-bus.h>
+#include <pthread.h>
 
 
 #define INTERFACE_NAME  "org.example.project.oresat"
@@ -15,6 +16,7 @@
 /* static data */
 static sd_bus_slot *slot = NULL;
 static sd_bus *bus = NULL;
+static bool endProgram = 0;
 
 
 /*****************************************************************************/
@@ -113,10 +115,49 @@ int client(void) {
 /* Server */
 
 
-int server(void) {
+static const sd_bus_vtable vtable[] = {
+    SD_BUS_VTABLE_START(0),
+    // key: SD_BUS_METHOD(dbus_signal_name, data_types, flag),
+    SD_BUS_SIGNAL("HelloSignal", "s", 0),
+    SD_BUS_SIGNAL("DataSignal", "id", 0),
+    SD_BUS_VTABLE_END
+};
+
+void* send_signals_thread(void *arg) {
     char test_string[] = "Hello world!";
     int32_t test_int = 5;
     double test_double = 10.0;
+    int r;
+
+    while(1) {
+        //send messages
+        r = sd_bus_emit_signal(bus,
+                               OBJECT_PATH,
+                               INTERFACE_NAME,
+                               "HelloSignal",
+                               "s",
+                               test_string);
+        dbusError(r, "Hello signal message failed:");
+
+        printf("%s\n", test_string);
+
+        r = sd_bus_emit_signal(bus,
+                               OBJECT_PATH,
+                               INTERFACE_NAME,
+                               "DataSignal",
+                               "id",
+                                test_int,
+                                test_double);
+        dbusError(r, "Data signal message failed:");
+
+        printf("%d %f\n", test_int, test_double);
+
+        usleep(WAIT_TIME);
+    }
+}
+
+int server(void) {
+    pthread_t send_signals_thread_id;
     int r;
     
     /* Connect to the bus */
@@ -127,31 +168,32 @@ int server(void) {
     r = sd_bus_request_name(bus, BUS_NAME, SD_BUS_NAME_ALLOW_REPLACEMENT);
     dbusError(r, "Failed to acquire service name. \nIs "INTERFACE_NAME".conf in /etc/dbus-1/system.d/ ?");
 
-    while(1) {
-        //send messages
-        r = sd_bus_emit_signal(bus, 
-                               OBJECT_PATH, 
-                               INTERFACE_NAME,
-                               "HelloSignal", 
-                               "s", 
-                               test_string);
-        dbusError(r, "Hello signal message failed:");
+    /* Install the vtable */
+    r = sd_bus_add_object_vtable(bus,
+                                 &slot,
+                                 OBJECT_PATH,
+                                 INTERFACE_NAME,
+                                 vtable,
+                                 NULL);
+    dbusError(r, "Failed to add vtable.");
 
-        printf("%s\n", test_string);
+    pthread_create(&send_signals_thread_id, NULL, send_signals_thread, NULL);
 
-        r = sd_bus_emit_signal(bus, 
-                               OBJECT_PATH, 
-                               INTERFACE_NAME,
-                               "DataSignal", 
-                               "id", 
-                                test_int,
-                                test_double);
-        dbusError(r, " Data signal message failed:");
+    while(endProgram == 0) {
+        /* Process requests */
+        r = sd_bus_process(bus, NULL);
+        dbusError(r, "Failed to process bus.");
 
-        printf("%d %f\n", test_int, test_double);
+        if (r > 0) /* we processed a request, try to process another one, right-away */
+            continue;
 
-        usleep(WAIT_TIME);
+        /* Wait for the next request to process */
+        r = sd_bus_wait(bus, (uint64_t) -1);
+        dbusError(r, "Failed to wait on bus.");
     }
+
+    r = sd_bus_release_name(bus, BUS_NAME);
+    dbusError(r, "Failed to release service name.");
 
     sd_bus_slot_unref(slot);
     sd_bus_unref(bus);

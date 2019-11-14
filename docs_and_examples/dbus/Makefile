@@ -1,5 +1,5 @@
 CC= gcc
-CFLAGS= $(shell pkg-config --cflags --libs libsystemd)
+CFLAGS= $(shell pkg-config --cflags --libs libsystemd) -pthread
 DFLAGS= -g -Wall
 
 all: sd-bus-method-example sd-bus-signal-example sd-bus-property-example
