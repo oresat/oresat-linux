@@ -400,8 +400,9 @@ CO_SDO_abortCode_t CO_ODF_3003(CO_ODF_arg_t *ODF_arg) {
         case 1 : /* load file from send folder (read only) */
 
             if(ODF_arg->reading == true) { /* reading, get file pointer index */
-                ODF_arg->dataLength = sizeof(sendFileBuffer->filePointer);
-                memcpy(ODF_arg->data, &sendFileBuffer->filePointer, ODF_arg->dataLength);
+                uint8_t temp = sendFileBuffer->filePointer+1;
+                ODF_arg->dataLength = sizeof(temp);
+                memcpy(ODF_arg->data, &temp, ODF_arg->dataLength);
             }
             else { /*writing, load file data */
                 if(ODF_arg->dataLength != sizeof(sendFileBuffer->filePointer)) {
