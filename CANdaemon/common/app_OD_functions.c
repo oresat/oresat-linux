@@ -201,8 +201,8 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
         memcpy(ODF_arg->data, &temp, ODF_arg->dataLength);
     }
     else if(ODF_arg->subIndex > 0 && ODF_arg->subIndex <= SEND_FILE_LIST_SIZE) {
-        ODF_arg->dataLength = strlen(sendFileBuffer->fileList[ODF_arg->subIndex]) + 1;
-        memcpy(ODF_arg->data, sendFileBuffer->fileList[ODF_arg->subIndex], ODF_arg->dataLength);
+        ODF_arg->dataLength = strlen(sendFileBuffer->fileList[ODF_arg->subIndex-1]) + 1;
+        memcpy(ODF_arg->data, sendFileBuffer->fileList[ODF_arg->subIndex-1], ODF_arg->dataLength);
     }
     else
         ret = CO_SDO_AB_SUB_UNKNOWN;
