@@ -11,10 +11,51 @@
 #include "CO_driver.h"
 
 
+#ifndef FILE_TRANSFER_MAX_SIZE
+    #define FILE_TRANSFER_MAX_SIZE 1000000
+#endif
+
+#ifndef FILE_PATH_MAX_LENGTH 
+    #define FILE_PATH_MAX_LENGTH 200
+#endif
+
+
 /**
  * Configure all application OD functions
  */
 void app_ODF_configure(void);
+
+
+/******************************************************************************/
+/* structs */
+
+
+/* Struct for ODF 3001 (receiving files). */
+typedef struct {
+    char        fileName[FILE_PATH_MAX_LENGTH];
+    int8_t      fileData[FILE_TRANSFER_MAX_SIZE];
+    uint32_t    fileSize;
+    bool_t      saveFile;
+} received_file_data_t;
+
+
+/** 
+ * Struct for ODF 3003 (sending files). 
+ * Used to load and access a file that is in sendableFileList
+ */
+typedef struct {
+    uint8_t     filePointer; 
+    char        filePath[FILE_PATH_MAX_LENGTH];
+    int8_t      fileData[FILE_TRANSFER_MAX_SIZE];
+    uint32_t    fileSize;
+    bool_t      deleteFile;
+    uint32_t    filesAvailable;
+    uint32_t    overflow;
+} send_file_data_t;
+
+
+/******************************************************************************/
+/* functions */
 
 
 /**
@@ -29,6 +70,12 @@ CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg);
  * from object dictionary.
  */
 CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg);
+
+/**
+ * Callback for using inside CO_OD_configure() function for reading files 
+ * from object dictionary.
+ */
+CO_SDO_abortCode_t CO_ODF_3003(CO_ODF_arg_t *ODF_arg);
 
 
 /**

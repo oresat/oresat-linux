@@ -306,7 +306,7 @@
       <description />
       <accessFunctionPreCode />
     </CANopenObject>
-    <CANopenObject index="2101" name="CAN node ID" objectType="VAR" memoryType="RAM" dataType="0x05" accessType="rw" PDOmapping="no" defaultValue="0x12" subNumber="0" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+    <CANopenObject index="2101" name="CAN node ID" objectType="VAR" memoryType="RAM" dataType="0x05" accessType="rw" PDOmapping="no" defaultValue="0x10" subNumber="0" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
       <description />
       <accessFunctionPreCode />
     </CANopenObject>
@@ -356,6 +356,11 @@
       <CANopenSubObject subIndex="03" name="Epoch time offset ms" objectType="VAR" dataType="0x07" accessType="rww" PDOmapping="optional" defaultValue="0" TPDOdetectCOS="false" />
       <accessFunctionPreCode />
     </CANopenObject>
+    <CANopenObject index="3000" name="Deamon Control" objectType="REC" memoryType="RAM" dataType="0x00" accessType="rw" PDOmapping="no" defaultValue="" subNumber="1" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+      <description />
+      <CANopenSubObject subIndex="00" name="max sub-index" objectType="VAR" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <accessFunctionPreCode />
+    </CANopenObject>
     <CANopenObject index="3001" name="Receive File" objectType="REC" memoryType="RAM" dataType="0x00" accessType="rw" PDOmapping="no" defaultValue="" subNumber="4" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
       <description />
       <CANopenSubObject subIndex="00" name="max sub-index" objectType="VAR" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="3" TPDOdetectCOS="false" />
@@ -364,18 +369,153 @@
       <CANopenSubObject subIndex="03" name="Save File" objectType="VAR" dataType="0x05" accessType="wo" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
       <accessFunctionPreCode />
     </CANopenObject>
-    <CANopenObject index="3002" name="Send File" objectType="REC" memoryType="RAM" dataType="0x00" accessType="rw" PDOmapping="no" defaultValue="" subNumber="5" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+    <CANopenObject index="3002" name="Send File List" objectType="ARRAY" memoryType="RAM" dataType="0x0f" accessType="rw" PDOmapping="no" defaultValue="" subNumber="128" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
       <description />
-      <CANopenSubObject subIndex="00" name="max sub-index" objectType="VAR" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="4" TPDOdetectCOS="false" />
-      <CANopenSubObject subIndex="01" name="File Name" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
-      <CANopenSubObject subIndex="02" name="File Data" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
-      <CANopenSubObject subIndex="03" name="Load file" objectType="VAR" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
-      <CANopenSubObject subIndex="04" name="Files Avalible" objectType="VAR" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="00" name="max sub-index" objectType="VAR" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="127" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="01" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="02" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="03" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="04" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="05" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="06" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="07" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="08" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="09" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="0a" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="0b" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="0c" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="0d" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="0e" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="0f" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="10" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="11" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="12" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="13" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="14" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="15" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="16" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="17" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="18" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="19" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="1a" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="1b" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="1c" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="1d" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="1e" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="1f" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="20" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="21" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="22" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="23" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="24" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="25" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="26" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="27" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="28" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="29" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="2a" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="2b" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="2c" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="2d" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="2e" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="2f" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="30" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="31" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="32" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="33" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="34" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="35" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="36" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="37" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="38" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="39" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="3a" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="3b" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="3c" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="3d" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="3e" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="3f" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="40" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="41" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="42" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="43" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="44" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="45" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="46" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="47" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="48" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="49" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="4a" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="4b" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="4c" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="4d" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="4e" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="4f" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="50" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="51" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="52" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="53" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="54" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="55" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="56" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="57" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="58" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="59" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="5a" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="5b" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="5c" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="5d" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="5e" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="5f" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="60" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="61" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="62" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="63" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="64" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="65" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="66" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="67" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="68" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="69" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="6a" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="6b" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="6c" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="6d" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="6e" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="6f" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="70" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="71" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="72" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="73" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="74" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="75" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="76" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="77" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="78" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="79" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="7a" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="7b" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="7c" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="7d" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="7e" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="7f" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
+      <accessFunctionPreCode />
+    </CANopenObject>
+    <CANopenObject index="3003" name="Send File Control" objectType="REC" memoryType="RAM" dataType="0x00" accessType="rw" PDOmapping="no" defaultValue="" subNumber="8" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+      <description />
+      <CANopenSubObject subIndex="00" name="max sub-index" objectType="VAR" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="7" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="01" name="Send File Pointer" objectType="VAR" dataType="0x05" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="02" name="File Path" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="03" name="File Data" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="04" name="File Size" objectType="VAR" dataType="0x07" accessType="ro" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="05" name="Delete File" objectType="VAR" dataType="0x01" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="06" name="Files Available" objectType="VAR" dataType="0x06" accessType="ro" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="07" name="Refresh Send File List" objectType="VAR" dataType="0x01" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
       <accessFunctionPreCode />
     </CANopenObject>
   </CANopenObjectList>
   <other>
-    <file fileName="Template_objDict.xml" fileCreator="Ryan Medick" fileCreationDate="11-07-2019" fileCreationTime="11:32AM" fileModifedBy="" fileMotifcationDate="11-07-2019" fileModificationTime="11:32AM" fileVersion="0" fileRevision="0" exportFolder="/home/ryan/PSAS/oresat-linux/CANdaemon/src/app_template/source/objDict" EdsFile="/home/ryan/PSAS/oresat-linux/CANdaemon/src/app_template/source/objDict/Template_objDict.eds" />
+    <file fileCreator="Ryan Medick" fileCreationDate="11-07-2019" fileCreationTime="11:32AM" fileModifedBy="" fileMotifcationDate="11-07-2019" fileModificationTime="11:32AM" fileVersion="0" fileRevision="0" exportFolder="" EdsFile="/home/ryan/PSAS/oresat-linux/CANdaemon/src/app_template/source/objDict/Template_objDict.eds" />
     <DeviceIdentity>
       <vendorName>Portland State Aerospace Society</vendorName>
       <vendorNumber>0</vendorNumber>
