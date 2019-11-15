@@ -342,7 +342,7 @@ static CO_SDO_abortCode_t read_file_data(CO_ODF_arg_t *ODF_arg) {
     if(ODF_arg->reading == false) 
         return CO_SDO_AB_READONLY; /* can't write parameters, read only */
 
-    /* handle if the file path is empty */
+    /* if the file path is empty, don't use the data buffer */
     if(sendFileBuffer->filePath[0] == '\0') {
         ODF_arg->dataLength = 1;
         memcpy(ODF_arg->data, sendFileBuffer->filePath, ODF_arg->dataLength);
@@ -475,6 +475,9 @@ CO_SDO_abortCode_t CO_ODF_3003(CO_ODF_arg_t *ODF_arg) {
             if(sendFileBuffer->fileList[0][sendFileBuffer->filePointer] != '\0') {
                 remove(sendFileBuffer->filePath); /* delete file */
                 sendFileBuffer->fileList[0][sendFileBuffer->filePointer] = '\0'; /* remove from array */
+                sendFileBuffer->filePath[0] = '\0';
+                sendFileBuffer->fileSize = 0;
+                --sendFileBuffer->filesAvailable;
             }
 
             break;
