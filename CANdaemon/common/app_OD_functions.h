@@ -47,6 +47,7 @@ typedef struct {
  */
 typedef struct {
     uint8_t     filePointer; 
+    char       *fileName;
     char        filePath[FILE_PATH_MAX_LENGTH];
     int8_t      fileData[FILE_TRANSFER_MAX_SIZE];
     uint32_t    fileSize;
