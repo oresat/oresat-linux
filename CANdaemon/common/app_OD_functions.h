@@ -19,6 +19,8 @@
     #define FILE_PATH_MAX_LENGTH 200
 #endif
 
+#define SEND_FILE_LIST_SIZE 127 /* must be <= 127 */
+
 
 /**
  * Configure all application OD functions
@@ -48,9 +50,9 @@ typedef struct {
     char        filePath[FILE_PATH_MAX_LENGTH];
     int8_t      fileData[FILE_TRANSFER_MAX_SIZE];
     uint32_t    fileSize;
-    bool_t      deleteFile;
     uint32_t    filesAvailable;
     uint32_t    overflow;
+    char        fileList[FILE_PATH_MAX_LENGTH][SEND_FILE_LIST_SIZE];
 } send_file_data_t;
 
 

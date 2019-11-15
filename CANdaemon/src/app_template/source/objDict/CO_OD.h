@@ -207,12 +207,13 @@
 /*3003    */ typedef struct {
                UNSIGNED8      maxSubIndex;
                UNSIGNED8      sendFilePointer;
-               DOMAIN         filePath;
+               DOMAIN         fileName;
                DOMAIN         fileData;
                UNSIGNED32     fileSize;
                BOOLEAN        deleteFile;
-               UNSIGNED16     filesAvailable;
-               BOOLEAN        refreshSendFileList;
+               UNSIGNED32     filesAvailable;
+               UNSIGNED32     overflow;
+               BOOLEAN        refreshFileArray;
                }              OD_sendFileControl_t;
 
 /*******************************************************************************
@@ -706,12 +707,13 @@
 
         #define OD_3003_0_sendFileControl_maxSubIndex               0
         #define OD_3003_1_sendFileControl_sendFilePointer           1
-        #define OD_3003_2_sendFileControl_filePath                  2
+        #define OD_3003_2_sendFileControl_fileName                  2
         #define OD_3003_3_sendFileControl_fileData                  3
         #define OD_3003_4_sendFileControl_fileSize                  4
         #define OD_3003_5_sendFileControl_deleteFile                5
         #define OD_3003_6_sendFileControl_filesAvailable            6
-        #define OD_3003_7_sendFileControl_refreshSendFileList       7
+        #define OD_3003_7_sendFileControl_overflow                  7
+        #define OD_3003_8_sendFileControl_refreshFileArray          8
 
 /*******************************************************************************
    STRUCTURES FOR VARIABLES IN DIFFERENT MEMORY LOCATIONS

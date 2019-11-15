@@ -2829,7 +2829,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="7" />
+            <defaultValue value="8" />
           </parameter>
           <parameter uniqueID="UID_PARAM_300301" access="readWrite">
             <label lang="en">Send File Pointer</label>
@@ -2840,7 +2840,7 @@
             <defaultValue value="0" />
           </parameter>
           <parameter uniqueID="UID_PARAM_300302" access="read">
-            <label lang="en">File Path</label>
+            <label lang="en">File Name</label>
             <description lang="en" />
             <denotation>
               <label lang="en" />
@@ -2879,8 +2879,16 @@
             </denotation>
             <defaultValue value="0" />
           </parameter>
-          <parameter uniqueID="UID_PARAM_300307" access="readWrite">
-            <label lang="en">Refresh Send File List</label>
+          <parameter uniqueID="UID_PARAM_300307" access="read">
+            <label lang="en">Overflow</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="0" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300308" access="readWrite">
+            <label lang="en">Refresh File Array</label>
             <description lang="en" />
             <denotation>
               <label lang="en" />
@@ -3285,15 +3293,16 @@
             <CANopenSubObject subIndex="007E" name="" objectType="7" dataType="000F" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_30027e" />
             <CANopenSubObject subIndex="007F" name="" objectType="7" dataType="000F" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_30027f" />
           </CANopenObject>
-          <CANopenObject index="3003" name="Send File Control" objectType="9" dataType="0000" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3003" subNumber="8">
+          <CANopenObject index="3003" name="Send File Control" objectType="9" dataType="0000" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3003" subNumber="9">
             <CANopenSubObject subIndex="0000" name="max sub-index" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300300" />
             <CANopenSubObject subIndex="0001" name="Send File Pointer" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300301" />
-            <CANopenSubObject subIndex="0002" name="File Path" objectType="7" dataType="000F" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300302" />
+            <CANopenSubObject subIndex="0002" name="File Name" objectType="7" dataType="000F" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300302" />
             <CANopenSubObject subIndex="0003" name="File Data" objectType="7" dataType="000F" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300303" />
             <CANopenSubObject subIndex="0004" name="File Size" objectType="7" dataType="0007" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300304" />
             <CANopenSubObject subIndex="0005" name="Delete File" objectType="7" dataType="0001" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300305" />
-            <CANopenSubObject subIndex="0006" name="Files Available" objectType="7" dataType="0006" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300306" />
-            <CANopenSubObject subIndex="0007" name="Refresh Send File List" objectType="7" dataType="0001" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300307" />
+            <CANopenSubObject subIndex="0006" name="Files Available" objectType="7" dataType="0007" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300306" />
+            <CANopenSubObject subIndex="0007" name="Overflow" objectType="7" dataType="0007" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300307" />
+            <CANopenSubObject subIndex="0008" name="Refresh File Array" objectType="7" dataType="0001" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300308" />
           </CANopenObject>
         </CANopenObjectList>
         <dummyUsage>
