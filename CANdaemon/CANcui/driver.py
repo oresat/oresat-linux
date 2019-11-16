@@ -29,9 +29,10 @@ class FrameData(can.Frame):
         ret = str("Node(" + str(self.id) + ")\t| Dlc(" + str(self.dlc) + ") | Type(" + str(self.frame_type) + ") | Ext(" + str(self.is_extended_id) + ") | Data[ ")
         for d in self.data:
             ds = str(hex(d))
-            ret += str(ds + " ")
-        ret += "] | LastModified(" + str(int(time.time() - int(self.modif))) + "s)"
-        if(not self.is_alive()): ret += " | STALE NODE"
+            ret += str(ds[2:] + " ")
+        ret += "] | LastModified("
+        if(self.is_alive()): ret += str(int(time.time() - int(self.modif))) + "s)"
+        else: ret += time.ctime() + "s) | STALE NODE"
         return ret
 
     def is_alive(self):
