@@ -199,12 +199,12 @@ static int method_quit(sd_bus_message *m, void *userdata, sd_bus_error *ret_erro
 
 
 static const sd_bus_vtable method_vtable[] = {
-        SD_BUS_VTABLE_START(0),
-        // key: SD_BUS_METHOD(dbus_method_name, inputs_types, return_types, function_name, SD_BUS_VTABLE_UNPRIVILEGED),
-        SD_BUS_METHOD("Hello", "s", "s", method_hello, SD_BUS_VTABLE_UNPRIVILEGED),
-        SD_BUS_METHOD("Multiply", "ii", "i", method_multiply, SD_BUS_VTABLE_UNPRIVILEGED),
-        SD_BUS_METHOD("Quit", NULL, NULL, method_quit, SD_BUS_VTABLE_UNPRIVILEGED),
-        SD_BUS_VTABLE_END
+    SD_BUS_VTABLE_START(0),
+    // key: SD_BUS_METHOD(dbus_method_name, inputs_types, return_types, callback_function, flag),
+    SD_BUS_METHOD("Hello", "s", "s", method_hello, SD_BUS_VTABLE_UNPRIVILEGED),
+    SD_BUS_METHOD("Multiply", "ii", "i", method_multiply, SD_BUS_VTABLE_UNPRIVILEGED),
+    SD_BUS_METHOD("Quit", NULL, NULL, method_quit, SD_BUS_VTABLE_UNPRIVILEGED),
+    SD_BUS_VTABLE_END
 };
 
 
@@ -219,7 +219,7 @@ int server(void) {
     r = sd_bus_request_name(bus, BUS_NAME, SD_BUS_NAME_ALLOW_REPLACEMENT);
     dbusError(r, "Failed to acquire service name. \nIs "INTERFACE_NAME".conf in /etc/dbus-1/system.d/ ?");
 
-    /* Install the object */
+    /* Install the vtable */
     r = sd_bus_add_object_vtable(bus,
                                  &slot,
                                  OBJECT_PATH,

@@ -124,7 +124,8 @@ struct sCO_OD_RAM CO_OD_RAM = {
 /*2109*/ {0x00},
 /*2130*/ {0x3L, {'-'}, 0x00000000L, 0x0000L},
 /*3001*/ {0x3L, 0, 0, 0x0L},
-/*3002*/ {0x4L, 0, 0, 0x0L, 0x0L},
+/*3002*/ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+/*3003*/ {0x8L, 0x0L, 0, 0, 0x0000L, 0, 0x0000L, 0x0000L, 0},
 /*3100*/ {0x2L, 0x0, 0x0},
 /*3101*/ {0x3L, 0x00, 0x00, 0x00},
 
@@ -343,12 +344,16 @@ struct sCO_OD_EEPROM CO_OD_EEPROM = {
            {(void*)&CO_OD_RAM.receiveFile.saveFile, 0x0a, 0x1 },
 };
 
-/*0x3002*/ const CO_OD_entryRecord_t OD_record3002[5] = {
-           {(void*)&CO_OD_RAM.sendFile.maxSubIndex, 0x06, 0x1 },
+/*0x3003*/ const CO_OD_entryRecord_t OD_record3003[9] = {
+           {(void*)&CO_OD_RAM.sendFileControl.maxSubIndex, 0x06, 0x1 },
+           {(void*)&CO_OD_RAM.sendFileControl.filePointer, 0x0e, 0x1 },
            {(void*)0, 0x06, 0x0 },
            {(void*)0, 0x06, 0x0 },
-           {(void*)&CO_OD_RAM.sendFile.loadFile, 0x06, 0x1 },
-           {(void*)&CO_OD_RAM.sendFile.filesAvalible, 0x06, 0x1 },
+           {(void*)&CO_OD_RAM.sendFileControl.fileSize, 0x86, 0x4 },
+           {(void*)&CO_OD_RAM.sendFileControl.deleteFile, 0x0e, 0x1 },
+           {(void*)&CO_OD_RAM.sendFileControl.filesAvailable, 0x86, 0x4 },
+           {(void*)&CO_OD_RAM.sendFileControl.overflow, 0x86, 0x4 },
+           {(void*)&CO_OD_RAM.sendFileControl.refreshFileList, 0x0e, 0x1 },
 };
 
 /*0x3100*/ const CO_OD_entryRecord_t OD_record3100[3] = {
@@ -367,7 +372,7 @@ struct sCO_OD_EEPROM CO_OD_EEPROM = {
 /*******************************************************************************
    OBJECT DICTIONARY
 *******************************************************************************/
-const CO_OD_entry_t CO_OD[52] = {
+const CO_OD_entry_t CO_OD[53] = {
 
 {0x1000, 0x00, 0x86, 4, (void*)&CO_OD_RAM.deviceType},
 {0x1001, 0x00, 0x26, 1, (void*)&CO_OD_RAM.errorRegister},
@@ -418,7 +423,8 @@ const CO_OD_entry_t CO_OD[52] = {
 {0x2109, 0x01, 0x8e, 2, (void*)&CO_OD_RAM.voltage[0]},
 {0x2130, 0x03, 0x00, 0, (void*)&OD_record2130},
 {0x3001, 0x03, 0x00, 0, (void*)&OD_record3001},
-{0x3002, 0x04, 0x00, 0, (void*)&OD_record3002},
+{0x3002, 0x7f, 0x06, 0, (void*)0},
+{0x3003, 0x08, 0x00, 1, (void*)&OD_record3003},
 {0x3100, 0x02, 0x00, 0, (void*)&OD_record3100},
 {0x3101, 0x03, 0x00, 0, (void*)&OD_record3101},
 };

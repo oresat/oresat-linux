@@ -129,7 +129,7 @@
 /*******************************************************************************
    OBJECT DICTIONARY
 *******************************************************************************/
-   #define CO_OD_NoOfElements             52
+   #define CO_OD_NoOfElements             53
 
 
 /*******************************************************************************
@@ -201,13 +201,17 @@
                DOMAIN         fileData;
                UNSIGNED8      saveFile;
                }              OD_receiveFile_t;
-/*3002    */ typedef struct {
+/*3003    */ typedef struct {
                UNSIGNED8      maxSubIndex;
+               UNSIGNED8      filePointer;
                DOMAIN         fileName;
                DOMAIN         fileData;
-               UNSIGNED8      loadFile;
-               UNSIGNED8      filesAvalible;
-               }              OD_sendFile_t;
+               UNSIGNED32     fileSize;
+               BOOLEAN        deleteFile;
+               INTEGER32      filesAvailable;
+               UNSIGNED32     overflow;
+               BOOLEAN        refreshFileList;
+               }              OD_sendFileControl_t;
 /*3100    */ typedef struct {
                UNSIGNED8      maxSubIndex;
                INTEGER8       currentState;
@@ -570,13 +574,149 @@
         #define OD_3001_3_receiveFile_saveFile                      3
 
 /*3002 */
-        #define OD_3002_sendFile                                    0x3002
+        #define OD_3002_senfFileList                                0x3002
 
-        #define OD_3002_0_sendFile_maxSubIndex                      0
-        #define OD_3002_1_sendFile_fileName                         1
-        #define OD_3002_2_sendFile_fileData                         2
-        #define OD_3002_3_sendFile_loadFile                         3
-        #define OD_3002_4_sendFile_filesAvalible                    4
+        #define OD_3002_0_senfFileList_maxSubIndex                  0
+        #define OD_3002_1_senfFileList_                             1
+        #define OD_3002_2_senfFileList_                             2
+        #define OD_3002_3_senfFileList_                             3
+        #define OD_3002_4_senfFileList_                             4
+        #define OD_3002_5_senfFileList_                             5
+        #define OD_3002_6_senfFileList_                             6
+        #define OD_3002_7_senfFileList_                             7
+        #define OD_3002_8_senfFileList_                             8
+        #define OD_3002_9_senfFileList_                             9
+        #define OD_3002_10_senfFileList_                            10
+        #define OD_3002_11_senfFileList_                            11
+        #define OD_3002_12_senfFileList_                            12
+        #define OD_3002_13_senfFileList_                            13
+        #define OD_3002_14_senfFileList_                            14
+        #define OD_3002_15_senfFileList_                            15
+        #define OD_3002_16_senfFileList_                            16
+        #define OD_3002_17_senfFileList_                            17
+        #define OD_3002_18_senfFileList_                            18
+        #define OD_3002_19_senfFileList_                            19
+        #define OD_3002_20_senfFileList_                            20
+        #define OD_3002_21_senfFileList_                            21
+        #define OD_3002_22_senfFileList_                            22
+        #define OD_3002_23_senfFileList_                            23
+        #define OD_3002_24_senfFileList_                            24
+        #define OD_3002_25_senfFileList_                            25
+        #define OD_3002_26_senfFileList_                            26
+        #define OD_3002_27_senfFileList_                            27
+        #define OD_3002_28_senfFileList_                            28
+        #define OD_3002_29_senfFileList_                            29
+        #define OD_3002_30_senfFileList_                            30
+        #define OD_3002_31_senfFileList_                            31
+        #define OD_3002_32_senfFileList_                            32
+        #define OD_3002_33_senfFileList_                            33
+        #define OD_3002_34_senfFileList_                            34
+        #define OD_3002_35_senfFileList_                            35
+        #define OD_3002_36_senfFileList_                            36
+        #define OD_3002_37_senfFileList_                            37
+        #define OD_3002_38_senfFileList_                            38
+        #define OD_3002_39_senfFileList_                            39
+        #define OD_3002_40_senfFileList_                            40
+        #define OD_3002_41_senfFileList_                            41
+        #define OD_3002_42_senfFileList_                            42
+        #define OD_3002_43_senfFileList_                            43
+        #define OD_3002_44_senfFileList_                            44
+        #define OD_3002_45_senfFileList_                            45
+        #define OD_3002_46_senfFileList_                            46
+        #define OD_3002_47_senfFileList_                            47
+        #define OD_3002_48_senfFileList_                            48
+        #define OD_3002_49_senfFileList_                            49
+        #define OD_3002_50_senfFileList_                            50
+        #define OD_3002_51_senfFileList_                            51
+        #define OD_3002_52_senfFileList_                            52
+        #define OD_3002_53_senfFileList_                            53
+        #define OD_3002_54_senfFileList_                            54
+        #define OD_3002_55_senfFileList_                            55
+        #define OD_3002_56_senfFileList_                            56
+        #define OD_3002_57_senfFileList_                            57
+        #define OD_3002_58_senfFileList_                            58
+        #define OD_3002_59_senfFileList_                            59
+        #define OD_3002_60_senfFileList_                            60
+        #define OD_3002_61_senfFileList_                            61
+        #define OD_3002_62_senfFileList_                            62
+        #define OD_3002_63_senfFileList_                            63
+        #define OD_3002_64_senfFileList_                            64
+        #define OD_3002_65_senfFileList_                            65
+        #define OD_3002_66_senfFileList_                            66
+        #define OD_3002_67_senfFileList_                            67
+        #define OD_3002_68_senfFileList_                            68
+        #define OD_3002_69_senfFileList_                            69
+        #define OD_3002_70_senfFileList_                            70
+        #define OD_3002_71_senfFileList_                            71
+        #define OD_3002_72_senfFileList_                            72
+        #define OD_3002_73_senfFileList_                            73
+        #define OD_3002_74_senfFileList_                            74
+        #define OD_3002_75_senfFileList_                            75
+        #define OD_3002_76_senfFileList_                            76
+        #define OD_3002_77_senfFileList_                            77
+        #define OD_3002_78_senfFileList_                            78
+        #define OD_3002_79_senfFileList_                            79
+        #define OD_3002_80_senfFileList_                            80
+        #define OD_3002_81_senfFileList_                            81
+        #define OD_3002_82_senfFileList_                            82
+        #define OD_3002_83_senfFileList_                            83
+        #define OD_3002_84_senfFileList_                            84
+        #define OD_3002_85_senfFileList_                            85
+        #define OD_3002_86_senfFileList_                            86
+        #define OD_3002_87_senfFileList_                            87
+        #define OD_3002_88_senfFileList_                            88
+        #define OD_3002_89_senfFileList_                            89
+        #define OD_3002_90_senfFileList_                            90
+        #define OD_3002_91_senfFileList_                            91
+        #define OD_3002_92_senfFileList_                            92
+        #define OD_3002_93_senfFileList_                            93
+        #define OD_3002_94_senfFileList_                            94
+        #define OD_3002_95_senfFileList_                            95
+        #define OD_3002_96_senfFileList_                            96
+        #define OD_3002_97_senfFileList_                            97
+        #define OD_3002_98_senfFileList_                            98
+        #define OD_3002_99_senfFileList_                            99
+        #define OD_3002_100_senfFileList_                           100
+        #define OD_3002_101_senfFileList_                           101
+        #define OD_3002_102_senfFileList_                           102
+        #define OD_3002_103_senfFileList_                           103
+        #define OD_3002_104_senfFileList_                           104
+        #define OD_3002_105_senfFileList_                           105
+        #define OD_3002_106_senfFileList_                           106
+        #define OD_3002_107_senfFileList_                           107
+        #define OD_3002_108_senfFileList_                           108
+        #define OD_3002_109_senfFileList_                           109
+        #define OD_3002_110_senfFileList_                           110
+        #define OD_3002_111_senfFileList_                           111
+        #define OD_3002_112_senfFileList_                           112
+        #define OD_3002_113_senfFileList_                           113
+        #define OD_3002_114_senfFileList_                           114
+        #define OD_3002_115_senfFileList_                           115
+        #define OD_3002_116_senfFileList_                           116
+        #define OD_3002_117_senfFileList_                           117
+        #define OD_3002_118_senfFileList_                           118
+        #define OD_3002_119_senfFileList_                           119
+        #define OD_3002_120_senfFileList_                           120
+        #define OD_3002_121_senfFileList_                           121
+        #define OD_3002_122_senfFileList_                           122
+        #define OD_3002_123_senfFileList_                           123
+        #define OD_3002_124_senfFileList_                           124
+        #define OD_3002_125_senfFileList_                           125
+        #define OD_3002_126_senfFileList_                           126
+        #define OD_3002_127_senfFileList_                           127
+
+/*3003 */
+        #define OD_3003_sendFileControl                             0x3003
+
+        #define OD_3003_0_sendFileControl_maxSubIndex               0
+        #define OD_3003_1_sendFileControl_filePointer               1
+        #define OD_3003_2_sendFileControl_fileName                  2
+        #define OD_3003_3_sendFileControl_fileData                  3
+        #define OD_3003_4_sendFileControl_fileSize                  4
+        #define OD_3003_5_sendFileControl_deleteFile                5
+        #define OD_3003_6_sendFileControl_filesAvailable            6
+        #define OD_3003_7_sendFileControl_overflow                  7
+        #define OD_3003_8_sendFileControl_refreshFileList           8
 
 /*3100 */
         #define OD_3100_starTrackerStatusControl                    0x3100
@@ -647,7 +787,8 @@ struct sCO_OD_RAM{
 /*2109      */ INTEGER16       voltage[1];
 /*2130      */ OD_time_t       time;
 /*3001      */ OD_receiveFile_t receiveFile;
-/*3002      */ OD_sendFile_t   sendFile;
+/*3002      */ DOMAIN          senfFileList[127];
+/*3003      */ OD_sendFileControl_t sendFileControl;
 /*3100      */ OD_starTrackerStatusControl_t starTrackerStatusControl;
 /*3101      */ OD_orienation_t orienation;
 
@@ -812,8 +953,13 @@ extern struct sCO_OD_EEPROM CO_OD_EEPROM;
 /*3001, Data Type: receiveFile_t */
         #define OD_receiveFile                                      CO_OD_RAM.receiveFile
 
-/*3002, Data Type: sendFile_t */
-        #define OD_sendFile                                         CO_OD_RAM.sendFile
+/*3002, Data Type: DOMAIN, Array[127] */
+        #define OD_senfFileList                                     CO_OD_RAM.senfFileList
+        #define ODL_senfFileList_arrayLength                        127
+        #define ODA_senfFileList_                                   0
+
+/*3003, Data Type: sendFileControl_t */
+        #define OD_sendFileControl                                  CO_OD_RAM.sendFileControl
 
 /*3100, Data Type: starTrackerStatusControl_t */
         #define OD_starTrackerStatusControl                         CO_OD_RAM.starTrackerStatusControl

@@ -25,54 +25,43 @@ pthread_mutex_t APP_ODF_mtx;
 #ifndef FILE_RECEIVE_FOLDER 
     #define FILE_RECEIVE_FOLDER "/tmp/received_files/"
 #endif
+
 #ifndef FILE_SEND_FOLDER
     #define FILE_SEND_FOLDER "/tmp/send_files/"
-#endif
-#ifndef FILE_TRANSFER_MAX_SIZE
-    #define FILE_TRANSFER_MAX_SIZE 6000
-#endif
-#ifndef FILE_PATH_MAX_LENGTH 
-    #define FILE_PATH_MAX_LENGTH 100
+
 #endif
 
-#ifndef FILE_PATH_MAX_LENGTH 
+#ifndef CO_SDO_BUFFER_SIZE
     #define CO_SDO_BUFFER_SIZE 889 // CO_SDO.* should define this
 #endif
 
 
 
 /******************************************************************************/
-/* data structures */
-
-
-/**
- * Object Dictionary storage object for receiving files.
- *
- * Object is used with CANopen OD objects that are for file transfer.
- */
-typedef struct {
-    char        fileName[FILE_PATH_MAX_LENGTH];
-    uint32_t    fileSize;
-    int8_t      fileData[FILE_TRANSFER_MAX_SIZE];
-    uint8_t     filesAvalible;
-} file_buffer_t;
-
+/* Static functions headers */
+static CO_SDO_abortCode_t save_file_data(CO_ODF_arg_t *ODF_arg, received_file_data_t *recvFileBuffer);
+static int initFileList(send_file_data_t *sendFileBuffer);
+static uint32_t get_file_name(const char *filePath, char *fileName);
+static uint32_t get_file_data(const char *filePath, int8_t *fileData);
+static CO_SDO_abortCode_t read_file_data(CO_ODF_arg_t *ODF_arg);
 
 /******************************************************************************/
 /* Static Variables */
 
 
-static file_buffer_t odReceiveFileBuffer;     /* for OD entry 0x3001 */
-static file_buffer_t odSendFileBuffer;        /* for OD entry 0x3002 */
+static received_file_data_t recvFileBuffer;     /* for OD entry 0x3001 */
+static send_file_data_t sendFileBuffer;         /* for OD entry 0x3002 and 0x3003 */
 
 
 /******************************************************************************/
-
+/* Add static data to SDO struct */
 
 void app_ODF_configure(void){
-    /* Add data structs to SDO Object Dictionary */
-    CO_OD_configure(CO->SDO[0], 0x3001, CO_ODF_3001, (void*)&odReceiveFileBuffer, 0, 0U);
-    CO_OD_configure(CO->SDO[0], 0x3002, CO_ODF_3002, (void*)&odSendFileBuffer, 0, 0U);
+    initFileList(&sendFileBuffer);
+
+    CO_OD_configure(CO->SDO[0], 0x3001, CO_ODF_3001, (void*)&recvFileBuffer, 0, 0U);
+    CO_OD_configure(CO->SDO[0], 0x3002, CO_ODF_3002, (void*)&sendFileBuffer, 0, 0U);
+    CO_OD_configure(CO->SDO[0], 0x3003, CO_ODF_3003, (void*)&sendFileBuffer, 0, 0U);
 
     return;
 }
@@ -86,8 +75,8 @@ void app_ODF_configure(void){
  * Wrapper function used by CP_ODF_3001 to save file data into SDO buffer from struct. 
  * It can handle spilting large data files into multiple segments.
  * */
-static CO_SDO_abortCode_t save_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *odFileBuffer) {
-    if(ODF_arg == NULL || odFileBuffer == NULL || ODF_arg->data == NULL)
+static CO_SDO_abortCode_t save_file_data(CO_ODF_arg_t *ODF_arg, received_file_data_t *recvFileBuffer) {
+    if(ODF_arg == NULL || recvFileBuffer == NULL || ODF_arg->data == NULL)
         return CO_SDO_AB_NO_DATA;
 
     if(ODF_arg->firstSegment == 1) { /* 1st segment only */
@@ -95,7 +84,7 @@ static CO_SDO_abortCode_t save_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *o
             return CO_SDO_AB_OUT_OF_MEM; /* file is larger than domain buffer */
         }
         
-        odFileBuffer->fileSize = 0; 
+        recvFileBuffer->fileSize = 0; 
         ODF_arg->offset = 0;
     }
 
@@ -103,28 +92,28 @@ static CO_SDO_abortCode_t save_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *o
      * check if there are more segements comming. This will also check if 
      * dataLengthTotal in not set (is 0).
      * */
-    if((odFileBuffer->fileSize + ODF_arg->dataLength) >= ODF_arg->dataLengthTotal)
+    if((recvFileBuffer->fileSize + ODF_arg->dataLength) >= ODF_arg->dataLengthTotal)
         ODF_arg->lastSegment = true;
     else
         ODF_arg->lastSegment = false;
 
     /* update fileSize */
-    odFileBuffer->fileSize += ODF_arg->dataLength;
+    recvFileBuffer->fileSize += ODF_arg->dataLength;
 
     /* copy data */
-    memcpy(&odFileBuffer->fileData[ODF_arg->offset], ODF_arg->data, ODF_arg->dataLength);
+    memcpy(&recvFileBuffer->fileData[ODF_arg->offset], ODF_arg->data, ODF_arg->dataLength);
 
     return CO_SDO_AB_NONE;
 }
 
 
 CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg) {
-    file_buffer_t *odFileBuffer;
+    received_file_data_t *recvFileBuffer;
     CO_SDO_abortCode_t ret = CO_SDO_AB_NONE;
     char filePath[] = FILE_RECEIVE_FOLDER;
     FILE *f;
 
-    odFileBuffer = (file_buffer_t*) ODF_arg->object;
+    recvFileBuffer = (received_file_data_t*) ODF_arg->object;
 
     /* error, no data to write */
     if(ODF_arg->dataLength == 0)
@@ -143,7 +132,7 @@ CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg) {
                 ret = CO_SDO_AB_OUT_OF_MEM; 
             else {
                 /* write data */
-                memcpy(odFileBuffer->fileName, ODF_arg->data, ODF_arg->dataLength);
+                memcpy(recvFileBuffer->fileName, ODF_arg->data, ODF_arg->dataLength);
 
                 /* no null char */
                 if(ODF_arg->data[ODF_arg->dataLength-1] != '\0')
@@ -155,26 +144,26 @@ CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg) {
 
         case 2 : /* file data */
             
-            ret = save_file_data(ODF_arg, odFileBuffer);
+            ret = save_file_data(ODF_arg, recvFileBuffer);
             break;
 
         case 3 : /* save file */
             
-            if(odFileBuffer->fileSize == 0 || odFileBuffer->fileName[0] == '\0')
+            if(recvFileBuffer->fileSize == 0 || recvFileBuffer->fileName[0] == '\0')
                 ret = CO_SDO_AB_NO_DATA; /* error, no data to save */
             else { /* save file to recieve folder */
-                strcat(filePath, odFileBuffer->fileName);
+                strcat(filePath, recvFileBuffer->fileName);
                 
                 f = fopen(filePath, "wb");
                 if(f == NULL)
                     ret = CO_SDO_AB_GENERAL; 
                 else {
-                    fwrite(odFileBuffer->fileData, sizeof(char), odFileBuffer->fileSize, f);
+                    fwrite(recvFileBuffer->fileData, sizeof(char), recvFileBuffer->fileSize, f);
                     fclose(f);
 
                     /* clear buffer */
-                    odFileBuffer->fileSize = 0;
-                    odFileBuffer->fileName[0] = '\0';
+                    recvFileBuffer->fileSize = 0;
+                    recvFileBuffer->fileName[0] = '\0';
 
                     ODF_arg->lastSegment = true;
                 }
@@ -192,50 +181,160 @@ CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg) {
 
 
 /******************************************************************************/
-/* Send file, OD entry 3002 */
+/* Send file array, OD entry 3002 */
+
+
+CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
+    CO_SDO_abortCode_t ret = CO_SDO_AB_NONE;
+    send_file_data_t *sendFileBuffer;
+
+    sendFileBuffer = (send_file_data_t*) ODF_arg->object;
+
+    if(ODF_arg->reading == false) 
+        return CO_SDO_AB_READONLY; /* can't write parameters, read only */
+
+    APP_LOCK_ODF();
+
+    if(ODF_arg->subIndex == 0) {
+        uint8_t temp = SEND_FILE_LIST_SIZE;
+        ODF_arg->dataLength = sizeof(temp);
+        memcpy(ODF_arg->data, &temp, ODF_arg->dataLength);
+    }
+    else if(ODF_arg->subIndex > 0 && ODF_arg->subIndex <= SEND_FILE_LIST_SIZE) {
+        ODF_arg->dataLength = strlen(sendFileBuffer->fileList[ODF_arg->subIndex-1]) + 1;
+        memcpy(ODF_arg->data, sendFileBuffer->fileList[ODF_arg->subIndex-1], ODF_arg->dataLength);
+    }
+    else
+        ret = CO_SDO_AB_SUB_UNKNOWN;
+
+    APP_UNLOCK_ODF();
+    return ret;
+}
+
+
+int32_t APP_ODF_3002(const char *filePath) {
+    int32_t ret = 0;
+    char fileName[FILE_PATH_MAX_LENGTH];
+    char newFilePath[FILE_PATH_MAX_LENGTH] = FILE_SEND_FOLDER;
+    int source, dest;
+    struct stat stat_source;
+
+    get_file_name(filePath, fileName);
+    strcat(newFilePath, fileName);
+
+    if(filePath == NULL || filePath[0] == '\0')
+        ret = 1; /* not a valid file path */
+    else if(filePath[0] != '/')
+        ret = 2; /* not a a absolute path */
+    else {
+        /* move file into send folder */
+
+        source = open(filePath, O_RDONLY, 0);
+        dest = open(newFilePath, O_WRONLY | O_CREAT, 0644);
+
+        fstat(source, &stat_source);
+        sendfile(dest, source, 0, stat_source.st_size);
+
+        close(source);
+        close(dest);
+
+        /* remove old file */
+        remove(filePath);
+
+        APP_LOCK_ODF();
+
+        /* there is a empty spot in file list, add filename to the list */
+        if(sendFileBuffer.filesAvailable < SEND_FILE_LIST_SIZE) { 
+            unsigned int i=0;
+
+            /* Since the file list array will be 127 at maxiumum, 
+             * a iterative search through the list is fine, 
+             * it will have a O(1).
+             */
+
+            /* spin until an empty spot in the file list is found or at end */
+            while(sendFileBuffer.fileList[0][i] != '\0' && i < SEND_FILE_LIST_SIZE) 
+                ++i;
+
+            /* add file name to file list if there is valid empty spot */
+            if(i < SEND_FILE_LIST_SIZE)
+                strncpy(sendFileBuffer.fileList[i], fileName, strlen(fileName) + 1);
+            else
+                ++sendFileBuffer.overflow;
+
+            ++sendFileBuffer.filesAvailable;
+        }
+
+        APP_UNLOCK_ODF();
+    }
+
+    return ret; 
+}
+
+
+/******************************************************************************/
+/* Send file, OD entry 3003 */
 
 
 /**
-* Wrapper funciton for CO_ODF_3002. Checks the directory for any files.
+* Wrapper funciton for CO_ODF_3003. Initalizes the file list array to empty 
+* and then adds any files found in the send folder to the file list. 
 *
-* @return # of file availibe on sucess, and sets filePath if more than 0
-* files are available.
+* @return 1 on sucess and -1 on error
 */
-static int32_t find_file(char *directory, char *filePath){
-    int32_t totalFiles = 0;
+static int initFileList(send_file_data_t *sendFileBuffer) {
     DIR *d;
     struct dirent *dir;
     int a, b;
-    bool fileFound = 0;
 
-    d = opendir(directory);
-    if(d != NULL) { /* directory found */
+    /* mark every entry in file array as empty */
+    for(unsigned int i=0; i<SEND_FILE_LIST_SIZE; ++i) 
+        sendFileBuffer->fileList[0][i] = '\0';
+
+    /* defualt values */
+    sendFileBuffer->filesAvailable = 0;
+    sendFileBuffer->overflow = 0;
+    sendFileBuffer->fileName = sendFileBuffer->fileList[0];
+    sendFileBuffer->filePath[0] = '\0';
+
+    if((d = opendir(FILE_SEND_FOLDER)) != NULL) { 
+        /* directory found */
         while((dir = readdir(d)) != NULL) {
+            /* file found */
             a = strncmp(dir->d_name, ".", sizeof(dir->d_name));
             b = strncmp(dir->d_name, "..", sizeof(dir->d_name));
 
-            if(a != 0 && b != 0) {
-                if(fileFound != 1) {
-                    /* file found, make path */
-                    strncpy(filePath, directory, strlen(directory) + 1);
-                    strncat(filePath, dir->d_name, strlen(dir->d_name) + 1);
-                    fileFound = 1;
-                }
-                ++totalFiles;
+            if(a != 0 && b != 0) { /* file found */
+                if(sendFileBuffer->filesAvailable < SEND_FILE_LIST_SIZE) /* space in file array  */
+                    strncpy(sendFileBuffer->fileList[sendFileBuffer->filesAvailable], dir->d_name, strlen(dir->d_name) + 1);
+                else /* file array is full */
+                    ++sendFileBuffer->overflow;
+
+                ++sendFileBuffer->filesAvailable;
             }
         }
         
         closedir(d);
-    }
-    else /* directory not found */
-        totalFiles = 0;
 
-    return totalFiles;
+        /* load 1st file, if there is one */
+        if(sendFileBuffer->fileList[0][0] != '\0') {
+            /* update file path */
+            strncpy(sendFileBuffer->filePath, FILE_SEND_FOLDER, strlen(FILE_SEND_FOLDER) + 1);
+            strncat(sendFileBuffer->filePath, sendFileBuffer->fileName, strlen(sendFileBuffer->fileName) + 1);
+
+            /* load file into buffer and get size */
+            sendFileBuffer->fileSize = get_file_data(sendFileBuffer->filePath, sendFileBuffer->fileData);
+        }
+    }
+    else
+        return -1;
+
+    return 1;
 }
 
 
 /**
-* Wrapper funciton for CO_ODF_3002. Remove the path from the file path name.
+* Wrapper funciton for CO_ODF_3003. Remove the path from the file path name.
 *
 * @return the length of the file name without '\0' or 0 on failure.
 */
@@ -271,7 +370,7 @@ static uint32_t get_file_name(const char *filePath, char *fileName) {
 
 
 /**
-* Wrapper funciton for CO_ODF_3002. Read in file data.
+* Wrapper funciton for CO_ODF_3003. Read in file data.
 *
 * @return file size or 0 on failure.
 */
@@ -303,25 +402,35 @@ static uint32_t get_file_data(const char *filePath, int8_t *fileData) {
 
 
 /**
- * Wrapper function used by CP_ODF_3002 to read file data into SDO buffer from struct. 
+ * Wrapper function used by CP_ODF_3003 to read file data into SDO buffer from struct. 
  * It can handle spilting large data files into multiple segments.
  * */
-static CO_SDO_abortCode_t read_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *odFileBuffer) {
-    if( ODF_arg == NULL || odFileBuffer == NULL)
-        return CO_SDO_AB_NO_DATA;
+static CO_SDO_abortCode_t read_file_data(CO_ODF_arg_t *ODF_arg) {
+    send_file_data_t *sendFileBuffer;
+
+    sendFileBuffer = (send_file_data_t*) ODF_arg->object;
+
+    if(ODF_arg->reading == false) 
+        return CO_SDO_AB_READONLY; /* can't write parameters, read only */
+
+    /* if the file path is empty, don't use the data buffer */
+    if(sendFileBuffer->filePath[0] == '\0') {
+        ODF_arg->dataLength = 1;
+        memcpy(ODF_arg->data, sendFileBuffer->filePath, ODF_arg->dataLength);
+        return CO_SDO_AB_NONE;
+    }
 
     if(ODF_arg->firstSegment == true) { /* 1st segment */
-        if(odFileBuffer->fileSize > FILE_TRANSFER_MAX_SIZE) {
+        if(sendFileBuffer->fileSize > FILE_TRANSFER_MAX_SIZE)
             return CO_SDO_AB_OUT_OF_MEM; /* file is larger than domain buffer */
-        }
         
-        ODF_arg->dataLengthTotal = odFileBuffer->fileSize;
+        ODF_arg->dataLengthTotal = sendFileBuffer->fileSize;
         ODF_arg->offset = 0;
 
-        if(odFileBuffer->fileSize <= CO_SDO_BUFFER_SIZE) {
+        if(sendFileBuffer->fileSize <= CO_SDO_BUFFER_SIZE) {
             /* only need 1 segment */
             ODF_arg->lastSegment = true;
-            ODF_arg->dataLength = odFileBuffer->fileSize;
+            ODF_arg->dataLength = sendFileBuffer->fileSize;
         }
         else { 
             /* multiple segments needed */
@@ -344,76 +453,147 @@ static CO_SDO_abortCode_t read_file_data(CO_ODF_arg_t *ODF_arg, file_buffer_t *o
     }
 
     /* copy data */
-    memcpy(ODF_arg->data, &odFileBuffer->fileData[ODF_arg->offset], ODF_arg->dataLength);
+    memcpy(ODF_arg->data, &sendFileBuffer->fileData[ODF_arg->offset], ODF_arg->dataLength);
 
     return CO_SDO_AB_NONE;
 }
 
 
-CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
-    file_buffer_t *odFileBuffer;
+CO_SDO_abortCode_t CO_ODF_3003(CO_ODF_arg_t *ODF_arg) {
     CO_SDO_abortCode_t ret = CO_SDO_AB_NONE;
-    char filePath[FILE_PATH_MAX_LENGTH];
+    send_file_data_t *sendFileBuffer;
 
-    odFileBuffer = (file_buffer_t*) ODF_arg->object;
-
-    if(ODF_arg->reading == false) 
-        return CO_SDO_AB_WRITEONLY; /* can't read parameters, write only */
+    sendFileBuffer = (send_file_data_t*) ODF_arg->object;
 
     APP_LOCK_ODF();
 
     switch(ODF_arg->subIndex) {
-        case 1 : /* filename */
+        case 1 : /* load file from send folder (read only) */
 
-            if(strlen(odFileBuffer->fileName) == 0) 
-                ret = CO_SDO_AB_NO_DATA; /* error, no data to read */
-            else if(strlen(odFileBuffer->fileName) > FILE_TRANSFER_MAX_SIZE)
-                ret = CO_SDO_AB_OUT_OF_MEM; /* error, new data will not fit in buffer */
+            if(ODF_arg->reading == true) { /* reading, get file pointer index */
+                uint8_t temp = sendFileBuffer->filePointer+1;
+                ODF_arg->dataLength = sizeof(temp);
+                memcpy(ODF_arg->data, &temp, ODF_arg->dataLength);
+            }
+            else { /*writing, load file data */
+                if(ODF_arg->dataLength != sizeof(sendFileBuffer->filePointer)) {
+                    ret = CO_SDO_AB_GENERAL; /* error with file */
+                    break;
+                }
+
+                memcpy(&sendFileBuffer->filePointer, ODF_arg->data, ODF_arg->dataLength);
+
+                if(sendFileBuffer->filePointer == 0 || sendFileBuffer->filePointer > SEND_FILE_LIST_SIZE) {
+                    ret = CO_SDO_AB_GENERAL; /* error, non valid index in array */
+                    break;
+                }
+
+                --sendFileBuffer->filePointer; /* fix offset value */
+
+                sendFileBuffer->fileName = sendFileBuffer->fileList[sendFileBuffer->filePointer];
+                
+                /* if there is a valid file name in the file list, make the file path */
+                if(sendFileBuffer->fileName[0] != '\0') {
+
+                    /* update file path */
+                    strncpy(sendFileBuffer->filePath, FILE_SEND_FOLDER, strlen(FILE_SEND_FOLDER)+1);
+                    strncat(sendFileBuffer->filePath, sendFileBuffer->fileName, strlen(sendFileBuffer->fileName) + 1);
+
+                    /* load file into buffer and get size */
+                    sendFileBuffer->fileSize = get_file_data(sendFileBuffer->filePath, sendFileBuffer->fileData);
+                    if(sendFileBuffer->fileSize > FILE_TRANSFER_MAX_SIZE) {
+                        ret = CO_SDO_AB_OUT_OF_MEM; /* error file to large */
+                    }
+                }
+            }
+
+            break;
+
+        case 2 : /* file name (read only) */
+
+            if(ODF_arg->reading == false) 
+                ret = CO_SDO_AB_READONLY; /* can't write parameters, read only */
             else {
-                ODF_arg->dataLength = strlen(odFileBuffer->fileName) + 1;
-                memcpy(ODF_arg->data, odFileBuffer->fileName, ODF_arg->dataLength);
-                ODF_arg->lastSegment = true;
-            }
-            break;
-
-        case 2 : /* file data */
-
-            ret = odFileBuffer->fileSize == 0 ? CO_SDO_AB_NO_DATA : read_file_data(ODF_arg, odFileBuffer);
-            break;
-
-        case 3 : /* load file from send folder */
-
-            /* get file path if a file is in the send folder */
-            odFileBuffer->filesAvalible = find_file(FILE_SEND_FOLDER, filePath);
-
-            if(odFileBuffer->filesAvalible != 0) { /* file(s) found */
-                /* get the file name */
-                if(get_file_name(filePath, odFileBuffer->fileName) == 0) {
-                    ret = CO_SDO_AB_GENERAL; /* error with file */
-                    break;
-                }
-
-                /* get the file data */
-                odFileBuffer->fileSize = get_file_data(filePath, odFileBuffer->fileData);
-                if(odFileBuffer->fileSize == 0) {
-                    ret = CO_SDO_AB_GENERAL; /* error with file */
-                    break;
-                }
-
-                /* remove file after file is sent */
-                if(remove(filePath) != 0) {
-                    ret = CO_SDO_AB_GENERAL; /* delete failed */
-                    break;
+                uint32_t temp = strlen(sendFileBuffer->fileName);
+                if(temp >= FILE_TRANSFER_MAX_SIZE)
+                    ret = CO_SDO_AB_OUT_OF_MEM; /* error, new data will not fit in buffer */
+                else {
+                    /* send file path, this can handle empty file name */
+                    ODF_arg->dataLength = temp + 1;
+                    memcpy(ODF_arg->data, sendFileBuffer->fileName, ODF_arg->dataLength);
                 }
             }
 
-            /* no break, use case 4 to set dataLength */
+            break;
 
-        case 4 : /* # of files avalible */
+        case 3 : /* file data (read only) */
 
-            ODF_arg->dataLength = sizeof(odFileBuffer->filesAvalible);
-            memcpy(ODF_arg->data, &odFileBuffer->filesAvalible, ODF_arg->dataLength);
-            ODF_arg->lastSegment = true;
+            ret = read_file_data(ODF_arg); /* wrapper function */
+
+            break;
+
+        case 4 : /* file size (read only) */
+
+            if(ODF_arg->reading == false) 
+                ret = CO_SDO_AB_READONLY; /* can't write parameters, read only */
+            else {
+                ODF_arg->dataLength = sizeof(sendFileBuffer->fileSize);
+                memcpy(ODF_arg->data, &sendFileBuffer->fileSize, ODF_arg->dataLength);
+            }
+
+            break;
+
+        case 5 : /* delete current file (read or write to delete file) */
+
+            if(ODF_arg->reading == true) { /* reading */
+                bool_t temp = true;
+                ODF_arg->dataLength = sizeof(temp);
+                memcpy(ODF_arg->data, &temp, ODF_arg->dataLength);
+            }
+
+            /* delete file if there is a valid file path */
+            if(sendFileBuffer->filePath[0] != '\0') {
+                remove(sendFileBuffer->filePath); /* delete file */
+                sendFileBuffer->fileName[0] = '\0';
+                sendFileBuffer->filePath[0] = '\0';
+                sendFileBuffer->fileSize = 0;
+                --sendFileBuffer->filesAvailable;
+            }
+
+            break;
+
+        case 6 : /* total # of files available (read only) */
+
+            if(ODF_arg->reading == false) 
+                ret = CO_SDO_AB_READONLY; /* can't write parameters, read only */
+            else {
+                ODF_arg->dataLength = sizeof(sendFileBuffer->filesAvailable);
+                memcpy(ODF_arg->data, &sendFileBuffer->filesAvailable, ODF_arg->dataLength);
+            }
+
+            break;
+
+        case 7 : /* # of files that overflowed (not in file array) (read only) */
+            
+            if(ODF_arg->reading == false) 
+                ret = CO_SDO_AB_READONLY; /* can't write parameters, read only */
+            else {
+                ODF_arg->dataLength = sizeof(sendFileBuffer->overflow);
+                memcpy(ODF_arg->data, &sendFileBuffer->overflow, ODF_arg->dataLength);
+            }
+
+            break;
+
+        case 8 : /* refresh file array (read or write to refresh )*/
+
+            if(ODF_arg->reading == true) { /* reading */
+                bool_t temp = true;
+                ODF_arg->dataLength = sizeof(temp);
+                memcpy(ODF_arg->data, &temp, ODF_arg->dataLength);
+            }
+
+            initFileList(sendFileBuffer);
+
             break;
 
         default :
@@ -423,35 +603,6 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
     APP_UNLOCK_ODF();
 
     return ret;
-}
-
-
-int32_t APP_ODF_3002(const char *filePath) {
-    int32_t ret = 0;
-    char fileName[FILE_PATH_MAX_LENGTH];
-    char newFilePath[FILE_PATH_MAX_LENGTH] = FILE_SEND_FOLDER;
-    int source, dest;
-    struct stat stat_source;
-
-    get_file_name(filePath, fileName);
-    strcat(newFilePath, fileName);
-
-    if(filePath == NULL || filePath[0] == '\0')
-        ret = 1;
-    else {
-        /* copy file into send folder */
-
-        source = open(filePath, O_RDONLY, 0);
-        dest = open(newFilePath, O_WRONLY | O_CREAT, 0644);
-
-        fstat(source, &stat_source);
-        sendfile(dest, source, 0, stat_source.st_size);
-
-        close(source);
-        close(dest);
-    }
-
-    return ret; 
 }
 
 
