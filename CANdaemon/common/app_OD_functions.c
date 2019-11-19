@@ -227,7 +227,7 @@ int32_t APP_ODF_3002(const char *filePath) {
     else if(filePath[0] != '/')
         ret = 2; /* not a a absolute path */
     else {
-        /* copy file into send folder */
+        /* move file into send folder */
 
         source = open(filePath, O_RDONLY, 0);
         dest = open(newFilePath, O_WRONLY | O_CREAT, 0644);
@@ -237,6 +237,31 @@ int32_t APP_ODF_3002(const char *filePath) {
 
         close(source);
         close(dest);
+
+        /* remove old file */
+        remove(filePath);
+
+        APP_LOCK_ODF();
+
+        /* there is a empty spot in file list, add filename to the list */
+        if(sendFileBuffer.filesAvailable < SEND_FILE_LIST_SIZE) { 
+            unsigned int i=0;
+
+            /* Since the file list array will be 127 at maxiumum, 
+             * a iterative search through the list is fine, 
+             * it will have a O(1).
+             */
+
+            /* spin until an empty spot in the file list is found or at end */
+            while(sendFileBuffer.fileList[0][i] != '\0' && i < SEND_FILE_LIST_SIZE) 
+                ++i;
+
+            /* add file name to file list if there is valid empty spot */
+            if(i < SEND_FILE_LIST_SIZE)
+                strncpy(sendFileBuffer.fileList[i], fileName, strlen(fileName) + 1);
+        }
+
+        APP_UNLOCK_ODF();
     }
 
     return ret; 

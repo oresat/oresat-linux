@@ -74,12 +74,6 @@ CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg);
  */
 CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg);
 
-/**
- * Callback for using inside CO_OD_configure() function for reading files 
- * from object dictionary.
- */
-CO_SDO_abortCode_t CO_ODF_3003(CO_ODF_arg_t *ODF_arg);
-
 
 /**
  * Add file to object dictionay that can be read by a master CAN node.
@@ -87,6 +81,13 @@ CO_SDO_abortCode_t CO_ODF_3003(CO_ODF_arg_t *ODF_arg);
  * @return 0 on success.
  */
 int32_t APP_ODF_3002(const char* filePath);
+
+
+/**
+ * Callback for using inside CO_OD_configure() function for reading files 
+ * from object dictionary.
+ */
+CO_SDO_abortCode_t CO_ODF_3003(CO_ODF_arg_t *ODF_arg);
 
 
 #endif
