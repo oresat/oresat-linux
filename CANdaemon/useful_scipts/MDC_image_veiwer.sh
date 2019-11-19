@@ -19,7 +19,7 @@ while [[ $a -eq 1 ]]; do
     fileAvalible=`echo -e $fileAvalible | tr -d '[:space:]'` # remove any whitespace
     fileAvalible=`echo "obase=10; ibase=16; $fileAvalible" | bc` # hex to dec
 
-    while [ $fileAvalible -gt 00000000 ]; do
+    while [[ $fileAvalible -gt 00000000 ]]; do
         fileName=`./../CANopenComm/canopencomm 0x12 r 0x3003 2 d`
         fileName="${fileName:3}" # remove starting 3 chars
         fileName="${fileName::-2}" # remove last 2 chars
@@ -44,7 +44,10 @@ while [[ $a -eq 1 ]]; do
         temp=`./../CANopenComm/canopencomm 0x12 r 0x3003 5 u8` # delete image on linux board
 
         fileAvalible=`./../CANopenComm/canopencomm 0x12 r 0x3003 6 u32`
-        fileAvalible="${fileAvalible:4}"
+        fileAvalible="${fileAvalible:6}"  #remove data length and 0x from output
+        fileAvalible=`echo $fileAvalible | tr [a-z] [A-Z]` # captize hex values
+        fileAvalible=`echo -e $fileAvalible | tr -d '[:space:]'` # remove any whitespace
+        fileAvalible=`echo "obase=10; ibase=16; $fileAvalible" | bc` # hex to dec
     done 
 
     sleep 300 
