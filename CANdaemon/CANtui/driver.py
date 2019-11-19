@@ -32,7 +32,7 @@ class FrameData(can.Frame):
             ret += str(ds[2:] + " ")
         ret += "] | LastModified("
         if(self.is_alive()): ret += str(int(time.time() - int(self.modif))) + "s)"
-        else: ret += time.ctime() + "s) | STALE NODE"
+        else: ret += time.ctime() + ") | STALE NODE"
         return ret
 
     def is_alive(self):
