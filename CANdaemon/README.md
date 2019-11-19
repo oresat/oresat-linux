@@ -5,6 +5,7 @@
   <h4>
     <a href="#features">Features</a> |
     <a href="#dependices">Dependices</a> |
+    <a href="#subdir layout">Subdir Layout</a> |
     <a href="#settup">Settup</a>
   </h4>
 </div>
@@ -26,6 +27,14 @@ The CANdaemon is [CANopenSocket], but with dbus interfaces to commicate with oth
 
 ## Dependices
 - For beaglebone black: systemd-dev, make, gcc, pkg-source 
+
+## Subdir Layout 
+- **CANopenComm** - Source code for CANopenComm
+- **CANopenNode** - git submodule for CANopenNode
+- **common** - common source code for CANopenComm and CANdaemon
+- **docs** - Documentation for CANdaemon
+- **src** - Holds an CANdaemon app for each OreSat Linux board
+- **useful_scipts** - Useful scripts like; the MDC image veiwer, enabling canable script, etc.
 
 ## Settup
 - `git submodules init`
