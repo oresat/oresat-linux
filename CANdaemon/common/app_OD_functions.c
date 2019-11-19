@@ -286,6 +286,16 @@ static int initFileList(send_file_data_t *sendFileBuffer) {
         }
         
         closedir(d);
+
+        /* load 1st file, if there is one */
+        if(sendFileBuffer->fileList[0][0] != '\0') {
+            /* update file path */
+            strncpy(sendFileBuffer->filePath, FILE_SEND_FOLDER, strlen(FILE_SEND_FOLDER) + 1);
+            strncat(sendFileBuffer->filePath, sendFileBuffer->fileName, strlen(sendFileBuffer->fileName) + 1);
+
+            /* load file into buffer and get size */
+            sendFileBuffer->fileSize = get_file_data(sendFileBuffer->filePath, sendFileBuffer->fileData);
+        }
     }
     else
         return -1;
