@@ -212,6 +212,36 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
 }
 
 
+int32_t APP_ODF_3002(const char *filePath) {
+    int32_t ret = 0;
+    char fileName[FILE_PATH_MAX_LENGTH];
+    char newFilePath[FILE_PATH_MAX_LENGTH] = FILE_SEND_FOLDER;
+    int source, dest;
+    struct stat stat_source;
+
+    get_file_name(filePath, fileName);
+    strcat(newFilePath, fileName);
+
+    if(filePath == NULL || filePath[0] == '\0')
+        ret = 1; /* not a valid file path */
+    else if(filePath[0] != '/')
+        ret = 2; /* not a a absolute path */
+    else {
+        /* copy file into send folder */
+
+        source = open(filePath, O_RDONLY, 0);
+        dest = open(newFilePath, O_WRONLY | O_CREAT, 0644);
+
+        fstat(source, &stat_source);
+        sendfile(dest, source, 0, stat_source.st_size);
+
+        close(source);
+        close(dest);
+    }
+
+    return ret; 
+}
+
 
 /******************************************************************************/
 /* Send file, OD entry 3003 */
@@ -232,9 +262,11 @@ static int initFileList(send_file_data_t *sendFileBuffer) {
     for(unsigned int i=0; i<SEND_FILE_LIST_SIZE; ++i) 
         sendFileBuffer->fileList[0][i] = '\0';
 
-    /* make sure these are 0 */
+    /* defualt values */
     sendFileBuffer->filesAvailable = 0;
     sendFileBuffer->overflow = 0;
+    sendFileBuffer->fileName = sendFileBuffer->fileList[0];
+    sendFileBuffer->filePath[0] = '\0';
 
     if((d = opendir(FILE_SEND_FOLDER)) != NULL) { 
         /* directory found */
@@ -411,13 +443,14 @@ CO_SDO_abortCode_t CO_ODF_3003(CO_ODF_arg_t *ODF_arg) {
                 }
 
                 memcpy(&sendFileBuffer->filePointer, ODF_arg->data, ODF_arg->dataLength);
-                --sendFileBuffer->filePointer; /* fix offset value */
 
-                if(sendFileBuffer->filePointer >= SEND_FILE_LIST_SIZE) {
+                if(sendFileBuffer->filePointer == 0 || sendFileBuffer->filePointer > SEND_FILE_LIST_SIZE) {
                     ret = CO_SDO_AB_GENERAL; /* error, non valid index in array */
                     break;
                 }
-                
+
+                --sendFileBuffer->filePointer; /* fix offset value */
+
                 sendFileBuffer->fileName = sendFileBuffer->fileList[sendFileBuffer->filePointer];
                 
                 /* if there is a valid file name in the file list, make the file path */
@@ -443,7 +476,7 @@ CO_SDO_abortCode_t CO_ODF_3003(CO_ODF_arg_t *ODF_arg) {
                 ret = CO_SDO_AB_READONLY; /* can't write parameters, read only */
             else {
                 uint32_t temp = strlen(sendFileBuffer->fileName);
-                if(temp > FILE_TRANSFER_MAX_SIZE)
+                if(temp >= FILE_TRANSFER_MAX_SIZE)
                     ret = CO_SDO_AB_OUT_OF_MEM; /* error, new data will not fit in buffer */
                 else {
                     /* send file path, this can handle empty file name */
@@ -531,37 +564,6 @@ CO_SDO_abortCode_t CO_ODF_3003(CO_ODF_arg_t *ODF_arg) {
     APP_UNLOCK_ODF();
 
     return ret;
-}
-
-
-int32_t APP_ODF_3002(const char *filePath) {
-    int32_t ret = 0;
-    char fileName[FILE_PATH_MAX_LENGTH];
-    char newFilePath[FILE_PATH_MAX_LENGTH] = FILE_SEND_FOLDER;
-    int source, dest;
-    struct stat stat_source;
-
-    get_file_name(filePath, fileName);
-    strcat(newFilePath, fileName);
-
-    if(filePath == NULL || filePath[0] == '\0')
-        ret = 1; /* not a valid file path */
-    else if(filePath[0] != '/')
-        ret = 2; /* not a a absolute path */
-    else {
-        /* copy file into send folder */
-
-        source = open(filePath, O_RDONLY, 0);
-        dest = open(newFilePath, O_WRONLY | O_CREAT, 0644);
-
-        fstat(source, &stat_source);
-        sendfile(dest, source, 0, stat_source.st_size);
-
-        close(source);
-        close(dest);
-    }
-
-    return ret; 
 }
 
 
