@@ -259,6 +259,10 @@ int32_t APP_ODF_3002(const char *filePath) {
             /* add file name to file list if there is valid empty spot */
             if(i < SEND_FILE_LIST_SIZE)
                 strncpy(sendFileBuffer.fileList[i], fileName, strlen(fileName) + 1);
+            else
+                ++sendFileBuffer.overflow;
+
+            ++sendFileBuffer.filesAvailable;
         }
 
         APP_UNLOCK_ODF();
