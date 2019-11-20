@@ -68,6 +68,16 @@ Mostly likely the Beaglebone will have some hardware clock / passwd error. So a 
 - `usermod -G wheel alarm` Add alarm to wheel group.
 - `groups alarm` Check if alarm is in the wheel group.
 
+## Install acpi
+- `pacman -S acpi acpid`
+- `sudo systemctl enable acpid` Enable acpi daemon
+- `sudo systemctl start acpid` Start acpi daemon
+
+## Adding ethernet option to USB0
+- `echo "g_ether" > /etc/modules-load.d/g_ether.conf`
+- run `dmesg | grep "HOST MAC"` and get the mac addr for usb0
+- `echo "options g_ether host_addr=xx:xx:xx:xx:xx:xx" > /etc/modprobe.d/g_ether.conf` and replace the x's with mac address found in last step
+
 ## Adding ethernet option to USB0
 - `echo "g_ether" > /etc/modules-load.d/g_ether.conf`
 - run `dmesg | grep "HOST MAC"` and get the mac addr for usb0
