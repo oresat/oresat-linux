@@ -1,7 +1,7 @@
 # Controller Area Network (CAN) Notes
 
 
-### Enabling CAN1 on the BeagleBone Black (pins P8_
+## Enabling CAN1 on the BeagleBone Black (pins P9_19 P9_20)
 - Edit /boot/uEnt.txt
     - add line `dtb-overlay=/lib/firmware/BB-CAN1-00A0.dtbo` under Custom Cape
     - comment out `enable_uboot_cape_universal=1`
@@ -10,7 +10,7 @@
     - `sudo ip link set can0 up type can bitrate 1000000`
 
 
-### Enabling CAN1 on the pocketbeagle (pins P2_09 P2_11)
+## Enabling CAN1 on the pocketbeagle (pins P2_09 P2_11)
 - Edit /boot/uEnt.txt
     - add line `dtb-overlay=/lib/firmware/PB-CAN1-00A0.dtbo` under Custom Cape
     - comment out `enable_uboot_cape_universal=1`
