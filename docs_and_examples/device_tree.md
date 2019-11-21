@@ -1,5 +1,5 @@
 # Device Tree
-ARM uses a device tree to set hardware descriptions like memory sizing, pin muxing, interupts configurations, and more. It is recommend to let the boot loader handle loading the device tree.
+ARM uses a device tree to set hardware descriptions like memory sizing, pin muxing, interupts configurations, and more. It is recommend to let the boot loader handle loading the device tree. If the Beaglebone_installing_arch.md was followed, /boot/dtbs/am335x-boneblack.dtb will be loaded by u-boot.
 
 ## Modify the Device tree
 Device tree on mainline Linux are not dynamic, meaning it's not able to change or be patched on runtime or by userspace, but it can be recompiled as needed.
