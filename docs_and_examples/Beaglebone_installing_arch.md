@@ -39,7 +39,7 @@ Mostly likely the Beaglebone will have some hardware clock / passwd error. So a 
 - Using a serial to usb cable connect a Beaglebone Black to latop running Linux.
 - On the Linux laptop run `ls /dev/tty*` again, you should see a new entry like ttyUSB0
 - connect power usb to Beaglebone black
-- Run `screen ttyUSB0 115200` on the laptop to connected to the Beaglebone.
+- Run `sudo screen /dev/ttyUSB0 115200` on the laptop to connected to the Beaglebone.
 - Use the user: alarm and password: alarm
 - Swap to root `su -` password: root. Sudo is not installed, so alarm user can't do much.
 - Run `pwck` short for passwd check. Will return nothing if it passes.
