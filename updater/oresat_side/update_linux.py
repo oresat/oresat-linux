@@ -4,49 +4,60 @@ from pydbus.generic import signal
 from pydbus import SystemBus
 from gi.repository import GLib
 
-INTERFACE_NAME = "org.example.project.oresat"
+INTERFACE_NAME = "org.OreSat.Updater"
 
 # ----------------------------------------------------------------------------
 # Server
 
+"""
+-# error
+0 nothing
+1 updating
+2 stopped
+"""
 
-class Server_XML(object):
+class dbus_interface(object):
     dbus = """
     <node>
         <interface name="org.example.project.oresat">
             <method name='Update'>
-                <arg type='s' name='file_path' direction='in'/>
+                <arg type='ss' name='file_path' direction='in'/>
                 <arg type='d' name='output' direction='out'/>
             </method>
-            <method name='Quit'/>
+            <signal name="UpdaterStatus">
+                <arg type='d'/>
+            </signal>
         </interface>
     </node>
     """
 
-    def Update(self, file_path):
+    # signal(s)
+    UpdaterStatus = signal()
+
+    def sendUpdaterStatus(state):
+        emit.UpdaterStatus(state)
+        print(state)
+        return True # for timeout_add_secounds
+
+    # method(s)
+    def Update(self, board, file_path):
         # To start updaing process with file_path
-        print("Recieved: {}".format(file_path))
+        print("Recieved: {} {}".format(board, file_path))
         return 1
 
-    def Quit(self):
-        # Removes this object from the DBUS connection and exits
-        loop.quit()
-
-class dbus_interface():
-    bus = SystemBus() # connect to bus
-    loop = GLib.MainLoop() # only used by server
-    emit = Server_XML() # Setup server to emit signals over the DBus
-
-    def init(self):
-        bus.publish(INTERFACE_NAME, self.emit)
-
-    def run(self):
-        self.loop.run()
-
-    def end(self):
-        self.loop.quit()
 
 if __name__=="__main__":
-    di = dbus_interface
-    di.init()
-    di.run()
+    bus = SystemBus()
+    loop = GLib.MainLoop()
+
+    emit = dbus_interface()
+    bus.publish(INTERFACE_NAME, emit)
+    
+    GLib.timeout_add_seconds(interval=1, function=sendUpdaterStatus) 
+
+    try:
+        loop.run()
+    except KeyboardInterrupt as e:
+        loop.quit()
+        print("\nExit by Control C")
+
