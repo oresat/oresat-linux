@@ -66,8 +66,8 @@ def untar(file_name):
 #also try the python apt module. it might solve this, 
 #https://stackoverflow.com/questions/17537390/how-to-install-a-package-using-the-python-apt-api
 def install(file_path):
-    if(file_path.endswith("deb")): #TODO test this stuff below
-       bashCommand = "sudo apt-get -qq install ./" + file_path
+    if(file_path.endswith(".pkg")): #TODO test this stuff below
+       bashCommand = "sudo pacman -Sy ./" + file_path
        output = subprocess.check_call(['bash','-c', bashCommand])
        #cli output for each install commans is in output
        #TODO add error checking
@@ -78,7 +78,7 @@ def install(file_path):
 
 def remove(file_path): #TODO test the -q, test -qq
     #make sure the file contains the package name, not a deb
-    bashCommand = "sudo apt-get -qq remove ./"+ file_path
+    bashCommand = "sudo pacman -R ./"+ file_path
     output = subprocess.check_call(['bash','-c', bashCommand])
     print("remove")
     return output
