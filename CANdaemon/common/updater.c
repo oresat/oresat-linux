@@ -17,9 +17,10 @@
 
 
 /* Static Variables */
-static volatile int     endProgram = 0;
-static sd_bus          *bus = NULL;
-static sd_bus_error     error = SD_BUS_ERROR_NULL;
+static volatile int endProgram = 0;
+static sd_bus *bus = NULL;
+static sd_bus_error error = SD_BUS_ERROR_NULL;
+static uint8_t state = 0;
 
 
 /* Static Functions */
@@ -89,38 +90,103 @@ void updater_program1ms(void){
 CO_SDO_abortCode_t CB_ODF_3002(CO_ODF_arg_t *ODF_arg) {
     file_buffer_t *odFileBuffer;
     CO_SDO_abortCode_t ret = CO_SDO_AB_NONE;
-    uint8_t temp = 0;
+    sd_bus_message *m;
+    int r;
 
     APP_LOCK_ODF();
 
-    if(ODF_arg->subIndex == 1) { /* get latest image */
-        if(ODF_arg->reading == false) { /* read parameters */
-            ODF_arg->dataLength = sizeof(temp);
-            memcpy(ODF_arg->data, &temp, ODF_arg->dataLength);
-        }
-        else {
-            /* Issue the method call and store the response message in m */
-            r = sd_bus_call_method(bus,
-                                   BUS_NAME,
-                                   OBJECT_PATH,
-                                   INTERFACE_NAME,
-                                   "Update",
-                                   &error,
-                                   &m,
-                                   "d",
-                                   temp);
-            dbusError(r, "Failed to issue method call:");
+    switch(ODF_arg->subIndex) {
+        case 1 : /* current state */
+            
+            if(ODF_arg->reading == true) {
+                ODF_arg->dataLength = sizeof(current_state);
+                memcpy(ODF_arg->data, &current_state, ODF_arg->dataLength);
+            }
+            else
+                ret = CO_SDO_AB_READONLY; /* can't write parameters, read only */
+            
+            break;
 
-            /* Parse the response message */
-            r = sd_bus_message_read(m, "d", &temp);
-            dbusError(r, "Failed to parse response message:");
+        case 2 : /* current file */
 
-            sd_bus_message_unref(m);
-        }
+            if(ODF_arg->reading == true)  {
+                ODF_arg->dataLength = strlen(current_file);
+                memcpy(ODF_arg->data, current_file, ODF_arg->dataLength);
+            }
+            else
+                ret = CO_SDO_AB_READONLY; /* can't write parameters, read only */
+            
+            break;
 
+        case 3 : /* give updater new file, will not update with it yet */
+            
+            if(ODF_arg->reading == true)
+                ret = CO_SDO_AB_WRITEONLY; /* can't read parameters, write only */
+            else {
+                //TODO copy file into local directory
+            }
+
+            break;
+
+        case 4 : /* number of updates avail */
+            
+            if(ODF_arg->reading == true) 
+                ODF_arg->dataLength = sizeof(updates_available);
+                memcpy(ODF_arg->data, &updates_available, ODF_arg->dataLength);
+            else
+                ret = CO_SDO_AB_READONLY; /* can't write parameters, read only */
+            
+            break;
+
+        case 5 : /* update */
+            
+            if(ODF_arg->reading == true)
+                ret = CO_SDO_AB_WRITEONLY; /* can't read parameters, write only */
+            else {
+                /* Issue the method call and store the response message in m */
+                r = sd_bus_call_method(bus,
+                                       BUS_NAME,
+                                       OBJECT_PATH,
+                                       INTERFACE_NAME,
+                                       "Update",
+                                       &error,
+                                       &m,
+                                       "d",
+                                       temp);
+                dbusError(r, "Failed to issue method call:");
+
+                /* Parse the response message */
+                r = sd_bus_message_read(m, "d", &temp);
+                dbusError(r, "Failed to parse response message:");
+
+                sd_bus_message_unref(m);
+            }
+
+            break;
+
+        case 6 : /* stop update */
+
+            if(ODF_arg->reading == true)
+                ret = CO_SDO_AB_WRITEONLY; /* can't read parameters, write only */
+            else {
+                //TODO call stop update method
+            }
+
+            break;
+
+        case 7 : /* delete current file */
+
+            if(ODF_arg->reading == true)
+                ret = CO_SDO_AB_WRITEONLY; /* can't read parameters, write only */
+            else {
+                //TODO call stop update method
+            }
+
+            break;
+
+        default :
+            ret = CO_SDO_AB_SUB_UNKNOWN; 
     }
-    else 
-        ret = CO_SDO_AB_SUB_UNKNOWN; 
 
     ODF_arg->lastSegment = true;
 

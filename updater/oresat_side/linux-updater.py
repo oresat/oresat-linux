@@ -9,7 +9,7 @@ INTERFACE_NAME = "org.OreSat.Updater"
 # ----------------------------------------------------------------------------
 # Server
 
-"""
+""" status enum
 -# error
 0 nothing
 1 updating
@@ -22,10 +22,11 @@ class dbus_interface(object):
         <interface name="org.example.project.oresat">
             <method name='Update'>
                 <arg type='ss' name='file_path' direction='in'/>
-                <arg type='d' name='output' direction='out'/>
+                <arg type='i' name='output' direction='out'/>
             </method>
+            <method name='StopUpdate' />
             <signal name="UpdaterStatus">
-                <arg type='d'/>
+                <arg type='i'/>
             </signal>
         </interface>
     </node>
@@ -45,6 +46,10 @@ class dbus_interface(object):
         print("Recieved: {} {}".format(board, file_path))
         return 1
 
+    def StopUpdate(self):
+        # stop update safely
+        print("Stopping update")
+        return 1
 
 if __name__=="__main__":
     bus = SystemBus()
@@ -53,6 +58,7 @@ if __name__=="__main__":
     emit = dbus_interface()
     bus.publish(INTERFACE_NAME, emit)
     
+    # signals
     GLib.timeout_add_seconds(interval=1, function=sendUpdaterStatus) 
 
     try:
