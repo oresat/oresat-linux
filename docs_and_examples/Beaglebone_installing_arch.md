@@ -39,7 +39,7 @@ Mostly likely the Beaglebone will have some hardware clock / passwd error. So a 
 - Using a serial to usb cable connect a Beaglebone Black to latop running Linux.
 - On the Linux laptop run `ls /dev/tty*` again, you should see a new entry like ttyUSB0
 - connect power usb to Beaglebone black
-- Run `screen ttyUSB0 115200` on the laptop to connected to the Beaglebone.
+- Run `sudo screen /dev/ttyUSB0 115200` on the laptop to connected to the Beaglebone.
 - Use the user: alarm and password: alarm
 - Swap to root `su -` password: root. Sudo is not installed, so alarm user can't do much.
 - Run `pwck` short for passwd check. Will return nothing if it passes.
@@ -60,13 +60,18 @@ Mostly likely the Beaglebone will have some hardware clock / passwd error. So a 
     - `pacman-key --init`
     - `pacman-key --populate archlinuxarm`
 - `pacman -Syu` to update system
-- `pacman -S make vim gcc python3 git pkg-config dtc` Install usefull packages as needed.
+- `pacman -S make vim gcc python3 git pkg-config dtc` Install useful packages as needed.
 
 ## Make alarm user a sudoer
 - `pacman -S sudo`
 - run `EDITOR=vim visudo` and uncomment out `%wheel ALL=(ALL) ALL`
 - `usermod -G wheel alarm` Add alarm to wheel group.
 - `groups alarm` Check if alarm is in the wheel group.
+
+## Install Advanced Configuration and Power Interface (ACPI)
+- `pacman -S acpi acpid`
+- `sudo systemctl enable acpid` Enable acpi daemon
+- `sudo systemctl start acpid` Start acpi daemon
 
 ## Adding ethernet option to USB0
 - `echo "g_ether" > /etc/modules-load.d/g_ether.conf`
