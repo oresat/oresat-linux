@@ -2,7 +2,7 @@
 
 import sys, os, time, atexit, signal
 import daemon
-import linux-updater
+import LinuxUpdater
 
 class MyDaemon:
     def __init__(self, pidfile):

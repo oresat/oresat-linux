@@ -13,16 +13,17 @@ saved. The .tar.gz file and the tar directory will also be moved to this directo
 once the process has been completed. 
 """
 
-from thread import Thread
+from threading import Thread
 from shutil import copy
 from datetime import datetime
 from pathlib import Path
 from pydbus.generic import signal
 from pydbus import SystemBus
 from gi.repository import GLib
+from enum import Enum
 import os, sys, re, yaml
-import linux-updater-deb
-import linux-updater-tar
+import LinuxUpdaterDeb
+import LinuxUpdaterTar
 
 
 INTERFACE_NAME = "org.OreSat.Updater"
@@ -38,30 +39,37 @@ class State(Enum):
 
 
 class LinuxUpdater(object):
+    dbus = """
+    <node>
+        <interface name="org.OreSat.Updater">
+            <signal name="Error">
+                <arg type='s'/>
+            </signal>
+            <signal name="UpdateDone">
+                <arg type='s'/>
+            </signal>
+            <property name="Status" type="d" access="read"/>
+            <property name="ComputerName" type="s" access="read"/>
+            <property name="CurrentUpdateFile" type="s" access="read"/>
+            <method name='AddUpdateFile'>
+                <arg type='s' name='file_path' direction='in'/>
+                <arg type='b' name='output' direction='out'/>
+            </method>
+            <method name='StartUpdate'>
+                <arg type='b' name='output' direction='out'/>
+            </method>
+            <method name='EmergencyStopUpdate'>
+                <arg type='b' name='output' direction='out'/>
+            </method>
+        </interface>
+    </node>
+    """
+
     def __init__(self):
-        self.current_state  = State.SLEEP.value
-        self.computer_name = "Star Tracker"
-        self.current_update_file =  ""
-        self.thread1 = threading.Thread(target=self.update, name="UpdateThread")
-        self.dbus_interface = """
-        <node>
-            <interface name="org.OreSat.Updater">
-                <signal name="Error" arg=type='s'/>
-                <signal name="UpdateDone" arg=type='s'/>
-                <property name="Status" type="d" access="read"/>
-                <property name="ComputerName" type="s" access="readwrite"/>
-                <property name="CurrentUpdateFile" type="s" access="read"/>
-                <method name='AddUpdateFile'>
-                    <arg type='s' name='file_path' direction='in'/>
-                    <arg type='i' name='output' direction='out'/>
-                </method>
-                <method name='StartUpdate'>
-                    <arg type='i' name='output' direction='out'/>
-                </method>
-                <method name='EmergencyStopUpdate' />
-            </interface>
-        </node>
-        """
+        self.current_state = State.SLEEP.value
+        self.computer_name = "StarTracker"
+        self.current_update_file = ""
+        self.thread1 = Thread(target=self.update, name="UpdateThread")
         # make directories for updater, if not found
         Path(UPDATES_DIR).mkdir(parents=True, exist_ok=True) 
         Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
@@ -69,9 +77,10 @@ class LinuxUpdater(object):
 
     def __del__(self):
         """ stop updater process """
-        if self.current_state = State.UPDATE.value:
-            self.current_state  = State.SLEEP.value
-        self.thread1.join()
+        if self.current_state == State.UPDATE.value:
+            self.current_state = State.SLEEP.value
+        if self.thread1.isAlive():
+            self.thread1.join()
 
 
     # signals
@@ -82,29 +91,29 @@ class LinuxUpdater(object):
     # properties
     @property
     def Status(self):
-        return self.updater_data.status
+        return self.current_state
 
 
     @property
     def ComputerName(self):
-        return self.updater_data.computer_name
+        return self.computer_name
 
 
     @ComputerName.setter
     def ComputerName(self, value):
-        self.updater_data.computer_name = value
+        self.computer_name = value
 
 
     @property
     def CurrentUpdateFile(self):
-        return self.updater_data.current_update_file
+        return self.current_update_file
 
 
     # methods
-    def addUpdateFile(self, file_path):
+    def AddUpdateFile(self, file_path):
         """ copies file into UPDATES_DIR """
-        if(file_path[0] != '/')
-            self.error = "not an absolute path: "+ file_path
+        if(file_path[0] != '/'):
+            self.error = "not an absolute path: " + file_path
             return False
         
         ret = copy(file_path, UPDATES_DIR)
@@ -115,12 +124,12 @@ class LinuxUpdater(object):
         return False # failed to copy
 
 
-    def startUpdate(self):
+    def StartUpdate(self):
         """ To start updaing process with file_path """
         if self.current_state == State.SLEEP.value or self.current_state == State.STOP.value:
             if thread1.isAlive():
                 self.error("Update thread already running, not in update state")
-            else
+            else:
                 self.thread1.start()
             return True
         elif self.current_state == State.UPDATE.value:
@@ -129,13 +138,12 @@ class LinuxUpdater(object):
         return False
 
 
-    def stopUpdate(self):
+    def StopUpdate(self):
         if self.current_state == State.UPDATE.value:
             self.current_state = State.STOP.value
             return True
         self.error("Update thread not running. Nothing to stop.")
         return False
-
 
     # other class methods
     def error(self, err):
@@ -158,7 +166,7 @@ class LinuxUpdater(object):
 
         # check for valid update file
         file = list_of_files[0] # get 1st file
-        if not re.match(r'linux-update-\d\d\d\d-\d\d-\d\d-\d\d-\d\d.tar.gz', file) 
+        if not re.match(r'linux-update-\d\d\d\d-\d\d-\d\d-\d\d-\d\d.tar.gz', file):
             self.error("not a valid update file")
             return None
         if update_file[0] != '/':
@@ -227,7 +235,7 @@ class LinuxUpdater(object):
                 self.error = "not an absolute path: " + p
                 p = p + " error"
                 break
-            else
+            else:
                 p = p + " installed"
                 
             if self.running == False:
@@ -247,7 +255,7 @@ class LinuxUpdater(object):
                 self.error = "not an absolute path: " + p
                 p = p + " error"
                 break
-            else
+            else:
                 p = p + " installed"
         
             if self.running == False:
@@ -258,15 +266,15 @@ class LinuxUpdater(object):
         return return_dict
 
 
-startLinuxUpdater():
-    bus = SystemBus()
-    loop = GLib.MainLoop()
-    emit = LinuxUpdater()
-    bus.publish(INTERFACE_NAME, emit)
+#startLinuxUpdater():
+bus = SystemBus()
+loop = GLib.MainLoop()
+emit = LinuxUpdater()
+bus.publish(INTERFACE_NAME, emit)
 
-    try:
-        loop.run()
-    except KeyboardInterrupt as e:
-        loop.quit()
-        print("\nExit by Control C")
+try:
+    loop.run()
+except KeyboardInterrupt as e:
+    loop.quit()
+    print("\nExit by Control C")
 

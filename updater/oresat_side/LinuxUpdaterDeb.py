@@ -9,7 +9,7 @@ def install(file_path):
     """ output will be 0 if it completes install, anything else fails """
     deb = apt.debfile.DebPackage(file_path)
     if deb.check(): # valid package check
-       return res = deb.install()
+       return deb.install()
     else:
        return 1 
 

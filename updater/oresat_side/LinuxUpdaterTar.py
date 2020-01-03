@@ -16,7 +16,7 @@ def untar(self, file_name):
     name as the tar file file without the .tar.gz extension
     """
     
-    bashCommand = "tar -xzf " + file_name  " -C " + WORKING_DIR
+    bashCommand = "tar -xzf " + file_name + " -C " + WORKING_DIR
     output = subprocess.check_call(['bash','-c', bashCommand])
 
     #create a str with the directory name by slicing off the .tar.gz extension
