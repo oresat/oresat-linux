@@ -21,9 +21,9 @@ from pydbus.generic import signal
 from pydbus import SystemBus
 from gi.repository import GLib
 from enum import Enum
-import os, sys, re, yaml
+import os, sys, re, yaml, subprocess
+import apt_pkg, apt.debfile
 import LinuxUpdaterDeb
-import LinuxUpdaterTar
 
 
 INTERFACE_NAME = "org.OreSat.Updater"
@@ -51,6 +51,7 @@ class LinuxUpdater(object):
             <property name="Status" type="d" access="read"/>
             <property name="ComputerName" type="s" access="readwrite"/>
             <property name="CurrentUpdateFile" type="s" access="read"/>
+            <property name="ErrorMessage" type="s" access="read"/>
             <method name='AddUpdateFile'>
                 <arg type='s' name='file_path' direction='in'/>
                 <arg type='b' name='output' direction='out'/>
@@ -69,6 +70,7 @@ class LinuxUpdater(object):
         self.current_state = State.SLEEP.value
         self.computer_name = "StarTracker"
         self.current_update_file = ""
+        self.error_message = ""
         self.thread1 = Thread(target=self.update, name="UpdateThread")
         # make directories for updater, if not found
         Path(UPDATES_DIR).mkdir(parents=True, exist_ok=True) 
@@ -92,6 +94,10 @@ class LinuxUpdater(object):
     @property
     def Status(self):
         return self.current_state
+
+    @property
+    def ErrorMessage(self):
+        return self.error_message
 
 
     @property
@@ -127,7 +133,7 @@ class LinuxUpdater(object):
     def StartUpdate(self):
         """ To start updaing process with file_path """
         if self.current_state == State.SLEEP.value or self.current_state == State.STOP.value:
-            if thread1.isAlive():
+            if self.thread1.isAlive():
                 self.error("Update thread already running, not in update state")
             else:
                 self.thread1.start()
@@ -148,6 +154,7 @@ class LinuxUpdater(object):
     # other class methods
     def error(self, err):
         self.current_state = State.ERROR.value
+        self.error_message = err
         self.Error(err) # send out error signal
 
 
@@ -162,108 +169,149 @@ class LinuxUpdater(object):
         list_of_files = os.listdir(UPDATES_DIR)
         if not list_of_files:
             self.current_state = State.SLEEP.value
-            return None # done, no update files
+            return None # done, empty, no update files
 
         # check for valid update file
-        file = list_of_files[0] # get 1st file
-        if not re.match(r'linux-update-\d\d\d\d-\d\d-\d\d-\d\d-\d\d.tar.gz', file):
-            self.error("not a valid update file")
+        self.current_update_file = list_of_files[0] # get 1st file
+        update_file_path = UPDATES_DIR + self.current_update_file
+        """
+        if not re.match(r"(update-\d\d\d\d-\d\d-\d\d-\d\d-\d\d\.tar\.gz)", update_file_path):
+            self.error("Not a valid update file")
             return None
-        if update_file[0] != '/':
-            self.error("not absoult path")
-            return None
+        """
 
         # copy file into working dir
-        ret = copy(update_file, WORKING_DIR)
-        if UPDATES_DIR in ret:
-            self.error("failed to copy into working dir")
+        ret_path = copy(update_file_path, WORKING_DIR)
+        if UPDATES_DIR in ret_path:
+            self.error("Failed to copy into working dir")
             return None
 
         # untar update file
-        tar_dir = untar(ret)
-        if not tar_dir:
-            self.error("untar failed")
+        if not untar(ret_path):
+            self.error("Untar failed")
             return None
 
         # load instructins file
+        instruction_dict = {}
         try:
-            with open(tar_dir + "/instruction.yml", "r") as file_object:
+            with open(WORKING_DIR + "instructions.yml", "r") as file_object:
                 # file_contents is a list of strings, each a line from txt file
-                file_contents = file_object.readlines()
+                #file_contents = file_object.readlines()
+                # change instructions data into dictionary
+                instruction_dict = yaml.safe_load(file_object)
+                if not instruction_dict:
+                    self.error("Not a valid yml file")
+                    return None
         except IOError:
-            self.error("instructions file not accessible")
-            return None
-
-        # change instructions data into dictionary
-        intructions_dict = yaml.safe_load(file_contents)
-        if not intructions_dict:
-            self.error("Not a valid yml file")
+            self.error("Instructions file not accessible")
             return None
 
         # process config file 
-        ret_file_data = self.process_config_file(intructions_dict, tar_dir)
+        ret_file_data = self.process_config_file(instruction_dict)
 
         # save output dictionary to file
+        new_yaml_file = WORKING_DIR + self.computer_name + '-return.yml'
         try:
-            with open(tar_dir + '/update.yml', 'w') as new_file:
-                yaml.dump(ret_file_data, new_yml_file)
+            with open(new_yaml_file, 'w') as file:
+                yaml.dump(ret_file_data, file)
         except IOError:
             self.error("return file data format error")
             return None
         
         # tar output file
-        ret_file_file = prepare_tar(new_yml_file)
+        ret_tar_file = prepare_tar(WORKING_DIR + self.computer_name + "-return.tar.gz", new_yaml_file)
 
         # send file to CANdaemon
         # send(ret_tar_file)
 
         # clean working dir
-        shutil.rmtree(WORKING_DIR) 
+        #shutil.rmtree(WORKING_DIR) 
 
         self.current_state = State.SLEEP.value
         return ret_tar_file
 
 
-    def process_config_file(self, intruction_dicts, dir_with_pkgs):
+    def process_config_file(self, instruction_dict):
         return_dict = {}
 
         # install packages
-        pkgs = intructions_dict[self.computer_name + "-install-pkgs"]
-        for p in pkgs:
-            r = install(dir_with_pkgs + p)
-            if r != 0:
-                self.error = "not an absolute path: " + p
-                p = p + " error"
-                break
-            else:
-                p = p + " installed"
-                
-            if self.running == False:
-                break # stop update was called
+        install_string = self.computer_name + "-install-pkgs"
+        if install_string in instruction_dict: # string in dictionary
+            pkgs = instruction_dict[install_string]
+            for p in pkgs:
+                r = install(WORKING_DIR + p)
+                if r != 0:
+                    self.error = "install pkg failed: " + p
+                    p = p + " error"
+                    break
+                else:
+                    p = p + " installed"
+                    
+                if self.current_state == State.STOP.value:
+                    break # stop update was called
 
-        return_dict[self.computer_name + "-install-pkgs"] = pkgs
+            return_dict[install_string] = pkgs
         
-        if self.running == False or not self.err:
+        if self.current_state == State.STOP.value or self.current_state == State.ERROR.value:
             # stop update was called or error occured
             return return_dict
 
         # remove packages
-        pkgs = intructions_dict[self.computer_name + "-remove-pkgs"]
-        for p in pkgs:
-            r = remove(dir_with_pkgs + p)
-            if r != 0:
-                self.error = "not an absolute path: " + p
-                p = p + " error"
-                break
-            else:
-                p = p + " installed"
+        remove_string = self.computer_name + "-remove-pkgs"
+        if remove_string in instruction_dict: # string in dictionary
+            pkgs = instruction_dict[remove_string]
+            for p in pkgs:
+                r = remove(WORKING_DIR + p)
+                if r != 0:
+                    self.error = "remove pkg failed: " + p
+                    p = p + " error"
+                    break
+                else:
+                    p = p + " installed"
+            
+                if self.current_state == State.STOP.value:
+                    break # stop update was called
         
-            if self.running == False:
-                break # stop update was called
-        
-        return_dict[self.computer_name + "-remove-pkgs"] = pkgs
+            return_dict[remove_string] = pkgs
 
         return return_dict
+
+
+def install(file_path):
+    """ output will be 0 if it completes install, anything else fails """
+    deb = apt.debfile.DebPackage(file_path)
+    if deb.check(): # valid package check
+       return deb.install()
+    else:
+       return 1 
+
+
+def remove(file_path): #TODO test the -q, test -qq
+    #make sure the file contains the package name, not a deb
+    bashCommand = "sudo apt-get -qq remove ./"+ file_path
+    output = subprocess.check_call(['bash','-c', bashCommand])
+    #print("remove")
+    return output
+
+
+def prepare_tar(output_file, file_path):
+    bashCommand = "tar -zcvf " + output_file + " " + file_path
+    output = subprocess.check_call(['bash','-c', bashCommand])
+    return output
+
+
+def untar(file_path):
+    """
+    contents of .tar.gz file are extracted to a directory with the same
+    name as the tar file file without the .tar.gz extension
+    """
+    
+    bashCommand = "tar -xzf " + file_path + " -C " + WORKING_DIR
+    output = subprocess.check_call(['bash','-c', bashCommand])
+
+    #create a str with the directory name by slicing off the .tar.gz extension
+    return True # file_name[0:len(file_path)-7]
+
 
 
 #startLinuxUpdater():
