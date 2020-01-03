@@ -1,173 +1,272 @@
 #!/usr/bin/env python3
-
 """
 The updater file contains functions for installing updates for OreSat from
 a .tar file. The primary function can be called using the following format. 
 
-python3 updater.py updatefile.tar
-
-The name of the updatefile.tar does not matter as long as it is a .tar file.
-The updatefile.tar should contain one or more .deb files. This is the only
+The name of the updatefile.tar does not matter as long as it is a .tar.gz file.
+The updatefile.tar.gz should contain one or more .deb files. This is the only
 file type that will be installed by this function.
 
 The function will have an associated, permament directory labled: old_updates. 
 Once a .deb file has been installed, it will be moved to this directory to be 
-saved. The .tar file and the tar directory will also be moved to this directory
+saved. The .tar.gz file and the tar directory will also be moved to this directory
 once the process has been completed. 
 """
 
-
-import os, sys, subprocess, apt_pkg, apt.debfile, re, yaml
 from thread import Thread
 from shutil import copy
 from datetime import datetime
+from pathlib import Path
+from pydbus.generic import signal
+from pydbus import SystemBus
+from gi.repository import GLib
+import os, sys, re, yaml
+import linux-updater-deb
+import linux-updater-tar
 
 
-UPDATE_DIR = '/opt/oresat-linux-updater/updates/'
+INTERFACE_NAME = "org.OreSat.Updater"
+UPDATES_DIR = '/tmp/oresat-linux-updater/updates/'
+WORKING_DIR = '/tmp/oresat-linux-updater/working/'
 
 
 class State(Enum):
     ERROR = -1
     SLEEP = 0
-    UPDATING = 1
-    STOPPED = 2
+    UPDATE = 1
+    STOP = 2
 
 
-class LinuxUpdater:
-    computer_name = ""
-    state = State.SLEEP.value
-    t1 = Thread(target=update)
-
-
-    def __init__():
-	t1.daemon = True
-        computer_name = "StarTracker" #TODO get computer name from dbus property
+class LinuxUpdater(object):
+    def __init__(self):
+        self.current_state  = State.SLEEP.value
+        self.computer_name = "Star Tracker"
+        self.current_update_file =  ""
+        self.thread1 = threading.Thread(target=self.update, name="UpdateThread")
+        self.dbus_interface = """
+        <node>
+            <interface name="org.OreSat.Updater">
+                <signal name="Error" arg=type='s'/>
+                <signal name="UpdateDone" arg=type='s'/>
+                <property name="Status" type="d" access="read"/>
+                <property name="ComputerName" type="s" access="readwrite"/>
+                <property name="CurrentUpdateFile" type="s" access="read"/>
+                <method name='AddUpdateFile'>
+                    <arg type='s' name='file_path' direction='in'/>
+                    <arg type='i' name='output' direction='out'/>
+                </method>
+                <method name='StartUpdate'>
+                    <arg type='i' name='output' direction='out'/>
+                </method>
+                <method name='EmergencyStopUpdate' />
+            </interface>
+        </node>
+        """
+        # make directories for updater, if not found
+        Path(UPDATES_DIR).mkdir(parents=True, exist_ok=True) 
+        Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
 
 
     def __del__(self):
         """ stop updater process """
-        t1.join()
+        if self.current_state = State.UPDATE.value:
+            self.current_state  = State.SLEEP.value
+        self.thread1.join()
 
 
-    def add_update_file(file_path):
-        """ copies file into UPDATE_DIR """
+    # signals
+    Error = signal()
+    UpdateDone = signal()
+
+
+    # properties
+    @property
+    def Status(self):
+        return self.updater_data.status
+
+
+    @property
+    def ComputerName(self):
+        return self.updater_data.computer_name
+
+
+    @ComputerName.setter
+    def ComputerName(self, value):
+        self.updater_data.computer_name = value
+
+
+    @property
+    def CurrentUpdateFile(self):
+        return self.updater_data.current_update_file
+
+
+    # methods
+    def addUpdateFile(self, file_path):
+        """ copies file into UPDATES_DIR """
         if(file_path[0] != '/')
-            return False # not absolute path
+            self.error = "not an absolute path: "+ file_path
+            return False
         
-        ret = copy(file_path, UPDATE_DIR)
+        ret = copy(file_path, UPDATES_DIR)
         
-        if UPDATE_DIR in ret:
+        if UPDATES_DIR in ret:
             return True
-
+        
         return False # failed to copy
 
-    
-    def update():
-        """ find oldest update file and starts update """
 
-        if self.state == State.UPDATING.value:
-            return # currently updating
+    def startUpdate(self):
+        """ To start updaing process with file_path """
+        if self.current_state == State.SLEEP.value or self.current_state == State.STOP.value:
+            if thread1.isAlive():
+                self.error("Update thread already running, not in update state")
+            else
+                self.thread1.start()
+            return True
+        elif self.current_state == State.UPDATE.value:
+            return True # already running
 
-        self.state = State.UPDATING.value
+        return False
 
-        list_of_files = os.listdir(UPDATE_DIR)
+
+    def stopUpdate(self):
+        if self.current_state == State.UPDATE.value:
+            self.current_state = State.STOP.value
+            return True
+        self.error("Update thread not running. Nothing to stop.")
+        return False
+
+
+    # other class methods
+    def error(self, err):
+        self.current_state = State.ERROR.value
+        self.Error(err) # send out error signal
+
+
+    def update(self):
+        """ 
+        Update thread function.
+        Finds the oldest update file and starts update 
+        """
+        self.current_state = State.UPDATE.value
+
+        # see if any update file exist
+        list_of_files = os.listdir(UPDATES_DIR)
         if not list_of_files:
-            self.state = State.ERROR.value
-            return 
+            self.current_state = State.SLEEP.value
+            return None # done, no update files
 
         # check for valid update file
         file = list_of_files[0] # get 1st file
-        m = re.match(r'linux-update-\d\d\d\d-\d\d-\d\d-\d\d-\d\d.tar.gz', file) #linux-update-2005-10-01-01-33.tar.gz (YY MM dd HH mm)
-        if not m:
-            self.state = State.ERROR.value
-            return # not valid update file name
+        if not re.match(r'linux-update-\d\d\d\d-\d\d-\d\d-\d\d-\d\d.tar.gz', file) 
+            self.error("not a valid update file")
+            return None
+        if update_file[0] != '/':
+            self.error("not absoult path")
+            return None
 
-        tar_dir = untar(tar_file)
+        # copy file into working dir
+        ret = copy(update_file, WORKING_DIR)
+        if UPDATES_DIR in ret:
+            self.error("failed to copy into working dir")
+            return None
+
+        # untar update file
+        tar_dir = untar(ret)
         if not tar_dir:
-            self.state = State.ERROR.value
-            return # untar failed
+            self.error("untar failed")
+            return None
 
+        # load instructins file
         try:
             with open(tar_dir + "/instruction.yml", "r") as file_object:
-                #file_contents is a list of strings, each a line from txt file
+                # file_contents is a list of strings, each a line from txt file
                 file_contents = file_object.readlines()
-                ret_file = process_config_file(file_contents, tar_dir)
-                prepare_tar(tar_file)
         except IOError:
-            #print("File not accessible")
-            self.state = State.ERROR.value
-            return
+            self.error("instructions file not accessible")
+            return None
+
+        # change instructions data into dictionary
+        intructions_dict = yaml.safe_load(file_contents)
+        if not intructions_dict:
+            self.error("Not a valid yml file")
+            return None
+
+        # process config file 
+        ret_file_data = self.process_config_file(intructions_dict, tar_dir)
+
+        # save output dictionary to file
+        try:
+            with open(tar_dir + '/update.yml', 'w') as new_file:
+                yaml.dump(ret_file_data, new_yml_file)
+        except IOError:
+            self.error("return file data format error")
+            return None
         
-        self.state = State.SLEEP.value
+        # tar output file
+        ret_file_file = prepare_tar(new_yml_file)
+
+        # send file to CANdaemon
+        # send(ret_tar_file)
+
+        # clean working dir
+        shutil.rmtree(WORKING_DIR) 
+
+        self.current_state = State.SLEEP.value
+        return ret_tar_file
 
 
-    def update_async():
-        """ find oldest update file and starts update asynchronous """
-        if not t1.isAlive():
-            t1.start()
-
-
-    def untar(self, file_name):
-        """
-        contents of .tar.gz file are extracted to a directory with the same
-        name as the tar file file without the .tar.gz extension
-        """
-        
-        bashCommand = "tar -xzf " + file_name
-        output = subprocess.check_call(['bash','-c', bashCommand])
-
-        #create a str with the directory name by slicing off the .tar.gz extension
-        return file_name[0:len(file_name)-7]
-
-
-    def install(self, file_path):
-        """ output will be 0 if it completes install, anything else fails """
-        deb = apt.debfile.DebPackage(file_path)
-        if deb.check(): # valid package check
-           return res = deb.install()
-        else:
-           return 1 
-
-
-    def remove(self, file_path): #TODO test the -q, test -qq
-        #make sure the file contains the package name, not a deb
-        bashCommand = "sudo apt-get -qq remove ./"+ file_path
-        output = subprocess.check_call(['bash','-c', bashCommand])
-        #print("remove")
-        return output
-
-
-    def process_config_file(self, file_contents, dir_with_pkgs):
-        data = yaml.safe_load(file_contents)
-
-        if not data:
-            return False
+    def process_config_file(self, intruction_dicts, dir_with_pkgs):
+        return_dict = {}
 
         # install packages
-        pkgs = data[self.computer_name + "-install-pkgs"]
+        pkgs = intructions_dict[self.computer_name + "-install-pkgs"]
         for p in pkgs:
             r = install(dir_with_pkgs + p)
             if r != 0:
-                self.update_error()
-                return False
+                self.error = "not an absolute path: " + p
+                p = p + " error"
+                break
+            else
+                p = p + " installed"
+                
+            if self.running == False:
+                break # stop update was called
+
+        return_dict[self.computer_name + "-install-pkgs"] = pkgs
+        
+        if self.running == False or not self.err:
+            # stop update was called or error occured
+            return return_dict
 
         # remove packages
-        pkgs = data[self.computer_name + "-remove-pkgs"]
+        pkgs = intructions_dict[self.computer_name + "-remove-pkgs"]
         for p in pkgs:
             r = remove(dir_with_pkgs + p)
             if r != 0:
-                self.update_error()
-                return False
+                self.error = "not an absolute path: " + p
+                p = p + " error"
+                break
+            else
+                p = p + " installed"
+        
+            if self.running == False:
+                break # stop update was called
+        
+        return_dict[self.computer_name + "-remove-pkgs"] = pkgs
 
-        return True
+        return return_dict
 
 
-    def update_error(self):
-        self.state = State.ERROR.value
-        #TODO undo installs and remmoves
+startLinuxUpdater():
+    bus = SystemBus()
+    loop = GLib.MainLoop()
+    emit = LinuxUpdater()
+    bus.publish(INTERFACE_NAME, emit)
 
-
-    def prepare_tar(self, file_path):
-        bashCommand = "tar -zcvf " + self.computer + "-completed.tar.gz ./" + file_path
-        output = subprocess.check_call(['bash','-c', bashCommand])
+    try:
+        loop.run()
+    except KeyboardInterrupt as e:
+        loop.quit()
+        print("\nExit by Control C")
 
