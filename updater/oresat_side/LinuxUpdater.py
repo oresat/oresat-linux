@@ -49,7 +49,7 @@ class LinuxUpdater(object):
                 <arg type='s'/>
             </signal>
             <property name="Status" type="d" access="read"/>
-            <property name="ComputerName" type="s" access="read"/>
+            <property name="ComputerName" type="s" access="readwrite"/>
             <property name="CurrentUpdateFile" type="s" access="read"/>
             <method name='AddUpdateFile'>
                 <arg type='s' name='file_path' direction='in'/>
