@@ -1,3 +1,4 @@
 *.o
 mono_crash.*
 nohup.out
+__pycache__
