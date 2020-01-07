@@ -13,14 +13,14 @@
 #define INTERFACE_NAME  "org.OreSat.Updater"
 #define BUS_NAME        INTERFACE_NAME
 #define OBJECT_PATH     "/org/OreSat/Updater"
-#define SIGNAL_THREAD_STACK_SIZE FILE_TRANSFER_MAX_SIZE*3
+#define FILE_NAME_SIZE
 
 
 /* Static Variables */
 static volatile int endProgram = 0;
 static sd_bus *bus = NULL;
-static sd_bus_error error = SD_BUS_ERROR_NULL;
-static uint8_t state = 0;
+static uint8_t current_state = 0;
+static char current_file[FILE_NAME_SIZE] = "\0";
 
 
 /* Static Functions */
@@ -90,7 +90,8 @@ void updater_program1ms(void){
 CO_SDO_abortCode_t CB_ODF_3002(CO_ODF_arg_t *ODF_arg) {
     file_buffer_t *odFileBuffer;
     CO_SDO_abortCode_t ret = CO_SDO_AB_NONE;
-    sd_bus_message *m;
+    sd_bus_error err = SD_BUS_ERROR_NULL;
+    sd_bus_message *mess;
     int r;
 
     APP_LOCK_ODF();
@@ -143,33 +144,49 @@ CO_SDO_abortCode_t CB_ODF_3002(CO_ODF_arg_t *ODF_arg) {
             if(ODF_arg->reading == true)
                 ret = CO_SDO_AB_WRITEONLY; /* can't read parameters, write only */
             else {
-                /* Issue the method call and store the response message in m */
                 r = sd_bus_call_method(bus,
                                        BUS_NAME,
                                        OBJECT_PATH,
                                        INTERFACE_NAME,
                                        "Update",
                                        &error,
-                                       &m,
+                                       &mess,
                                        "d",
                                        temp);
                 dbusError(r, "Failed to issue method call:");
 
                 /* Parse the response message */
-                r = sd_bus_message_read(m, "d", &temp);
+                r = sd_bus_message_read(mess, "d", &temp);
                 dbusError(r, "Failed to parse response message:");
 
-                sd_bus_message_unref(m);
+                sd_bus_message_unref(mess);
             }
 
             break;
 
         case 6 : /* stop update */
+            int32_t temp;
 
             if(ODF_arg->reading == true)
                 ret = CO_SDO_AB_WRITEONLY; /* can't read parameters, write only */
             else {
-                //TODO call stop update method
+                r = sd_bus_call_method(bus,
+                                       BUS_NAME,
+                                       OBJECT_PATH,
+                                       INTERFACE_NAME,
+                                       "StopUpdate",
+                                       &err,
+                                       &mess,
+                                       "d",
+                                       temp);
+                dbusError(r, "Failed to issue method call:");
+
+                /* Parse the response message */
+                r = sd_bus_message_read(mess, "d", &temp);
+                dbusError(r, "Failed to parse response message:");
+                
+                sd_bus_message_unref(mess);
+                sd_bus_error_free(&err);
             }
 
             break;

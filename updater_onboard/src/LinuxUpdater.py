@@ -14,7 +14,7 @@ once the process has been completed.
 """
 
 from threading import Thread
-from shutil import copy
+import shutil
 from datetime import datetime
 from pathlib import Path
 from pydbus.generic import signal
@@ -81,7 +81,7 @@ class LinuxUpdater(object):
         """ stop updater process """
         if self.current_state == State.UPDATE.value:
             self.current_state = State.SLEEP.value
-        if self.thread1.isAlive():
+        if self.thread1.is_alive():
             self.thread1.join()
 
 
@@ -122,7 +122,7 @@ class LinuxUpdater(object):
             self.error = "not an absolute path: " + file_path
             return False
         
-        ret = copy(file_path, UPDATES_DIR)
+        ret = shutil.copy(file_path, UPDATES_DIR)
         
         if UPDATES_DIR in ret:
             return True
@@ -133,7 +133,7 @@ class LinuxUpdater(object):
     def StartUpdate(self):
         """ To start updaing process with file_path """
         if self.current_state == State.SLEEP.value or self.current_state == State.STOP.value:
-            if self.thread1.isAlive():
+            if self.thread1.is_alive():
                 self.error("Update thread already running, not in update state")
             else:
                 self.thread1.start()
@@ -157,6 +157,17 @@ class LinuxUpdater(object):
         self.error_message = err
         self.Error(err) # send out error signal
 
+    def updateFailed(self, err):
+        """ 
+        Update failed reverting all part of update and clearing 
+        working and update directories
+        """
+        self.error(err)
+        shutil.rmtree(WORKING_DIR)
+        shutil.rmtree(UPDATES_DIR)
+
+        # revert update
+
 
     def update(self):
         """ 
@@ -169,7 +180,7 @@ class LinuxUpdater(object):
         list_of_files = os.listdir(UPDATES_DIR)
         if not list_of_files:
             self.current_state = State.SLEEP.value
-            return None # done, empty, no update files
+            return # done, empty, no update files
 
         # check for valid update file
         self.current_update_file = list_of_files[0] # get 1st file
@@ -177,19 +188,19 @@ class LinuxUpdater(object):
         """
         if not re.match(r"(update-\d\d\d\d-\d\d-\d\d-\d\d-\d\d\.tar\.gz)", update_file_path):
             self.error("Not a valid update file")
-            return None
+            return
         """
 
         # copy file into working dir
-        ret_path = copy(update_file_path, WORKING_DIR)
+        ret_path = shutil.copy(update_file_path, WORKING_DIR)
         if UPDATES_DIR in ret_path:
-            self.error("Failed to copy into working dir")
-            return None
+            self.updateFailed("Failed to copy into working dir")
+            return
 
         # untar update file
         if not untar(ret_path):
-            self.error("Untar failed")
-            return None
+            self.updateFailed("Untar failed")
+            return
 
         # load instructins file
         instruction_dict = {}
@@ -200,104 +211,55 @@ class LinuxUpdater(object):
                 # change instructions data into dictionary
                 instruction_dict = yaml.safe_load(file_object)
                 if not instruction_dict:
-                    self.error("Not a valid yml file")
-                    return None
+                    self.updateFailed("Not a valid yml file")
+                    return
         except IOError:
-            self.error("Instructions file not accessible")
-            return None
-
-        # process config file 
-        ret_file_data = self.process_config_file(instruction_dict)
-
-        # save output dictionary to file
-        new_yaml_file = WORKING_DIR + self.computer_name + '-return.yml'
-        try:
-            with open(new_yaml_file, 'w') as file:
-                yaml.dump(ret_file_data, file)
-        except IOError:
-            self.error("return file data format error")
-            return None
-        
-        # tar output file
-        ret_tar_file = prepare_tar(WORKING_DIR + self.computer_name + "-return.tar.gz", new_yaml_file)
-
-        # send file to CANdaemon
-        # send(ret_tar_file)
-
-        # clean working dir
-        #shutil.rmtree(WORKING_DIR) 
-
-        self.current_state = State.SLEEP.value
-        return ret_tar_file
-
-
-    def process_config_file(self, instruction_dict):
-        return_dict = {}
+            self.updateFailed("Instructions file not accessible")
+            return
 
         # install packages
         install_string = self.computer_name + "-install-pkgs"
-        if install_string in instruction_dict: # string in dictionary
+        if install_string in instruction_dict: # string key in dictionary
             pkgs = instruction_dict[install_string]
             for p in pkgs:
-                r = install(WORKING_DIR + p)
-                if r != 0:
-                    self.error = "install pkg failed: " + p
-                    p = p + " error"
-                    break
-                else:
-                    p = p + " installed"
+                if not install(WORKING_DIR + p):
+                    self.updateFailed("install pkg failed: " + p)
+                    return
                     
                 if self.current_state == State.STOP.value:
-                    break # stop update was called
-
-            return_dict[install_string] = pkgs
-        
-        if self.current_state == State.STOP.value or self.current_state == State.ERROR.value:
-            # stop update was called or error occured
-            return return_dict
+                    return # stop update was called
 
         # remove packages
         remove_string = self.computer_name + "-remove-pkgs"
-        if remove_string in instruction_dict: # string in dictionary
+        if remove_string in instruction_dict: # string key in dictionary
             pkgs = instruction_dict[remove_string]
             for p in pkgs:
-                r = remove(WORKING_DIR + p)
-                if r != 0:
-                    self.error = "remove pkg failed: " + p
-                    p = p + " error"
-                    break
-                else:
-                    p = p + " installed"
+                if not remove(WORKING_DIR + p):
+                    self.updateFailed("remove pkg failed: " + p)
+                    return
             
                 if self.current_state == State.STOP.value:
-                    break # stop update was called
-        
-            return_dict[remove_string] = pkgs
+                    return # stop update was called
 
-        return return_dict
+        # clear working dir and remove update pkg
+        shutil.rmtree(WORKING_DIR)
+        os.remove(update_file_path)
+        self.current_state = State.SLEEP.value
+        return
 
 
 def install(file_path):
     """ output will be 0 if it completes install, anything else fails """
     deb = apt.debfile.DebPackage(file_path)
-    if deb.check(): # valid package check
-       return deb.install()
-    else:
-       return 1 
+    if deb.check() and deb.install() == 0: # valid package and install worked
+        return True
+    return False
 
 
-def remove(file_path): #TODO test the -q, test -qq
-    #make sure the file contains the package name, not a deb
+def remove(file_path): # TODO change to python3-apt
     bashCommand = "sudo apt-get -qq remove ./"+ file_path
     output = subprocess.check_call(['bash','-c', bashCommand])
-    #print("remove")
-    return output
-
-
-def prepare_tar(output_file, file_path):
-    bashCommand = "tar -zcvf " + output_file + " " + file_path
-    output = subprocess.check_call(['bash','-c', bashCommand])
-    return output
+    return True
 
 
 def untar(file_path):

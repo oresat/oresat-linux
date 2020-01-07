@@ -17,8 +17,9 @@ All main process have there own repos: [GPS], [StarTracker], [OreSat Live], and 
 
 ## Repo Layout 
 - **CANdaemon** - Source code for CANdaemon
-- **docs_and_examples** - Useful documentation and examples for general Linux stuff 
-- **updater** - Source code for Linux updarer
+- **docs_and_examples** - Useful documentation and examples for general Linux stuff.
+- **updater_onboard** - Source code for Linux updarer that will live on the satellite.
+- **updater_ground_station** - Source code for Linux updarer that will interatact with the Ground Station that will build the updates.
 
 <!-- Other oresat repos -->
 [GPS]:https://github.com/oresat/oresat-gps-software
