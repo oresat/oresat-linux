@@ -24,7 +24,7 @@ import threading, os, sys, re, yaml, subprocess, apt_pkg, apt.debfile, shutil, t
 
 DBUS_INTERFACE_NAME = "org.OreSat.Updater"
 UPDATES_DIR = '/tmp/oresat-linux-updater/updates/'
-WORKING_DIR = '/tm/p/oresat-linux-updater/working/'
+WORKING_DIR = '/tmp/oresat-linux-updater/working/'
 
 
 # all state for linux updater, uses auto() since we don't care about the actual value
@@ -74,13 +74,12 @@ class LinuxUpdater(object):
         self.current_state = State.SLEEP.value
         self.computer_name = "StarTracker"
         self.error_message = ""
-        self.update_available = 0
+        self.available_updates = len(os.listdir(UPDATES_DIR))
         self.running = True
         self.update_file_name = ""
         self.update_file_path = ""
         self.update_instruction = {}
         self.thread1 = threading.Thread(target=self.working_thread)
-        print(self.current_state) # TODO remove
 
         # start working thread
         self.thread1.start()
@@ -127,7 +126,7 @@ class LinuxUpdater(object):
 
     @property
     def UpdatesAvailable(self):
-        return self.updates_available
+        return self.available_updates
 
 
     # dbus methods
@@ -140,6 +139,9 @@ class LinuxUpdater(object):
         ret = shutil.copy(file_path, UPDATES_DIR)
         
         if UPDATES_DIR in ret:
+            self.available_updates = len(os.listdir(UPDATES_DIR)) # not += 1
+            # therefor it will handle file overrides
+            # file overrides should not happen
             return True
         
         return False # failed to copy
@@ -168,9 +170,15 @@ class LinuxUpdater(object):
     # other class methods
     def error(self, err):
         """ usefull error method """
+        self.lock.acquire()
         self.current_state = State.ERROR.value
+        self.lock.release()
         self.error_message = err
+
+        #reset fields
         self.update_file_name = ""
+        self.update_file_path = ""
+
         self.Error(err) # send out error signal
 
 
@@ -183,14 +191,15 @@ class LinuxUpdater(object):
         # goto error state
         self.error(err)
 
-        #reset fields
-        self.update_file_path = ""
-        self.update_file_name = ""
-        self.update_instruction = {}
-
-        # remove all updater files
+        # remove all updater files 
         shutil.rmtree(WORKING_DIR)
         shutil.rmtree(UPDATES_DIR)
+        Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
+        Path(UPDATES_DIR).mkdir(parents=True, exist_ok=True) 
+        
+        #reset fields not reset by error()
+        self.available_updates = 0
+        self.update_instruction = {}
 
         # TODO revert update
 
@@ -205,12 +214,9 @@ class LinuxUpdater(object):
 
     def working_thread(self):
         while(self.running):
-            print(self.current_state) # TODO remove
             if self.current_state == State.PREUPDATE.value:
-                print("preupdate") # TODO remove
                 self.pre_update()
             elif self.current_state == State.UPDATE.value:
-                print("update") # TODO remove
                 self.update()
             else:
                 time.sleep(1)
@@ -228,25 +234,27 @@ class LinuxUpdater(object):
         # Every state can transition to error state,
         # But errors should use error() or update_failed()
         if new_state == State.ERROR.value:
-            self.change_state(State.ERROR.value)
+            self.current_state = State.ERROR.value
             self.lock.release()
             return True
 
         rv = False # return value, assume false by default
 
+        # TODO make this better
         if self.current_state == State.ERROR.value:
             if self.current_state == Start.STOP.value or self.current_state == Start.Error.value:
+                self.current_state = new_state
                 rv = True
         elif self.current_state == State.SLEEP.value:
             if new_state == State.SLEEP.value or new_state == State.PREUPDATE.value:
                 self.current_state = new_state
                 rv = True
         elif self.current_state == State.PREUPDATE.value:
-            if new_state == State.PREUPDATE.value or new_state == State.UPDATE.value:
+            if new_state == State.PREUPDATE.value or new_state == State.SLEEP.value or new_state == State.UPDATE.value:
                 self.current_state = new_state
                 rv = True
         elif self.current_state == State.UPDATE.value:
-            if new_state == State.UPDATE.value or new_state == State.STOP.value:
+            if new_state == State.UPDATE.value or new_state == State.STOP.value or new_state == State.SLEEP.value:
                 self.current_state = new_state
                 rv = True
         elif self.current_state == State.STOP.value:
@@ -285,12 +293,12 @@ class LinuxUpdater(object):
         # copy file into working dir
         ret_path = shutil.copy(self.update_file_path, WORKING_DIR)
         if UPDATES_DIR in ret_path:
-            self.updateFailed("Failed to copy into working dir")
+            self.updated_failed("Failed to copy into working dir")
             return
 
         # uncompress_file update file
         if not uncompress_file(ret_path):
-            self.updateFailed("Untar failed")
+            self.updated_failed("Untar failed")
             return
 
         # load instructins file
@@ -299,10 +307,10 @@ class LinuxUpdater(object):
                 # load instructions data into dictionary
                 self.update_instruction = yaml.safe_load(file_object)
                 if not self.update_instruction:
-                    self.updateFailed("Not a valid yml file") # empty dictionary
+                    self.updated_failed("Not a valid yml file") # empty dictionary
                     return
         except IOError:
-            self.updateFailed("Instructions file not accessible")
+            self.updated_failed("Instructions file not accessible")
             return
 
         self.change_state(State.UPDATE.value)
@@ -316,7 +324,7 @@ class LinuxUpdater(object):
             pkgs = self.update_instruction[install_string]
             for p in pkgs:
                 if not install(WORKING_DIR + p):
-                    self.updateFailed("install pkg failed: " + p)
+                    self.updated_failed("install pkg failed: " + p)
                     return
 
                 if self.current_state == State.STOP.value:
@@ -328,17 +336,19 @@ class LinuxUpdater(object):
             pkgs = self.update_instruction[remove_string]
             for p in pkgs:
                 if not remove(WORKING_DIR + p):
-                    self.updateFailed("remove pkg failed: " + p)
+                    self.updated_failed("remove pkg failed: " + p)
                     return
 
                 if self.current_state == State.STOP.value:
                     return # stop update was called
 
-        # clear working dir and remove update pkg
+        # clear working dir and remove update deb pkg
         shutil.rmtree(WORKING_DIR)
+        Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
         os.remove(self.update_file_path)
         self.update_file_name = ""
         self.update_file_path = ""
+        self.available_updates -= 1
         self.update_instruction = {}
         self.change_state(State.SLEEP.value)
         return
