@@ -13,27 +13,27 @@ saved. The .tar.gz file and the tar directory will also be moved to this directo
 once the process has been completed. 
 """
 
-from threading import Thread
+
 from pathlib import Path
 from pydbus.generic import signal
 from pydbus import SystemBus
 from gi.repository import GLib
-from enum import Enum, auto
-import os, sys, re, yaml, subprocess, apt_pkg, apt.debfile, shutil
+from enum import Enum
+import threading, os, sys, re, yaml, subprocess, apt_pkg, apt.debfile, shutil, time
 
 
 DBUS_INTERFACE_NAME = "org.OreSat.Updater"
 UPDATES_DIR = '/tmp/oresat-linux-updater/updates/'
-WORKING_DIR = '/tmp/oresat-linux-updater/working/'
+WORKING_DIR = '/tm/p/oresat-linux-updater/working/'
 
 
 # all state for linux updater, uses auto() since we don't care about the actual value
 class State(Enum):
-    ERROR = auto()
-    SLEEP = auto()
-    PREUPDATE = auto()
-    UPDATE = auto()
-    STOP = auto()
+    ERROR = 0
+    SLEEP = 1 
+    PREUPDATE = 2 
+    UPDATE = 3
+    STOP = 4
 
 
 class LinuxUpdater(object):
@@ -43,12 +43,10 @@ class LinuxUpdater(object):
             <signal name="Error">
                 <arg type='s'/>
             </signal>
-            <signal name="UpdateDone">
-                <arg type='s'/>
-            </signal>
             <property name="Status" type="d" access="read"/>
             <property name="ComputerName" type="s" access="readwrite"/>
             <property name="CurrentUpdateFile" type="s" access="read"/>
+            <property name="UpdatesAvailable" type="d" access="read"/>
             <property name="ErrorMessage" type="s" access="read"/>
             <method name='AddUpdateFile'>
                 <arg type='s' name='file_path' direction='in'/>
@@ -63,19 +61,26 @@ class LinuxUpdater(object):
             <method name='EmergencyStopUpdate'>
                 <arg type='b' name='output' direction='out'/>
             </method>
+            <method name='GetAptListOutput'>
+                <arg type='b' name='output' direction='out'/>
+            </method>
         </interface>
     </node>
     """
 
     def __init__(self):
         # set local fields
+        self.lock = threading.Lock()
         self.current_state = State.SLEEP.value
         self.computer_name = "StarTracker"
         self.error_message = ""
+        self.update_available = 0
         self.running = True
         self.update_file_name = ""
+        self.update_file_path = ""
         self.update_instruction = {}
-        self.thread1 = Thread(target=self.update, name="working_thread")
+        self.thread1 = threading.Thread(target=self.working_thread)
+        print(self.current_state) # TODO remove
 
         # start working thread
         self.thread1.start()
@@ -86,16 +91,12 @@ class LinuxUpdater(object):
 
 
     def __del__(self):
-        """ stop updater process """
-        self.running = False
-        self.change_state(State.STOP.value) # stop if currently updating
-        if self.thread1.is_alive():
-            self.thread1.join()
+        """ del updater process """
+        self.end()
 
 
     # dbus signals
     Error = signal()
-    UpdateDone = signal()
 
 
     # dbus properties
@@ -122,6 +123,11 @@ class LinuxUpdater(object):
     @property
     def CurrentUpdateFile(self):
         return self.update_file_name
+
+
+    @property
+    def UpdatesAvailable(self):
+        return self.updates_available
 
 
     # dbus methods
@@ -154,6 +160,11 @@ class LinuxUpdater(object):
         return self.change_state(State.STOP.value)
 
 
+    def GetAptListOutput(self):#TODO
+        """ To stop updaing """
+        return True
+
+
     # other class methods
     def error(self, err):
         """ usefull error method """
@@ -184,14 +195,25 @@ class LinuxUpdater(object):
         # TODO revert update
 
 
+    def end(self):
+        """ Use to stop all threads nicely """
+        self.running = False
+        self.change_state(State.STOP.value) # stop if currently updating
+        if self.thread1.is_alive():
+            self.thread1.join()
+
+
     def working_thread(self):
         while(self.running):
-            if self.current_state ==  State.PREUPDATE.value:
+            print(self.current_state) # TODO remove
+            if self.current_state == State.PREUPDATE.value:
+                print("preupdate") # TODO remove
                 self.pre_update()
             elif self.current_state == State.UPDATE.value:
+                print("update") # TODO remove
                 self.update()
             else:
-                sleep(1)
+                time.sleep(1)
 
 
     def change_state(self, new_state):
@@ -201,13 +223,13 @@ class LinuxUpdater(object):
         use the error() or updated_failed() methods as needed. 
         """
 
-        threadLock.acquire()
+        self.lock.acquire()
 
         # Every state can transition to error state,
         # But errors should use error() or update_failed()
-        if new_state = ERROR:
-            self.current_state = State.ERROR.Value
-            threadLock.release()
+        if new_state == State.ERROR.value:
+            self.change_state(State.ERROR.value)
+            self.lock.release()
             return True
 
         rv = False # return value, assume false by default
@@ -217,24 +239,24 @@ class LinuxUpdater(object):
                 rv = True
         elif self.current_state == State.SLEEP.value:
             if new_state == State.SLEEP.value or new_state == State.PREUPDATE.value:
-                self.current_state = new_state:
+                self.current_state = new_state
                 rv = True
         elif self.current_state == State.PREUPDATE.value:
             if new_state == State.PREUPDATE.value or new_state == State.UPDATE.value:
-                self.current_state = new_state:
+                self.current_state = new_state
                 rv = True
         elif self.current_state == State.UPDATE.value:
             if new_state == State.UPDATE.value or new_state == State.STOP.value:
-                self.current_state = new_state:
+                self.current_state = new_state
                 rv = True
         elif self.current_state == State.STOP.value:
             if new_state == State.UPDATE.value or new_state == State.STOP.value:
-                self.current_state = new_state:
+                self.current_state = new_state
                 rv = True
-        else
+        else:
             self.errror("Unkown state")
 
-        ThreadLock.release()
+        self.lock.release()
         return rv
 
 
@@ -359,5 +381,6 @@ try:
     loop.run()
 except KeyboardInterrupt as e:
     loop.quit()
+    emit.end()
     print("\nExit by Control C")
 
