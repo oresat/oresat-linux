@@ -119,7 +119,7 @@ class LinuxUpdater(object):
     def AddUpdateFile(self, file_path):
         """ copies file into UPDATES_DIR """
         if(file_path[0] != '/'):
-            self.error = "not an absolute path: " + file_path
+            self.error("not an absolute path: " + file_path)
             return False
         
         ret = shutil.copy(file_path, UPDATES_DIR)
@@ -155,6 +155,7 @@ class LinuxUpdater(object):
     def error(self, err):
         self.current_state = State.ERROR.value
         self.error_message = err
+        self.current_update_file = ""
         self.Error(err) # send out error signal
 
     def updateFailed(self, err):
@@ -166,7 +167,7 @@ class LinuxUpdater(object):
         shutil.rmtree(WORKING_DIR)
         shutil.rmtree(UPDATES_DIR)
 
-        # revert update
+        # TODO revert update
 
 
     def update(self):
@@ -225,7 +226,7 @@ class LinuxUpdater(object):
                 if not install(WORKING_DIR + p):
                     self.updateFailed("install pkg failed: " + p)
                     return
-                    
+
                 if self.current_state == State.STOP.value:
                     return # stop update was called
 
@@ -237,13 +238,14 @@ class LinuxUpdater(object):
                 if not remove(WORKING_DIR + p):
                     self.updateFailed("remove pkg failed: " + p)
                     return
-            
+
                 if self.current_state == State.STOP.value:
                     return # stop update was called
 
         # clear working dir and remove update pkg
         shutil.rmtree(WORKING_DIR)
         os.remove(update_file_path)
+        self.current_update_file = ""
         self.current_state = State.SLEEP.value
         return
 
