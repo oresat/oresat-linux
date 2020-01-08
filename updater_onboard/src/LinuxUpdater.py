@@ -14,29 +14,26 @@ once the process has been completed.
 """
 
 from threading import Thread
-import shutil
-from datetime import datetime
 from pathlib import Path
 from pydbus.generic import signal
 from pydbus import SystemBus
 from gi.repository import GLib
-from enum import Enum
-import os, sys, re, yaml, subprocess
-import apt_pkg, apt.debfile
-import LinuxUpdaterDeb
+from enum import Enum, auto
+import os, sys, re, yaml, subprocess, apt_pkg, apt.debfile, shutil
 
 
-INTERFACE_NAME = "org.OreSat.Updater"
+DBUS_INTERFACE_NAME = "org.OreSat.Updater"
 UPDATES_DIR = '/tmp/oresat-linux-updater/updates/'
 WORKING_DIR = '/tmp/oresat-linux-updater/working/'
 
 
+# all state for linux updater, uses auto() since we don't care about the actual value
 class State(Enum):
-    ERROR = -1
-    SLEEP = 0
-    PREUPDATE = 1
-    UPDATE = 2
-    STOP = 3
+    ERROR = auto()
+    SLEEP = auto()
+    PREUPDATE = auto()
+    UPDATE = auto()
+    STOP = auto()
 
 
 class LinuxUpdater(object):
@@ -96,12 +93,12 @@ class LinuxUpdater(object):
             self.thread1.join()
 
 
-    # signals
+    # dbus signals
     Error = signal()
     UpdateDone = signal()
 
 
-    # properties
+    # dbus properties
     @property
     def Status(self):
         return self.current_state
@@ -127,7 +124,7 @@ class LinuxUpdater(object):
         return self.update_file_name
 
 
-    # methods
+    # dbus methods
     def AddUpdateFile(self, file_path):
         """ copies file into UPDATES_DIR """
         if(file_path[0] != '/'):
@@ -197,8 +194,53 @@ class LinuxUpdater(object):
                 sleep(1)
 
 
+    def change_state(self, new_state):
+        """
+        State machine for linux updater anyt state change should 
+        happen with this functionw with expection of errors. For errors,
+        use the error() or updated_failed() methods as needed. 
+        """
+
+        threadLock.acquire()
+
+        # Every state can transition to error state,
+        # But errors should use error() or update_failed()
+        if new_state = ERROR:
+            self.current_state = State.ERROR.Value
+            threadLock.release()
+            return True
+
+        rv = False # return value, assume false by default
+
+        if self.current_state == State.ERROR.value:
+            if self.current_state == Start.STOP.value or self.current_state == Start.Error.value:
+                rv = True
+        elif self.current_state == State.SLEEP.value:
+            if new_state == State.SLEEP.value or new_state == State.PREUPDATE.value:
+                self.current_state = new_state:
+                rv = True
+        elif self.current_state == State.PREUPDATE.value:
+            if new_state == State.PREUPDATE.value or new_state == State.UPDATE.value:
+                self.current_state = new_state:
+                rv = True
+        elif self.current_state == State.UPDATE.value:
+            if new_state == State.UPDATE.value or new_state == State.STOP.value:
+                self.current_state = new_state:
+                rv = True
+        elif self.current_state == State.STOP.value:
+            if new_state == State.UPDATE.value or new_state == State.STOP.value:
+                self.current_state = new_state:
+                rv = True
+        else
+            self.errror("Unkown state")
+
+        ThreadLock.release()
+        return rv
+
+
     def pre_update(self):
         """ 
+        Load oldest update file if one exist 
         Update thread function.
         Finds the oldest update file and starts update 
         """
@@ -206,7 +248,7 @@ class LinuxUpdater(object):
         # see if any update file exist
         list_of_files = os.listdir(UPDATES_DIR)
         if not list_of_files:
-            self.current_state = State.SLEEP.value
+            self.change_state(State.SLEEP.value)
             return # done, empty, no update files
 
         # check for valid update file
@@ -224,8 +266,8 @@ class LinuxUpdater(object):
             self.updateFailed("Failed to copy into working dir")
             return
 
-        # untar update file
-        if not untar(ret_path):
+        # uncompress_file update file
+        if not uncompress_file(ret_path):
             self.updateFailed("Untar failed")
             return
 
@@ -280,49 +322,6 @@ class LinuxUpdater(object):
         return
 
 
-    def change_state(self, new_state):
-        """
-        State machine for linux updater anyt state change should 
-        happen with this functionw with expection of errors. For errors,
-        use the error() or updated_failed() methods as needed. 
-        """
-
-        threadLock.acquire()
-
-        # every state can transition to error state
-        if new_state = ERROR:
-            self.error("change state function switch to error state")
-            threadLock.release()
-            return True
-
-        rv = False # return value, assume false by default
-
-        if self.current_state == State.ERROR.value:
-            if self.current_state == Start.STOP.value or self.current_state == Start.Error.value:
-                rv = True
-        elif self.current_state == State.SLEEP.value:
-            if new_state == State.SLEEP.value or new_state == State.PREUPDATE.value:
-                self.current_state = new_state:
-                rv = True
-        elif self.current_state == State.PREUPDATE.value:
-            if new_state == State.PREUPDATE.value or new_state == State.UPDATE.value:
-                self.current_state = new_state:
-                rv = True
-        elif self.current_state == State.UPDATE.value:
-            if new_state == State.UPDATE.value or new_state == State.STOP.value:
-                self.current_state = new_state:
-                rv = True
-        elif self.current_state == State.STOP.value:
-            if new_state == State.UPDATE.value or new_state == State.STOP.value:
-                self.current_state = new_state:
-                rv = True
-        else
-            self.errror("Unkown state")
-
-        ThreadLock.release()
-        return rv
-
-
 def install(file_path):
     """ output will be 0 if it completes install, anything else fails """
     deb = apt.debfile.DebPackage(file_path)
@@ -337,7 +336,7 @@ def remove(file_path): # TODO change to python3-apt
     return True
 
 
-def untar(file_path):
+def uncompress_file(file_path): # TODO FLIF?
     """
     contents of .tar.gz file are extracted to a directory with the same
     name as the tar file file without the .tar.gz extension
@@ -354,7 +353,7 @@ def untar(file_path):
 bus = SystemBus()
 loop = GLib.MainLoop()
 emit = LinuxUpdater()
-bus.publish(INTERFACE_NAME, emit)
+bus.publish(DBUS_INTERFACE_NAME, emit)
 
 try:
     loop.run()
