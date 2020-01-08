@@ -34,8 +34,9 @@ WORKING_DIR = '/tmp/oresat-linux-updater/working/'
 class State(Enum):
     ERROR = -1
     SLEEP = 0
-    UPDATE = 1
-    STOP = 2
+    PREUPDATE = 1
+    UPDATE = 2
+    STOP = 3
 
 
 class LinuxUpdater(object):
@@ -59,6 +60,9 @@ class LinuxUpdater(object):
             <method name='StartUpdate'>
                 <arg type='b' name='output' direction='out'/>
             </method>
+            <method name='Reset'>
+                <arg type='b' name='output' direction='out'/>
+            </method>
             <method name='EmergencyStopUpdate'>
                 <arg type='b' name='output' direction='out'/>
             </method>
@@ -67,11 +71,18 @@ class LinuxUpdater(object):
     """
 
     def __init__(self):
+        # set local fields
         self.current_state = State.SLEEP.value
         self.computer_name = "StarTracker"
-        self.current_update_file = ""
         self.error_message = ""
-        self.thread1 = Thread(target=self.update, name="UpdateThread")
+        self.running = True
+        self.update_file_name = ""
+        self.update_instruction = {}
+        self.thread1 = Thread(target=self.update, name="working_thread")
+
+        # start working thread
+        self.thread1.start()
+
         # make directories for updater, if not found
         Path(UPDATES_DIR).mkdir(parents=True, exist_ok=True) 
         Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
@@ -79,8 +90,8 @@ class LinuxUpdater(object):
 
     def __del__(self):
         """ stop updater process """
-        if self.current_state == State.UPDATE.value:
-            self.current_state = State.SLEEP.value
+        self.running = False
+        self.change_state(State.STOP.value) # stop if currently updating
         if self.thread1.is_alive():
             self.thread1.join()
 
@@ -94,6 +105,7 @@ class LinuxUpdater(object):
     @property
     def Status(self):
         return self.current_state
+
 
     @property
     def ErrorMessage(self):
@@ -112,7 +124,7 @@ class LinuxUpdater(object):
 
     @property
     def CurrentUpdateFile(self):
-        return self.current_update_file
+        return self.update_file_name
 
 
     # methods
@@ -131,51 +143,65 @@ class LinuxUpdater(object):
 
 
     def StartUpdate(self):
-        """ To start updaing process with file_path """
-        if self.current_state == State.SLEEP.value or self.current_state == State.STOP.value:
-            if self.thread1.is_alive():
-                self.error("Update thread already running, not in update state")
-            else:
-                self.thread1.start()
-            return True
-        elif self.current_state == State.UPDATE.value:
-            return True # already running
-
-        return False
+        """ To start updaing """
+        return self.change_state(State.PREUPDATE.value)
 
 
-    def StopUpdate(self):
-        if self.current_state == State.UPDATE.value:
-            self.current_state = State.STOP.value
-            return True
-        self.error("Update thread not running. Nothing to stop.")
-        return False
+    def Reset(self):
+        """ Reset updater if in error state back into sleeping state """
+        return self.change_state(State.SLEEP.value)
+
+
+    def EmergencyStopUpdate(self):
+        """ To stop updaing """
+        return self.change_state(State.STOP.value)
+
 
     # other class methods
     def error(self, err):
+        """ usefull error method """
         self.current_state = State.ERROR.value
         self.error_message = err
-        self.current_update_file = ""
+        self.update_file_name = ""
         self.Error(err) # send out error signal
 
-    def updateFailed(self, err):
+
+    def update_failed(self, err):
         """ 
         Update failed reverting all part of update and clearing 
-        working and update directories
+        working and update directories.
         """
+
+        # goto error state
         self.error(err)
+
+        #reset fields
+        self.update_file_path = ""
+        self.update_file_name = ""
+        self.update_instruction = {}
+
+        # remove all updater files
         shutil.rmtree(WORKING_DIR)
         shutil.rmtree(UPDATES_DIR)
 
         # TODO revert update
 
 
-    def update(self):
+    def working_thread(self):
+        while(self.running):
+            if self.current_state ==  State.PREUPDATE.value:
+                self.pre_update()
+            elif self.current_state == State.UPDATE.value:
+                self.update()
+            else:
+                sleep(1)
+
+
+    def pre_update(self):
         """ 
         Update thread function.
         Finds the oldest update file and starts update 
         """
-        self.current_state = State.UPDATE.value
 
         # see if any update file exist
         list_of_files = os.listdir(UPDATES_DIR)
@@ -184,16 +210,16 @@ class LinuxUpdater(object):
             return # done, empty, no update files
 
         # check for valid update file
-        self.current_update_file = list_of_files[0] # get 1st file
-        update_file_path = UPDATES_DIR + self.current_update_file
+        self.update_file_name = list_of_files[0] # get 1st file
+        self.update_file_path = UPDATES_DIR + self.update_file_name
         """
-        if not re.match(r"(update-\d\d\d\d-\d\d-\d\d-\d\d-\d\d\.tar\.gz)", update_file_path):
+        if not re.match(r"(update-\d\d\d\d-\d\d-\d\d-\d\d-\d\d\.tar\.gz)", self.update_file_path):
             self.error("Not a valid update file")
             return
         """
 
         # copy file into working dir
-        ret_path = shutil.copy(update_file_path, WORKING_DIR)
+        ret_path = shutil.copy(self.update_file_path, WORKING_DIR)
         if UPDATES_DIR in ret_path:
             self.updateFailed("Failed to copy into working dir")
             return
@@ -204,24 +230,26 @@ class LinuxUpdater(object):
             return
 
         # load instructins file
-        instruction_dict = {}
         try:
             with open(WORKING_DIR + "instructions.yml", "r") as file_object:
-                # file_contents is a list of strings, each a line from txt file
-                #file_contents = file_object.readlines()
-                # change instructions data into dictionary
-                instruction_dict = yaml.safe_load(file_object)
-                if not instruction_dict:
-                    self.updateFailed("Not a valid yml file")
+                # load instructions data into dictionary
+                self.update_instruction = yaml.safe_load(file_object)
+                if not self.update_instruction:
+                    self.updateFailed("Not a valid yml file") # empty dictionary
                     return
         except IOError:
             self.updateFailed("Instructions file not accessible")
             return
 
+        self.change_state(State.UPDATE.value)
+        return
+
+
+    def update(self):
         # install packages
         install_string = self.computer_name + "-install-pkgs"
-        if install_string in instruction_dict: # string key in dictionary
-            pkgs = instruction_dict[install_string]
+        if install_string in self.update_instruction: # string key in dictionary
+            pkgs = self.update_instruction[install_string]
             for p in pkgs:
                 if not install(WORKING_DIR + p):
                     self.updateFailed("install pkg failed: " + p)
@@ -232,8 +260,8 @@ class LinuxUpdater(object):
 
         # remove packages
         remove_string = self.computer_name + "-remove-pkgs"
-        if remove_string in instruction_dict: # string key in dictionary
-            pkgs = instruction_dict[remove_string]
+        if remove_string in self.update_instruction: # string key in dictionary
+            pkgs = self.update_instruction[remove_string]
             for p in pkgs:
                 if not remove(WORKING_DIR + p):
                     self.updateFailed("remove pkg failed: " + p)
@@ -244,10 +272,55 @@ class LinuxUpdater(object):
 
         # clear working dir and remove update pkg
         shutil.rmtree(WORKING_DIR)
-        os.remove(update_file_path)
-        self.current_update_file = ""
-        self.current_state = State.SLEEP.value
+        os.remove(self.update_file_path)
+        self.update_file_name = ""
+        self.update_file_path = ""
+        self.update_instruction = {}
+        self.change_state(State.SLEEP.value)
         return
+
+
+    def change_state(self, new_state):
+        """
+        State machine for linux updater anyt state change should 
+        happen with this functionw with expection of errors. For errors,
+        use the error() or updated_failed() methods as needed. 
+        """
+
+        threadLock.acquire()
+
+        # every state can transition to error state
+        if new_state = ERROR:
+            self.error("change state function switch to error state")
+            threadLock.release()
+            return True
+
+        rv = False # return value, assume false by default
+
+        if self.current_state == State.ERROR.value:
+            if self.current_state == Start.STOP.value or self.current_state == Start.Error.value:
+                rv = True
+        elif self.current_state == State.SLEEP.value:
+            if new_state == State.SLEEP.value or new_state == State.PREUPDATE.value:
+                self.current_state = new_state:
+                rv = True
+        elif self.current_state == State.PREUPDATE.value:
+            if new_state == State.PREUPDATE.value or new_state == State.UPDATE.value:
+                self.current_state = new_state:
+                rv = True
+        elif self.current_state == State.UPDATE.value:
+            if new_state == State.UPDATE.value or new_state == State.STOP.value:
+                self.current_state = new_state:
+                rv = True
+        elif self.current_state == State.STOP.value:
+            if new_state == State.UPDATE.value or new_state == State.STOP.value:
+                self.current_state = new_state:
+                rv = True
+        else
+            self.errror("Unkown state")
+
+        ThreadLock.release()
+        return rv
 
 
 def install(file_path):
@@ -275,7 +348,6 @@ def untar(file_path):
 
     #create a str with the directory name by slicing off the .tar.gz extension
     return True # file_name[0:len(file_path)-7]
-
 
 
 #startLinuxUpdater():
