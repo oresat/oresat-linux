@@ -113,7 +113,7 @@ class MyDaemon:
         self.start()
 
     def run(self):
-        start_linux_updater()
+        updater.start_linux_updater()
 
 if __name__ == "__main__":
         daemon = MyDaemon('/run/oresat-linux-updater.pid')
