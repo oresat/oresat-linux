@@ -69,6 +69,10 @@ class LinuxUpdater(object):
     """
 
     def __init__(self):
+        # make directories for updater, if not found
+        Path(UPDATES_DIR).mkdir(parents=True, exist_ok=True) 
+        Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
+
         # set local fields
         self.lock = threading.Lock()
         self.current_state = State.SLEEP.value
@@ -83,10 +87,6 @@ class LinuxUpdater(object):
 
         # start working thread
         self.thread1.start()
-
-        # make directories for updater, if not found
-        Path(UPDATES_DIR).mkdir(parents=True, exist_ok=True) 
-        Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
 
 
     def __del__(self):
@@ -381,16 +381,16 @@ def uncompress_file(file_path): # TODO FLIF?
     return True # file_name[0:len(file_path)-7]
 
 
-#startLinuxUpdater():
-bus = SystemBus()
-loop = GLib.MainLoop()
-emit = LinuxUpdater()
-bus.publish(DBUS_INTERFACE_NAME, emit)
+def start_linux_updater():
+    bus = SystemBus()
+    loop = GLib.MainLoop()
+    emit = LinuxUpdater()
+    bus.publish(DBUS_INTERFACE_NAME, emit)
 
-try:
-    loop.run()
-except KeyboardInterrupt as e:
-    loop.quit()
-    emit.end()
-    print("\nExit by Control C")
+    try:
+        loop.run()
+    except KeyboardInterrupt as e:
+        loop.quit()
+        emit.end()
+        print("\nExit by Control C")
 

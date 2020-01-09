@@ -14,21 +14,23 @@ install_path='/opt/'$daemon_name'/'
 sudo rm -rf $install_path
 
 echo 'Copying python scripts to /opt/'$daemon_name
-sudo mkdir $install_path
-sudo cp linux-updater-daemon.py $install_path
-sudo cp linux-updater-dbus.py $install_path
-sudo cp linux-updater.py $install_path
+sudo mkdir -p $install_path
+sudo cp src/*.py $install_path
 
-echo 'Copying daemon service file to /usr/lib/systemd/system/'
-sudo cp ./$daemon_name.service /usr/lib/systemd/system/
+echo 'Copying daemon service file to /etc/systemd/system/'
+sudo cp ./src/$daemon_name.service /etc/systemd/system/
 
-echo 'Copying dbus config file to /usr/share/dbus-1/system.d/'
-sudo cp ./org.OreSat.Updater.conf /usr/share/dbus-1/system.d/
+echo 'Copying dbus config file to /etc/dbus-1/system.d/'
+sudo cp ./src/org.OreSat.Updater.conf /etc/dbus-1/system.d/
 
 sudo touch /run/$daemon_name.pid
 
+sleep 1
+
 echo 'Reloading systemctl'
 sudo systemctl daemon-reload
+
+sleep 1
 
 echo 'Starting daemon'
 sudo systemctl start $daemon_name.service

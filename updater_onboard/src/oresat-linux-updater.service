@@ -4,9 +4,9 @@ Description=python daemon example for oresat linux
 [Service]
 Type=forking
 Restart=always
-PIDFile=/run/daemon-example.pid
-ExecStart=/usr/bin/python3 /usr/bin/daemon-example.py start
-ExecStop=/usr/bin/python3 /usr/bin/daemon-example.py stop
+PIDFile=/run/oresat-linux-updater.pid
+ExecStart=/usr/bin/python3 /opt/oresat-linux-updater/updater_daemon.py start
+ExecStop=/usr/bin/python3 /opt/oresat-linux-updater/updater_daemon.py stop
 
 [Install]
 WantedBy=multi-user.target

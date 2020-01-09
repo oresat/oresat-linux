@@ -2,7 +2,7 @@
 
 import sys, os, time, atexit, signal
 import daemon
-import LinuxUpdater
+import updater
 
 class MyDaemon:
     def __init__(self, pidfile):
@@ -113,7 +113,7 @@ class MyDaemon:
         self.start()
 
     def run(self):
-        start_linux_updater():
+        start_linux_updater()
 
 if __name__ == "__main__":
         daemon = MyDaemon('/run/oresat-linux-updater.pid')
