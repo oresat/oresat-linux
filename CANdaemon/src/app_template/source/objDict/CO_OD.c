@@ -127,6 +127,7 @@ struct sCO_OD_RAM CO_OD_RAM = {
 /*3001*/ {0x3L, 0, 0, 0x0L},
 /*3002*/ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 /*3003*/ {0x8L, 0x0L, 0, 0, 0x0000L, 0, 0x0000L, 0x0000L, 0},
+/*3004*/ {0x9L, 0x0000L, 0x0000L, 0, 0, 0, 0, 0, 0, 0},
 
            CO_OD_FIRST_LAST_WORD,
 };
@@ -359,10 +360,23 @@ struct sCO_OD_EEPROM CO_OD_EEPROM = {
            {(void*)&CO_OD_RAM.sendFileControl.refreshFileArray, 0x0e, 0x1 },
 };
 
+/*0x3004*/ const CO_OD_entryRecord_t OD_record3004[10] = {
+           {(void*)&CO_OD_RAM.linuxUpdater.maxSubIndex, 0x06, 0x1 },
+           {(void*)&CO_OD_RAM.linuxUpdater.currentState, 0x86, 0x4 },
+           {(void*)&CO_OD_RAM.linuxUpdater.updatesAvailable, 0x86, 0x4 },
+           {(void*)0, 0x06, 0x0 },
+           {(void*)0, 0x06, 0x0 },
+           {(void*)0, 0x0a, 0x0 },
+           {(void*)0, 0x0a, 0x0 },
+           {(void*)0, 0x0a, 0x0 },
+           {(void*)0, 0x0a, 0x0 },
+           {(void*)0, 0x0a, 0x0 },
+};
+
 /*******************************************************************************
    OBJECT DICTIONARY
 *******************************************************************************/
-const CO_OD_entry_t CO_OD[52] = {
+const CO_OD_entry_t CO_OD[53] = {
 
 {0x1000, 0x00, 0x86, 4, (void*)&CO_OD_RAM.deviceType},
 {0x1001, 0x00, 0x26, 1, (void*)&CO_OD_RAM.errorRegister},
@@ -416,4 +430,5 @@ const CO_OD_entry_t CO_OD[52] = {
 {0x3001, 0x03, 0x00, 0, (void*)&OD_record3001},
 {0x3002, 0x7f, 0x0e, 0, (void*)0},
 {0x3003, 0x08, 0x00, 0, (void*)&OD_record3003},
+{0x3004, 0x09, 0x00, 1, (void*)&OD_record3004},
 };

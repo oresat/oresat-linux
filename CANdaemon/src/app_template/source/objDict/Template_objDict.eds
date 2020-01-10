@@ -1710,7 +1710,7 @@ DefaultValue=0x00000000
 PDOMapping=0
 
 [ManufacturerObjects]
-SupportedObjects=14
+SupportedObjects=15
 1=0x2100
 2=0x2101
 3=0x2102
@@ -1725,6 +1725,7 @@ SupportedObjects=14
 12=0x3001
 13=0x3002
 14=0x3003
+15=0x3004
 
 [2100]
 ParameterName=Error status bits
@@ -3229,6 +3230,102 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0001
 AccessType=rw
+DefaultValue=0
+PDOMapping=0
+
+[3004]
+ParameterName=Linux Updater
+ObjectType=0x9
+;StorageLocation=RAM
+SubNumber=0xA
+
+[3004sub0]
+ParameterName=max sub-index
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x0005
+AccessType=ro
+DefaultValue=9
+PDOMapping=0
+
+[3004sub1]
+ParameterName=Current state
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x0004
+AccessType=ro
+DefaultValue=0
+PDOMapping=0
+
+[3004sub2]
+ParameterName=Updates available
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x0007
+AccessType=ro
+DefaultValue=0
+PDOMapping=0
+
+[3004sub3]
+ParameterName=Current update file
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x000F
+AccessType=ro
+DefaultValue=0
+PDOMapping=0
+
+[3004sub4]
+ParameterName=Error Message
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x000F
+AccessType=ro
+DefaultValue=0
+PDOMapping=0
+
+[3004sub5]
+ParameterName=Add update file
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x000F
+AccessType=wo
+DefaultValue=0
+PDOMapping=0
+
+[3004sub6]
+ParameterName=Start update
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x000F
+AccessType=wo
+DefaultValue=0
+PDOMapping=0
+
+[3004sub7]
+ParameterName=Emergency Stop update
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x000F
+AccessType=wo
+DefaultValue=0
+PDOMapping=0
+
+[3004sub8]
+ParameterName=Rest Linux updater
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x000F
+AccessType=wo
+DefaultValue=0
+PDOMapping=0
+
+[3004sub9]
+ParameterName=Get apt list output
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x000F
+AccessType=wo
 DefaultValue=0
 PDOMapping=0
 

@@ -514,6 +514,20 @@
       <CANopenSubObject subIndex="08" name="Refresh File Array" objectType="VAR" dataType="0x01" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
       <accessFunctionPreCode />
     </CANopenObject>
+    <CANopenObject index="3004" name="Linux Updater" objectType="REC" memoryType="RAM" dataType="0x05" accessType="rw" PDOmapping="no" defaultValue="" subNumber="10" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+      <description />
+      <CANopenSubObject subIndex="00" name="max sub-index" objectType="VAR" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="9" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="01" name="Current state" objectType="VAR" dataType="0x04" accessType="ro" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="02" name="Updates available" objectType="VAR" dataType="0x07" accessType="ro" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="03" name="Current update file" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="04" name="Error Message" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="05" name="Add update file" objectType="VAR" dataType="0x0f" accessType="wo" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="06" name="Start update" objectType="VAR" dataType="0x0f" accessType="wo" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="07" name="Emergency Stop update" objectType="VAR" dataType="0x0f" accessType="wo" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="08" name="Rest Linux updater" objectType="VAR" dataType="0x0f" accessType="wo" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="09" name="Get apt list output" objectType="VAR" dataType="0x0f" accessType="wo" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <accessFunctionPreCode />
+    </CANopenObject>
   </CANopenObjectList>
   <other>
     <file fileName="Template_objDict.xml" fileCreator="Ryan Medick" fileCreationDate="11-07-2019" fileCreationTime="11:32AM" fileModifedBy="" fileMotifcationDate="11-07-2019" fileModificationTime="11:32AM" fileVersion="0" fileRevision="0" exportFolder="/home/ryan/PSAS/oresat-linux/CANdaemon/src/app_template/source/objDict" EdsFile="/home/ryan/PSAS/oresat-linux/CANdaemon/src/app_template/source/objDict/Template_objDict.eds" />

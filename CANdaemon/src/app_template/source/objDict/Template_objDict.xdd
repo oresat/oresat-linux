@@ -2895,6 +2895,94 @@
             </denotation>
             <defaultValue value="0" />
           </parameter>
+          <parameter uniqueID="UID_PARAM_3004" access="readWrite">
+            <label lang="en">Linux Updater</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300400" access="read">
+            <label lang="en">max sub-index</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="9" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300401" access="read">
+            <label lang="en">Current state</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="0" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300402" access="read">
+            <label lang="en">Updates available</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="0" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300403" access="read">
+            <label lang="en">Current update file</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="0" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300404" access="read">
+            <label lang="en">Error Message</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="0" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300405" access="write">
+            <label lang="en">Add update file</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="0" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300406" access="write">
+            <label lang="en">Start update</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="0" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300407" access="write">
+            <label lang="en">Emergency Stop update</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="0" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300408" access="write">
+            <label lang="en">Rest Linux updater</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="0" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300409" access="write">
+            <label lang="en">Get apt list output</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="0" />
+          </parameter>
         </parameterList>
       </ApplicationProcess>
     </ProfileBody>
@@ -3303,6 +3391,18 @@
             <CANopenSubObject subIndex="0006" name="Files Available" objectType="7" dataType="0007" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300306" />
             <CANopenSubObject subIndex="0007" name="Overflow" objectType="7" dataType="0007" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300307" />
             <CANopenSubObject subIndex="0008" name="Refresh File Array" objectType="7" dataType="0001" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300308" />
+          </CANopenObject>
+          <CANopenObject index="3004" name="Linux Updater" objectType="9" dataType="0005" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3004" subNumber="10">
+            <CANopenSubObject subIndex="0000" name="max sub-index" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300400" />
+            <CANopenSubObject subIndex="0001" name="Current state" objectType="7" dataType="0004" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300401" />
+            <CANopenSubObject subIndex="0002" name="Updates available" objectType="7" dataType="0007" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300402" />
+            <CANopenSubObject subIndex="0003" name="Current update file" objectType="7" dataType="000F" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300403" />
+            <CANopenSubObject subIndex="0004" name="Error Message" objectType="7" dataType="000F" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300404" />
+            <CANopenSubObject subIndex="0005" name="Add update file" objectType="7" dataType="000F" lowLimit="" highLimit="" accessType="wo" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300405" />
+            <CANopenSubObject subIndex="0006" name="Start update" objectType="7" dataType="000F" lowLimit="" highLimit="" accessType="wo" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300406" />
+            <CANopenSubObject subIndex="0007" name="Emergency Stop update" objectType="7" dataType="000F" lowLimit="" highLimit="" accessType="wo" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300407" />
+            <CANopenSubObject subIndex="0008" name="Rest Linux updater" objectType="7" dataType="000F" lowLimit="" highLimit="" accessType="wo" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300408" />
+            <CANopenSubObject subIndex="0009" name="Get apt list output" objectType="7" dataType="000F" lowLimit="" highLimit="" accessType="wo" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300409" />
           </CANopenObject>
         </CANopenObjectList>
         <dummyUsage>

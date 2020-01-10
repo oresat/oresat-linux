@@ -129,7 +129,7 @@
 /*******************************************************************************
    OBJECT DICTIONARY
 *******************************************************************************/
-   #define CO_OD_NoOfElements             52
+   #define CO_OD_NoOfElements             53
 
 
 /*******************************************************************************
@@ -215,6 +215,18 @@
                UNSIGNED32     overflow;
                BOOLEAN        refreshFileArray;
                }              OD_sendFileControl_t;
+/*3004    */ typedef struct {
+               UNSIGNED8      maxSubIndex;
+               INTEGER32      currentState;
+               UNSIGNED32     updatesAvailable;
+               DOMAIN         currentUpdateFile;
+               DOMAIN         errorMessage;
+               DOMAIN         addUpdateFile;
+               DOMAIN         startUpdate;
+               DOMAIN         emergencyStopUpdate;
+               DOMAIN         restLinuxUpdater;
+               DOMAIN         getAptListOutput;
+               }              OD_linuxUpdater_t;
 
 /*******************************************************************************
    TYPE DEFINITIONS FOR OBJECT DICTIONARY INDEXES
@@ -715,6 +727,20 @@
         #define OD_3003_7_sendFileControl_overflow                  7
         #define OD_3003_8_sendFileControl_refreshFileArray          8
 
+/*3004 */
+        #define OD_3004_linuxUpdater                                0x3004
+
+        #define OD_3004_0_linuxUpdater_maxSubIndex                  0
+        #define OD_3004_1_linuxUpdater_currentState                 1
+        #define OD_3004_2_linuxUpdater_updatesAvailable             2
+        #define OD_3004_3_linuxUpdater_currentUpdateFile            3
+        #define OD_3004_4_linuxUpdater_errorMessage                 4
+        #define OD_3004_5_linuxUpdater_addUpdateFile                5
+        #define OD_3004_6_linuxUpdater_startUpdate                  6
+        #define OD_3004_7_linuxUpdater_emergencyStopUpdate          7
+        #define OD_3004_8_linuxUpdater_restLinuxUpdater             8
+        #define OD_3004_9_linuxUpdater_getAptListOutput             9
+
 /*******************************************************************************
    STRUCTURES FOR VARIABLES IN DIFFERENT MEMORY LOCATIONS
 *******************************************************************************/
@@ -772,6 +798,7 @@ struct sCO_OD_RAM{
 /*3001      */ OD_receiveFile_t receiveFile;
 /*3002      */ DOMAIN          sendFileList[127];
 /*3003      */ OD_sendFileControl_t sendFileControl;
+/*3004      */ OD_linuxUpdater_t linuxUpdater;
 
                UNSIGNED32     LastWord;
 };
@@ -944,4 +971,7 @@ extern struct sCO_OD_EEPROM CO_OD_EEPROM;
 
 /*3003, Data Type: sendFileControl_t */
         #define OD_sendFileControl                                  CO_OD_RAM.sendFileControl
+
+/*3004, Data Type: linuxUpdater_t */
+        #define OD_linuxUpdater                                     CO_OD_RAM.linuxUpdater
 
