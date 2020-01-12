@@ -52,6 +52,8 @@ SOURCES =	$(COMMON_SRC)/main.c                \
 		$(COMMON_SRC)/app_OD_helpers.c      \
 		$(COMMON_SRC)/CO_OD_storage.c       \
 		$(COMMON_SRC)/CO_Linux_tasks.c      \
+		$(COMMON_SRC)/updater.c      	    \
+		$(COMMON_SRC)/error_assert_handlers.c   \
 		$(STACK_SRC)/crc16-ccitt.c          \
 		$(STACK_SRC)/CO_SDO.c               \
 		$(STACK_SRC)/CO_Emergency.c         \

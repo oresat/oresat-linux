@@ -2,12 +2,16 @@
  *
  */
 
-#include "updaer.h"
+#include "CANopen.h"
+#include "CO_driver.h"
+#include "updater.h"
+#include "error_assert_handlers.h"
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <systemd/sd-bus.h>
+#include <signal.h>
 
 
 #define INTERFACE_NAME  "org.OreSat.Updater"
@@ -30,33 +34,15 @@ static char error_message[ERROR_MESSAGE_SIZE] = "\0";
 
 
 /******************************************************************************/
-void dbusError(int r, char* err) {
-    if (r < 0)
-        fprintf(stderr, "%s %s\n", err, strerror(-r));
-    return;
-}
-
-
-void dbusErrorExit(int r, char* err) {
-    if (r < 0) {
-        fprintf(stderr, "%s %s\n", err, strerror(-r));
-        exit(0);
-    }
-    return;
-}
-
-
-/******************************************************************************/
 void updater_programStart(void){
     sd_bus_error err = SD_BUS_ERROR_NULL;
     int r;
 
     /* Connect to the bus */
     r = sd_bus_open_system(&bus);
-    dbusError(r, "Failed to connect to system bus:");
-    
+
     /* set computer name on linux updater */
-    char computer_name[50] = "StarTracker"; // TODO get computer_name
+    char computer_name[] = "StarTracker"; // TODO get computer_name
     r = sd_bus_set_property(bus, 
                             BUS_NAME, 
                             OBJECT_PATH, 
@@ -65,11 +51,10 @@ void updater_programStart(void){
                             &err, 
                             "s", 
                             computer_name);
-    dbusError(r, "Set property failed.");
-    
+
     sd_bus_error_free(&err);
 
-    CO_OD_configure(CO->SDO[0], 0x3004, CB_ODF_3004, NULL, 0, 0U);
+    CO_OD_configure(CO->SDO[0], 0x3004, CO_ODF_3004, NULL, 0, 0U);
 
     return;
 }
@@ -96,20 +81,31 @@ void updater_programAsync(uint16_t timer1msDiff){
 /******************************************************************************/
 void updater_program1ms(void){
     sd_bus_error err = SD_BUS_ERROR_NULL;
-    sd_bus_message *mess;
+    sd_bus_message *mess = NULL;
     int r;
 
      /* decode dbus property */
     r = sd_bus_get_property(bus, BUS_NAME, OBJECT_PATH, INTERFACE_NAME, "Status",  &err, &mess, "i");
-    dbusError(r, "Get property failed.");
+    if(r < 0) 
+        /* since this is the 1st dbus call and it returned an error, 
+         * there is no reason to call anything else */
+        goto end;
+
     r = sd_bus_message_read(mess, "i", &current_state);
-    dbusError(r, "Read message failed.");
+    
+    if(mess != NULL)
+        sd_bus_message_unref(mess);
+    sd_bus_error_free(&err);
 
     r = sd_bus_get_property(bus, BUS_NAME, OBJECT_PATH, INTERFACE_NAME, "CurrentUpdateFile",  &err, &mess, "s");
-    dbusError(r, "Get property failed.");
     r = sd_bus_message_read(mess, "s", &current_state);
-    dbusError(r, "Read message failed.");
     
+    end:
+
+    sd_bus_error_free(&err);
+    if(mess != NULL)
+        sd_bus_message_unref(mess);
+
     return;
 }
 
@@ -117,15 +113,12 @@ void updater_program1ms(void){
 /******************************************************************************/
 
 
-CO_SDO_abortCode_t CB_ODF_3004(CO_ODF_arg_t *ODF_arg) {
-    file_buffer_t *odFileBuffer;
+CO_SDO_abortCode_t CO_ODF_3004(CO_ODF_arg_t *ODF_arg) {
     CO_SDO_abortCode_t ret = CO_SDO_AB_NONE;
     sd_bus_error err = SD_BUS_ERROR_NULL;
     sd_bus_message *mess;
     int r;
-    bool temp_bool;
-
-    APP_LOCK_ODF();
+    bool_t temp_bool;
 
     switch(ODF_arg->subIndex) {
         case 1 : /* current state */
@@ -173,11 +166,16 @@ CO_SDO_abortCode_t CB_ODF_3004(CO_ODF_arg_t *ODF_arg) {
             break;
 
         case 5 : /* give updater new file, will not update with it yet */
-            bool temp_bool;
             
             if(ODF_arg->reading == true)
                 ret = CO_SDO_AB_WRITEONLY; /* can't read parameters, write only */
             else {
+                /* dbus interface not up */
+                if(bus == NULL) {
+                    ret = CO_SDO_AB_GENERAL;
+                    break;
+                }
+
                 if(ODF_arg->dataLength > FILE_PATH_MAX_LENGTH) {
                     ret = CO_SDO_AB_GENERAL; /* file path to big */
                     break;
@@ -198,7 +196,7 @@ CO_SDO_abortCode_t CB_ODF_3004(CO_ODF_arg_t *ODF_arg) {
                                        OBJECT_PATH,
                                        INTERFACE_NAME,
                                        "AddUpdateFile",
-                                       &error,
+                                       &err,
                                        &mess,
                                        "s",
                                        new_update_file);
@@ -223,7 +221,7 @@ CO_SDO_abortCode_t CB_ODF_3004(CO_ODF_arg_t *ODF_arg) {
                                        OBJECT_PATH,
                                        INTERFACE_NAME,
                                        "StartUpdate",
-                                       &error,
+                                       &err,
                                        &mess,
                                        NULL);
 
@@ -317,8 +315,6 @@ CO_SDO_abortCode_t CB_ODF_3004(CO_ODF_arg_t *ODF_arg) {
     }
 
     ODF_arg->lastSegment = true;
-
-    APP_UNLOCK_ODF();
 
     return ret;
 }

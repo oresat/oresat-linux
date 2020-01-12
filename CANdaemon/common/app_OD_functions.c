@@ -7,6 +7,7 @@
 #include "CO_driver.h"
 #include "app_OD_functions.h"
 #include "app_OD_helpers.h"
+#include "error_assert_handlers.h"
 #include <string.h>
 #include <stdio.h>
 #include <sys/types.h>

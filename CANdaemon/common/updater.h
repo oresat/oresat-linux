@@ -3,18 +3,13 @@
  */
 
 
-#ifndef CO_APPLICATION_H
-#define CO_APPLICATION_H
+#ifndef UPDATER_H
+#define UPDATER_H
 
 
+#include "CANopen.h"
+#include "CO_driver.h"
 #include <stdint.h>
-
-
-/*
- * Handle the dbus errors
- */
-void dbusError(int r, char* err);
-void dbusErrorExit(int r, char* err);
 
 
 /**
@@ -54,7 +49,7 @@ void updater_program1ms(void);
 /**
  * Callbacks for getting the latest image from the test camera process and adding to the send bufffer.
  */
-CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg);
+CO_SDO_abortCode_t CO_ODF_3004(CO_ODF_arg_t *ODF_arg);
 
 
 #endif

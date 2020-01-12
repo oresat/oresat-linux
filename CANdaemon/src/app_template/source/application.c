@@ -29,6 +29,7 @@
 #include "app_OD_functions.h"
 #include "app_OD_helpers.h"
 #include "CANopen.h"
+#include "error_assert_handlers.h"
 #include "CO_driver.h"
 #include <stdio.h>
 #include <stdint.h>
@@ -56,23 +57,6 @@ static sd_bus           *bus = NULL;
 static void* signal_thread(void *arg);
 static int file_transfer_signal_cb(sd_bus_message *, void *, sd_bus_error *);
 static int data_signal_cb(sd_bus_message *, void *, sd_bus_error *);
-
-
-/******************************************************************************/
-void dbusError(int r, char* err) {
-    if (r < 0)
-        fprintf(stderr, "%s %s\n", err, strerror(-r));
-    return;
-}
-
-
-void dbusErrorExit(int r, char* err) {
-    if (r < 0) {
-        fprintf(stderr, "%s %s\n", err, strerror(-r));
-        exit(0);
-    }
-    return;
-}
 
 
 /******************************************************************************/

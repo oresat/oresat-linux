@@ -34,13 +34,6 @@
 #include <stdint.h>
 
 
-/*
- * Handle the dbus errors
- */
-void dbusError(int r, char* err);
-void dbusErrorExit(int r, char* err);
-
-
 /**
  * Function is called on program startup.
  */

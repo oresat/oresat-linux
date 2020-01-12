@@ -59,23 +59,6 @@ static int data_signal_cb(sd_bus_message *, void *, sd_bus_error *);
 
 
 /******************************************************************************/
-void dbusError(int r, char* err) {
-    if (r < 0)
-        fprintf(stderr, "%s %s\n", err, strerror(-r));
-    return;
-}
-
-
-void dbusErrorExit(int r, char* err) {
-    if (r < 0) {
-        fprintf(stderr, "%s %s\n", err, strerror(-r));
-        exit(0);
-    }
-    return;
-}
-
-
-/******************************************************************************/
 void app_programStart(void){
     int r;
     endProgram = 0;

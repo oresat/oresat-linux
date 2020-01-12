@@ -4,10 +4,33 @@
 
 
 #include "CO_driver.h"
-#include "error_asser_functions.h"
+#include "error_assert_handlers.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+
+/******************************************************************************/
+
+
+void dbusError(int r, char* err) {
+    if (r < 0)
+        fprintf(stderr, "%s %s\n", err, strerror(-r));
+    return;
+}
+
+
+void dbusErrorExit(int r, char* err) {
+    if (r < 0) {
+        fprintf(stderr, "%s %s\n", err, strerror(-r));
+        exit(0);
+    }
+    return;
+}
+
+
+/******************************************************************************/
+/*
 
 
 void error(char* err) {
@@ -51,4 +74,4 @@ void assertExit(bool_t r, char* err) {
     }
     return;
 }
-
+*/
