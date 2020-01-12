@@ -101,32 +101,49 @@ class LinuxUpdater(object):
     # dbus properties
     @property
     def Status(self):
-        return self.current_state
+        self.lock.acquire()
+        rv = self.current_state
+        self.lock.release()
+        return rv
 
 
     @property
     def ErrorMessage(self):
-        return self.error_message
+        self.lock.acquire()
+        rv = self.error_message
+        self.lock.release()
+        return rv
 
 
     @property
     def ComputerName(self):
-        return self.computer_name
+        self.lock.acquire()
+        rv = self.computer_name
+        self.lock.release()
+        return rv
 
 
     @ComputerName.setter
     def ComputerName(self, value):
+        self.lock.acquire()
         self.computer_name = value
+        self.lock.release()
 
 
     @property
     def CurrentUpdateFile(self):
-        return self.update_file_name
+        self.lock.acquire()
+        rv = self.update_file_name
+        self.lock.release()
+        return rv
 
 
     @property
     def UpdatesAvailable(self):
-        return self.available_updates
+        self.lock.acquire()
+        rv = self.available_updates
+        self.lock.release()
+        return rv
 
 
     # dbus methods
@@ -136,14 +153,16 @@ class LinuxUpdater(object):
             self.error("not an absolute path: " + file_path)
             return False
         
+        self.lock.acquire()
         ret = shutil.copy(file_path, UPDATES_DIR)
         
         if UPDATES_DIR in ret:
             self.available_updates = len(os.listdir(UPDATES_DIR)) # not += 1
-            # therefor it will handle file overrides
-            # file overrides should not happen
+            # this will handle file overrides
+            self.lock.release()
             return True
         
+        self.lock.release()
         return False # failed to copy
 
 
@@ -172,12 +191,12 @@ class LinuxUpdater(object):
         """ usefull error method """
         self.lock.acquire()
         self.current_state = State.ERROR.value
-        self.lock.release()
         self.error_message = err
 
         #reset fields
         self.update_file_name = ""
         self.update_file_path = ""
+        self.lock.release()
 
         self.Error(err) # send out error signal
 
@@ -191,6 +210,8 @@ class LinuxUpdater(object):
         # goto error state
         self.error(err)
 
+        self.lock.acquire()
+
         # remove all updater files 
         shutil.rmtree(WORKING_DIR)
         shutil.rmtree(UPDATES_DIR)
@@ -200,6 +221,8 @@ class LinuxUpdater(object):
         #reset fields not reset by error()
         self.available_updates = 0
         self.update_instruction = {}
+
+        self.lock.release()
 
         # TODO revert update
 
