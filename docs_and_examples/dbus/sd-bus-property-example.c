@@ -42,7 +42,7 @@ void dbusErrorExit(int r, char* err) {
 
 
 int client(void) {
-    sd_bus_error err;
+    sd_bus_error err = SD_BUS_ERROR_NULL;
     sd_bus_message *mess = NULL;
     double test_double = 0.0;
     uint32_t test_int = 0;
@@ -55,34 +55,46 @@ int client(void) {
     while(endProgram == 0) {
         /* check for dbus property */
         //  int sd_bus_get_property(sd_bus *bus, const char *destination, const char *path, const char *interface, const char *member, sd_bus_error *ret_error, sd_bus_message **reply, const char *type);
-        r = sd_bus_get_property(            bus,                BUS_NAME,      OBJECT_PATH,        INTERFACE_NAME,            "Test1",                    &err,                  &mess,              "d");
+        r = sd_bus_get_property(bus,BUS_NAME, OBJECT_PATH, INTERFACE_NAME, "Test1", &err, &mess, "d");
         dbusError(r, "Get property failed.");
 
-        /* decode dbus property */
-        r = sd_bus_message_read(mess, "d", &test_double);
-        dbusError(r, "Read message failed.");
+        if (r >= 0) {
+            /* decode dbus property */
+            r = sd_bus_message_read(mess, "d", &test_double);
+            dbusError(r, "Read message failed.");
 
-        printf("%f\n", test_double);
+            printf("%f\n", test_double);
+        }
 
         /* free message */
+        sd_bus_error_free(&err);
+        err = SD_BUS_ERROR_NULL;
         sd_bus_message_unref(mess);
         mess = NULL;
 
         r = sd_bus_get_property(bus, BUS_NAME, OBJECT_PATH, INTERFACE_NAME, "Test2",  &err, &mess, "u");
         dbusError(r, "Get property failed.");
 
-        /* decode dbus property */
-        r = sd_bus_message_read(mess, "u", &test_int);
-        dbusError(r, "Read message failed.");
+        if (r >= 0) {
+            /* decode dbus property */
+            r = sd_bus_message_read(mess, "u", &test_int);
+            dbusError(r, "Read message failed.");
 
-        printf("%d\n", test_int);
+            printf("%d\n", test_int);
+        }
 
         /* free message */
+        sd_bus_error_free(&err);
+        err = SD_BUS_ERROR_NULL;
         sd_bus_message_unref(mess);
         mess = NULL;
 
-        r = sd_bus_set_property(bus, BUS_NAME, OBJECT_PATH, INTERFACE_NAME, "Test2",  &err, "u", 10);
-        dbusError(r, "Set property failed.");
+        if (r >= 0) {
+            r = sd_bus_set_property(bus, BUS_NAME, OBJECT_PATH, INTERFACE_NAME, "Test2",  &err, "u", 10);
+            dbusError(r, "Set property failed.");
+        }
+
+        printf("\n");
 
         sleep(WAIT_TIME);
     }
