@@ -86,17 +86,10 @@ endif
 ##############################################################################
 # Compile
 
-CANOPENCOMM_PATH="../../CANopenComm/"
-
 OBJS = $(SOURCES:%.c=%.o)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@ $(DFLAGS)
-
-all: candaemon
-	$(MAKE) -C $(CANOPENCOMM_PATH) all
-	bash -c "cp $(CANOPENCOMM_PATH)canopend ."
-	bash -c "cp $(CANOPENCOMM_PATH)canopencomm ."
 
 candaemon: $(OBJS)
 	bash -c "echo - > od_storage"
@@ -104,12 +97,4 @@ candaemon: $(OBJS)
 	$(CC) $(CFLAGS) $(LFLAGS) $(INCLUDE_DIRS) $^ -o $@
 
 clean:
-	rm -rf $(OBJS) candaemon canopend canopencomm od_storage od_storage_auto
-	$(MAKE) -C $(CANOPENCOMM_PATH) clean
-
-help:
-	$(info Make Options:)
-	$(info - candaeamon: canopend with dbus interfaces)
-	$(info - canopend: default canopend using candaemon object dictionary)
-	$(info - canopencomm: default canopencomm from canopen)
-	$(info - clean: remove all .o files and binaries)
+	rm -rf $(OBJS) candaemon od_storage od_storage_auto
