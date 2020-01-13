@@ -145,7 +145,7 @@ class LinuxUpdater(object):
 
         if(self._current_state == State.SLEEP.value):
             self.__lock.acquire()
-            self._current_state = State.UPDATE.value)
+            self._current_state = State.UPDATE.value
             self.__lock.release()
         else:
             rv = False
@@ -292,7 +292,7 @@ class LinuxUpdater(object):
         for p in pkgs:
             if not instal_pkg(WORKING_DIR + p):
                 self.__update_error("install pkg failed: " + p)
-                break False
+                return False
 
         return True
 
@@ -307,7 +307,7 @@ class LinuxUpdater(object):
         for p in pkgs:
             if not remove_pkg(WORKING_DIR + p):
                 self.__update_error("remove pkg failed: " + p)
-                break False
+                return False
 
         return True
 

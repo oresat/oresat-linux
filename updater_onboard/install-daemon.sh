@@ -18,7 +18,7 @@ python3 -m py_compileall updater_daemon.py updater.py
 
 echo 'Copying python scripts to /opt/'$daemon_name
 sudo mkdir -p $install_path
-sudo cp __init__/*.pyc $install_path
+sudo cp ./__pycache__/*.pyc $install_path
 
 echo 'Copying daemon service file to /etc/systemd/system/'
 sudo cp ./$daemon_name.service /etc/systemd/system/
