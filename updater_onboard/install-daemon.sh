@@ -11,22 +11,20 @@ fi
 daemon_name='oresat-linux-updater'
 install_path='/opt/'$daemon_name'/'
 
-sudo rm -rf $install_path
+echo 'stoping '$daemon_name' deamon if it is running'
+sudo systemctl stop $daemon_name.service
 
-echo 'Compile bytecode'
-python3 -m py_compileall updater_daemon.py updater.py
+sudo rm -rf $install_path
 
 echo 'Copying python scripts to /opt/'$daemon_name
 sudo mkdir -p $install_path
-sudo cp ./__pycache__/*.pyc $install_path
+sudo cp updater_daemon.py updater.py $install_path
 
 echo 'Copying daemon service file to /etc/systemd/system/'
 sudo cp ./$daemon_name.service /etc/systemd/system/
 
-echo 'Copying dbus config file to /etc/dbus-1/system.d/'
-sudo cp ./org.OreSat.Updater.conf /etc/dbus-1/system.d/
-
-sudo touch /run/$daemon_name.pid
+echo 'Copying dbus config file to /usr/share/dbus-1/system.d/'
+sudo cp ./org.OreSat.Updater.conf /usr/share/dbus-1/system.d/
 
 sleep 1
 

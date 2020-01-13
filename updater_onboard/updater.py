@@ -182,7 +182,6 @@ class LinuxUpdater(object):
     def end(self):
         """ Use to stop all threads nicely """
         self.__running = False
-        self._current_state(State.STOP.value) # stop if currently updating
         if self.__working_thread.is_alive():
             self.__working_thread.join()
 

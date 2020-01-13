@@ -5,8 +5,8 @@ Description=daemon for OreSat Linux Updater.
 Type=forking
 Restart=always
 PIDFile=/run/oresat-linux-updater.pid
-ExecStart=/usr/bin/python3 /opt/oresat-linux-updater/updater_daemon.pyc start
-ExecStop=/usr/bin/python3 /opt/oresat-linux-updater/updater_daemon.pyc stop
+ExecStart=/usr/bin/python3 /opt/oresat-linux-updater/updater_daemon.py start
+ExecStop=/usr/bin/python3 /opt/oresat-linux-updater/updater_daemon.py stop
 
 [Install]
 WantedBy=multi-user.target
