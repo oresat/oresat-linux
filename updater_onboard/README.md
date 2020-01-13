@@ -16,7 +16,7 @@ This is daemon is available on on all OreSat Linux board and will allow any debi
 | AvailableArchiveFiles | Number of archive file available.                 | Uint32    | Readonly      |
 
 ### States Machine
-![]("https://github.com/oresat/oresat-linux/updater_onboard/docs/LinuxUpdaterStateMachine.jpg")
+![]("https://github.com/oresat/oresat-linux/updater_onboard/UpdaterStateMachine.jpg")
 - **Sleep** - Initial state that will be listening for commands.
 - **Pre-Update** - If there are archive files available, the updater will open the oldest one, and load the yaml instrution file.
 - **Update** - Parses the instructions and install deb packages it says to.
