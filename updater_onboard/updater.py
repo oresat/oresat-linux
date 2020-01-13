@@ -18,8 +18,7 @@ WORKING_DIR = '/tmp/oresat-linux-updater/working/'
 class State(Enum):
     FAILED = 0
     SLEEP = 1
-    PREUPDATE = 2 
-    UPDATE = 3
+    UPDATE = 2
 
 
 class LinuxUpdater(object):
@@ -58,12 +57,10 @@ class LinuxUpdater(object):
         # set local fields
         self._current_state = State.SLEEP.value
         self._error_message = ""
+        self._archive_file_name = ""
         self._available_archive_files = len(os.listdir(UPDATES_DIR))
         self.__lock = threading.Lock()
         self.__running = True
-        self.__archive_file_name = ""
-        self.__archive_file_path = ""
-        self.__archive_instruction = {}
         self.__working_thread = threading.Thread(target=self.__working_loop)
 
         # start working thread
@@ -77,6 +74,7 @@ class LinuxUpdater(object):
 
     # ------------------------------------------------------------------------
     # dbus properties
+
 
     @property
     def CurrentState(self):
@@ -96,33 +94,35 @@ class LinuxUpdater(object):
     @ComputerName.setter
     def ComputerName(self, value):
         self.__lock.acquire()
-        self._computer_name = value
+        self._computer_name = value.lower()
         self.__lock.release()
 
 
     @property
     def CurrentArchiveFile(self):
-        return self.__archive_file_name
+        return self._archive_file_name
 
 
     @property
     def AvailableArchiveFiles(self):
         return self._available_archive_files
 
+
     # ------------------------------------------------------------------------
     # dbus methods
+
 
     def AddUpdateFile(self, file_path):
         """ copies file into UPDATES_DIR """
         if(file_path[0] != '/'):
-            self.error("not an absolute path: " + file_path)
+            self.__update_error("not an absolute path: " + file_path)
             return False
 
         # TODO fix this
         """
         # check for valid update file
         if not re.match(r"(update-\d\d\d\d-\d\d-\d\d-\d\d-\d\d\.tar\.gz)", self.__archive_file_path):
-            self.error("Not a valid update file")
+            self.__update_error("Not a valid update file")
             return
         """
 
@@ -145,7 +145,7 @@ class LinuxUpdater(object):
 
         if(self._current_state == State.SLEEP.value):
             self.__lock.acquire()
-            self._current_state = State.PREUPDATE.value)
+            self._current_state = State.UPDATE.value)
             self.__lock.release()
         else:
             rv = False
@@ -157,19 +157,26 @@ class LinuxUpdater(object):
         """ To stop updaing """
         return True
 
+
     # ------------------------------------------------------------------------
     # non-dbus class methods
+
 
     def __working_loop(self):
         while(self.__running):
             if self._current_state == State.FAILED.value:
                 self.__failed_state()
-            elif self._current_state == State.PREUPDATE.value:
-                self.__pre_update()
             elif self._current_state == State.UPDATE.value:
                 self.update()
             else:
                 time.sleep(1)
+
+
+    def __update_error(self, message):
+        self.__lock.acquire()
+        self._error_message = message
+        self._current_state = State.ERROR.value
+        self.__lock.release()
 
 
     def end(self):
@@ -194,11 +201,9 @@ class LinuxUpdater(object):
         Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
         Path(UPDATES_DIR).mkdir(parents=True, exist_ok=True) 
         
-        #reset fields not reset by error()
+        #reset fields not reset by __update_error()
         self._available_archive_files = 0
-        self.__archive_instruction = {}
-        self.__archive_file_name = ""
-        self.__archive_file_path = ""
+        self._archive_file_name = ""
 
         self.__lock.release()
 
@@ -209,99 +214,102 @@ class LinuxUpdater(object):
         self.__lock.release()
 
 
-    def __pre_update_state(self):
+    def __update_state(self):
         """ 
         Load oldest update file if one exist 
         Update thread function.
         Finds the oldest update file and starts update 
         """
 
-        self.__lock.acquire()
+        archive_instruction = {}
+        archive_file_path = ""
 
         # see if any update file exist
         list_of_files = os.listdir(UPDATES_DIR)
         if not list_of_files:
-            self._current_state State.SLEEP.value)
+            self.__lock.acquire()
+            self._current_state = State.SLEEP.value
             self.__lock.release()
             return # done, empty, no update files
 
-        self.__archive_file_name = list_of_files[0] # get 1st file
-        self.__archive_file_path = UPDATES_DIR + self.__archive_file_name
+        self.__lock.acquire()
+        self._archive_file_name = list_of_files[0] # get 1st file
+        archive_file_path = UPDATES_DIR + self._archive_file_name
+        self.__lock.release()
 
         # copy file into working dir
-        ret_path = shutil.copy(self.__archive_file_path, WORKING_DIR)
+        ret_path = shutil.copy(archive_file_path, WORKING_DIR)
         if UPDATES_DIR in ret_path:
-            self._current_state = State.FAILED.value
-            self._error_message = "Failed to copy into working dir"
-            self.__lock.release()
+            self.__update_error("Failed to copy into working dir")
             return
 
         # open_archive_file update file
         if not open_archive_file(ret_path):
-            self._current_state = State.FAILED.value
-            self._error_message = "Untar failed"
-            self.__lock.release()
+            self.__update_error("Open archive failed")
             return
 
         # load instructins file
         try:
             with open(WORKING_DIR + "instructions.yml", "r") as file_object:
                 # load instructions data into dictionary
-                self.__archive_instruction = yaml.safe_load(file_object)
-                if not self.__archive_instruction:
-                    self._current_state = State.FAILED.value
-                    self._error_message = "Not a valid yml file"
-                    self.__lock.release()
+                archive_instruction = yaml.safe_load(file_object)
+                if not archive_instruction:
+                    self.__update_error("Not a valid yml file")
                     return
         except IOError:
-            self._current_state = State.FAILED.value
-            self._error_message = "Instructions file not accessible"
-            self.__lock.release()
+            self.__update_error("Instructions file not accessible")
             return
-        
-        self._current_state = new_state
-        self.__lock.release()
-        return
-
-
-    def __update_state(self):
-        # install packages
-        install_string = self._computer_name + "-install-pkgs"
-        if install_string in self.__archive_instruction: # string key in dictionary
-            pkgs = self.__archive_instruction[install_string]
-            for p in pkgs:
-                if not instal_pkg(WORKING_DIR + p):
-                    self.__lock.acquire()
-                    self._error_message = "install pkg failed: " + p
-                    self.__lock.release()
-                    return
 
         # remove packages
-        remove_string = self._computer_name + "-remove-pkgs"
-        if remove_string in self.__archive_instruction: # string key in dictionary
-            pkgs = self.__archive_instruction[remove_string]
-            for p in pkgs:
-                if not remove_pkg(WORKING_DIR + p):
-                    self.__lock.acquire()
-                    self._error_message = "remove pkg failed: " + p
-                    self._current_state = State.SLEEP.value
-                    self.__lock.release()
-                    return
+        self.__parse_remove_instructions("all", archive_instruction)
+        self.__parse_remove_instructions(self.computer_name, archive_instruction)
+
+        # install packages
+        self.__parse_install_instructions("all", archive_instruction)
+        self.__parse_install_instructions(self.computer_name, archive_instruction)
 
         self.__lock.acquire()
 
         # clear working dir and remove update deb pkg
         shutil.rmtree(WORKING_DIR)
         Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
-        os.remove_pkg(self.__archive_file_path)
-        self.__archive_file_name = ""
-        self.__archive_file_path = ""
+        os.remove_pkg(archive_file_path)
+        self._archive_file_name = ""
         self._available_archive_files -= 1
-        self.__archive_instruction = {}
         self._current_state = State.SLEEP.value
         
         self.__lock.release()
         return
+
+
+    def __parse_install_instructions(self, computer_name, archive_instruction):
+        """ follows the insstruction for computr name in the archive instruction """
+        install_string = name + "-install-pkgs"
+        if install_string not in archive_instruction: 
+            return False # no instruction for that computer name
+
+        pkgs = archive_instruction[install_string]
+        for p in pkgs:
+            if not instal_pkg(WORKING_DIR + p):
+                self.__update_error("install pkg failed: " + p)
+                break False
+
+        return True
+
+
+    def __parse_remove_instructions(self, computer_name, archive_instruction):
+        """ follows the insstruction for computr name in the archive instruction """
+        remove_string = name + "-remove-pkgs"
+        if remove_string not in archive_instruction: 
+            return False # no instruction for that computer name
+
+        pkgs = archive_instruction[remove_string]
+        for p in pkgs:
+            if not remove_pkg(WORKING_DIR + p):
+                self.__update_error("remove pkg failed: " + p)
+                break False
+
+        return True
 
 
 def instal_pkg(file_path):
