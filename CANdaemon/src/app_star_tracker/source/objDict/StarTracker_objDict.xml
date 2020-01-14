@@ -364,7 +364,7 @@
       <CANopenSubObject subIndex="03" name="Save File" objectType="VAR" dataType="0x05" accessType="wo" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
       <accessFunctionPreCode />
     </CANopenObject>
-    <CANopenObject index="3002" name="Senf File List" objectType="ARRAY" memoryType="RAM" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" subNumber="128" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+    <CANopenObject index="3002" name="Senf File List" objectType="ARRAY" memoryType="RAM" dataType="0x0f" accessType="rw" PDOmapping="no" defaultValue="" subNumber="128" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
       <description />
       <CANopenSubObject subIndex="00" name="max sub-index" objectType="VAR" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="127" TPDOdetectCOS="false" />
       <CANopenSubObject subIndex="01" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
@@ -496,7 +496,7 @@
       <CANopenSubObject subIndex="7f" name="" objectType="VAR" dataType="0x0f" accessType="ro" PDOmapping="no" defaultValue="" TPDOdetectCOS="false" />
       <accessFunctionPreCode />
     </CANopenObject>
-    <CANopenObject index="3003" name="Send File Control" objectType="REC" memoryType="RAM" dataType="0x05" accessType="rw" PDOmapping="no" defaultValue="" subNumber="9" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+    <CANopenObject index="3003" name="Send File Control" objectType="REC" memoryType="RAM" dataType="0x00" accessType="rw" PDOmapping="no" defaultValue="" subNumber="9" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
       <description />
       <CANopenSubObject subIndex="00" name="max sub-index" objectType="VAR" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="8" TPDOdetectCOS="false" />
       <CANopenSubObject subIndex="01" name="File Pointer" objectType="VAR" dataType="0x05" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
@@ -519,9 +519,9 @@
     <CANopenObject index="3101" name="Orienation" objectType="REC" memoryType="RAM" dataType="0x00" accessType="rw" PDOmapping="no" defaultValue="" subNumber="4" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
       <description />
       <CANopenSubObject subIndex="00" name="max sub-index" objectType="VAR" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="3" TPDOdetectCOS="false" />
-      <CANopenSubObject subIndex="01" name="Rotation Y" objectType="VAR" dataType="0x03" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
-      <CANopenSubObject subIndex="02" name="Rotation Z" objectType="VAR" dataType="0x03" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
-      <CANopenSubObject subIndex="03" name="Rotation Camera" objectType="VAR" dataType="0x03" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="01" name="declination" objectType="VAR" dataType="0x04" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="02" name="right_ascension" objectType="VAR" dataType="0x04" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="03" name="orienation" objectType="VAR" dataType="0x04" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
       <accessFunctionPreCode />
     </CANopenObject>
   </CANopenObjectList>

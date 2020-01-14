@@ -219,9 +219,9 @@
                }              OD_starTrackerStatusControl_t;
 /*3101    */ typedef struct {
                UNSIGNED8      maxSubIndex;
-               INTEGER16      rotationY;
-               INTEGER16      rotationZ;
-               INTEGER16      rotationCamera;
+               INTEGER32      declination;
+               INTEGER32      right_ascension;
+               INTEGER32      orienation;
                }              OD_orienation_t;
 
 /*******************************************************************************
@@ -729,9 +729,9 @@
         #define OD_3101_orienation                                  0x3101
 
         #define OD_3101_0_orienation_maxSubIndex                    0
-        #define OD_3101_1_orienation_rotationY                      1
-        #define OD_3101_2_orienation_rotationZ                      2
-        #define OD_3101_3_orienation_rotationCamera                 3
+        #define OD_3101_1_orienation_declination                    1
+        #define OD_3101_2_orienation_right_ascension                2
+        #define OD_3101_3_orienation_orienation                     3
 
 /*******************************************************************************
    STRUCTURES FOR VARIABLES IN DIFFERENT MEMORY LOCATIONS

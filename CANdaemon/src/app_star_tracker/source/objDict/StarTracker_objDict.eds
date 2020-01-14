@@ -3267,28 +3267,28 @@ DefaultValue=3
 PDOMapping=0
 
 [3101sub1]
-ParameterName=Rotation Y
+ParameterName=declination
 ObjectType=0x7
 ;StorageLocation=RAM
-DataType=0x0003
+DataType=0x0004
 AccessType=rw
 DefaultValue=0
 PDOMapping=0
 
 [3101sub2]
-ParameterName=Rotation Z
+ParameterName=right_ascension
 ObjectType=0x7
 ;StorageLocation=RAM
-DataType=0x0003
+DataType=0x0004
 AccessType=rw
 DefaultValue=0
 PDOMapping=0
 
 [3101sub3]
-ParameterName=Rotation Camera
+ParameterName=orienation
 ObjectType=0x7
 ;StorageLocation=RAM
-DataType=0x0003
+DataType=0x0004
 AccessType=rw
 DefaultValue=0
 PDOMapping=0
