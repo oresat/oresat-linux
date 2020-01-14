@@ -3,7 +3,7 @@ This repo has all the general design and code for all 4 linux boards on OreSat. 
 
 All A8 onboard OreSat will run 3 processes; the CANdaemon, the updater, and the main process.
 
-![](https://github.com/oresat/oresat-linux/blob/master/docs_and_examples/drawio/OreSatLinuxDiagram.jpg)
+![](https://github.com/oresat/oresat-linux/blob/master/CANdaemon/docs/OreSatLinuxDiagram.jpg)
 
 ## Processes
 ### CANdaemon
