@@ -1,6 +1,6 @@
 candaemon
-candaemon-master
 canopencomm
 canopend
 *.o
 .ycm*
+.config

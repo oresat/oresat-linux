@@ -1,0 +1,11 @@
+[Unit]
+Description=CAN to dbus interface for all oresat daemons
+
+[Service]
+Type=forking
+PIDFile=/run/oresat-candaemon.pid
+ExecStart=/opt/candaemon
+Restart=on-failure
+
+[Install]
+WantedBy=milti-user.target
