@@ -57,8 +57,8 @@ The CANdaemon is [CANopenSocket], but with dbus interfaces to commicate with oth
 [StarTracker]:https://github.com/oresat/oresat-star-tracker
 [OreSatLive]:https://github.com/oresat/oresat-dxwifi-software
 
-<!-- References --> 
-[CAN-Wikipedia}:https://en.wikipedia.org/wiki/CAN_bus
+<!-- References -->
+[CAN-Wikipedia]:https://en.wikipedia.org/wiki/CAN_bus
 [CANopenSocket]:https://github.com/CANopenNode/CANopenSocket
 [DBus-Specs]:https://dbus.freedesktop.org/doc/dbus-specification.html
 [CANopen-Specs]:https://www.can-cia.org/groups/specifications/
