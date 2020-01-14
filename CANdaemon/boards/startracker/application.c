@@ -28,6 +28,7 @@
 #include "application.h"
 #include "app_OD_functions.h"
 #include "app_OD_helpers.h"
+#include "error_assert_handlers.h"
 #include "CANopen.h"
 #include "CO_driver.h"
 #include <stdio.h>
@@ -115,7 +116,7 @@ void app_program1ms(void){
     sd_bus_message_unref(mess);
     mess = NULL;
 
-    r = sd_bus_get_property(bus, BUS_NAME, OBJECT_PATH, INTERFACE_NAME, "ORI",  &err, "d");
+    r = sd_bus_get_property(bus, BUS_NAME, OBJECT_PATH, INTERFACE_NAME, "ORI",  &err, &mess, "d");
     if (r >= 0) {
         /* decode dbus property */
             r = sd_bus_message_read(mess, "d", &orientation);

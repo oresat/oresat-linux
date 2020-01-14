@@ -31,8 +31,8 @@ LFLAGS = -lrt -pthread $(shell pkg-config --libs libsystemd)
 STACK_SRC =     	./CANopenNode/stack
 CANOPENNODE_SRC = 	./CANopenNode
 COMMON_SRC = 		./common
-APP_SRC =		./board/$(BOARD)
-OBJDICT_SRC =           ./board/$(BOARD)/objDict
+APP_SRC =		./boards/$(BOARD)
+OBJDICT_SRC =           ./boards/$(BOARD)/objDict
 
 INCLUDE_DIRS =	-I$(STACK_SRC)		            \
 		-I$(CANOPENNODE_SRC)	            \
@@ -75,6 +75,10 @@ OBJS = $(SOURCES:%.c=%.o)
 	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@ $(DFLAGS)
 
 candaemon: $(OBJS)
+	@if [ ! -f .config ]; then \
+		exit 1; \
+	fi
+
 	bash -c "echo - > od_storage"
 	bash -c "echo - > od_storage_auto"
 	$(CC) $(CFLAGS) $(LFLAGS) $(INCLUDE_DIRS) $^ -o $@
