@@ -46,7 +46,7 @@ The CANdaemon is [CANopenSocket], but with dbus interfaces to commicate with oth
 - modify /boards/<new_board_name>/objDict with [libedssharp] as needed
 
 ## Useful References
-- [CAN Wikipedia]
+- [CAN-Wikipedia]
 - [CANopenSocket]
 - [DBus-Specs]
 - [CANopen-Specs]
@@ -58,7 +58,7 @@ The CANdaemon is [CANopenSocket], but with dbus interfaces to commicate with oth
 [OreSatLive]:https://github.com/oresat/oresat-dxwifi-software
 
 <!-- References --> 
-[CAN Wikipedia}:https://en.wikipedia.org/wiki/CAN_bus
+[CAN-Wikipedia}:https://en.wikipedia.org/wiki/CAN_bus
 [CANopenSocket]:https://github.com/CANopenNode/CANopenSocket
 [DBus-Specs]:https://dbus.freedesktop.org/doc/dbus-specification.html
 [CANopen-Specs]:https://www.can-cia.org/groups/specifications/
