@@ -31,8 +31,8 @@ LFLAGS = -lrt -pthread $(shell pkg-config --libs libsystemd)
 STACK_SRC =     	./CANopenNode/stack
 CANOPENNODE_SRC = 	./CANopenNode
 COMMON_SRC = 		./common
-APP_SRC =		./src/app_$(BOARD)/source
-OBJDICT_SRC =           ./src/app_$(BOARD)/source/objDict
+APP_SRC =		./board/$(BOARD)
+OBJDICT_SRC =           ./board/$(BOARD)/objDict
 
 INCLUDE_DIRS =	-I$(STACK_SRC)		            \
 		-I$(CANOPENNODE_SRC)	            \
@@ -79,26 +79,23 @@ candaemon: $(OBJS)
 	bash -c "echo - > od_storage_auto"
 	$(CC) $(CFLAGS) $(LFLAGS) $(INCLUDE_DIRS) $^ -o $@
 
+config:
+	bash ./edit_config.sh
+
 clean:
 	rm -rf $(OBJS) candaemon od_storage od_storage_auto
 
 # boards
 
-cfc:
-	bash -c python3 ./configure_candaemon.py -m $@
-
 cameraboard:
-	bash -c python3 ./configure_candaemon.py -m $@
-
-dxwifi:
-	bash -c python3 ./configure_candaemon.py -m $@
+	bash -c "cp ./boards/$@/.config ."
 
 gps:
-	bash -c python3 ./configure_candaemon.py -m $@
+	bash -c "cp ./boards/$@/.config ."
 
 startracker:
-	bash -c python3 ./configure_candaemon.py -m $@
+	bash -c "cp ./boards/$@/.config ."
 
 template:
-	bash -c python3 ./configure_candaemon.py -m $@
+	bash -c "cp ./boards/$@/.config ."
 

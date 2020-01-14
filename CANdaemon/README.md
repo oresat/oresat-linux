@@ -18,15 +18,15 @@ The CANdaemon is [CANopenSocket], but with dbus interfaces to commicate with oth
 - Designed to control other process over DBus from CAN.
 - Easy to add more DBus clients to control new processes.
 
-## Additions to CANopenSocket
-- The Network Manager Node is now off;
+## Changes to CANopenSocket
+- The CANdaemon cannot be a Network Manager Node
 - DBus interface (use sd-bus; systemd dbus system)
     - Has a extra thread for reading from data from the CAN Object Dictionary and interfacing with all other processes/daemons over DBus. 
     - For each process that the CANdaemon will interface with, there is a thread to read signals/properties from that dbus service and add that data to the CAN Object Dictionary.
-    - Each app has a directory under src/ that contains the makefile, an unique Object Dictionary, and all Object Dictionary to DBus interface threads/functions.
+    - Each board has a directory under boards/ that contains an unique Object Dictionary and all Object Dictionary to DBus interface threads/functions.
 
 ## Dependices
-- For beaglebone black: systemd-dev, make, gcc, pkg-source 
+- For beaglebone black: libsystemd-dev, make, gcc, pkg-source 
 
 ## Subdir Layout 
 - **CANopenComm** - Source code for CANopenComm
@@ -39,13 +39,14 @@ The CANdaemon is [CANopenSocket], but with dbus interfaces to commicate with oth
 ## Settup
 - `git submodules init`
 - `git submodules update`
-- `cd src/<app folder>`
-- `make clean candaemon`
-- `./candaemon`
+- `make <board>`
+- `make config` if you want to edit the config file
+- `make candaemon`
 
 ## Making a new app
-- `cp -r src/app_template src/app_<new_app_name>`
-- modify appilcation.* as needed
+- `cp -r boards/template boards/<new_board_name>`
+- modify /boards/<new_board_name>/appilcation.* as needed
+- modify /boards/<new_board_name>/objDict with [libedssharp] as needed
 
 ## Useful References
 - [CANopenSocket]
@@ -63,3 +64,6 @@ The CANdaemon is [CANopenSocket], but with dbus interfaces to commicate with oth
 [DBus-Specs]:https://dbus.freedesktop.org/doc/dbus-specification.html
 [CANopen-Specs]:https://www.can-cia.org/groups/specifications/
 [ECSS-CANBus-Extended-Protocal]:https://ecss.nl/standard/ecss-e-st-50-15c-space-engineering-canbus-extension-protocol-1-may-2015/
+
+<!-- Other --> 
+[libedssharp]:https://github.com/robincornelius/libedssharp
