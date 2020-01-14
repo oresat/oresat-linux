@@ -33,7 +33,7 @@ The CANdaemon is [CANopenSocket], but with dbus interfaces to commicate with oth
 - **CANopenNode** - git submodule for CANopenNode
 - **common** - common source code for CANopenComm and CANdaemon
 - **docs** - Documentation for CANdaemon
-- **src** - Holds an CANdaemon app for each OreSat Linux board
+- **boards** - Holds an CANdaemon app for each OreSat Linux board
 - **useful_scipts** - Useful scripts like; the MDC image veiwer, enabling canable script, etc.
 
 ## Settup
@@ -43,7 +43,7 @@ The CANdaemon is [CANopenSocket], but with dbus interfaces to commicate with oth
 - `make config` if you want to edit the config file
 - `make candaemon`
 
-## Making a new app
+## Making a new board
 - `cp -r boards/template boards/<new_board_name>`
 - modify /boards/<new_board_name>/appilcation.* as needed
 - modify /boards/<new_board_name>/objDict with [libedssharp] as needed
