@@ -20,8 +20,8 @@ echo 'Copying python scripts to /opt/'$daemon_name
 sudo mkdir -p $install_path
 sudo cp updater_daemon.py updater.py $install_path
 
-echo 'Copying daemon service file to /etc/systemd/system/'
-sudo cp ./$daemon_name.service /etc/systemd/system/
+echo 'Copying daemon service file to /usr/lib/systemd/system/'
+sudo cp ./$daemon_name.service /usr/lib/systemd/system/
 
 echo 'Copying dbus config file to /usr/share/dbus-1/system.d/'
 sudo cp ./org.OreSat.Updater.conf /usr/share/dbus-1/system.d/
