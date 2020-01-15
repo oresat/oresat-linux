@@ -1,0 +1,5 @@
+# OreSat Linux CANdaemon config file
+oresat-board:template
+updater:on
+debug:on
+

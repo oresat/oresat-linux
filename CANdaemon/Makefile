@@ -92,14 +92,14 @@ clean:
 # boards
 
 cameraboard:
-	bash -c "cp ./boards/$@/.config ."
+	bash -c "cp ./boards/$@/config .config"
 
 gps:
-	bash -c "cp ./boards/$@/.config ."
+	bash -c "cp ./boards/$@/config .config"
 
 startracker:
-	bash -c "cp ./boards/$@/.config ."
+	bash -c "cp ./boards/$@/config .config"
 
 template:
-	bash -c "cp ./boards/$@/.config ."
+	bash -c "cp ./boards/$@/config .config"
 
