@@ -2,6 +2,25 @@
 
 
 ##############################################################################
+# boards
+
+list_boards:
+	@echo "cameraboad gps startracker template"
+
+cameraboard:
+	bash -c "cp ./boards/$@/config .config"
+
+gps:
+	bash -c "cp ./boards/$@/config .config"
+
+startracker:
+	bash -c "cp ./boards/$@/config .config"
+
+template:
+	bash -c "cp ./boards/$@/config .config"
+
+
+##############################################################################
 # Options for CANdaemon, Reading config file
 
 BOARD=$(shell grep -r "oresat-board" .config | cut -f 2 -d ':')
@@ -88,18 +107,4 @@ config:
 
 clean:
 	rm -rf $(OBJS) candaemon od_storage od_storage_auto
-
-# boards
-
-cameraboard:
-	bash -c "cp ./boards/$@/config .config"
-
-gps:
-	bash -c "cp ./boards/$@/config .config"
-
-startracker:
-	bash -c "cp ./boards/$@/config .config"
-
-template:
-	bash -c "cp ./boards/$@/config .config"
 
