@@ -1,0 +1,16 @@
+#!/bin/bash
+
+PKG_NAME=oresat-linux-updater
+
+# make sure source directory has been removed
+rm -rf /usr/bin/$PKG_NAME
+
+# make sure daemon pid file has been removed
+rm -f /run/$PKG_NAME.pid
+
+# if purging package, remove all temps
+if [ "$1" = "purge" ]; then 
+	rm -rf /tmp/$PKG_NAME
+fi
+
+systemctl daemon-reload

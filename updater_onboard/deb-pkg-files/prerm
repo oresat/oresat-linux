@@ -1,4 +1,0 @@
-#!/bin/bash
-
-# make sure the daemon is stopped before removing
-systemctl stop oresat-linux-updater
