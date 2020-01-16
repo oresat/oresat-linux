@@ -27,7 +27,7 @@ BOARD=$(shell grep -r "oresat-board" .config | cut -f 2 -d ':')
 
 DEBUG=$(shell grep -r "debug" .config | cut -f 2 -d ':')
 ifeq ($(DEBUG), on)
-    CFLAGS += -g
+    DFLAGS += -g
 endif
 
 UPDATER_INTERFACE=$(shell grep -r "updater" .config | cut -f 2 -d ':')
@@ -36,8 +36,8 @@ ifeq ($(UPDATER_INTERFACE), on)
 endif
 
 #System Setting
-DFLAGS= -DFILE_TRANSFER_MAX_SIZE=1500000    \
-	-DFILE_PATH_MAX_LENGTH=200
+DFLAGS += -DFILE_TRANSFER_MAX_SIZE=1500000    \
+	  -DFILE_PATH_MAX_LENGTH=200
 
 
 ##############################################################################
