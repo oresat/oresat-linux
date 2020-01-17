@@ -356,11 +356,11 @@
       <CANopenSubObject subIndex="03" name="Epoch time offset ms" objectType="VAR" dataType="0x07" accessType="rww" PDOmapping="optional" defaultValue="0" TPDOdetectCOS="false" />
       <accessFunctionPreCode />
     </CANopenObject>
-    <CANopenObject index="3000" name="Systemd Control" objectType="REC" memoryType="RAM" dataType="0x05" accessType="rw" PDOmapping="no" defaultValue="" subNumber="3" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
+    <CANopenObject index="3000" name="Systemd Control" objectType="REC" memoryType="RAM" dataType="0x00" accessType="rw" PDOmapping="no" defaultValue="" subNumber="3" accessFunctionName="" disabled="false" TPDOdetectCOS="false">
       <description />
       <CANopenSubObject subIndex="00" name="max sub-index" objectType="VAR" dataType="0x05" accessType="ro" PDOmapping="no" defaultValue="2" TPDOdetectCOS="false" />
-      <CANopenSubObject subIndex="01" name="Reboot" objectType="VAR" dataType="0x0f" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
-      <CANopenSubObject subIndex="02" name="Poweroff" objectType="VAR" dataType="0x0f" accessType="rw" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="01" name="Reboot" objectType="VAR" dataType="0x0f" accessType="wo" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
+      <CANopenSubObject subIndex="02" name="Poweroff" objectType="VAR" dataType="0x0f" accessType="wo" PDOmapping="no" defaultValue="0" TPDOdetectCOS="false" />
       <accessFunctionPreCode />
     </CANopenObject>
     <CANopenObject index="3001" name="Receive File" objectType="REC" memoryType="RAM" dataType="0x00" accessType="rw" PDOmapping="no" defaultValue="" subNumber="4" accessFunctionName="" disabled="false" TPDOdetectCOS="false">

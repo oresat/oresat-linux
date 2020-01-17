@@ -1951,7 +1951,7 @@ ParameterName=Reboot
 ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x000F
-AccessType=rw
+AccessType=wo
 DefaultValue=0
 PDOMapping=0
 
@@ -1960,7 +1960,7 @@ ParameterName=Poweroff
 ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x000F
-AccessType=rw
+AccessType=wo
 DefaultValue=0
 PDOMapping=0
 
