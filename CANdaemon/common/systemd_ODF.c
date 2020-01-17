@@ -40,7 +40,7 @@ CO_SDO_abortCode_t SYSTEMD_ODF(CO_ODF_arg_t *ODF_arg) {
     int r;
 
     /* can't read parameters, write only */
-    if(ODF_arg->reading == true 
+    if(ODF_arg->reading == true)
         return CO_SDO_AB_WRITEONLY;
 
     switch(ODF_arg->subIndex) {
