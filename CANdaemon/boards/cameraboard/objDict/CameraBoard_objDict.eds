@@ -1710,7 +1710,7 @@ DefaultValue=0x00000000
 PDOMapping=0
 
 [ManufacturerObjects]
-SupportedObjects=14
+SupportedObjects=15
 1=0x2100
 2=0x2101
 3=0x2102
@@ -1721,10 +1721,11 @@ SupportedObjects=14
 8=0x2108
 9=0x2109
 10=0x2130
-11=0x3001
-12=0x3002
-13=0x3003
-14=0x3100
+11=0x3000
+12=0x3001
+13=0x3002
+14=0x3003
+15=0x3100
 
 [2100]
 ParameterName=Error status bits
@@ -1929,6 +1930,39 @@ DataType=0x0007
 AccessType=rww
 DefaultValue=0
 PDOMapping=1
+
+[3000]
+ParameterName=Systemd Control
+ObjectType=0x9
+;StorageLocation=RAM
+SubNumber=0x3
+
+[3000sub0]
+ParameterName=max sub-index
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+
+[3000sub1]
+ParameterName=Restart
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x000F
+AccessType=wo
+DefaultValue=0
+PDOMapping=0
+
+[3000sub2]
+ParameterName=Poweroff
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x000F
+AccessType=wo
+DefaultValue=0
+PDOMapping=0
 
 [3001]
 ParameterName=Receive File

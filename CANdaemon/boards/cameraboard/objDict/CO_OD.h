@@ -129,7 +129,7 @@
 /*******************************************************************************
    OBJECT DICTIONARY
 *******************************************************************************/
-   #define CO_OD_NoOfElements             52
+   #define CO_OD_NoOfElements             53
 
 
 /*******************************************************************************
@@ -195,6 +195,11 @@
                UNSIGNED64     epochTimeBaseMs;
                UNSIGNED32     epochTimeOffsetMs;
                }              OD_time_t;
+/*3000    */ typedef struct {
+               UNSIGNED8      maxSubIndex;
+               DOMAIN         restart;
+               DOMAIN         poweroff;
+               }              OD_systemdControl_t;
 /*3001    */ typedef struct {
                UNSIGNED8      maxSubIndex;
                DOMAIN         fileName;
@@ -554,6 +559,13 @@
         #define OD_2130_2_time_epochTimeBaseMs                      2
         #define OD_2130_3_time_epochTimeOffsetMs                    3
 
+/*3000 */
+        #define OD_3000_systemdControl                              0x3000
+
+        #define OD_3000_0_systemdControl_maxSubIndex                0
+        #define OD_3000_1_systemdControl_restart                    1
+        #define OD_3000_2_systemdControl_poweroff                   2
+
 /*3001 */
         #define OD_3001_receiveFile                                 0x3001
 
@@ -763,6 +775,7 @@ struct sCO_OD_RAM{
 /*2108      */ INTEGER16       temperature[1];
 /*2109      */ INTEGER16       voltage[1];
 /*2130      */ OD_time_t       time;
+/*3000      */ OD_systemdControl_t systemdControl;
 /*3001      */ OD_receiveFile_t receiveFile;
 /*3002      */ DOMAIN          sendFileList[127];
 /*3003      */ OD_sendFileControl_t sendFileControl;
@@ -925,6 +938,9 @@ extern struct sCO_OD_EEPROM CO_OD_EEPROM;
 
 /*2130, Data Type: time_t */
         #define OD_time                                             CO_OD_RAM.time
+
+/*3000, Data Type: systemdControl_t */
+        #define OD_systemdControl                                   CO_OD_RAM.systemdControl
 
 /*3001, Data Type: receiveFile_t */
         #define OD_receiveFile                                      CO_OD_RAM.receiveFile
