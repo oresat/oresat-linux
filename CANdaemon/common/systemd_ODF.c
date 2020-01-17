@@ -39,8 +39,9 @@ CO_SDO_abortCode_t SYSTEMD_ODF(CO_ODF_arg_t *ODF_arg) {
     sd_bus_error error = SD_BUS_ERROR_NULL;
     int r;
 
-    if(ODF_arg->reading == false) 
-        return CO_SDO_AB_WRITEONLY; /* can't read parameters, write only */
+    /* can't read parameters, write only */
+    if(ODF_arg->reading == true 
+        return CO_SDO_AB_WRITEONLY;
 
     switch(ODF_arg->subIndex) {
         case 1 : /* reboot Linux system */
@@ -49,9 +50,9 @@ CO_SDO_abortCode_t SYSTEMD_ODF(CO_ODF_arg_t *ODF_arg) {
                                    OBJECT_PATH,
                                    INTERFACE_NAME,
                                    "Reboot",
-                                    &error,
-                                    NULL,
-                                    NULL);
+                                   &error,
+                                   NULL,
+                                   NULL);
             if(r < 0)
                 ret = CO_SDO_AB_GENERAL;
             
@@ -62,10 +63,10 @@ CO_SDO_abortCode_t SYSTEMD_ODF(CO_ODF_arg_t *ODF_arg) {
                                    BUS_NAME,
                                    OBJECT_PATH,
                                    INTERFACE_NAME,
-                                   "Poweroff",
-                                    &error,
-                                    NULL,
-                                    NULL);
+                                   "PowerOff",
+                                   &error,
+                                   NULL,
+                                   NULL);
             if(r < 0)
                 ret = CO_SDO_AB_GENERAL;
 
