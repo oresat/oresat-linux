@@ -46,6 +46,14 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <stdint.h>
+#include <stdbool.h>
+#include <sys/stat.h>
+#include <syslog.h>
+#include <stdio.h>
+#include <stdarg.h>
+
+
 
 #define NSEC_PER_SEC            (1000000000)    /* The number of nanoseconds per second. */
 #define NSEC_PER_MSEC           (1000000)       /* The number of nanoseconds per millisecond. */
@@ -57,6 +65,10 @@
 #endif
 #ifndef FILE_SEND_FOLDER
 #define FILE_SEND_FOLDER "/tmp/send_files/"
+#endif
+
+#ifndef DEFAULT_PID_FILE
+#define DEFAULT_PID_FILE "/run/oresat-candaemon.pid"
 #endif
 
 
@@ -104,27 +116,106 @@ void CO_error(const uint32_t info) {
 }
 
 
+void logmsg(int priority, const char *fmt, ...)
+{
+	va_list args;
+	va_start(args, fmt);
+	vsyslog(priority, fmt, args);
+	vfprintf((priority>4?stdout:stderr), fmt, args);
+	va_end(args);
+}
+
+
 /******************************************************************************/
 /** Mainline and RT thread                                                   **/
 /******************************************************************************/
+bool daemon_flag = false;
 int main (int argc, char *argv[]) {
+    int c;
+    char *pid_file = DEFAULT_PID_FILE;
+    FILE *run_fp = NULL;
+    pid_t pid = 0, sid = 0;
+
+    /* Register signal handlers */
+    signal(SIGINT, NULL);
+    signal(SIGTERM, NULL);
+
+    /* Command line argument processing */
+    while ((c = getopt(argc, argv, "d")) != -1) {
+        switch (c) {
+            case 'd':
+                daemon_flag = true;
+                break;
+            default:
+                fprintf(stderr, "Usage: %s [-d]", argv[0]);
+                exit(1);
+        }
+    }
+
+    setlogmask(LOG_UPTO(LOG_NOTICE));
+    openlog(argv[0], LOG_PID|LOG_CONS, LOG_DAEMON);
+
+    /* Run as daemon if needed */
+    if (daemon_flag) {
+        logmsg(LOG_DEBUG, "Starting as daemon...\n");
+        /* Fork */
+        if ((pid = fork()) < 0) {
+            logmsg(LOG_ERR, "Error: Failed to fork!\n");
+            exit(EXIT_FAILURE);
+        }
+
+        /* Parent process exits */
+        if (pid) {
+            exit(EXIT_SUCCESS);
+        }
+
+        /* Child process continues on */
+        /* Log PID */
+        if ((run_fp = fopen(pid_file, "w+")) == NULL) {
+            logmsg(LOG_ERR, "Error: Unable to open file %s\n", pid_file);
+            exit(EXIT_FAILURE);
+        }
+        fprintf(run_fp, "%d\n", getpid());
+        fflush(run_fp);
+        fclose(run_fp);
+
+        /* Create new session for process group leader */
+        if ((sid = setsid()) < 0) {
+            logmsg(LOG_ERR, "Error: Failed to create new session!\n");
+            exit(EXIT_FAILURE);
+        }
+
+        /* Set default umask and cd to root to avoid blocking filesystems */
+        umask(0);
+        if (chdir("/") < 0) {
+            logmsg(LOG_ERR, "Error: Failed to chdir to root: %s\n", strerror(errno));
+            exit(EXIT_FAILURE);
+        }
+
+        /* Redirect std streams to /dev/null */
+        if (freopen("/dev/null", "r", stdin) == NULL) {
+            logmsg(LOG_ERR, "Error: Failed to redirect streams to /dev/null!\n");
+            exit(EXIT_FAILURE);
+        }
+        if (freopen("/dev/null", "w+", stdout) == NULL) {
+            logmsg(LOG_ERR, "Error: Failed to redirect streams to /dev/null!\n");
+            exit(EXIT_FAILURE);
+        }
+        if (freopen("/dev/null", "w+", stderr) == NULL) {
+            logmsg(LOG_ERR, "Error: Failed to redirect streams to /dev/null!\n");
+            exit(EXIT_FAILURE);
+        }
+    }
+
     CO_NMT_reset_cmd_t reset = CO_RESET_NOT;
     CO_ReturnError_t odStorStatus_rom, odStorStatus_eeprom;
     int CANdevice0Index = 0;
     bool_t firstRun = true;
 
-    char* CANdevice = NULL;         /* CAN device, configurable by arguments. */
+    char* CANdevice = "can1";         /* CAN device, configurable by arguments. */
     int nodeId = OD_CANNodeID;      /* Use value from Object Dictionary or set to 1..127 by arguments */
 
-    if(argc < 2 || strcmp(argv[1], "--help") == 0){
-        fprintf(stderr, "Usage: %s <CAN device name>\n", argv[0]);
-        exit(EXIT_SUCCESS);
-    }
-
-    if(optind < argc) {
-        CANdevice = argv[optind];
-        CANdevice0Index = if_nametoindex(CANdevice);
-    }
+    CANdevice0Index = if_nametoindex(CANdevice);
 
     if(nodeId < 1 || nodeId > 127) {
         fprintf(stderr, "Wrong node ID (%d)\n", nodeId);
