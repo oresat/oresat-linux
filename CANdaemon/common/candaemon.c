@@ -1,6 +1,7 @@
 
 #include "candaemon.h"
 #include "app_OD_functions.h"
+#include "systemd_ODF.h"
 #include "application.h"
 #include "updater.h"
 #include <stdint.h>
@@ -9,6 +10,7 @@
 /******************************************************************************/
 void CD_programStart(void){
     app_ODF_configure();
+    systemd_ODF_configure();
 
     app_programStart();
 

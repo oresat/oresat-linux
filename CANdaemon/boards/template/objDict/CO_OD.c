@@ -123,7 +123,7 @@ struct sCO_OD_RAM CO_OD_RAM = {
 /*2108*/ {0x00},
 /*2109*/ {0x00},
 /*2130*/ {0x3L, {'-'}, 0x00000000L, 0x0000L},
-/*3000*/ {0x0L},
+/*3000*/ {0x2L, 0, 0},
 /*3001*/ {0x3L, 0, 0, 0x0L},
 /*3002*/ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 /*3003*/ {0x8L, 0x0L, 0, 0, 0x0000L, 0, 0x0000L, 0x0000L, 0},
@@ -337,8 +337,10 @@ struct sCO_OD_EEPROM CO_OD_EEPROM = {
            {(void*)&CO_OD_RAM.time.epochTimeOffsetMs, 0x9e, 0x4 },
 };
 
-/*0x3000*/ const CO_OD_entryRecord_t OD_record3000[1] = {
-           {(void*)&CO_OD_RAM.deamonControl.maxSubIndex, 0x06, 0x1 },
+/*0x3000*/ const CO_OD_entryRecord_t OD_record3000[3] = {
+           {(void*)&CO_OD_RAM.systemdControl.maxSubIndex, 0x06, 0x1 },
+           {(void*)0, 0x0e, 0x0 },
+           {(void*)0, 0x0e, 0x0 },
 };
 
 /*0x3001*/ const CO_OD_entryRecord_t OD_record3001[4] = {
@@ -426,9 +428,9 @@ const CO_OD_entry_t CO_OD[53] = {
 {0x2108, 0x01, 0x8e, 2, (void*)&CO_OD_RAM.temperature[0]},
 {0x2109, 0x01, 0x8e, 2, (void*)&CO_OD_RAM.voltage[0]},
 {0x2130, 0x03, 0x00, 0, (void*)&OD_record2130},
-{0x3000, 0x00, 0x00, 0, (void*)&OD_record3000},
+{0x3000, 0x02, 0x00, 1, (void*)&OD_record3000},
 {0x3001, 0x03, 0x00, 0, (void*)&OD_record3001},
 {0x3002, 0x7f, 0x0e, 0, (void*)0},
 {0x3003, 0x08, 0x00, 0, (void*)&OD_record3003},
-{0x3004, 0x09, 0x00, 1, (void*)&OD_record3004},
+{0x3004, 0x09, 0x00, 0, (void*)&OD_record3004},
 };

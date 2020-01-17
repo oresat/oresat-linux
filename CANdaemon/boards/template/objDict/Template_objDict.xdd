@@ -1728,7 +1728,7 @@
             <defaultValue value="0" />
           </parameter>
           <parameter uniqueID="UID_PARAM_3000" access="readWrite">
-            <label lang="en">Deamon Control</label>
+            <label lang="en">Systemd Control</label>
             <description lang="en" />
             <denotation>
               <label lang="en" />
@@ -1737,6 +1737,22 @@
           </parameter>
           <parameter uniqueID="UID_PARAM_300000" access="read">
             <label lang="en">max sub-index</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="2" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300001" access="readWrite">
+            <label lang="en">Reboot</label>
+            <description lang="en" />
+            <denotation>
+              <label lang="en" />
+            </denotation>
+            <defaultValue value="0" />
+          </parameter>
+          <parameter uniqueID="UID_PARAM_300002" access="readWrite">
+            <label lang="en">Poweroff</label>
             <description lang="en" />
             <denotation>
               <label lang="en" />
@@ -3242,8 +3258,10 @@
             <CANopenSubObject subIndex="0002" name="Epoch time base ms" objectType="7" dataType="001B" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_213002" />
             <CANopenSubObject subIndex="0003" name="Epoch time offset ms" objectType="7" dataType="0007" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="RPDO" uniqueIDRef="UID_PARAM_213003" />
           </CANopenObject>
-          <CANopenObject index="3000" name="Deamon Control" objectType="9" dataType="0000" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3000" subNumber="1">
+          <CANopenObject index="3000" name="Systemd Control" objectType="9" dataType="0005" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3000" subNumber="3">
             <CANopenSubObject subIndex="0000" name="max sub-index" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300000" />
+            <CANopenSubObject subIndex="0001" name="Reboot" objectType="7" dataType="000F" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300001" />
+            <CANopenSubObject subIndex="0002" name="Poweroff" objectType="7" dataType="000F" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300002" />
           </CANopenObject>
           <CANopenObject index="3001" name="Receive File" objectType="9" dataType="0000" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3001" subNumber="4">
             <CANopenSubObject subIndex="0000" name="max sub-index" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300100" />
@@ -3392,7 +3410,7 @@
             <CANopenSubObject subIndex="0007" name="Overflow" objectType="7" dataType="0007" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300307" />
             <CANopenSubObject subIndex="0008" name="Refresh File Array" objectType="7" dataType="0001" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300308" />
           </CANopenObject>
-          <CANopenObject index="3004" name="Linux Updater" objectType="9" dataType="0005" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3004" subNumber="10">
+          <CANopenObject index="3004" name="Linux Updater" objectType="9" dataType="0000" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3004" subNumber="10">
             <CANopenSubObject subIndex="0000" name="max sub-index" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300400" />
             <CANopenSubObject subIndex="0001" name="Current state" objectType="7" dataType="0004" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300401" />
             <CANopenSubObject subIndex="0002" name="Updates available" objectType="7" dataType="0007" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300402" />
