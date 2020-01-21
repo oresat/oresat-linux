@@ -22,12 +22,12 @@ mkdir -p $DBUS_PATH
 cp src/org.oresat.linux.updater.conf $DBUS_PATH
 
 # systemd daemon service file
-DAEMON_PATH=$PKG_NAME"/usr/lib/systemd/system/"
+DAEMON_PATH=$PKG_NAME"/lib/systemd/system/"
 mkdir -p $DAEMON_PATH
 cp src/oresat-linux-updater.service $DAEMON_PATH
 
 # source code
-SOURCE_PATH=$PKG_NAME"/usr/bin/"$PKG_NAME
+SOURCE_PATH=$PKG_NAME"/usr/share/"$PKG_NAME
 mkdir -p $SOURCE_PATH
 cp src/updater.py $SOURCE_PATH
 cp src/updater_daemon.py $SOURCE_PATH

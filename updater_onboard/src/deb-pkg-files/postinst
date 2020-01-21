@@ -1,13 +1,8 @@
 #!/bin/sh
 
-# compile python3 code into bytecode
-python3 -m compileall /usr/bin/oresat-linux-updater/
+PKG_NAME=oresat-linux-updater
 
-# load new daemon service file
+# load new daemon service file and start
 systemctl daemon-reload
-
-# make /tmp dir
-if [ ! -f "/usr/bin/$PKGNAME" ]; then 
-	mkdir /tmp/oresat-linux-updater/
-fi
+systemctl enable $PKG_NAME
 
