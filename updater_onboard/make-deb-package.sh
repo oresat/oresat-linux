@@ -42,4 +42,4 @@ cd $BUILD_DIR
 find . -type f ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -printf '%P ' | xargs md5sum > DEBIAN/md5sums
 cd -
 
-dpkg -b $PKG_NAME"/"
+dpkg -b $BUILD_DIR"/"
