@@ -99,8 +99,6 @@ candaemon: $(OBJS)
 		exit 1; \
 	fi
 
-	bash -c "echo - > od_storage"
-	bash -c "echo - > od_storage_auto"
 	$(CC) $(CFLAGS) $(LFLAGS) $(INCLUDE_DIRS) $^ -o $@
 
 config:

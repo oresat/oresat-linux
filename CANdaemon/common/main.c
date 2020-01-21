@@ -61,10 +61,10 @@
 #define TMR_TASK_OVERFLOW_US    (5000)          /* Overflow detect limit for taskTmr in microseconds */
 #define INCREMENT_1MS(var)      (var++)         /* Increment 1ms variable in taskTmr */
 #ifndef FILE_RECEIVE_FOLDER 
-#define FILE_RECEIVE_FOLDER "/tmp/received_files/"
+#define FILE_RECEIVE_FOLDER "/tmp/oresat-candaemon/received_files/"
 #endif
 #ifndef FILE_SEND_FOLDER
-#define FILE_SEND_FOLDER "/tmp/send_files/"
+#define FILE_SEND_FOLDER "/tmp/oresat-candaemon/send_files/"
 #endif
 
 #ifndef DEFAULT_PID_FILE
@@ -84,16 +84,12 @@ static int                  rtPriority = -1;    /* Real time priority, configura
 static int                  mainline_epoll_fd;  /* epoll file descriptor for mainline */
 static CO_OD_storage_t      odStor;             /* Object Dictionary storage object for CO_OD_ROM */
 static CO_OD_storage_t      odStorAuto;         /* Object Dictionary storage object for CO_OD_EEPROM */
-static char                *odStorFile_rom    = "od_storage";       /* Name of the file */
-static char                *odStorFile_eeprom = "od_storage_auto";  /* Name of the file */
 static CO_time_t            CO_time;            /* Object for current time */
 
 /* Realtime thread */
-#ifndef CO_SINGLE_THREAD
 static void*                rt_thread(void* arg);
 static pthread_t            rt_thread_id;
 static int                  rt_thread_epoll_fd;
-#endif
 
 
 /* Signal handler */
@@ -208,7 +204,6 @@ int main (int argc, char *argv[]) {
     }
 
     CO_NMT_reset_cmd_t reset = CO_RESET_NOT;
-    CO_ReturnError_t odStorStatus_rom, odStorStatus_eeprom;
     int CANdevice0Index = 0;
     bool_t firstRun = true;
 
@@ -259,11 +254,6 @@ int main (int argc, char *argv[]) {
     }
 
 
-    /* initialize Object Dictionary storage */
-    odStorStatus_rom = CO_OD_storage_init(&odStor, (uint8_t*) &CO_OD_ROM, sizeof(CO_OD_ROM), odStorFile_rom);
-    odStorStatus_eeprom = CO_OD_storage_init(&odStorAuto, (uint8_t*) &CO_OD_EEPROM, sizeof(CO_OD_EEPROM), odStorFile_eeprom);
-
-
     /* Catch signals SIGINT and SIGTERM */
     if(signal(SIGINT, sigHandler) == SIG_ERR)
         CO_errExit("Program init - SIGINIT handler creation failed");
@@ -308,12 +298,6 @@ int main (int argc, char *argv[]) {
         /* initialize OD objects 1010 and 1011 and verify errors. */
         CO_OD_configure(CO->SDO[0], OD_H1010_STORE_PARAM_FUNC, CO_ODF_1010, (void*)&odStor, 0, 0U);
         CO_OD_configure(CO->SDO[0], OD_H1011_REST_PARAM_FUNC, CO_ODF_1011, (void*)&odStor, 0, 0U);
-        if(odStorStatus_rom != CO_ERROR_NO) {
-            CO_errorReport(CO->em, CO_EM_NON_VOLATILE_MEMORY, CO_EMC_HARDWARE, (uint32_t)odStorStatus_rom);
-        }
-        if(odStorStatus_eeprom != CO_ERROR_NO) {
-            CO_errorReport(CO->em, CO_EM_NON_VOLATILE_MEMORY, CO_EMC_HARDWARE, (uint32_t)odStorStatus_eeprom + 1000);
-        }
 
 
         /* Configure callback functions for task control */
