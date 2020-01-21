@@ -4,7 +4,7 @@ PKG_NAME="oresat-linux-updater"
 
 # remove old build dir, if it exists
 TEMP=$PKG_NAME"*"
-rm -rf "$TEMP"
+rm -rf $TEMP
 
 VERSION=`grep -i version src/deb-pkg-files/control | cut -d ":" -f 2 | sed 's/ //g'`
 ARCHITECTURE=`grep -i architecture src/deb-pkg-files/control | cut -d ":" -f 2 | sed 's/ //g'`
