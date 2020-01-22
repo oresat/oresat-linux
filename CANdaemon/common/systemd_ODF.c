@@ -15,13 +15,7 @@
 #define OBJECT_PATH     "/org/freedesktop/systemd1"
 
 
-static sd_bus *bus = NULL;
-
-
 void systemd_ODF_configure(void){
-    /* Connect to the bus */
-    int r = sd_bus_open_system(&bus);
-    dbusErrorExit(r, "Failed to connect to system bus:");
 
     CO_OD_configure(CO->SDO[0], 0x3000, SYSTEMD_ODF, NULL, 0, 0U);
 
@@ -29,15 +23,16 @@ void systemd_ODF_configure(void){
 }
 
 
-void end_systemd_ODF(void){
-    sd_bus_unref(bus);
-}
-
-
 CO_SDO_abortCode_t SYSTEMD_ODF(CO_ODF_arg_t *ODF_arg) {
     CO_SDO_abortCode_t ret = CO_SDO_AB_NONE;
     sd_bus_error error = SD_BUS_ERROR_NULL;
+    sd_bus *bus = NULL;
     int r;
+
+    /* Connect to the bus */
+    if(sd_bus_open_system(&bus) <= 0)
+        return CO_SDO_AB_GENERAL;
+
 
     /* can't read parameters, write only */
     if(ODF_arg->reading == true)
@@ -77,6 +72,7 @@ CO_SDO_abortCode_t SYSTEMD_ODF(CO_ODF_arg_t *ODF_arg) {
     }
     
     sd_bus_error_free(&error);
+    sd_bus_unref(bus);
     return ret;
 }
 

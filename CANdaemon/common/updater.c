@@ -35,24 +35,9 @@ static char error_message[ERROR_MESSAGE_SIZE] = "\0";
 
 /******************************************************************************/
 void updater_programStart(void){
-    sd_bus_error err = SD_BUS_ERROR_NULL;
-
     /* Connect to the bus */
     int r = sd_bus_open_system(&bus);
     dbusError(r, "Failed to connect to system bus.");
-
-    /* set computer name on linux updater */
-    char computer_name[] = "StarTracker"; // TODO get computer_name
-    sd_bus_set_property(bus, 
-                        BUS_NAME, 
-                        OBJECT_PATH, 
-                        INTERFACE_NAME, 
-                        "ComputerName", 
-                        &err, 
-                        "s", 
-                        computer_name);
-
-    sd_bus_error_free(&err);
 
     CO_OD_configure(CO->SDO[0], 0x3004, CO_ODF_3004, NULL, 0, 0U);
 
