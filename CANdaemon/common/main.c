@@ -26,7 +26,6 @@
 
 
 #include "CANopen.h"
-#include "CO_OD_storage.h"
 #include "CO_Linux_tasks.h"
 #include "CO_time.h"
 #include "candaemon.h"
@@ -82,8 +81,6 @@ pthread_mutex_t             CO_CAN_VALID_mtx = PTHREAD_MUTEX_INITIALIZER;
 /* Other variables and objects */
 static int                  rtPriority = -1;    /* Real time priority, configurable by arguments. (-1=RT disabled) */
 static int                  mainline_epoll_fd;  /* epoll file descriptor for mainline */
-static CO_OD_storage_t      odStor;             /* Object Dictionary storage object for CO_OD_ROM */
-static CO_OD_storage_t      odStorAuto;         /* Object Dictionary storage object for CO_OD_EEPROM */
 static CO_time_t            CO_time;            /* Object for current time */
 
 /* Realtime thread */
@@ -295,11 +292,6 @@ int main (int argc, char *argv[]) {
         }
 
 
-        /* initialize OD objects 1010 and 1011 and verify errors. */
-        CO_OD_configure(CO->SDO[0], OD_H1010_STORE_PARAM_FUNC, CO_ODF_1010, (void*)&odStor, 0, 0U);
-        CO_OD_configure(CO->SDO[0], OD_H1011_REST_PARAM_FUNC, CO_ODF_1011, (void*)&odStor, 0, 0U);
-
-
         /* Configure callback functions for task control */
         CO_EM_initCallback(CO->em, taskMain_cbSignal);
         CO_SDO_initCallback(CO->SDO[0], taskMain_cbSignal);
@@ -386,8 +378,6 @@ int main (int argc, char *argv[]) {
                 /* code was processed in the above function. Additional code process below */
 
                 CD_programAsync(timer1msDiff);
-
-                CO_OD_storage_autoSave(&odStorAuto, CO_timer1ms, 60000);
             }
 
             else {
@@ -406,10 +396,6 @@ int main (int argc, char *argv[]) {
     }
 
     CD_programEnd();
-
-    /* Store CO_OD_EEPROM */
-    CO_OD_storage_autoSave(&odStorAuto, 0, 0);
-    CO_OD_storage_autoSaveClose(&odStorAuto);
 
     /* delete objects from memory */
     CANrx_taskTmr_close();
