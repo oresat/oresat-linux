@@ -7,8 +7,8 @@
 #include <systemd/sd-bus.h>
 
 
+#define DESTINATION     "org.example.project.oresat"
 #define INTERFACE_NAME  "org.example.project.oresat"
-#define BUS_NAME        INTERFACE_NAME
 #define OBJECT_PATH     "/org/example/project/oresat"
 #define WAIT_TIME       1 // seconds
 
@@ -55,7 +55,7 @@ int client(void) {
     while(endProgram == 0) {
         /* check for dbus property */
         //  int sd_bus_get_property(sd_bus *bus, const char *destination, const char *path, const char *interface, const char *member, sd_bus_error *ret_error, sd_bus_message **reply, const char *type);
-        r = sd_bus_get_property(bus,BUS_NAME, OBJECT_PATH, INTERFACE_NAME, "Test1", &err, &mess, "d");
+        r = sd_bus_get_property(bus,DESTINATION, OBJECT_PATH, INTERFACE_NAME, "Test1", &err, &mess, "d");
         dbusError(r, "Get property failed.");
 
         if (r >= 0) {
@@ -72,7 +72,7 @@ int client(void) {
         sd_bus_message_unref(mess);
         mess = NULL;
 
-        r = sd_bus_get_property(bus, BUS_NAME, OBJECT_PATH, INTERFACE_NAME, "Test2",  &err, &mess, "u");
+        r = sd_bus_get_property(bus, DESTINATION, OBJECT_PATH, INTERFACE_NAME, "Test2",  &err, &mess, "u");
         dbusError(r, "Get property failed.");
 
         if (r >= 0) {
@@ -89,9 +89,12 @@ int client(void) {
         sd_bus_message_unref(mess);
         mess = NULL;
 
+        ++test_int;
+
         if (r >= 0) {
-            r = sd_bus_set_property(bus, BUS_NAME, OBJECT_PATH, INTERFACE_NAME, "Test2",  &err, "u", 10);
+            r = sd_bus_set_property(bus, DESTINATION, OBJECT_PATH, INTERFACE_NAME, "Test2",  &err, "u", test_int);
             dbusError(r, "Set property failed.");
+            printf("%d\n", test_int);
         }
 
         printf("\n");
@@ -118,9 +121,9 @@ typedef struct {
 static const sd_bus_vtable vtable[] = {
     SD_BUS_VTABLE_START(0),
     // key: SD_BUS_PROPERTY(dbus_property_name, data_types, getter_function, pointer_to_data, flag),
-    SD_BUS_PROPERTY("Test1", "d", NULL, offsetof(Object, test1), 0),
+    SD_BUS_PROPERTY("Test1", "d", NULL, offsetof(Object, test1), SD_BUS_VTABLE_PROPERTY_EMITS_CHANGE),
     // key: SD_BUS_WRITABLE_PROPERTY(dbus_property_name, data_types, getter_function, setter_function, pointer_to_data, flag),
-    SD_BUS_WRITABLE_PROPERTY("Test2", "u", NULL, NULL, offsetof(Object, test2), 0),
+    SD_BUS_WRITABLE_PROPERTY("Test2", "u", NULL, NULL, offsetof(Object, test2), SD_BUS_VTABLE_PROPERTY_EMITS_CHANGE),
     SD_BUS_VTABLE_END
 };
 
@@ -139,7 +142,7 @@ int server(void) {
     dbusErrorExit(r, "Failed to connect to system bus.");
 
     /* Take a well-known service name so that clients can find us */
-    r = sd_bus_request_name(bus, BUS_NAME, SD_BUS_NAME_ALLOW_REPLACEMENT);
+    r = sd_bus_request_name(bus, DESTINATION, SD_BUS_NAME_ALLOW_REPLACEMENT);
     dbusError(r, "Failed to acquire service name. \nIs "INTERFACE_NAME".conf in /etc/dbus-1/system.d/ ?");
 
     /* Install the vtable */
@@ -164,7 +167,7 @@ int server(void) {
         dbusError(r, "Failed to wait on bus.");
     }
 
-    r = sd_bus_release_name(bus, BUS_NAME);
+    r = sd_bus_release_name(bus, DESTINATION);
     dbusError(r, "Failed to release service name.");
 
     sd_bus_slot_unref(slot);

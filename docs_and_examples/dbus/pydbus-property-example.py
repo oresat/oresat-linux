@@ -34,7 +34,9 @@ class Server_XML(object):
     dbus = """
     <node>
         <interface name="org.example.project.oresat">
-            <property name="Test1" type="d" access="read"/>
+            <property name="Test1" type="d" access="read">
+                <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
+            </property>
             <property name="Test2" type="u" access="readwrite"> 
                 <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
             </property>
