@@ -1,104 +1,164 @@
-/**
- *
- */
-
 #include "CANopen.h"
-#include "CO_driver.h"
-#include "updater.h"
+#include "CO_SDO.h"
+#include "OD_helpers.h"
+#include "file_transfer_ODF.h"
 #include "error_assert_handlers.h"
+#include "updater.h"
+#include <systemd/sd-bus.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <systemd/sd-bus.h>
-#include <signal.h>
+#include <stdbool.h>
 
 
-#define INTERFACE_NAME  "org.OreSat.Updater"
-#define BUS_NAME        INTERFACE_NAME
-#define OBJECT_PATH     "/org/OreSat/Updater"
-#define FILE_NAME_SIZE 100
-#define ERROR_MESSAGE_SIZE 100
+#define DESTINATION         "org.oresat.updater"
+#define INTERFACE_NAME      "org.oresat.updater"
+#define OBJECT_PATH         "/org/oresat/updater"
+#define FILE_NAME_SIZE      100
+#define ERROR_MESSAGE_SIZE  100
 
 
-/* Static Variables */
-static volatile int endProgram = 0;
-static sd_bus *bus = NULL;
-static int32_t current_state = 0;
-static uint32_t updates_available = 0;
-static char current_file[FILE_NAME_SIZE] = "\0";
-static char error_message[ERROR_MESSAGE_SIZE] = "\0";
+// Static variables
+static sd_bus               *bus = NULL;
+static pthread_t            signal_thread_id;
+static bool                 end_program = false;
+static int32_t              current_state = 0;
+static uint32_t             updates_available = 0;
+static char                 current_file[FILE_NAME_SIZE] = "\0";
+static char                 error_message[ERROR_MESSAGE_SIZE] = "\0";
 
 
-/* Static Functions */
+// Static functions headers
+static int read_status_cb(sd_bus_message *m, void *userdata, sd_bus_error *ret_error);
+static void* signal_thread(void* arg);
 
 
-/******************************************************************************/
-void updater_programStart(void){
-    /* Connect to the bus */
-    int r = sd_bus_open_system(&bus);
-    dbusError(r, "Failed to connect to system bus.");
+// ***************************************************************************
+// updater dbus functions
 
-    CO_OD_configure(CO->SDO[0], 0x3004, CO_ODF_3004, NULL, 0, 0U);
 
-    return;
+int updater_dbus_setup(void) {
+    int r;
+    void* userdata = NULL;
+
+    // add updater_ODF to OD
+    CO_OD_configure(CO->SDO[0], 0x3004, updater_ODF, NULL, 0, 0U);
+
+    // Connect to the bus
+    r = sd_bus_open_system(&bus);
+    if (r < 0) {
+        fprintf(stderr, "Failed to connect to systemd bus.\n");
+        return r;
+    }
+
+    r = sd_bus_match_signal(
+            bus,
+            NULL,
+            NULL,
+            OBJECT_PATH,
+            "org.freedesktop.DBus.Properties",
+            "PropertiesChanged", 
+            read_status_cb, 
+            userdata);
+    if (r < 0) {
+        fprintf(stderr, "Failed to add new signal match.\n");
+        return r;
+    }
+
+    // Start dbus signal thread
+    if (pthread_create(&signal_thread_id, NULL, signal_thread, NULL) != 0) {
+        fprintf(stderr, "Failed to start dbus signal thread.\n");
+        return -1;
+    }
+
+    return 0;
 }
 
 
-/******************************************************************************/
-void updater_communicationReset(void){
-    return;
+int updater_dbus_end(void) {
+
+    // stop dbus signal thread
+    end_program = true;
+    if (pthread_join(signal_thread_id, NULL) != 0) {
+        fprintf(stderr, "signal thread join failed.\n");
+        return -1;
+    }
+
+    sd_bus_unref(bus);
+    return 0;
 }
 
 
-/******************************************************************************/
-void updater_programEnd(void){
-    return;
-}
+// ***************************************************************************
+// updater dbus signal functions
 
 
-/******************************************************************************/
-void updater_programAsync(uint16_t timer1msDiff){
-    return;
-}
-
-
-/******************************************************************************/
-void updater_program1ms(void){
-    sd_bus_error err = SD_BUS_ERROR_NULL;
-    sd_bus_message *mess = NULL;
+static int read_status_cb(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
     int r;
 
-     /* decode dbus property */
-    r = sd_bus_get_property(bus, BUS_NAME, OBJECT_PATH, INTERFACE_NAME, "Status",  &err, &mess, "i");
-    if(r < 0) 
-        /* since this is the 1st dbus call and it returned an error, 
-         * there is no reason to call anything else */
-        goto end;
+    r = sd_bus_get_property(
+            bus, 
+            DESTINATION, 
+            OBJECT_PATH, 
+            INTERFACE_NAME, 
+            "Status",  
+            ret_error, 
+            &m, 
+            "i");
+    if (r < 0)
+        return r;
 
-    r = sd_bus_message_read(mess, "i", &current_state);
+    r = sd_bus_message_read(m, "i", &current_state);
+    if (r < 0)
+        return r;
     
-    if(mess != NULL)
-        sd_bus_message_unref(mess);
-    sd_bus_error_free(&err);
+    r = sd_bus_get_property(
+            bus, 
+            DESTINATION, 
+            OBJECT_PATH, 
+            INTERFACE_NAME, 
+            "CurrentUpdateFile",  
+            ret_error, 
+            &m, 
+            "s");
+    if (r < 0)
+        return r;
 
-    r = sd_bus_get_property(bus, BUS_NAME, OBJECT_PATH, INTERFACE_NAME, "CurrentUpdateFile",  &err, &mess, "s");
-    r = sd_bus_message_read(mess, "s", &current_state);
-    
-    end:
+    r = sd_bus_message_read(m, "s", &current_file);
+    if (r < 0)
+        return r;
 
-    sd_bus_error_free(&err);
-    if(mess != NULL)
-        sd_bus_message_unref(mess);
-
-    return;
+    return 0;
 }
 
 
-/******************************************************************************/
+static void* signal_thread(void* arg) {
+    int r;
+    sd_bus_error err = SD_BUS_ERROR_NULL;
+
+    while (end_program == false) {
+        // Process requests
+        r = sd_bus_process(bus, NULL);
+        if ( r < 0) 
+            fprintf(stderr, "Failed to processA bus.\n");
+        else if (r > 0) // we processed a request, try to process another one, right-away
+            continue;
+
+        // Wait for the next request to process 
+        if (sd_bus_wait(bus, UINT64_MAX) < 0)
+            fprintf(stderr, "Bus wait failed.\n");
+    }
+
+    sd_bus_error_free(&err);
+    return NULL;
+}
 
 
-CO_SDO_abortCode_t CO_ODF_3004(CO_ODF_arg_t *ODF_arg) {
+// ***************************************************************************
+// updater ODF(s)
+
+
+CO_SDO_abortCode_t updater_ODF(CO_ODF_arg_t *ODF_arg) {
     CO_SDO_abortCode_t ret = CO_SDO_AB_NONE;
     sd_bus_error err = SD_BUS_ERROR_NULL;
     sd_bus_message *mess;
@@ -176,15 +236,17 @@ CO_SDO_abortCode_t CO_ODF_3004(CO_ODF_arg_t *ODF_arg) {
                     break;
                 }
 
-                r = sd_bus_call_method(bus,
-                                       BUS_NAME,
-                                       OBJECT_PATH,
-                                       INTERFACE_NAME,
-                                       "AddUpdateFile",
-                                       &err,
-                                       &mess,
-                                       "s",
-                                       new_update_file);
+                r = sd_bus_call_method(
+                        bus,
+                        DESTINATION,
+                        OBJECT_PATH,
+                        INTERFACE_NAME,
+                        "AddUpdateFile",
+                        &err,
+                        &mess,
+                        "s",
+                        new_update_file);
+                dbusError(r, "Failed to issue method call:");
 
                 /* Parse the response message */
                 r = sd_bus_message_read(mess, "b", &temp_bool);
@@ -201,14 +263,16 @@ CO_SDO_abortCode_t CO_ODF_3004(CO_ODF_arg_t *ODF_arg) {
             if(ODF_arg->reading == true)
                 ret = CO_SDO_AB_WRITEONLY; /* can't read parameters, write only */
             else {
-                r = sd_bus_call_method(bus,
-                                       BUS_NAME,
-                                       OBJECT_PATH,
-                                       INTERFACE_NAME,
-                                       "StartUpdate",
-                                       &err,
-                                       &mess,
-                                       NULL);
+                r = sd_bus_call_method(
+                        bus,
+                        DESTINATION,
+                        OBJECT_PATH,
+                        INTERFACE_NAME,
+                        "StartUpdate",
+                        &err,
+                        &mess,
+                        NULL);
+                dbusError(r, "Failed to issue method call:");
 
                 /* Parse the response message */
                 r = sd_bus_message_read(mess, "b", &temp_bool);
@@ -225,14 +289,15 @@ CO_SDO_abortCode_t CO_ODF_3004(CO_ODF_arg_t *ODF_arg) {
             if(ODF_arg->reading == true)
                 ret = CO_SDO_AB_WRITEONLY; /* can't read parameters, write only */
             else {
-                r = sd_bus_call_method(bus,
-                                       BUS_NAME,
-                                       OBJECT_PATH,
-                                       INTERFACE_NAME,
-                                       "StopUpdate",
-                                       &err,
-                                       &mess,
-                                       NULL);
+                r = sd_bus_call_method(
+                        bus,
+                        DESTINATION,
+                        OBJECT_PATH,
+                        INTERFACE_NAME,
+                        "StopUpdate",
+                        &err,
+                        &mess,
+                        NULL);
                 dbusError(r, "Failed to issue method call:");
 
                 /* Parse the response message */
@@ -250,14 +315,15 @@ CO_SDO_abortCode_t CO_ODF_3004(CO_ODF_arg_t *ODF_arg) {
             if(ODF_arg->reading == true)
                 ret = CO_SDO_AB_WRITEONLY; /* can't read parameters, write only */
             else {
-                r = sd_bus_call_method(bus,
-                                       BUS_NAME,
-                                       OBJECT_PATH,
-                                       INTERFACE_NAME,
-                                       "Reset",
-                                       &err,
-                                       &mess,
-                                       NULL);
+                r = sd_bus_call_method(
+                        bus,
+                        DESTINATION,
+                        OBJECT_PATH,
+                        INTERFACE_NAME,
+                        "Reset",
+                        &err,
+                        &mess,
+                        NULL);
                 dbusError(r, "Failed to issue method call:");
 
                 /* Parse the response message */
@@ -275,14 +341,15 @@ CO_SDO_abortCode_t CO_ODF_3004(CO_ODF_arg_t *ODF_arg) {
             if(ODF_arg->reading == true)
                 ret = CO_SDO_AB_WRITEONLY; /* can't read parameters, write only */
             else {
-                r = sd_bus_call_method(bus,
-                                       BUS_NAME,
-                                       OBJECT_PATH,
-                                       INTERFACE_NAME,
-                                       "GetAptListOutput",
-                                       &err,
-                                       &mess,
-                                       NULL);
+                r = sd_bus_call_method(
+                        bus,
+                        DESTINATION,
+                        OBJECT_PATH,
+                        INTERFACE_NAME,
+                        "GetAptListOutput",
+                        &err,
+                        &mess,
+                        NULL);
                 dbusError(r, "Failed to issue method call:");
 
                 /* Parse the response message */

@@ -1,10 +1,6 @@
-/*
- *
- *
- */
 #include "CANopen.h"
 #include "CO_SDO.h" /* only for return codes*/
-#include "app_OD_helpers.h"
+#include "OD_helpers.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>

@@ -1,35 +1,14 @@
-/*
- *
- */
-
-
-#ifndef APP_OD_FUNCTIONS_H
-#define APP_OD_FUNCTIONS_H
+#ifndef FILE_TRANSFER_ODF_H
+#define FILE_TRANSFER_ODF_H
 
 
 #include "CANopen.h"
 #include "CO_driver.h"
 
 
-#ifndef FILE_TRANSFER_MAX_SIZE
-    #define FILE_TRANSFER_MAX_SIZE 1000000
-#endif
-
-#ifndef FILE_PATH_MAX_LENGTH 
-    #define FILE_PATH_MAX_LENGTH 200
-#endif
-
-#define SEND_FILE_LIST_SIZE 127 /* must be <= 127 */
-
-
-/**
- * Configure all application OD functions
- */
-void app_ODF_configure(void);
-
-
-/******************************************************************************/
-/* structs */
+#define FILE_TRANSFER_MAX_SIZE  1000000
+#define FILE_PATH_MAX_LENGTH    200
+#define SEND_FILE_LIST_SIZE     127 /* must be <= 127 */
 
 
 /* Struct for ODF 3001 (receiving files). */
@@ -57,37 +36,41 @@ typedef struct {
 } send_file_data_t;
 
 
-/******************************************************************************/
-/* functions */
+/**
+ * Configure all application OD functions
+ */
+int file_transfer_ODF_setup(void);
 
 
 /**
  * Callback for using inside CO_OD_configure() function for writing files 
  * into object dictionary.
  */
-CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg);
+CO_SDO_abortCode_t recv_file_ODF(CO_ODF_arg_t *ODF_arg);
 
 
 /**
  * Callback for using inside CO_OD_configure() function for reading files 
  * from object dictionary.
  */
-CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg);
+CO_SDO_abortCode_t send_file_array_ODF(CO_ODF_arg_t *ODF_arg);
 
 
 /**
- * Add file to object dictionay that can be read by a master CAN node.
+ * Add file to object dictionary that can be read by a master CAN node.
+ * Ment to be used by other part of the CANdaemon (from the app).
+ * An example would be giving the master CAN node a captured image.
  *
  * @return 0 on success.
  */
-int32_t APP_ODF_3002(const char* filePath);
+int app_send_file(const char* filePath);
 
 
 /**
  * Callback for using inside CO_OD_configure() function for reading files 
  * from object dictionary.
  */
-CO_SDO_abortCode_t CO_ODF_3003(CO_ODF_arg_t *ODF_arg);
+CO_SDO_abortCode_t send_file_ODF(CO_ODF_arg_t *ODF_arg);
 
 
 #endif

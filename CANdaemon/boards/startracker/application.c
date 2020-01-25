@@ -1,136 +1,123 @@
-/*
- * Application interface for CANopenSocket.
- *
- * @file        application.c
- * @author      Janez Paternoster
- * @copyright   2016 Janez Paternoster
- *
- * This file is part of CANopenSocket, a Linux implementation of CANopen
- * stack with master functionality. Project home page is
- * <https://github.com/CANopenNode/CANopenSocket>. CANopenSocket is based
- * on CANopenNode: <https://github.com/CANopenNode/CANopenNode>.
- *
- * CANopenSocket is free and open source software: you can redistribute
- * it and/or modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
-
-
 #include "application.h"
-#include "app_OD_functions.h"
-#include "app_OD_helpers.h"
+#include "OD_helpers.h"
+#include "file_transfer_ODF.h"
 #include "error_assert_handlers.h"
-#include "CANopen.h"
-#include "CO_driver.h"
+#include <systemd/sd-bus.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <systemd/sd-bus.h>
-#include <signal.h>
+#include <stdbool.h>
 
 
-#define INTERFACE_NAME  "org.OreSat.StarTracker"
-#define BUS_NAME        INTERFACE_NAME
-#define OBJECT_PATH     "/org/OreSat/StarTracker"
-#define SIGNAL_THREAD_STACK_SIZE FILE_TRANSFER_MAX_SIZE*3
+#define DESTINATION     "org.oresat.startracker"
+#define INTERFACE_NAME  "org.oresat.startracker"
+#define OBJECT_PATH     "/org/oresat/startracker"
 
 
-/* Static Variables */
+// Static variables
 static sd_bus           *bus = NULL;
+static pthread_t        signal_thread_id;
+static bool             end_program = false;
 
 
-/* Static Functions */
+// Static functions headers
+static int read_orientation_cb(sd_bus_message *m, void *userdata, sd_bus_error *ret_error);
+static void* signal_thread(void* arg);
 
 
-/******************************************************************************/
-void app_programStart(void){
+// ***************************************************************************
+// app dbus functions
+
+
+int app_dbus_setup(void) {
     int r;
+    void* userdata = NULL;
 
-    /* Connect to the system bus */
+    /* Connect to the bus */
     r = sd_bus_open_system(&bus);
-    dbusErrorExit(r, "Failed to connect to system bus.");
+    if (r < 0) {
+        fprintf(stderr, "Failed to connect to systemd bus.\n");
+        return r;
+    }
 
-    return;
+    r = sd_bus_match_signal(
+            bus,
+            NULL,
+            NULL,
+            OBJECT_PATH,
+            "org.freedesktop.DBus.Properties",
+            "PropertiesChanged", 
+            read_orientation_cb, 
+            userdata);
+    if (r < 0) {
+        fprintf(stderr, "Failed to add new signal match.\n");
+        return r;
+    }
+
+    //start dbus signal thread
+    if (pthread_create(&signal_thread_id, NULL, signal_thread, NULL) != 0) {
+        fprintf(stderr, "Failed to start dbus signal thread.\n");
+        return -1;
+    }
+
+    return 0;
 }
 
 
-/******************************************************************************/
-void app_communicationReset(void){
+int app_dbus_end(void) {
 
-}
-
-
-/******************************************************************************/
-void app_programEnd(void){
+    // stop dbus signal thread
+    end_program = true;
+    if (pthread_join(signal_thread_id, NULL) != 0) {
+        fprintf(stderr, "signal thread join failed.\n");
+        return -1;
+    }
 
     sd_bus_unref(bus);
-
-    return;
+    return 0;
 }
 
 
-/******************************************************************************/
-void app_programAsync(uint16_t timer1msDiff){
-
-}
+// ***************************************************************************
+// other startracker functions
 
 
-/******************************************************************************/
-void app_program1ms(void){
-    sd_bus_error err = SD_BUS_ERROR_NULL;
-    sd_bus_message *mess = NULL;
+static int read_orientation_cb(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
     double declination, right_ascension, orientation = 0.0;
-    int r;
 
-    r = sd_bus_get_property(bus,BUS_NAME, OBJECT_PATH, INTERFACE_NAME, "DEC", &err, &mess, "d");
-    if (r >= 0) {
-        /* decode dbus property */
-        r = sd_bus_message_read(mess, "d", &declination);
-    }
+    if (sd_bus_get_property(bus, DESTINATION, OBJECT_PATH, INTERFACE_NAME, "DEC", ret_error, &m, "ddd") < 0)
+        return 1; // failed to get property
+    
+    if (sd_bus_message_read(m, "ddd", &declination, &right_ascension, &orientation) < 0)
+        return 1; // failed to decode dbus property
 
-    /* free message */
-    sd_bus_error_free(&err);
-    err = SD_BUS_ERROR_NULL;
-    sd_bus_message_unref(mess);
-    mess = NULL;
-
-    r = sd_bus_get_property(bus, BUS_NAME, OBJECT_PATH, INTERFACE_NAME, "RA",  &err, &mess, "d");
-    if (r >= 0) {
-        /* decode dbus property */
-        r = sd_bus_message_read(mess, "d", &right_ascension);
-    }
-
-    /* free message */
-    sd_bus_error_free(&err);
-    err = SD_BUS_ERROR_NULL;
-    sd_bus_message_unref(mess);
-    mess = NULL;
-
-    r = sd_bus_get_property(bus, BUS_NAME, OBJECT_PATH, INTERFACE_NAME, "ORI",  &err, &mess, "d");
-    if (r >= 0) {
-        /* decode dbus property */
-            r = sd_bus_message_read(mess, "d", &orientation);
-    }
-
-    /* free message */
-    sd_bus_error_free(&err);
-    err = SD_BUS_ERROR_NULL;
-    sd_bus_message_unref(mess);
-    mess = NULL;
-
+    // update OD
     app_writeOD(0x3101, 1, &declination, sizeof(declination));
     app_writeOD(0x3101, 2, &right_ascension, sizeof(right_ascension));
     app_writeOD(0x3101, 3, &orientation, sizeof(orientation));
+
+    return 0;
 }
 
+
+static void* signal_thread(void* arg) {
+    int r;
+    sd_bus_error err = SD_BUS_ERROR_NULL;
+
+    while (end_program == false) {
+        // Process requests
+        r = sd_bus_process(bus, NULL);
+        if ( r < 0) 
+            fprintf(stderr, "Failed to processA bus.\n");
+        else if (r > 0) // we processed a request, try to process another one, right-away
+            continue;
+
+        // Wait for the next request to process 
+        if (sd_bus_wait(bus, UINT64_MAX) < 0)
+            fprintf(stderr, "Bus wait failed.\n");
+    }
+
+    sd_bus_error_free(&err);
+    return NULL;
+}
 

@@ -1,34 +1,10 @@
-/*
- * CANopen main program file for Linux SocketCAN.
- *
- * @file        main
- * @author      Janez Paternoster
- * @copyright   2015 Janez Paternoster
- *
- * This file is part of CANopenSocket, a Linux implementation of CANopen
- * stack with master functionality. Project home page is
- * <https://github.com/CANopenNode/CANopenSocket>. CANopenSocket is based
- * on CANopenNode: <https://github.com/CANopenNode/CANopenNode>.
- *
- * CANopenSocket is free and open source software: you can redistribute
- * it and/or modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
-
-
 #include "CANopen.h"
 #include "CO_Linux_tasks.h"
 #include "CO_time.h"
-#include "candaemon.h"
+#include "application.h"
+#include "updater.h"
+#include "systemd_ODF.h"
+#include "file_transfer_ODF.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -44,31 +20,17 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-
 #include <stdint.h>
 #include <stdbool.h>
 #include <sys/stat.h>
 #include <syslog.h>
-#include <stdio.h>
 #include <stdarg.h>
 
 
-
-#define NSEC_PER_SEC            (1000000000)    /* The number of nanoseconds per second. */
-#define NSEC_PER_MSEC           (1000000)       /* The number of nanoseconds per millisecond. */
 #define TMR_TASK_INTERVAL_NS    (1000000)       /* Interval of taskTmr in nanoseconds */
 #define TMR_TASK_OVERFLOW_US    (5000)          /* Overflow detect limit for taskTmr in microseconds */
 #define INCREMENT_1MS(var)      (var++)         /* Increment 1ms variable in taskTmr */
-#ifndef FILE_RECEIVE_FOLDER 
-#define FILE_RECEIVE_FOLDER "/tmp/oresat-candaemon/received_files/"
-#endif
-#ifndef FILE_SEND_FOLDER
-#define FILE_SEND_FOLDER "/tmp/oresat-candaemon/send_files/"
-#endif
-
-#ifndef DEFAULT_PID_FILE
-#define DEFAULT_PID_FILE "/run/oresat-candaemon.pid"
-#endif
+#define DEFAULT_PID_FILE        "/run/oresat-candaemon.pid"
 
 
 /* Global variable increments each millisecond. */
@@ -87,6 +49,8 @@ static CO_time_t            CO_time;            /* Object for current time */
 static void*                rt_thread(void* arg);
 static pthread_t            rt_thread_id;
 static int                  rt_thread_epoll_fd;
+
+static bool                 daemon_flag = false;
 
 
 /* Signal handler */
@@ -122,7 +86,6 @@ void logmsg(int priority, const char *fmt, ...)
 /******************************************************************************/
 /** Mainline and RT thread                                                   **/
 /******************************************************************************/
-bool daemon_flag = false;
 int main (int argc, char *argv[]) {
     int c;
     char *pid_file = DEFAULT_PID_FILE;
@@ -226,12 +189,6 @@ int main (int argc, char *argv[]) {
         CO_errExit(s);
     }
 
-    struct stat st = {0};
-    if(stat(FILE_RECEIVE_FOLDER, &st) == -1)
-        mkdir(FILE_RECEIVE_FOLDER, 0700);
-    if(stat(FILE_SEND_FOLDER, &st) == -1)
-        mkdir(FILE_SEND_FOLDER, 0700);
-
 
     printf("%s - starting CANopen device with Node ID %d(0x%02X)", argv[0], nodeId, nodeId);
 
@@ -280,11 +237,11 @@ int main (int argc, char *argv[]) {
 
 
         /* Enter CAN configuration. */
-        CO_CANsetConfigurationMode(CANdevice0Index);
+        CO_CANsetConfigurationMode(&CANdevice0Index);
 
 
         /* initialize CANopen */
-        err = CO_init(CANdevice0Index, nodeId, 0);
+        err = CO_init(&CANdevice0Index, nodeId, 0);
         if(err != CO_ERROR_NO) {
             char s[120];
             snprintf(s, 120, "Communication reset - CANopen initialization failed, err=%d", err);
@@ -337,11 +294,14 @@ int main (int argc, char *argv[]) {
                     CO_errExit("Program init - rt_thread set scheduler failed");
             }
 
-            CD_programStart();
+            // set up general ODFs
+            file_transfer_ODF_setup();
+            systemd_ODF_setup();
+
+            // set up dbus services
+            updater_dbus_setup();
+            app_dbus_setup();
         }
-
-
-        CD_communicationReset();
 
 
         /* start CAN */
@@ -376,8 +336,6 @@ int main (int argc, char *argv[]) {
                 tmr1msPrev = CO_timer1ms;
 
                 /* code was processed in the above function. Additional code process below */
-
-                CD_programAsync(timer1msDiff);
             }
 
             else {
@@ -395,12 +353,14 @@ int main (int argc, char *argv[]) {
         CO_errExit("Program end - pthread_join failed");
     }
 
-    CD_programEnd();
+    // stop dbus services threads
+    updater_dbus_end();
+    app_dbus_end();
 
     /* delete objects from memory */
     CANrx_taskTmr_close();
     taskMain_close();
-    CO_delete(CANdevice0Index);
+    CO_delete(&CANdevice0Index);
 
     printf("%s on %s (nodeId=0x%02X) - finished.\n\n", argv[0], CANdevice, nodeId);
 
@@ -443,8 +403,6 @@ static void* rt_thread(void* arg) {
                 CO_trace_process(CO->trace[i], *CO_time.epochTimeOffsetMs);
             }
 #endif
-
-            CD_program1ms();
 
             /* Detect timer large overflow */
             if(OD_performance[ODA_performance_timerCycleMaxTime] > TMR_TASK_OVERFLOW_US && rtPriority > 0 && CO->CANmodule[0]->CANnormal) {

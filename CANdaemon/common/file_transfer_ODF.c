@@ -1,13 +1,8 @@
-/*
- *
- */
-
-
 #include "CANopen.h"
 #include "CO_driver.h"
-#include "app_OD_functions.h"
-#include "app_OD_helpers.h"
+#include "OD_helpers.h"
 #include "error_assert_handlers.h"
+#include "file_transfer_ODF.h"
 #include <string.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -17,63 +12,84 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <pthread.h>
 
 
-pthread_mutex_t APP_ODF_mtx;
-#define APP_LOCK_ODF()            {if(pthread_mutex_lock(&APP_ODF_mtx) != 0) CO_errExit("Mutex lock CO_OD_mtx failed");}
-#define APP_UNLOCK_ODF()          {if(pthread_mutex_unlock(&APP_ODF_mtx) != 0) CO_errExit("Mutex unlock CO_OD_mtx failed");}
-
-#ifndef FILE_RECEIVE_FOLDER 
-    #define FILE_RECEIVE_FOLDER "/tmp/received_files/"
-#endif
-
-#ifndef FILE_SEND_FOLDER
-    #define FILE_SEND_FOLDER "/tmp/send_files/"
-
-#endif
-
+#define FILE_RECEIVE_FOLDER     "/tmp/received_files/"
+#define FILE_SEND_FOLDER        "/tmp/send_files/"
 #ifndef CO_SDO_BUFFER_SIZE
-    #define CO_SDO_BUFFER_SIZE 889 // CO_SDO.* should define this
+#define CO_SDO_BUFFER_SIZE      889 // CO_driver.h should define this
 #endif
 
 
+// ***************************************************************************
+// Static Variables
 
-/******************************************************************************/
-/* Static functions headers */
+
+static pthread_mutex_t          FT_ODF_mtx;
+static received_file_data_t     recvFileBuffer;
+static send_file_data_t         sendFileBuffer;
+
+
+// ***************************************************************************
+// Static functions headers
+
+
+static int ft_lock_mtx(void);
+static int ft_unlock_mtx(void);
 static CO_SDO_abortCode_t save_file_data(CO_ODF_arg_t *ODF_arg, received_file_data_t *recvFileBuffer);
 static int initFileList(send_file_data_t *sendFileBuffer);
 static uint32_t get_file_name(const char *filePath, char *fileName);
 static uint32_t get_file_data(const char *filePath, int8_t *fileData);
 static CO_SDO_abortCode_t read_file_data(CO_ODF_arg_t *ODF_arg);
 
-/******************************************************************************/
-/* Static Variables */
+
+// ***************************************************************************
+// Mutex functions
 
 
-static received_file_data_t recvFileBuffer;     /* for OD entry 0x3001 */
-static send_file_data_t sendFileBuffer;         /* for OD entry 0x3002 and 0x3003 */
+static int ft_lock_mtx(void) {
+    if(pthread_mutex_lock(&FT_ODF_mtx) != 0) 
+        fprintf(stderr, "File transfer mutex lock failed");
+    return 0;
+}
 
-
-/******************************************************************************/
-/* Add static data to SDO struct */
-
-void app_ODF_configure(void){
-    initFileList(&sendFileBuffer);
-
-    CO_OD_configure(CO->SDO[0], 0x3001, CO_ODF_3001, (void*)&recvFileBuffer, 0, 0U);
-    CO_OD_configure(CO->SDO[0], 0x3002, CO_ODF_3002, (void*)&sendFileBuffer, 0, 0U);
-    CO_OD_configure(CO->SDO[0], 0x3003, CO_ODF_3003, (void*)&sendFileBuffer, 0, 0U);
-
-    return;
+static int ft_unlock_mtx(void) {
+    if(pthread_mutex_unlock(&FT_ODF_mtx) != 0) 
+        fprintf(stderr, "File transfer mutex unlock failed");
+    return 0;
 }
 
 
-/******************************************************************************/
-/* Receiveing incoming file, OD entry 3001 */
+// ***************************************************************************
+// Add static data to SDO struct
+
+
+int file_transfer_ODF_setup(void) {
+
+    // make sure /tmp dir exist
+    struct stat st = {0};
+    if(stat(FILE_RECEIVE_FOLDER, &st) == -1)
+        mkdir(FILE_RECEIVE_FOLDER, 0700);
+    if(stat(FILE_SEND_FOLDER, &st) == -1)
+        mkdir(FILE_SEND_FOLDER, 0700);
+
+    initFileList(&sendFileBuffer);
+
+    CO_OD_configure(CO->SDO[0], 0x3001, recv_file_ODF, (void*)&recvFileBuffer, 0, 0U);
+    CO_OD_configure(CO->SDO[0], 0x3002, send_file_array_ODF, (void*)&sendFileBuffer, 0, 0U);
+    CO_OD_configure(CO->SDO[0], 0x3003, send_file_ODF, (void*)&sendFileBuffer, 0, 0U);
+
+    return 0;
+}
+
+
+// ***************************************************************************
+// Receiveing incoming file ODF
 
 
 /**
- * Wrapper function used by CP_ODF_3001 to save file data into SDO buffer from struct. 
+ * Wrapper function used by recv_file_ODF to save file data into SDO buffer from struct. 
  * It can handle spilting large data files into multiple segments.
  * */
 static CO_SDO_abortCode_t save_file_data(CO_ODF_arg_t *ODF_arg, received_file_data_t *recvFileBuffer) {
@@ -108,7 +124,7 @@ static CO_SDO_abortCode_t save_file_data(CO_ODF_arg_t *ODF_arg, received_file_da
 }
 
 
-CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg) {
+CO_SDO_abortCode_t recv_file_ODF(CO_ODF_arg_t *ODF_arg) {
     received_file_data_t *recvFileBuffer;
     CO_SDO_abortCode_t ret = CO_SDO_AB_NONE;
     char filePath[] = FILE_RECEIVE_FOLDER;
@@ -123,7 +139,7 @@ CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg) {
     if(ODF_arg->reading == false) 
         return CO_SDO_AB_READONLY; /* can't write parameters, read only */
 
-    APP_LOCK_ODF();
+    ft_lock_mtx();
 
     switch(ODF_arg->subIndex) {
         case 1 : /* file name */
@@ -175,17 +191,16 @@ CO_SDO_abortCode_t CO_ODF_3001(CO_ODF_arg_t *ODF_arg) {
             ret = CO_SDO_AB_SUB_UNKNOWN; 
     }
 
-    APP_UNLOCK_ODF();
-
+    ft_unlock_mtx();
     return ret;
 }
 
 
-/******************************************************************************/
-/* Send file array, OD entry 3002 */
+// ***************************************************************************
+// Send file array ODF
 
 
-CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
+CO_SDO_abortCode_t send_file_array_ODF(CO_ODF_arg_t *ODF_arg) {
     CO_SDO_abortCode_t ret = CO_SDO_AB_NONE;
     send_file_data_t *sendFileBuffer;
 
@@ -194,7 +209,7 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
     if(ODF_arg->reading == false) 
         return CO_SDO_AB_READONLY; /* can't write parameters, read only */
 
-    APP_LOCK_ODF();
+    ft_lock_mtx();
 
     if(ODF_arg->subIndex == 0) {
         uint8_t temp = SEND_FILE_LIST_SIZE;
@@ -208,13 +223,13 @@ CO_SDO_abortCode_t CO_ODF_3002(CO_ODF_arg_t *ODF_arg) {
     else
         ret = CO_SDO_AB_SUB_UNKNOWN;
 
-    APP_UNLOCK_ODF();
+    ft_unlock_mtx();
     return ret;
 }
 
 
-int32_t APP_ODF_3002(const char *filePath) {
-    int32_t ret = 0;
+int app_send_file(const char *filePath) {
+    int ret = 0;
     char fileName[FILE_PATH_MAX_LENGTH];
     char newFilePath[FILE_PATH_MAX_LENGTH] = FILE_SEND_FOLDER;
     int source, dest;
@@ -242,7 +257,7 @@ int32_t APP_ODF_3002(const char *filePath) {
         /* remove old file */
         remove(filePath);
 
-        APP_LOCK_ODF();
+        ft_lock_mtx();
 
         /* there is a empty spot in file list, add filename to the list */
         if(sendFileBuffer.filesAvailable < SEND_FILE_LIST_SIZE) { 
@@ -266,7 +281,7 @@ int32_t APP_ODF_3002(const char *filePath) {
             ++sendFileBuffer.filesAvailable;
         }
 
-        APP_UNLOCK_ODF();
+        ft_unlock_mtx();
     }
 
     return ret; 
@@ -278,7 +293,7 @@ int32_t APP_ODF_3002(const char *filePath) {
 
 
 /**
-* Wrapper funciton for CO_ODF_3003. Initalizes the file list array to empty 
+* Wrapper funciton for send_file_ODF. Initalizes the file list array to empty 
 * and then adds any files found in the send folder to the file list. 
 *
 * @return 1 on sucess and -1 on error
@@ -335,7 +350,7 @@ static int initFileList(send_file_data_t *sendFileBuffer) {
 
 
 /**
-* Wrapper funciton for CO_ODF_3003. Remove the path from the file path name.
+* Wrapper funciton for send_file_ODF. Remove the path from the file path name.
 *
 * @return the length of the file name without '\0' or 0 on failure.
 */
@@ -371,7 +386,7 @@ static uint32_t get_file_name(const char *filePath, char *fileName) {
 
 
 /**
-* Wrapper funciton for CO_ODF_3003. Read in file data.
+* Wrapper funciton for send_file_ODF. Read in file data.
 *
 * @return file size or 0 on failure.
 */
@@ -403,7 +418,7 @@ static uint32_t get_file_data(const char *filePath, int8_t *fileData) {
 
 
 /**
- * Wrapper function used by CP_ODF_3003 to read file data into SDO buffer from struct. 
+ * Wrapper function used by send_file_ODF to read file data into SDO buffer from struct. 
  * It can handle spilting large data files into multiple segments.
  * */
 static CO_SDO_abortCode_t read_file_data(CO_ODF_arg_t *ODF_arg) {
@@ -460,13 +475,13 @@ static CO_SDO_abortCode_t read_file_data(CO_ODF_arg_t *ODF_arg) {
 }
 
 
-CO_SDO_abortCode_t CO_ODF_3003(CO_ODF_arg_t *ODF_arg) {
+CO_SDO_abortCode_t send_file_ODF(CO_ODF_arg_t *ODF_arg) {
     CO_SDO_abortCode_t ret = CO_SDO_AB_NONE;
     send_file_data_t *sendFileBuffer;
 
     sendFileBuffer = (send_file_data_t*) ODF_arg->object;
 
-    APP_LOCK_ODF();
+    ft_lock_mtx();
 
     switch(ODF_arg->subIndex) {
         case 1 : /* load file from send folder (read only) */
@@ -601,11 +616,7 @@ CO_SDO_abortCode_t CO_ODF_3003(CO_ODF_arg_t *ODF_arg) {
             ret = CO_SDO_AB_SUB_UNKNOWN; 
     }
 
-    APP_UNLOCK_ODF();
-
+    ft_unlock_mtx();
     return ret;
 }
 
-
-/******************************************************************************/
-/* TBD */

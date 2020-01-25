@@ -1,11 +1,8 @@
-/*
- *
- *
- */
-
-
 #ifndef APP_OD_HELPERS_H
 #define APP_OD_HELPERS_H
+
+
+#include <stdint.h>
 
 
 /**
