@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <pthread.h>
 
 
 #define DESTINATION         "org.oresat.updater"
@@ -79,8 +80,17 @@ int updater_dbus_end(void) {
 
     // stop dbus signal thread
     end_program = true;
+
+    struct timespec tim;
+    tim.tv_sec = 1;
+    tim.tv_nsec = 0;
+
+    if (nanosleep(&tim, NULL) < 0 ) {
+        fprintf(stderr, "Nano sleep system call failed \n");
+    }
+
     if (pthread_join(signal_thread_id, NULL) != 0) {
-        fprintf(stderr, "signal thread join failed.\n");
+        fprintf(stderr, "updater signal thread join failed.\n");
         return -1;
     }
 
@@ -145,9 +155,10 @@ static void* signal_thread(void* arg) {
             continue;
 
         // Wait for the next request to process 
-        if (sd_bus_wait(bus, UINT64_MAX) < 0)
+        if (sd_bus_wait(bus, 100000) < 0)
             fprintf(stderr, "Bus wait failed.\n");
     }
+    printf("app thread exited \n");
 
     sd_bus_error_free(&err);
     return NULL;

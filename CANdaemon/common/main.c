@@ -57,6 +57,10 @@ static bool                 daemon_flag = false;
 volatile sig_atomic_t CO_endProgram = 0;
 static void sigHandler(int sig) {
     CO_endProgram = 1;
+
+    // stop dbus services threads
+    updater_dbus_end();
+    app_dbus_end();
 }
 
 
@@ -328,13 +332,6 @@ int main (int argc, char *argv[]) {
             }
 
             else if(taskMain_process(ev.data.fd, &reset, CO_timer1ms)) {
-                uint16_t timer1msDiff;
-                static uint16_t tmr1msPrev = 0;
-
-                /* Calculate time difference */
-                timer1msDiff = CO_timer1ms - tmr1msPrev;
-                tmr1msPrev = CO_timer1ms;
-
                 /* code was processed in the above function. Additional code process below */
             }
 

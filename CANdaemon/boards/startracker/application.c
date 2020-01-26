@@ -16,13 +16,13 @@
 
 // Static variables
 static sd_bus           *bus = NULL;
-static pthread_t        signal_thread_id;
+static pthread_t        app_signal_thread_id;
 static bool             end_program = false;
 
 
 // Static functions headers
 static int read_orientation_cb(sd_bus_message *m, void *userdata, sd_bus_error *ret_error);
-static void* signal_thread(void* arg);
+static void* app_signal_thread(void* arg);
 
 
 // ***************************************************************************
@@ -55,7 +55,7 @@ int app_dbus_setup(void) {
     }
 
     //start dbus signal thread
-    if (pthread_create(&signal_thread_id, NULL, signal_thread, NULL) != 0) {
+    if (pthread_create(&app_signal_thread_id, NULL, app_signal_thread, NULL) != 0) {
         fprintf(stderr, "Failed to start dbus signal thread.\n");
         return -1;
     }
@@ -68,8 +68,17 @@ int app_dbus_end(void) {
 
     // stop dbus signal thread
     end_program = true;
-    if (pthread_join(signal_thread_id, NULL) != 0) {
-        fprintf(stderr, "signal thread join failed.\n");
+
+    struct timespec tim;
+    tim.tv_sec = 1;
+    tim.tv_nsec = 0;
+
+    if (nanosleep(&tim, NULL) < 0 ) {
+        fprintf(stderr, "Nano sleep system call failed \n");
+    }
+
+    if (pthread_join(app_signal_thread_id, NULL) != 0) {
+        fprintf(stderr, "app signal thread join failed.\n");
         return -1;
     }
 
@@ -100,7 +109,7 @@ static int read_orientation_cb(sd_bus_message *m, void *userdata, sd_bus_error *
 }
 
 
-static void* signal_thread(void* arg) {
+static void* app_signal_thread(void* arg) {
     int r;
     sd_bus_error err = SD_BUS_ERROR_NULL;
 
@@ -113,9 +122,10 @@ static void* signal_thread(void* arg) {
             continue;
 
         // Wait for the next request to process 
-        if (sd_bus_wait(bus, UINT64_MAX) < 0)
+        if (sd_bus_wait(bus, 100000) < 0)
             fprintf(stderr, "Bus wait failed.\n");
     }
+    printf("app thread exited \n");
 
     sd_bus_error_free(&err);
     return NULL;
