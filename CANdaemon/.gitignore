@@ -1,9 +1,4 @@
 candaemon
-canopencomm
-canopend
 *.o
 .ycm*
 .config
-od_storage
-od_storage_auto
-
