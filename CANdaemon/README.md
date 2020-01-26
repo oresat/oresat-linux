@@ -61,7 +61,7 @@ The CANdaemon is based off of [CANopenSocket], but with dbus interfaces to commi
 <!-- References -->
 [CAN-Wikipedia]:https://en.wikipedia.org/wiki/CAN_bus
 [CANopenSocket]:https://github.com/CANopenNode/CANopenSocket
-[Sytemd-DBus]:https://www.freedesktop.org/wiki/Software/systemd/dbus/
+[Systemd-DBus]:https://www.freedesktop.org/wiki/Software/systemd/dbus/
 [DBus-Specs]:https://dbus.freedesktop.org/doc/dbus-specification.html
 [CANopen-Specs]:https://www.can-cia.org/groups/specifications/
 [ECSS-CANBus-Extended-Protocal]:https://ecss.nl/standard/ecss-e-st-50-15c-space-engineering-canbus-extension-protocol-1-may-2015/
