@@ -1,101 +1,60 @@
-/*
- * Application interface for CANopenSocket.
- *
- * @file        application.c
- * @author      Janez Paternoster
- * @copyright   2016 Janez Paternoster
- *
- * This file is part of CANopenSocket, a Linux implementation of CANopen
- * stack with master functionality. Project home page is
- * <https://github.com/CANopenNode/CANopenSocket>. CANopenSocket is based
- * on CANopenNode: <https://github.com/CANopenNode/CANopenNode>.
- *
- * CANopenSocket is free and open source software: you can redistribute
- * it and/or modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
-
-
-#include "application.h"
-#include "app_OD_functions.h"
-#include "app_OD_helpers.h"
-#include "error_assert_handlers.h"
 #include "CANopen.h"
-#include "CO_driver.h"
+#include "CO_SDO.h"
+#include "OD_helpers.h"
+#include "file_transfer_ODF.h"
+#include "error_assert_handlers.h"
+#include "application.h"
+#include <systemd/sd-bus.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <systemd/sd-bus.h>
+#include <stdbool.h>
 
 
-#define INTERFACE_NAME  "org.OreSat.CameraBoard"
-#define BUS_NAME        INTERFACE_NAME
-#define OBJECT_PATH     "/org/OreSat/CameraBoard"
-#define SIGNAL_THREAD_STACK_SIZE FILE_TRANSFER_MAX_SIZE*3
+#define DESTINATION     "org.oresat.cameraboard"
+#define INTERFACE_NAME  "org.oresat.cameraboard"
+#define OBJECT_PATH     "/org/oresat/cameraboard"
 
 
-/* Static Variables */
-static volatile int     endProgram = 0;
-static sd_bus          *bus = NULL;
+// Static variables
+static sd_bus           *bus = NULL;
 
 
-/* Static Functions */
+// Static functions headers
+CO_SDO_abortCode_t cameraboard_ODF(CO_ODF_arg_t *ODF_arg);
 
 
-/******************************************************************************/
-void app_programStart(void){
+// ***************************************************************************
+// app dbus functions
+
+
+int app_dbus_setup(void) {
     int r;
+    void* userdata = NULL;
 
     /* Connect to the bus */
     r = sd_bus_open_system(&bus);
-    dbusError(r, "Failed to connect to system bus.");
+    if (r < 0) {
+        fprintf(stderr, "Failed to connect to systemd bus.\n");
+        return r;
+    }
 
-    CO_OD_configure(CO->SDO[0], 0x3100, CB_ODF_3100, NULL, 0, 0U);
+    CO_OD_configure(CO->SDO[0], 0x3100, cameraboard_ODF, NULL, 0, 0U);
 
-    return;
+    return 0;
 }
 
 
-/******************************************************************************/
-void app_communicationReset(void){
-
-}
-
-
-/******************************************************************************/
-void app_programEnd(void){
+int app_dbus_end(void) {
     sd_bus_unref(bus);
-
-    return;
+    return 0;
 }
 
 
-/******************************************************************************/
-void app_programAsync(uint16_t timer1msDiff){
-
-}
+// ***************************************************************************
+// other cameraboard functions
 
 
-/******************************************************************************/
-void app_program1ms(void){
-
-}
-
-
-/******************************************************************************/
-
-
-CO_SDO_abortCode_t CB_ODF_3100(CO_ODF_arg_t *ODF_arg) {
+CO_SDO_abortCode_t cameraboard_ODF(CO_ODF_arg_t *ODF_arg) {
     CO_SDO_abortCode_t ret = CO_SDO_AB_NONE;
     sd_bus_error err = SD_BUS_ERROR_NULL;
     sd_bus_message *m = NULL;
@@ -109,22 +68,29 @@ CO_SDO_abortCode_t CB_ODF_3100(CO_ODF_arg_t *ODF_arg) {
     }
 
     /* Issue the method call and store the response message in m */
-    r = sd_bus_call_method(bus,
-                           BUS_NAME,
-                           OBJECT_PATH,
-                           INTERFACE_NAME,
-                           "LatestImage",
-                           &err,
-                           &m,
-                           NULL);
-    dbusError(r, "Failed to issue method call.");
+    r = sd_bus_call_method(
+            bus,
+            BUS_NAME,
+            OBJECT_PATH,
+            INTERFACE_NAME,
+            "LatestImage",
+            &err,
+            &m,
+            NULL);
+    if (r < 0) {
+        fprintf(stderr, "Failed to issue method call.");
+        return CO_SDO_AB_GENERAL
+    }
 
     /* Parse the response message */
     r = sd_bus_message_read(m, "s", &file_path);
-    dbusError(r, "Failed to parse response message.");
+    if (r < 0) {
+        fprintf(stderr, "Failed to parse response message.");
+        return CO_SDO_AB_GENERAL
+    }
 
     if(file_path != NULL)
-        APP_ODF_3002(file_path);
+        app_send_file(file_path);
 
     sd_bus_error_free(&err);
     sd_bus_message_unref(m);
