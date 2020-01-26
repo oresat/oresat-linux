@@ -1,29 +1,30 @@
 <div align="center">
   <h1>
-  <br> CANdaemon for OreSat </br>
+    <br> Oresat Linux CANdaemon </br>
   </h1>
   <h4>
     <a href="#features">Features</a> |
+    <a href="#directory layout">Directory Layout</a> |
     <a href="#dependices">Dependices</a> |
-    <a href="#subdir layout">Subdir Layout</a> |
-    <a href="#settup">Settup</a>
+    <a href="#how to use">How to use</a>
   </h4>
 </div>
 
-The CANdaemon is [CANopenSocket], but with dbus interfaces to commicate with other process. The CANdaemon can commicate with main process ([GPS], [StarTracker], [OreSatLive], or the Cirrus Flux Camera process) and the Linux Updater. The CANdaemon not ment to be a Node on the CANbus, not the Network Manager.
+The CANdaemon is based off of [CANopenSocket], but with dbus interfaces to commicate and control daemons. The CANdaemon can commicate with main process ([GPS], [StarTracker], [OreSatLive], or the Cirrus Flux Camera daemons) and the Linux Updater. The CANdaemon is ment to be a node on the CANbus, not the Network Manager.
 
 ![](https://github.com/oresat/oresat-linux/blob/master/CANdaemon/docs/OreSatLinuxDiagram.jpg)
 
 ## Features
 - Follows the CiA (CAN-in-Automation) specs for [CANopen-Specs]. 
 - Follows the [ECSS-CANBus-Extended-Protocal] on top of CiA specs.
-- Designed to control other process over DBus from CAN using sd-bus (systemd dbus system).
-- Easy to add more DBus clients to control new processes over CAN.
+- Designed to allow the CAN Network Manager to have control of local daemons.
+- Uses sd-bus for dbus communication (systemd dbus) to daemons.
+- Easy to add more DBus clients to control new daemons over CAN.
 
-## Subdir Layout 
+## Directory Layout 
 - **boards** - Holds an CANdaemon app for each OreSat Linux board
-- **CANopenNode** - git submodule for CANopenNode
-- **common** - common source code for CANopenComm and CANdaemon
+- **CANopenNode** - The git submodule for CANopenNode (backend of CANdaemon)
+- **common** - Common source code for CANdaemon, regardless of which app is enabled.
 - **docs** - Documentation for CANdaemon
 
 ## Dependices
@@ -37,7 +38,6 @@ The CANdaemon is [CANopenSocket], but with dbus interfaces to commicate with oth
 
 ### Running CANdaemon
 - `make <board>`
-- `make config` if you want to edit the config file
 - `make candaemon`
 
 ### Making a new board
@@ -48,6 +48,7 @@ The CANdaemon is [CANopenSocket], but with dbus interfaces to commicate with oth
 ## Useful References
 - [CAN-Wikipedia]
 - [CANopenSocket]
+- [Systemd-DBus]
 - [DBus-Specs]
 - [CANopen-Specs]
 - [ECSS-CANBus-Extended-Protocal]
@@ -60,6 +61,7 @@ The CANdaemon is [CANopenSocket], but with dbus interfaces to commicate with oth
 <!-- References -->
 [CAN-Wikipedia]:https://en.wikipedia.org/wiki/CAN_bus
 [CANopenSocket]:https://github.com/CANopenNode/CANopenSocket
+[Sytemd-DBus]:https://www.freedesktop.org/wiki/Software/systemd/dbus/
 [DBus-Specs]:https://dbus.freedesktop.org/doc/dbus-specification.html
 [CANopen-Specs]:https://www.can-cia.org/groups/specifications/
 [ECSS-CANBus-Extended-Protocal]:https://ecss.nl/standard/ecss-e-st-50-15c-space-engineering-canbus-extension-protocol-1-may-2015/
