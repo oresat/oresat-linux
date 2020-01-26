@@ -7,40 +7,26 @@ list_boards:
 	@echo "cameraboad gps startracker template"
 
 cameraboard:
-	bash -c "cp ./boards/$@/config .config"
+	@echo "$@" > .config
 
 gps:
-	bash -c "cp ./boards/$@/config .config"
+	@echo "$@" > .config
 
 startracker:
-	bash -c "cp ./boards/$@/config .config"
+	@echo "$@" > .config
 
 template:
-	bash -c "cp ./boards/$@/config .config"
-
-
-##############################################################################
-# Options for CANdaemon, Reading config file
-
-BOARD=$(shell grep -r "oresat-board" .config | cut -f 2 -d ':')
-
-DEBUG=$(shell grep -r "debug" .config | cut -f 2 -d ':')
-ifeq ($(DEBUG), on)
-    DFLAGS += -g
-endif
-
-UPDATER_INTERFACE=$(shell grep -r "updater" .config | cut -f 2 -d ':')
-ifeq ($(UPDATER_INTERFACE), on)
-    DFLAGS += -DUPDATER
-endif
+	@echo "$@" > .config
 
 
 ##############################################################################
 # General and files
 
 CC = gcc
-CFLAGS = -Wall $(shell pkg-config --cflags libsystemd)
+CFLAGS = -g -Wall $(shell pkg-config --cflags libsystemd)
 LFLAGS = -lrt -pthread $(shell pkg-config --libs libsystemd)
+
+BOARD = $(shell cat .config)
 
 STACK_SRC =     	./CANopenNode/stack
 STACKDRV_SRC =     	./common/socketCAN
@@ -100,5 +86,5 @@ config:
 	bash ./edit_config.sh
 
 clean:
-	rm -rf $(OBJS) candaemon
+	rm -rf $(OBJS) candaemon boards/*/*.o boards/*/objDict/*.o
 

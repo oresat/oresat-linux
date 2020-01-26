@@ -1,5 +1,0 @@
-# OreSat Linux CANdaemon config file
-oresat-board:gps
-updater:on
-debug:on
-
