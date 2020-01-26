@@ -96,11 +96,9 @@ static int read_gps_cb(sd_bus_message *m, void *userdata, sd_bus_error *ret_erro
     int16_t posX = 0;
     int16_t posY = 0;
     int16_t posZ = 0;
-    /*
     int16_t velX = 0;
     int16_t velY = 0;
     int16_t velZ = 0;
-    */
     int32_t state;
 
     r = sd_bus_message_read(m, "ddd", &posX, &posY, &posZ); //, &velX, &velY, &velZ, &accX, &accY, &accZ);
@@ -118,11 +116,9 @@ static int read_gps_cb(sd_bus_message *m, void *userdata, sd_bus_error *ret_erro
     app_writeOD(0x3003, 1, &posX, sizeof(float));
     app_writeOD(0x3003, 2, &posY, sizeof(float));
     app_writeOD(0x3003, 3, &posZ, sizeof(float));
-    /*
     app_writeOD(0x3003, 4, &velX, sizeof(float));
     app_writeOD(0x3003, 5, &velY, sizeof(float));
     app_writeOD(0x3003, 6, &velZ, sizeof(float));
-    */
     app_writeOD(0x3001, 1, &state, sizeof(state));
 
     return 0;

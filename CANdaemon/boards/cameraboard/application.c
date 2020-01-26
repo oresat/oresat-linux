@@ -29,7 +29,6 @@ CO_SDO_abortCode_t cameraboard_ODF(CO_ODF_arg_t *ODF_arg);
 
 int app_dbus_setup(void) {
     int r;
-    void* userdata = NULL;
 
     /* Connect to the bus */
     r = sd_bus_open_system(&bus);
@@ -70,7 +69,7 @@ CO_SDO_abortCode_t cameraboard_ODF(CO_ODF_arg_t *ODF_arg) {
     /* Issue the method call and store the response message in m */
     r = sd_bus_call_method(
             bus,
-            BUS_NAME,
+            DESTINATION,
             OBJECT_PATH,
             INTERFACE_NAME,
             "LatestImage",
@@ -79,14 +78,14 @@ CO_SDO_abortCode_t cameraboard_ODF(CO_ODF_arg_t *ODF_arg) {
             NULL);
     if (r < 0) {
         fprintf(stderr, "Failed to issue method call.");
-        return CO_SDO_AB_GENERAL
+        return CO_SDO_AB_GENERAL;
     }
 
     /* Parse the response message */
     r = sd_bus_message_read(m, "s", &file_path);
     if (r < 0) {
         fprintf(stderr, "Failed to parse response message.");
-        return CO_SDO_AB_GENERAL
+        return CO_SDO_AB_GENERAL;
     }
 
     if(file_path != NULL)
