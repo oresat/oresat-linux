@@ -285,19 +285,6 @@ int main (int argc, char *argv[]) {
 
             OD_performance[ODA_performance_timerCycleTime] = TMR_TASK_INTERVAL_NS/1000; /* informative */
 
-            /* Create rt_thread */
-            if(pthread_create(&rt_thread_id, NULL, rt_thread, NULL) != 0)
-                CO_errExit("Program init - rt_thread creation failed");
-
-            /* Set priority for rt_thread */
-            if(rtPriority > 0) {
-                struct sched_param param;
-
-                param.sched_priority = rtPriority;
-                if(pthread_setschedparam(rt_thread_id, SCHED_FIFO, &param) != 0)
-                    CO_errExit("Program init - rt_thread set scheduler failed");
-            }
-
             // set up general ODFs
             file_transfer_ODF_setup();
             systemd_ODF_setup();
@@ -317,27 +304,40 @@ int main (int argc, char *argv[]) {
 
         printf("%s - running ...\n", argv[0]);
 
-
-        while(reset == CO_RESET_NOT && CO_endProgram == 0) {
-/* loop for normal program execution ******************************************/
+        /* Endless loop */
+        while(CO_endProgram == 0) {
             int ready;
             struct epoll_event ev;
 
-            ready = epoll_wait(mainline_epoll_fd, &ev, 1, -1);
+            ready = epoll_wait(rt_thread_epoll_fd, &ev, 1, -1);
 
             if(ready != 1) {
                 if(errno != EINTR) {
-                    CO_error(0x11100000L + errno);
+                    CO_error(0x12100000L + errno);
                 }
             }
 
-            else if(taskMain_process(ev.data.fd, &reset, CO_timer1ms)) {
+            else if(CANrx_taskTmr_process(ev.data.fd)) {
                 /* code was processed in the above function. Additional code process below */
+                INCREMENT_1MS(CO_timer1ms);
+
+                /* Monitor variables with trace objects */
+                CO_time_process(&CO_time);
+#if CO_NO_TRACE > 0
+                for(int i=0; i<OD_traceEnable && i<CO_NO_TRACE; i++) {
+                    CO_trace_process(CO->trace[i], *CO_time.epochTimeOffsetMs);
+                }
+#endif
+
+                /* Detect timer large overflow */
+                if(OD_performance[ODA_performance_timerCycleMaxTime] > TMR_TASK_OVERFLOW_US && rtPriority > 0 && CO->CANmodule[0]->CANnormal) {
+                    CO_errorReport(CO->em, CO_EM_ISR_TIMER_OVERFLOW, CO_EMC_SOFTWARE_INTERNAL, 0x22400000L | OD_performance[ODA_performance_timerCycleMaxTime]);
+                }
             }
 
             else {
                 /* No file descriptor was processed. */
-                CO_error(0x11200000L);
+                CO_error(0x12200000L);
             }
         }
     }
@@ -346,9 +346,6 @@ int main (int argc, char *argv[]) {
 /* program exit ***************************************************************/
     /* join threads */
     CO_endProgram = 1;
-    if(pthread_join(rt_thread_id, NULL) != 0) {
-        CO_errExit("Program end - pthread_join failed");
-    }
 
     // stop dbus services threads
     updater_dbus_end();
@@ -372,46 +369,3 @@ int main (int argc, char *argv[]) {
     exit(EXIT_SUCCESS);
 }
 
-
-/* Realtime thread for CAN receive and taskTmr ********************************/
-static void* rt_thread(void* arg) {
-
-    /* Endless loop */
-    while(CO_endProgram == 0) {
-        int ready;
-        struct epoll_event ev;
-
-        ready = epoll_wait(rt_thread_epoll_fd, &ev, 1, -1);
-
-        if(ready != 1) {
-            if(errno != EINTR) {
-                CO_error(0x12100000L + errno);
-            }
-        }
-
-        else if(CANrx_taskTmr_process(ev.data.fd)) {
-            /* code was processed in the above function. Additional code process below */
-            INCREMENT_1MS(CO_timer1ms);
-
-            /* Monitor variables with trace objects */
-            CO_time_process(&CO_time);
-#if CO_NO_TRACE > 0
-            for(int i=0; i<OD_traceEnable && i<CO_NO_TRACE; i++) {
-                CO_trace_process(CO->trace[i], *CO_time.epochTimeOffsetMs);
-            }
-#endif
-
-            /* Detect timer large overflow */
-            if(OD_performance[ODA_performance_timerCycleMaxTime] > TMR_TASK_OVERFLOW_US && rtPriority > 0 && CO->CANmodule[0]->CANnormal) {
-                CO_errorReport(CO->em, CO_EM_ISR_TIMER_OVERFLOW, CO_EMC_SOFTWARE_INTERNAL, 0x22400000L | OD_performance[ODA_performance_timerCycleMaxTime]);
-            }
-        }
-
-        else {
-            /* No file descriptor was processed. */
-            CO_error(0x12200000L);
-        }
-    }
-
-    return NULL;
-}
