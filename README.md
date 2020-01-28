@@ -1,24 +1,24 @@
 # OreSat-Linux
 This repo has all the general design and code for all 4 linux boards on OreSat. The four boards being [GPS], [StarTracker], [OreSat Live], and Cirrus Flux Camera (CFC).
 
-All A8 onboard OreSat will run 3 processes; the CANdaemon, the updater, and the main process.
-
+## Linux board
 ![](https://github.com/oresat/oresat-linux/blob/master/CANdaemon/docs/OreSatLinuxDiagram.jpg)
 
-## Processes
+All A8 onboard OreSat will run 3 processes; the CANdaemon, the updater, and the main process. 
+
 ### CANdaemon
-The inferface between the CANbus and the any other processes on a linux board; including the main process and the Updater process. Uses DBus for IPC (inter-process communication). This based off of [CANopenSocket] but with multiple DBus interfaces.
+Acts a front end for all of OreSat Linux daemons. The CANdaemon allows the CAN Network Manger to control/get data from daemons on the Linux board. It will use DBus to interface with daemons.
 
-### Updater
-Python scripts to handle updating packages on the linux boards. Will use DBus to commicate with CANdaemon.
+### Linux updater
+A daemon that allows the Linux board to be updated through *.deb packages.
 
-### Main process
-All main process have there own repos: [GPS], [StarTracker], [OreSat Live], and CFC. Will use DBus to commicate with CANdaemon.
+### Main Process
+See [GPS], [StarTracker], [OreSat Live], and/or Cirrus Flux Camera (CFC) repos. All these process will be daemonized and will be debian package.
 
 ## Repo Layout 
-- **CANdaemon** - Source code for CANdaemon
+- **CANdaemon** - Source code for CANdaemon. CANdaemon allows the CAN Network Manager to Control daemons running on the Linux board.
 - **docs_and_examples** - Useful documentation and examples for general Linux stuff.
-- **updater_onboard** - Source code for Linux updarer that will live on the satellite.
+- **updater_onboard** - Source code for Linux updarer that will live on the satellite. It will allow deb package updates for OreSat's Linux boards.
 - **updater_ground_station** - Source code for Linux updarer that will interatact with the Ground Station that will build the updates.
 
 <!-- Other oresat repos -->
