@@ -3,7 +3,7 @@ candaemon
 .ycm*
 .config
 *.a
-CMakeCache.txt*
-CMakeFiles*
+CMakeCache.txt
+CMakeFiles
 *.cmake
-Makefile*
+Makefile
