@@ -7,3 +7,7 @@ CMakeCache.txt
 CMakeFiles
 *.cmake
 Makefile
+build.ninja
+.ninja_deps
+.ninja_log
+rules.ninja

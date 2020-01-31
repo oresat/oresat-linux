@@ -1,10 +1,48 @@
 cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 project(CANdaemon C)
+set(LINUX_DISTRIBUTION "")
+
+if(EXISTS "/etc/os-release")
+    execute_process(COMMAND cat /etc/os-release
+        COMMAND grep -m1 NAME
+        COMMAND awk -F= "{ print $2 }"
+        COMMAND tr "\n" " "
+        COMMAND sed "s/ //"
+        OUTPUT_VARIABLE LINUX_DISTRIBUTION
+        RESULT_VARIABLE LINUX_ID_RESULT
+    )
+    if(${LINUX_DISTRIBUTION} MATCHES "Debian")
+        set(LINUX_DISTRIBUTION "Debian")
+    endif()
+else()
+    message(FATAL_ERROR "Missing /etc/os-release. Not a Linux based system?")
+endif()
+
+if(LINUX_DISTRIBUTION MATCHES "Debian")
+    find_library(DEB_LIBSYSTEMD libsystemd-dev)
+    if(NOT DEB_LIBSYSTEMD)
+        message(FATAL_ERROR "Debian libsystemd library not found")
+    endif()
+endif()
+
+# Determine if we are using make or ninja
+if(CMAKE_MAKE_PROGRAM MATCHES "make") 
+    set(CMAKE_MAKE_PROGRAM_PRETTY_NAME "make")
+endif()
+if(CMAKE_MAKE_PROGRAM MATCHES "ninja")
+    set(CMAKE_MAKE_PROGRAM_PRETTY_NAME "ninja")
+endif()
+if(NOT CMAKE_MAKE_PROGRAM_PRETTY_NAME)
+    set(CMAKE_MAKE_PROGRAM_PRETTY_NAME "${CMAKE_MAKE_PROGRAM}")
+endif()
 
 set(CMAKE_EXE_LINKER_FLAGS "-pthread -lsystemd")
 
 # TODO change later
 set(BOARD startracker)
+if(NOT BOARD)
+    message(FATAL_ERROR "specfy board\n ie: cmake -DBOARD=startracker .")
+endif()
 
 # all paths to source directories
 set(BOARDS_DIR boards/${BOARD})
@@ -45,8 +83,5 @@ set(SOURCE_FILES
     ${COMMON_DIR}/systemd_ODF.c
     ${COMMON_DIR}/updater.c
 )
-
-#target_link_libraries(pthread_Mutex pthread)
-#target_compile_options(candaemon PUBLIC "-pthread")
 
 add_executable(candaemon ${SOURCE_FILES})
