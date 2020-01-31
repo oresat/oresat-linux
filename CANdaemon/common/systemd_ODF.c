@@ -25,7 +25,7 @@ CO_SDO_abortCode_t systemd_ODF(CO_ODF_arg_t *ODF_arg) {
     int r;
 
     /* Connect to the bus */
-    if (sd_bus_open_system(&bus) <= 0)
+    if (sd_bus_open_system(&bus) < 0)
         return CO_SDO_AB_GENERAL;
 
     /* can't read parameters, write only */

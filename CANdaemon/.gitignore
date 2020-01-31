@@ -6,6 +6,7 @@ candaemon
 CMakeCache.txt
 CMakeFiles
 *.cmake
+install_manifest.txt
 Makefile
 build.ninja
 .ninja_deps
