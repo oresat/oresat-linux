@@ -188,26 +188,25 @@ int main (int argc, char *argv[]) {
     }
 
     if(CANdevice0Index == 0) {
-        char s[120];
-        snprintf(s, 120, "Can't find CAN device \"%s\"", CANdevice);
-        CO_errExit(s);
+        logmsg(LOG_ERR, "Can't find CAN device \"%s\"", CANdevice);
+        exit(EXIT_FAILURE);
     }
 
 
-    printf("%s - starting CANopen device with Node ID %d(0x%02X)", argv[0], nodeId, nodeId);
+    logmsg(LOG_DEBUG, "Starting Node ID %d(0x%02X)\n", nodeId, nodeId);
 
 
     /* Verify, if OD structures have proper alignment of initial values */
     if(CO_OD_RAM.FirstWord != CO_OD_RAM.LastWord) {
-        fprintf(stderr, "Program init - %s - Error in CO_OD_RAM.\n", argv[0]);
+        logmsg(LOG_ERR, "Program init - Error in CO_OD_RAM.\n");
         exit(EXIT_FAILURE);
     }
     if(CO_OD_EEPROM.FirstWord != CO_OD_EEPROM.LastWord) {
-        fprintf(stderr, "Program init - %s - Error in CO_OD_EEPROM.\n", argv[0]);
+        logmsg(LOG_ERR, "Program init - Error in CO_OD_EEPROM.\n");
         exit(EXIT_FAILURE);
     }
     if(CO_OD_ROM.FirstWord != CO_OD_ROM.LastWord) {
-        fprintf(stderr, "Program init - %s - Error in CO_OD_ROM.\n", argv[0]);
+        logmsg(LOG_ERR, "Program init - Error in CO_OD_ROM.\n");
         exit(EXIT_FAILURE);
     }
 
@@ -226,7 +225,7 @@ int main (int argc, char *argv[]) {
 /* CANopen communication reset - initialize CANopen objects *******************/
         CO_ReturnError_t err;
 
-        printf("%s - communication reset ...\n", argv[0]);
+        logmsg(LOG_DEBUG, "Communication reset ...\n");
 
 
         /* Wait other threads (command interface). */
@@ -248,7 +247,7 @@ int main (int argc, char *argv[]) {
         err = CO_init(&CANdevice0Index, nodeId, 0);
         if(err != CO_ERROR_NO) {
             char s[120];
-            snprintf(s, 120, "Communication reset - CANopen initialization failed, err=%d", err);
+            logmsg(LOG_ERR, "Communication reset - initialization failed\n");
             CO_errExit(s);
         }
 

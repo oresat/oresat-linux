@@ -8,6 +8,7 @@ ExecStart=/usr/bin/candaemon -d
 Restart=on-failure
 User=root
 Group=root
+After=network-online.target
 
 [Install]
-WantedBy=milti-user.target
+WantedBy=multi-user.target
