@@ -177,13 +177,13 @@ int main (int argc, char *argv[]) {
     CANdevice0Index = if_nametoindex(CANdevice);
 
     if(nodeId < 1 || nodeId > 127) {
-        fprintf(stderr, "Wrong node ID (%d)\n", nodeId);
+        logmsg(LOG_ERR, "Invalid node ID (%d)\n", nodeId);
         exit(EXIT_FAILURE);
     }
 
     if(rtPriority != -1 && (rtPriority < sched_get_priority_min(SCHED_FIFO)
                          || rtPriority > sched_get_priority_max(SCHED_FIFO))) {
-        fprintf(stderr, "Wrong RT priority (%d)\n", rtPriority);
+        logmsg(LOG_ERR, "Wrong RT priority (%d)\n", rtPriority);
         exit(EXIT_FAILURE);
     }
 
@@ -269,7 +269,7 @@ int main (int argc, char *argv[]) {
             /* Configure epoll for mainline */
             mainline_epoll_fd = epoll_create(4);
             if(mainline_epoll_fd == -1)
-                CO_errExit("Program init - epoll_create mainline failed");
+                logmsg(LOG_ERR, "Program init - epoll_create mainline failed\n");
 
             /* Init mainline */
             taskMain_init(mainline_epoll_fd, &OD_performance[ODA_performance_mainCycleMaxTime]);
@@ -277,7 +277,7 @@ int main (int argc, char *argv[]) {
             /* Configure epoll for rt_thread */
             rt_thread_epoll_fd = epoll_create(2);
             if(rt_thread_epoll_fd == -1)
-                CO_errExit("Program init - epoll_create rt_thread failed");
+                logmsg(LOG_ERR, "Program init - epoll_create rt_thread failed\n");
 
             /* Init taskRT */
             CANrx_taskTmr_init(rt_thread_epoll_fd, TMR_TASK_INTERVAL_NS, &OD_performance[ODA_performance_timerCycleMaxTime]);
@@ -286,7 +286,7 @@ int main (int argc, char *argv[]) {
 
             /* Create rt_thread */
             if(pthread_create(&rt_thread_id, NULL, rt_thread, NULL) != 0)
-                CO_errExit("Program init - rt_thread creation failed");
+                logmsg(LOG_ERR, "Program init - rt_thread creation failed\n");
 
             /* Set priority for rt_thread */
             if(rtPriority > 0) {
@@ -294,7 +294,7 @@ int main (int argc, char *argv[]) {
 
                 param.sched_priority = rtPriority;
                 if(pthread_setschedparam(rt_thread_id, SCHED_FIFO, &param) != 0)
-                    CO_errExit("Program init - rt_thread set scheduler failed");
+                    logmsg(LOG_ERR, "Program init - rt_thread set scheduler failed\n");
             }
 
             // set up general ODFs
@@ -314,7 +314,7 @@ int main (int argc, char *argv[]) {
 
         reset = CO_RESET_NOT;
 
-        printf("%s - running ...\n", argv[0]);
+        logmsg(LOG_DEBUG, " running ...\n");
 
 
         while(reset == CO_RESET_NOT && CO_endProgram == 0) {
@@ -346,7 +346,7 @@ int main (int argc, char *argv[]) {
     /* join threads */
     CO_endProgram = 1;
     if(pthread_join(rt_thread_id, NULL) != 0) {
-        CO_errExit("Program end - pthread_join failed");
+        logmsg(LOG_ERR, "Program end - pthread_join failed");
     }
 
     // stop dbus services threads
@@ -358,13 +358,13 @@ int main (int argc, char *argv[]) {
     taskMain_close();
     CO_delete(&CANdevice0Index);
 
-    printf("%s on %s (nodeId=0x%02X) - finished.\n\n", argv[0], CANdevice, nodeId);
+    logmsg(LOG_DEBUG, "%s on %s (nodeId=0x%02X) - finished.\n\n", argv[0], CANdevice, nodeId);
 
     /* Flush all buffers (and reboot) */
     if(reset == CO_RESET_APP) {
         sync();
         if(reboot(LINUX_REBOOT_CMD_RESTART) != 0) {
-            CO_errExit("Program end - reboot failed");
+            logmsg(LOG_ERR, "Program end - reboot failed");
         }
     }
 
