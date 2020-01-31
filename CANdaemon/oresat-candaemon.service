@@ -4,7 +4,7 @@ Description=CAN to dbus interface for all oresat daemons
 [Service]
 Type=forking
 PIDFile=/run/oresat-candaemon.pid
-ExecStart=/opt/candaemon
+ExecStart=/usr/bin/candaemon -d
 Restart=on-failure
 
 [Install]
