@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 project(CANdaemon C)
-set(LINUX_DISTRIBUTION "")
+
+##############################################################################
+# Release vs debug modes (set CFLAGS, LDFLAGS, etc)
+
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
@@ -8,6 +11,28 @@ endif()
 set(CMAKE_C_FLAGS "-Wall -Wextra")
 set(CMAKE_C_FLAGS_DEBUG "-g")
 set(CMAKE_C_FLAGS_RELEASE "-O3")
+
+set(CMAKE_EXE_LINKER_FLAGS "-pthread -lsystemd")
+
+##############################################################################
+# Cpack Debian Package
+
+if(MAKE_PKG)
+    set(CPACK_PACKAGE_NAME candaemon)
+    set(CPACK_PACKAGE_VERSION 0.0.1) # TODO link to github version??
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS "cmake (), make (), gcc (), libsystemd ()") # TODO finish
+    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Ryan Medick")
+    set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "CAN systemd controller")
+    set(CPACK_DEBIAN_PACKAGE_SECTION "embedded")
+    set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "http://www.oresat.org")
+    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE all)
+    set(CPACK_DEBIAN_PACKAGE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
+endif()
+
+##############################################################################
+# Check Linux distribution / verion / kernel version
+
+set(LINUX_DISTRIBUTION "")
 
 if(EXISTS "/etc/os-release")
     execute_process(COMMAND cat /etc/os-release
@@ -32,7 +57,9 @@ if(LINUX_DISTRIBUTION MATCHES "Debian")
     endif()
 endif()
 
-# Determine if we are using make or ninja
+##############################################################################
+# Check if make or ninja
+
 if(CMAKE_MAKE_PROGRAM MATCHES "make") 
     set(CMAKE_MAKE_PROGRAM_PRETTY_NAME "make")
 endif()
@@ -43,13 +70,17 @@ if(NOT CMAKE_MAKE_PROGRAM_PRETTY_NAME)
     set(CMAKE_MAKE_PROGRAM_PRETTY_NAME "${CMAKE_MAKE_PROGRAM}")
 endif()
 
-set(CMAKE_EXE_LINKER_FLAGS "-pthread -lsystemd")
+##############################################################################
+# Figure out which board
 
 # TODO change later
 set(BOARD startracker)
 if(NOT BOARD)
     message(FATAL_ERROR "specfy board\n ie: cmake -DBOARD=startracker .")
 endif()
+
+##############################################################################
+# Files
 
 # all paths to source directories
 set(BOARDS_DIR boards/${BOARD})
