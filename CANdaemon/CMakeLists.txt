@@ -3,7 +3,9 @@ project(CANdaemon C)
 
 ##############################################################################
 # Release vs debug modes (set CFLAGS, LDFLAGS, etc)
+# to use: cmake -DCMAKE_BUILD_TYPE=Debug . 
 
+# default to release
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
@@ -13,21 +15,6 @@ set(CMAKE_C_FLAGS_DEBUG "-g")
 set(CMAKE_C_FLAGS_RELEASE "-O3")
 
 set(CMAKE_EXE_LINKER_FLAGS "-pthread -lsystemd")
-
-##############################################################################
-# Cpack Debian Package
-
-if(MAKE_PKG)
-    set(CPACK_PACKAGE_NAME candaemon)
-    set(CPACK_PACKAGE_VERSION 0.0.1) # TODO link to github version??
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS "cmake (), make (), gcc (), libsystemd ()") # TODO finish
-    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Ryan Medick")
-    set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "CAN systemd controller")
-    set(CPACK_DEBIAN_PACKAGE_SECTION "embedded")
-    set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "http://www.oresat.org")
-    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE all)
-    set(CPACK_DEBIAN_PACKAGE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
-endif()
 
 ##############################################################################
 # Check Linux distribution / verion / kernel version
@@ -80,7 +67,7 @@ if(NOT BOARD)
 endif()
 
 ##############################################################################
-# Files
+# Get source files
 
 # all paths to source directories
 set(BOARDS_DIR boards/${BOARD})
@@ -122,4 +109,33 @@ set(SOURCE_FILES
     ${COMMON_DIR}/updater.c
 )
 
+##############################################################################
+# Create an executable
+
 add_executable(candaemon ${SOURCE_FILES})
+
+############################################################
+# Install
+
+# Binaries
+install (TARGETS candaemon DESTINATION bin)
+
+# Daemon service file
+install (FILES oresat-candaemon.service DESTINATION etc/systemd/system)
+
+
+##############################################################################
+# Cpack Debian Package
+
+if(MAKE_PKG) # TODO remove if
+    set(CPACK_PACKAGE_NAME candaemon)
+    set(CPACK_PACKAGE_VERSION 0.0.1) # TODO link to github version??
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS "cmake (), make (), gcc (), libsystemd ()") # TODO finish
+    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Ryan Medick")
+    set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "CAN systemd controller")
+    set(CPACK_DEBIAN_PACKAGE_SECTION "embedded")
+    set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "http://www.oresat.org")
+    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE all)
+    set(CPACK_DEBIAN_PACKAGE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
+endif()
+
