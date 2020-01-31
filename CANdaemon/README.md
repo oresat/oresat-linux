@@ -41,7 +41,7 @@ The CANdaemon is based off of [CANopenSocket], but with dbus interfaces to commi
 ### Running CANdaemon
 - Using cmake and make
     - `cmake .`
-    - `make clean all
+    - `make all`
     - `./candaemon`
 - Using cmake and ninja
     - `cmake -GNinja .`
