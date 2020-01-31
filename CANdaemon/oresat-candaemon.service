@@ -1,6 +1,6 @@
 [Unit]
 Description=CAN to dbus interface for all oresat daemons
-After=systemd-network.service
+After=network-online.target
 
 [Service]
 Type=forking

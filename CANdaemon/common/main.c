@@ -188,7 +188,7 @@ int main (int argc, char *argv[]) {
     }
 
     if(CANdevice0Index == 0) {
-        logmsg(LOG_ERR, "Can't find CAN device \"%s\"", CANdevice);
+        logmsg(LOG_ERR, "Can't find CAN device \"%s\"\n", CANdevice);
         exit(EXIT_FAILURE);
     }
 
