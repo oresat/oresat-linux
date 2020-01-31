@@ -1,5 +1,6 @@
 [Unit]
 Description=CAN to dbus interface for all oresat daemons
+After=systemd-network.service
 
 [Service]
 Type=forking
@@ -8,7 +9,6 @@ ExecStart=/usr/bin/candaemon -d
 Restart=on-failure
 User=root
 Group=root
-After=network-online.target
 
 [Install]
 WantedBy=multi-user.target
