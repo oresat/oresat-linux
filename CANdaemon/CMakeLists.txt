@@ -1,6 +1,13 @@
 cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 project(CANdaemon C)
 set(LINUX_DISTRIBUTION "")
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
+set(CMAKE_C_FLAGS "-Wall -Wextra")
+set(CMAKE_C_FLAGS_DEBUG "-g")
+set(CMAKE_C_FLAGS_RELEASE "-O3")
 
 if(EXISTS "/etc/os-release")
     execute_process(COMMAND cat /etc/os-release

@@ -47,6 +47,8 @@ The CANdaemon is based off of [CANopenSocket], but with dbus interfaces to commi
     - `cmake -GNinja .`
     - `ninja`
     - `./candaemon`
+- optional flags:
+    - `cmake -DCMAKE_BUILD_TYPE=Debug .` to turn on -g, -Wall, and -Wextra flags
 
 ### Making a new board
 - `cp -r boards/template boards/<new_board_name>`
