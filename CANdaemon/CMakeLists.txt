@@ -111,7 +111,7 @@ add_executable(candaemon ${SOURCE_FILES})
 # Install
 
 # Binaries
-install (TARGETS candaemon DESTINATION bin)
+install (TARGETS candaemon DESTINATION /usr/bin)
 
 # Daemon service file
 install (FILES oresat-candaemon.service DESTINATION /lib/systemd/system)
