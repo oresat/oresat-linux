@@ -37,13 +37,6 @@ else()
     message(FATAL_ERROR "Missing /etc/os-release. Not a Linux based system?")
 endif()
 
-if(LINUX_DISTRIBUTION MATCHES "Debian")
-    find_library(DEB_LIBSYSTEMD libsystemd-dev)
-    if(NOT DEB_LIBSYSTEMD)
-        message(FATAL_ERROR "Debian libsystemd library not found")
-    endif()
-endif()
-
 ##############################################################################
 # Check if make or ninja
 
