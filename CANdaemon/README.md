@@ -28,8 +28,10 @@ The CANdaemon is based off of [CANopenSocket], but with dbus interfaces to commi
 - **docs** - Documentation for CANdaemon
 
 ## Dependices
-- For Debian: libsystemd-dev, make, gcc, pkg-source 
-- For Arch: make, gcc, pkg-source 
+- For Debian: libsystemd-dev, cmake, make, gcc
+    - optional: ninja-build
+- For Arch: cmake, make, gcc
+    - optional: ninja
 
 ## How to use
 ### Setup
@@ -37,8 +39,14 @@ The CANdaemon is based off of [CANopenSocket], but with dbus interfaces to commi
 - `git submodules update`
 
 ### Running CANdaemon
-- `make <board>`
-- `make candaemon`
+- Using cmake and make
+    - `cmake .`
+    - `make clean all
+    - `./candaemon`
+- Using cmake and ninja
+    - `cmake -GNinja .`
+    - `ninja`
+    - `./candaemon`
 
 ### Making a new board
 - `cp -r boards/template boards/<new_board_name>`
