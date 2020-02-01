@@ -2,6 +2,19 @@ cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 project(CANdaemon C)
 
 ##############################################################################
+# Deal with git submodule
+
+find_package(Git)
+if(NOT GIT_FOUND)
+    message(FATAL_ERROR "git check failed")
+endif()
+if(NOT EXISTS "CANopenNode/.git")
+    message(STATUS "Running: git submoduke update --init")
+    execute_process(COMMAND git submodule update --init WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
+
+##############################################################################
 # Release vs debug modes (set CFLAGS, LDFLAGS, etc)
 # to use: cmake -DCMAKE_BUILD_TYPE=Debug . 
 
