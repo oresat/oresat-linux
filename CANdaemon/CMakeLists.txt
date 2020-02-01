@@ -124,18 +124,18 @@ add_executable(candaemon ${SOURCE_FILES})
 # Install
 
 # Binaries
-install (TARGETS candaemon DESTINATION /usr/bin)
+install(TARGETS candaemon DESTINATION /usr/bin)
 
 # Daemon service file
-install (FILES oresat-candaemon.service DESTINATION /lib/systemd/system)
+install(FILES oresat-candaemon.service DESTINATION /lib/systemd/system)
 
 
 ##############################################################################
-# Cpack Debian Package
+# Cpack Package
 
-if(MAKE_PKG) # TODO remove if
-    set(CPACK_PACKAGE_NAME candaemon)
-    set(CPACK_PACKAGE_VERSION 0.0.1) # TODO link to github version??
+set(CPACK_PACKAGE_NAME candaemon)
+set(CPACK_PACKAGE_VERSION 0.0.1) # TODO link to github version??
+if(${LINUX_DISTRIBUTION} MATCHES "Debian")
     set(CPACK_DEBIAN_PACKAGE_DEPENDS "cmake (), make (), gcc (), libsystemd ()") # TODO finish
     set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Ryan Medick")
     set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "CAN systemd controller")
@@ -145,3 +145,4 @@ if(MAKE_PKG) # TODO remove if
     set(CPACK_DEBIAN_PACKAGE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
 endif()
 
+include(CPack)

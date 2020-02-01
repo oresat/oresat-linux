@@ -1,5 +1,6 @@
 [Unit]
-Description=CAN to dbus interface for all oresat daemons
+Description=OreSat Linux CANdaemon
+Wants=network-online.target
 After=network-online.target
 
 [Service]
