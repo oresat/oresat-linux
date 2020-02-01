@@ -1,7 +1,7 @@
 #include "application.h"
 #include "OD_helpers.h"
 #include "file_transfer_ODF.h"
-#include "error_assert_handlers.h"
+#include "error_logging.h"
 #include <systemd/sd-bus.h>
 #include <pthread.h>
 #include <stdio.h>

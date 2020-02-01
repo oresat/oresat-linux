@@ -1,6 +1,6 @@
 #include "CANopen.h"
 #include "CO_driver.h"
-#include "error_assert_handlers.h"
+#include "error_logging.h"
 #include "systemd_ODF.h"
 #include <systemd/sd-bus.h>
 

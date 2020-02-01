@@ -1,7 +1,7 @@
 #include "CANopen.h"
 #include "CO_driver.h"
 #include "OD_helpers.h"
-#include "error_assert_handlers.h"
+#include "error_logging.h"
 #include "file_transfer_ODF.h"
 #include <string.h>
 #include <stdio.h>

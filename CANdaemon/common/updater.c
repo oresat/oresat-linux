@@ -2,7 +2,7 @@
 #include "CO_SDO.h"
 #include "OD_helpers.h"
 #include "file_transfer_ODF.h"
-#include "error_assert_handlers.h"
+#include "error_logging.h"
 #include "updater.h"
 #include <systemd/sd-bus.h>
 #include <pthread.h>
@@ -257,11 +257,13 @@ CO_SDO_abortCode_t updater_ODF(CO_ODF_arg_t *ODF_arg) {
                         &mess,
                         "s",
                         new_update_file);
-                dbusError(r, "Failed to issue method call:");
+                if (r < 0)
+                    fprintf(stderr, "Failed to issue method call.");
 
                 /* Parse the response message */
                 r = sd_bus_message_read(mess, "b", &temp_bool);
-                dbusError(r, "Failed to parse response message:");
+                if (r < 0)
+                    fprintf(stderr, "Failed to parse response message.");
 
                 sd_bus_message_unref(mess);
                 sd_bus_error_free(&err);
@@ -283,11 +285,13 @@ CO_SDO_abortCode_t updater_ODF(CO_ODF_arg_t *ODF_arg) {
                         &err,
                         &mess,
                         NULL);
-                dbusError(r, "Failed to issue method call:");
+                if (r < 0)
+                    fprintf(stderr, "Failed to issue method call.");
 
                 /* Parse the response message */
                 r = sd_bus_message_read(mess, "b", &temp_bool);
-                dbusError(r, "Failed to parse response message:");
+                if (r < 0)
+                    fprintf(stderr, "Failed to parse response message.");
 
                 sd_bus_message_unref(mess);
                 sd_bus_error_free(&err);
@@ -309,11 +313,13 @@ CO_SDO_abortCode_t updater_ODF(CO_ODF_arg_t *ODF_arg) {
                         &err,
                         &mess,
                         NULL);
-                dbusError(r, "Failed to issue method call:");
+                if (r < 0)
+                    fprintf(stderr, "Failed to issue method call.");
 
                 /* Parse the response message */
                 r = sd_bus_message_read(mess, "b", &temp_bool);
-                dbusError(r, "Failed to parse response message:");
+                if (r < 0)
+                    fprintf(stderr, "Failed to parse response message.");
                 
                 sd_bus_message_unref(mess);
                 sd_bus_error_free(&err);
@@ -335,11 +341,13 @@ CO_SDO_abortCode_t updater_ODF(CO_ODF_arg_t *ODF_arg) {
                         &err,
                         &mess,
                         NULL);
-                dbusError(r, "Failed to issue method call:");
+                if (r < 0)
+                    fprintf(stderr, "Failed to issue method call.");
 
                 /* Parse the response message */
                 r = sd_bus_message_read(mess, "b", &temp_bool);
-                dbusError(r, "Failed to parse response message:");
+                if (r < 0)
+                    fprintf(stderr, "Failed to parse response message.");
 
                 sd_bus_message_unref(mess);
                 sd_bus_error_free(&err);
@@ -361,11 +369,13 @@ CO_SDO_abortCode_t updater_ODF(CO_ODF_arg_t *ODF_arg) {
                         &err,
                         &mess,
                         NULL);
-                dbusError(r, "Failed to issue method call:");
+                if (r < 0)
+                    fprintf(stderr, "Failed to issue method call.");
 
                 /* Parse the response message */
                 r = sd_bus_message_read(mess, "b", &temp_bool);
-                dbusError(r, "Failed to parse response message:");
+                if (r < 0)
+                    fprintf(stderr, "Failed to parse response message.");
 
                 sd_bus_message_unref(mess);
                 sd_bus_error_free(&err);

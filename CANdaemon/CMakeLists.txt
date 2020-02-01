@@ -94,7 +94,7 @@ set(SOURCE_FILES
     ${STACK_DRIVER_DIR}/CO_driver.c
     ${STACK_DRIVER_DIR}/CO_Linux_tasks.c
     ${COMMON_DIR}/CO_time.c
-    ${COMMON_DIR}/error_assert_handlers.c
+    ${COMMON_DIR}/error_logging.c
     ${COMMON_DIR}/file_transfer_ODF.c
     ${COMMON_DIR}/main.c
     ${COMMON_DIR}/OD_helpers.c
