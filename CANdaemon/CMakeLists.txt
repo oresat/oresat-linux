@@ -145,7 +145,7 @@ if(${LINUX_DISTRIBUTION} MATCHES "Debian")
     set(CPACK_GENERATOR "DEB")
     set(CPACK_PACKAGE_VENDOR "Company")
     set(CPACK_COMPONENTS_ALL exe link config lastversion script log monitor)
-    set(CPACK_PACKAGE_NAME candaemon)
+    set(CPACK_PACKAGE_NAME "oresat-candaemon-${BOARD}")
     set(CPACK_PACKAGE_VERSION 0.0.1) # TODO link to github version??
     set(CPACK_PACKAGE_CONTACT "rmedick@pdx.edu")
     set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "CAN systemd controller")
