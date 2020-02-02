@@ -47,8 +47,12 @@ The CANdaemon is based off of [CANopenSocket], but with dbus interfaces to commi
     - `cmake -GNinja .`
     - `ninja`
     - `./candaemon`
-- optional flags:
+- Optional flags:
     - `cmake -DCMAKE_BUILD_TYPE=Debug .` to turn on -g, -Wall, and -Wextra flags
+- Installing binary and daemon service file (usefull for testing)
+    - `sudo make install` or `sudo ninja install`
+- Building deb binary package
+    - On a beaglebone (or debian based armhf system) `sudo make package`
 
 ### Making a new board
 - `cp -r boards/template boards/<new_board_name>`
