@@ -88,7 +88,7 @@ int app_dbus_end(void) {
 
 
 // ***************************************************************************
-// other startracker functions
+// other star tracker functions
 
 
 static int read_orientation_cb(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {

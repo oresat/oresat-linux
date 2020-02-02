@@ -1,21 +1,29 @@
 cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 project(CANdaemon C)
 
+
 ##############################################################################
 # Figure out which board
 
 if(NOT BOARD)
-    message(FATAL_ERROR "No board specified\n  ie: cmake -DBOARD=startracker .")
+    message(FATAL_ERROR "No board specified\n  ie: cmake -DBOARD=star-tracker .")
 endif()
 
 # ignore case
 STRING(TOLOWER "${BOARD}" BOARD)
 
-if(BOARD MATCHES "startracker" OR BOARD MATCHES "gps" OR BOARD MATCHES "template" OR BOARD MATCHES "cameraboard")
-    message(STATUS "Board ${BOARD} selected")
+if(BOARD MATCHES "cirrus-flux-camera" OR BOARD MATCHES "cirrus_flux_camera" OR BOARD MATCHES "cfc")
+    set(BOARD cirrus_flux_camera)
+elseif(BOARD MATCHES "gps")
+elseif(BOARD MATCHES "live")
+elseif(BOARD MATCHES "star-tracker" OR BOARD MATCHES "star_tracker" OR BOARD MATCHES "st")
+    set(BOARD star_tracker)
+elseif(BOARD MATCHES "template")
 else()
-    message(FATAL_ERROR "${BOARD} No board specified")
+    message(FATAL_ERROR "${BOARD} is not a valid board")
 endif()
+
+message(STATUS "Board ${BOARD} selected")
 
 
 ##############################################################################
@@ -46,6 +54,7 @@ set(CMAKE_C_FLAGS_RELEASE "-O3")
 
 set(CMAKE_EXE_LINKER_FLAGS "-pthread -lsystemd")
 
+
 ##############################################################################
 # Check Linux distribution / verion / kernel version
 
@@ -67,6 +76,7 @@ else()
     message(FATAL_ERROR "Missing /etc/os-release. Not a Linux based system?")
 endif()
 
+
 ##############################################################################
 # Check if make or ninja
 
@@ -80,12 +90,13 @@ if(NOT CMAKE_MAKE_PROGRAM_PRETTY_NAME)
     set(CMAKE_MAKE_PROGRAM_PRETTY_NAME "${CMAKE_MAKE_PROGRAM}")
 endif()
 
+
 ##############################################################################
 # Get source files
 
 # all paths to source directories
 set(BOARDS_DIR boards/${BOARD})
-set(OD_DIR boards/${BOARD}/objDict)
+set(OD_DIR boards/${BOARD}/object_dictionary)
 set(CANOPENNODE_DIR CANopenNode)
 set(STACK_DIR CANopenNode/stack)
 set(COMMON_DIR common)
@@ -123,10 +134,12 @@ set(SOURCE_FILES
     ${COMMON_DIR}/updater.c
 )
 
+
 ##############################################################################
 # Create an executable
 
 add_executable(candaemon ${SOURCE_FILES})
+
 
 ############################################################
 # Install
