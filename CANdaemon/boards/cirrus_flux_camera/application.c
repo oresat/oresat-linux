@@ -10,9 +10,9 @@
 #include <stdbool.h>
 
 
-#define DESTINATION     "org.oresat.cameraboard"
-#define INTERFACE_NAME  "org.oresat.cameraboard"
-#define OBJECT_PATH     "/org/oresat/cameraboard"
+#define DESTINATION     "org.oresat.cirrusfluxcamera"
+#define INTERFACE_NAME  "org.oresat.cirrusfluxcamera"
+#define OBJECT_PATH     "/org/oresat/cirrusfluxcamera"
 
 
 // Static variables
@@ -20,7 +20,6 @@ static sd_bus           *bus = NULL;
 
 
 // Static functions headers
-CO_SDO_abortCode_t cameraboard_ODF(CO_ODF_arg_t *ODF_arg);
 
 
 // ***************************************************************************
@@ -37,7 +36,7 @@ int app_dbus_setup(void) {
         return r;
     }
 
-    CO_OD_configure(CO->SDO[0], 0x3100, cameraboard_ODF, NULL, 0, 0U);
+    CO_OD_configure(CO->SDO[0], 0x3100, CFC_ODF, NULL, 0, 0U);
 
     return 0;
 }
@@ -50,10 +49,10 @@ int app_dbus_end(void) {
 
 
 // ***************************************************************************
-// other cameraboard functions
+// other cirrus flux camera functions
 
 
-CO_SDO_abortCode_t cameraboard_ODF(CO_ODF_arg_t *ODF_arg) {
+CO_SDO_abortCode_t CFC_ODF(CO_ODF_arg_t *ODF_arg) {
     CO_SDO_abortCode_t ret = CO_SDO_AB_NONE;
     sd_bus_error err = SD_BUS_ERROR_NULL;
     sd_bus_message *m = NULL;
