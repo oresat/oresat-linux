@@ -5,17 +5,24 @@ project(CANdaemon C)
 # Figure out which board
 
 if(NOT BOARD)
-    message(FATAL_ERROR "No board specified\n  ie: cmake -DBOARD=startracker .")
+    message(FATAL_ERROR "No board specified\n  ie: cmake -DBOARD=star-tracker .")
 endif()
 
 # ignore case
 STRING(TOLOWER "${BOARD}" BOARD)
 
-if(BOARD MATCHES "startracker" OR BOARD MATCHES "gps" OR BOARD MATCHES "template" OR BOARD MATCHES "cameraboard")
-    message(STATUS "Board ${BOARD} selected")
+if(BOARD MATCHES "cirrus_flux_camera" OR BOARD MATCHES "cirrus-flux-camera" OR BOARD MATCHES "cfc")
+    set(BOARD "cirrus_flux_camera")
+elseif(BOARD MATCHES "gps")
+elseif(${BOARD} MATCHES "star_tracker" OR ${BOARD} MATCHES "star-tracker")
+    set(BOARD "star_tracker")
+elseif(BOARD MATCHES "live")
+elseif(BOARD MATCHES "template")
 else()
-    message(FATAL_ERROR "${BOARD} No board specified")
+    message(FATAL_ERROR "${BOARD} is not a valid board.")
 endif()
+
+message(STATUS "Board ${BOARD} selected")
 
 
 ##############################################################################
@@ -85,7 +92,7 @@ endif()
 
 # all paths to source directories
 set(BOARDS_DIR boards/${BOARD})
-set(OD_DIR boards/${BOARD}/objDict)
+set(OD_DIR boards/${BOARD}/object_dictionary)
 set(CANOPENNODE_DIR CANopenNode)
 set(STACK_DIR CANopenNode/stack)
 set(COMMON_DIR common)
