@@ -135,14 +135,14 @@ install(FILES oresat-candaemon.service DESTINATION /lib/systemd/system)
 
 set(CPACK_PACKAGE_NAME candaemon)
 set(CPACK_PACKAGE_VERSION 0.0.1) # TODO link to github version??
+set(CPACK_PACKAGE_CONTACT "rmedick@pdx.edu")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "CAN systemd controller")
 if(${LINUX_DISTRIBUTION} MATCHES "Debian")
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS "cmake (), make (), gcc (), libsystemd ()") # TODO finish
-    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Ryan Medick")
-    set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "CAN systemd controller")
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS "cmake (>= 3.13.4-1), make (>= 4.2.1-1.2), gcc (>= 4:8.3.0-1), libsystemd-dev (>= 241-7~deb10u2rcnee0~buster+20191124)")
     set(CPACK_DEBIAN_PACKAGE_SECTION "embedded")
     set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "http://www.oresat.org")
-    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE all)
-    set(CPACK_DEBIAN_PACKAGE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
+    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE COMMAND pkg --print-architecture)
+    #set(CPACK_DEBIAN_PACKAGE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
 endif()
 
 include(CPack)
