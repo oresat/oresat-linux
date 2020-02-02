@@ -2,6 +2,23 @@ cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 project(CANdaemon C)
 
 ##############################################################################
+# Figure out which board
+
+if(NOT BOARD)
+    message(FATAL_ERROR "No board specified\n  ie: cmake -DBOARD=startracker .")
+endif()
+
+# ignore case
+STRING(TOLOWER "${BOARD}" BOARD)
+
+if(BOARD MATCHES "startracker" OR BOARD MATCHES "gps" OR BOARD MATCHES "template" OR BOARD MATCHES "cameraboard")
+    message(STATUS "Board ${BOARD} selected")
+else()
+    message(FATAL_ERROR "${BOARD} No board specified")
+endif()
+
+
+##############################################################################
 # Deal with git submodule
 
 find_package(Git)
@@ -20,7 +37,7 @@ endif()
 
 # default to release
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release)
+    set(CMAKE_BUILD_TYPE Release)
 endif()
 
 set(CMAKE_C_FLAGS "-Wall -Wextra")
@@ -61,15 +78,6 @@ if(CMAKE_MAKE_PROGRAM MATCHES "ninja")
 endif()
 if(NOT CMAKE_MAKE_PROGRAM_PRETTY_NAME)
     set(CMAKE_MAKE_PROGRAM_PRETTY_NAME "${CMAKE_MAKE_PROGRAM}")
-endif()
-
-##############################################################################
-# Figure out which board
-
-# TODO change later
-set(BOARD startracker)
-if(NOT BOARD)
-    message(FATAL_ERROR "specfy board\n ie: cmake -DBOARD=startracker .")
 endif()
 
 ##############################################################################
