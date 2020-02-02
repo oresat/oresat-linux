@@ -131,18 +131,23 @@ install(FILES oresat-candaemon.service DESTINATION /lib/systemd/system)
 
 
 ##############################################################################
-# Cpack Package
+# Cpack debian package
 
-set(CPACK_PACKAGE_NAME candaemon)
-set(CPACK_PACKAGE_VERSION 0.0.1) # TODO link to github version??
-set(CPACK_PACKAGE_CONTACT "rmedick@pdx.edu")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "CAN systemd controller")
 if(${LINUX_DISTRIBUTION} MATCHES "Debian")
+    set(CPACK_GENERATOR "DEB")
+    set(CPACK_PACKAGE_VENDOR "Company")
+    set(CPACK_COMPONENTS_ALL exe link config lastversion script log monitor)
+    set(CPACK_PACKAGE_NAME candaemon)
+    set(CPACK_PACKAGE_VERSION 0.0.1) # TODO link to github version??
+    set(CPACK_PACKAGE_CONTACT "rmedick@pdx.edu")
+    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "CAN systemd controller")
     set(CPACK_DEBIAN_PACKAGE_DEPENDS "cmake (>= 3.13.4-1), make (>= 4.2.1-1.2), gcc (>= 4:8.3.0-1), libsystemd-dev (>= 241-7~deb10u2rcnee0~buster+20191124)")
     set(CPACK_DEBIAN_PACKAGE_SECTION "embedded")
     set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "http://www.oresat.org")
-    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE COMMAND pkg --print-architecture)
-    #set(CPACK_DEBIAN_PACKAGE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
+    execute_process(COMMAND dpkg --print-architecture OUTPUT_VARIABLE ARCH OUTPUT_STRIP_TRAILING_WHITESPACE)
+    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "${ARCH}")
+    set(CPACK_DEBIAN_PACKAGE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
+
+    include(CPack)
 endif()
 
-include(CPack)
