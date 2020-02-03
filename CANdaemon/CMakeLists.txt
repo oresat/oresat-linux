@@ -95,12 +95,12 @@ endif()
 # Get source files
 
 # all paths to source directories
-set(BOARDS_DIR boards/${BOARD})
-set(OD_DIR boards/${BOARD}/object_dictionary)
-set(CANOPENNODE_DIR CANopenNode)
-set(STACK_DIR CANopenNode/stack)
-set(COMMON_DIR common)
-set(STACK_DRIVER_DIR common/socketCAN)
+set(BOARDS_DIR src/boards/${BOARD})
+set(OD_DIR src/boards/${BOARD}/object_dictionary)
+set(CANOPENNODE_DIR src/CANopenNode)
+set(STACK_DIR src/CANopenNode/stack)
+set(COMMON_DIR src/common)
+set(STACK_DRIVER_DIR src/socketCAN)
 
 # add all headers in source directories
 include_directories(${BOARDS_DIR})
@@ -128,10 +128,10 @@ set(SOURCE_FILES
     ${COMMON_DIR}/CO_time.c
     ${COMMON_DIR}/error_logging.c
     ${COMMON_DIR}/file_transfer_ODF.c
-    ${COMMON_DIR}/main.c
     ${COMMON_DIR}/OD_helpers.c
     ${COMMON_DIR}/systemd_ODF.c
     ${COMMON_DIR}/updater.c
+    src/main.c
 )
 
 

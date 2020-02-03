@@ -4,9 +4,9 @@
   </h1>
   <h4>
     <a href="#features">Features</a> |
-    <a href="#directory layout">Directory Layout</a> |
     <a href="#dependices">Dependices</a> |
     <a href="#how to use">How to use</a>
+    <a href="#directory layout">Directory Layout</a> |
   </h4>
 </div>
 
@@ -17,25 +17,20 @@ The CANdaemon is based off of [CANopenSocket], but with dbus interfaces to commi
 ## Features
 - Follows the CiA (CAN-in-Automation) specs for [CANopen-Specs]. 
 - Follows the [ECSS-CANBus-Extended-Protocal] on top of CiA specs.
-- Designed to allow the CAN Network Manager to have control of local daemons.
+- Allows the CAN Network Manager to have control of daemons and power setting thru [systemd].
 - Uses sd-bus for dbus communication (systemd dbus) to daemons.
-- Easy to add more DBus clients to control new daemons over CAN.
-
-## Directory Layout 
-- **boards** - Holds an CANdaemon app for each OreSat Linux board
-- **CANopenNode** - The git submodule for CANopenNode (backend of CANdaemon)
-- **common** - Common source code for CANdaemon, regardless of which app is enabled.
-- **docs** - Documentation for CANdaemon
+- Easy to add more DBus clients.
 
 ## Dependices
-- For Debian: libsystemd-dev, cmake, make, gcc
+- For Debian: git, systemd, libsystemd-dev, cmake, make, gcc
     - optional: ninja-build
-- For Arch: cmake, make, gcc
+- For Arch: git, systemd, cmake, make, gcc
     - optional: ninja
 
 ## How to use
-- Compiling with cmake and make
-    - `cmake -DBOARD=<board> .` or `cmake -GNinja -DBOARD=<board> .`
+- Compiling
+    - `cd build`
+    - `cmake -DBOARD=<board> ..` or `cmake -GNinja -DBOARD=<board> ..`
     - `make` or `ninja`
 - Optional cmake flags:
     - `-DCMAKE_BUILD_TYPE=Debug` to turn on -g, -Wall, and -Wextra flags
@@ -44,9 +39,16 @@ The CANdaemon is based off of [CANopenSocket], but with dbus interfaces to commi
     - `./candaemon -d` as a daemon
 - Installing binary and daemon service file (usefull for testing)
     - `sudo make install` or `sudo ninja install`
-- Building deb binary package`
-    - On a beaglebone (or debian based armhf system) 
+- Building deb binary package on a beaglebone (or debian based armhf system)
     - `sudo make package` or`sudo ninja package`
+
+## Directory Layout 
+- **src** - Holds an CANdaemon app for each OreSat Linux board
+    - **boards** - Holds an CANdaemon app for each OreSat Linux board
+    - **CANopenNode** - The git submodule for CANopenNode
+    - **common** - Common source code, regardless of which board is enabled.
+    - **socketCAN** - CANopenNode SocketCAN driver
+- **docs** - Documentation for CANdaemon
 
 ### Making a new board
 - `cp -r boards/template boards/<new_board_name>`
@@ -69,6 +71,7 @@ The CANdaemon is based off of [CANopenSocket], but with dbus interfaces to commi
 <!-- References -->
 [CAN-Wikipedia]:https://en.wikipedia.org/wiki/CAN_bus
 [CANopenSocket]:https://github.com/CANopenNode/CANopenSocket
+[Systemd]:https://freedesktop.org/wiki/Software/systemd/
 [Systemd-DBus]:https://www.freedesktop.org/wiki/Software/systemd/dbus/
 [DBus-Specs]:https://dbus.freedesktop.org/doc/dbus-specification.html
 [CANopen-Specs]:https://www.can-cia.org/groups/specifications/
