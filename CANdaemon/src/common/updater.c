@@ -2,7 +2,7 @@
 #include "CO_SDO.h"
 #include "OD_helpers.h"
 #include "file_transfer_ODF.h"
-#include "error_logging.h"
+#include "log_message.h"
 #include "updater.h"
 #include <systemd/sd-bus.h>
 #include <pthread.h>
@@ -48,7 +48,7 @@ int updater_dbus_setup(void) {
     // Connect to the bus
     r = sd_bus_open_system(&bus);
     if (r < 0) {
-        fprintf(stderr, "Failed to connect to systemd bus.\n");
+        log_message(LOG_ERR, "Failed to connect to systemd bus.\n");
         return r;
     }
 
@@ -62,13 +62,13 @@ int updater_dbus_setup(void) {
             read_status_cb, 
             userdata);
     if (r < 0) {
-        fprintf(stderr, "Failed to add new signal match.\n");
+        log_message(LOG_ERR, "Failed to add new signal match.\n");
         return r;
     }
 
     // Start dbus signal thread
     if (pthread_create(&signal_thread_id, NULL, signal_thread, NULL) != 0) {
-        fprintf(stderr, "Failed to start dbus signal thread.\n");
+        log_message(LOG_DEBUG, "Failed to start dbus signal thread.\n");
         return -1;
     }
 
@@ -86,11 +86,11 @@ int updater_dbus_end(void) {
     tim.tv_nsec = 0;
 
     if (nanosleep(&tim, NULL) < 0 ) {
-        fprintf(stderr, "Nano sleep system call failed \n");
+        log_message(LOG_DEBUG, "Nano sleep system call failed \n");
     }
 
     if (pthread_join(signal_thread_id, NULL) != 0) {
-        fprintf(stderr, "updater signal thread join failed.\n");
+        log_message(LOG_DEBUG, "updater signal thread join failed.\n");
         return -1;
     }
 
@@ -150,13 +150,13 @@ static void* signal_thread(void* arg) {
         // Process requests
         r = sd_bus_process(bus, NULL);
         if ( r < 0) 
-            fprintf(stderr, "Failed to processA bus.\n");
+            log_message(LOG_DEBUG, "Failed to processA bus.\n");
         else if (r > 0) // we processed a request, try to process another one, right-away
             continue;
 
         // Wait for the next request to process 
         if (sd_bus_wait(bus, 100000) < 0)
-            fprintf(stderr, "Bus wait failed.\n");
+            log_message(LOG_DEBUG, "Bus wait failed.\n");
     }
     printf("app thread exited \n");
 
@@ -258,12 +258,12 @@ CO_SDO_abortCode_t updater_ODF(CO_ODF_arg_t *ODF_arg) {
                         "s",
                         new_update_file);
                 if (r < 0)
-                    fprintf(stderr, "Failed to issue method call.");
+                    log_message(LOG_DEBUG, "Failed to issue method call.");
 
                 /* Parse the response message */
                 r = sd_bus_message_read(mess, "b", &temp_bool);
                 if (r < 0)
-                    fprintf(stderr, "Failed to parse response message.");
+                    log_message(LOG_DEBUG, "Failed to parse response message.");
 
                 sd_bus_message_unref(mess);
                 sd_bus_error_free(&err);
@@ -286,12 +286,12 @@ CO_SDO_abortCode_t updater_ODF(CO_ODF_arg_t *ODF_arg) {
                         &mess,
                         NULL);
                 if (r < 0)
-                    fprintf(stderr, "Failed to issue method call.");
+                    log_message(LOG_DEBUG, "Failed to issue method call.");
 
                 /* Parse the response message */
                 r = sd_bus_message_read(mess, "b", &temp_bool);
                 if (r < 0)
-                    fprintf(stderr, "Failed to parse response message.");
+                    log_message(LOG_DEBUG, "Failed to parse response message.");
 
                 sd_bus_message_unref(mess);
                 sd_bus_error_free(&err);
@@ -314,12 +314,12 @@ CO_SDO_abortCode_t updater_ODF(CO_ODF_arg_t *ODF_arg) {
                         &mess,
                         NULL);
                 if (r < 0)
-                    fprintf(stderr, "Failed to issue method call.");
+                    log_message(LOG_DEBUG, "Failed to issue method call.");
 
                 /* Parse the response message */
                 r = sd_bus_message_read(mess, "b", &temp_bool);
                 if (r < 0)
-                    fprintf(stderr, "Failed to parse response message.");
+                    log_message(LOG_DEBUG, "Failed to parse response message.");
                 
                 sd_bus_message_unref(mess);
                 sd_bus_error_free(&err);
@@ -342,12 +342,12 @@ CO_SDO_abortCode_t updater_ODF(CO_ODF_arg_t *ODF_arg) {
                         &mess,
                         NULL);
                 if (r < 0)
-                    fprintf(stderr, "Failed to issue method call.");
+                    log_message(LOG_DEBUG, "Failed to issue method call.");
 
                 /* Parse the response message */
                 r = sd_bus_message_read(mess, "b", &temp_bool);
                 if (r < 0)
-                    fprintf(stderr, "Failed to parse response message.");
+                    log_message(LOG_DEBUG, "Failed to parse response message.");
 
                 sd_bus_message_unref(mess);
                 sd_bus_error_free(&err);
@@ -370,12 +370,12 @@ CO_SDO_abortCode_t updater_ODF(CO_ODF_arg_t *ODF_arg) {
                         &mess,
                         NULL);
                 if (r < 0)
-                    fprintf(stderr, "Failed to issue method call.");
+                    log_message(LOG_DEBUG, "Failed to issue method call.");
 
                 /* Parse the response message */
                 r = sd_bus_message_read(mess, "b", &temp_bool);
                 if (r < 0)
-                    fprintf(stderr, "Failed to parse response message.");
+                    log_message(LOG_DEBUG, "Failed to parse response message.");
 
                 sd_bus_message_unref(mess);
                 sd_bus_error_free(&err);

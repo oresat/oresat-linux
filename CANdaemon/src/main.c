@@ -1,4 +1,4 @@
-#include "error_logging.h"
+#include "log_message.h"
 #include "CANopen.h"
 #include "CO_Linux_tasks.h"
 #include "CO_time.h"
@@ -60,7 +60,7 @@ static void sigHandler(int sig) {
 
 void CO_error(const uint32_t info) {
     CO_errorReport(CO->em, CO_EM_GENERIC_SOFTWARE_ERROR, CO_EMC_SOFTWARE_INTERNAL, info);
-    logmsg(LOG_DEBUG, "canopen generic error: 0x%X\n", info);
+    log_message(LOG_DEBUG, "canopen generic error: 0x%X\n", info);
 }
 
 
@@ -97,10 +97,10 @@ int main (int argc, char *argv[]) {
 
     /* Run as daemon if needed */
     if (daemon_flag) {
-        logmsg(LOG_DEBUG, "Starting as daemon...\n");
+        log_message(LOG_DEBUG, "Starting as daemon...\n");
         /* Fork */
         if ((pid = fork()) < 0) {
-            logmsg(LOG_ERR, "Error: Failed to fork!\n");
+            log_message(LOG_ERR, "Error: Failed to fork!\n");
             exit(EXIT_FAILURE);
         }
 
@@ -112,7 +112,7 @@ int main (int argc, char *argv[]) {
         /* Child process continues on */
         /* Log PID */
         if ((run_fp = fopen(pid_file, "w+")) == NULL) {
-            logmsg(LOG_ERR, "Error: Unable to open file %s\n", pid_file);
+            log_message(LOG_ERR, "Error: Unable to open file %s\n", pid_file);
             exit(EXIT_FAILURE);
         }
         fprintf(run_fp, "%d\n", getpid());
@@ -121,81 +121,81 @@ int main (int argc, char *argv[]) {
 
         /* Create new session for process group leader */
         if ((sid = setsid()) < 0) {
-            logmsg(LOG_ERR, "Error: Failed to create new session!\n");
+            log_message(LOG_ERR, "Error: Failed to create new session!\n");
             exit(EXIT_FAILURE);
         }
 
         /* Set default umask and cd to root to avoid blocking filesystems */
         umask(0);
         if (chdir("/") < 0) {
-            logmsg(LOG_ERR, "Error: Failed to chdir to root: %s\n", strerror(errno));
+            log_message(LOG_ERR, "Error: Failed to chdir to root: %s\n", strerror(errno));
             exit(EXIT_FAILURE);
         }
 
         /* Redirect std streams to /dev/null */
         if (freopen("/dev/null", "r", stdin) == NULL) {
-            logmsg(LOG_ERR, "Error: Failed to redirect streams to /dev/null!\n");
+            log_message(LOG_ERR, "Error: Failed to redirect streams to /dev/null!\n");
             exit(EXIT_FAILURE);
         }
         if (freopen("/dev/null", "w+", stdout) == NULL) {
-            logmsg(LOG_ERR, "Error: Failed to redirect streams to /dev/null!\n");
+            log_message(LOG_ERR, "Error: Failed to redirect streams to /dev/null!\n");
             exit(EXIT_FAILURE);
         }
         if (freopen("/dev/null", "w+", stderr) == NULL) {
-            logmsg(LOG_ERR, "Error: Failed to redirect streams to /dev/null!\n");
+            log_message(LOG_ERR, "Error: Failed to redirect streams to /dev/null!\n");
             exit(EXIT_FAILURE);
         }
     }
 
     if(nodeId < 1 || nodeId > 127) {
-        logmsg(LOG_ERR, "Invalid node ID (%d)\n", nodeId);
+        log_message(LOG_ERR, "Invalid node ID (%d)\n", nodeId);
         exit(EXIT_FAILURE);
     }
 
     if(rtPriority != -1 && (rtPriority < sched_get_priority_min(SCHED_FIFO)
                          || rtPriority > sched_get_priority_max(SCHED_FIFO))) {
-        logmsg(LOG_ERR, "Wrong RT priority (%d)\n", rtPriority);
+        log_message(LOG_ERR, "Wrong RT priority (%d)\n", rtPriority);
         exit(EXIT_FAILURE);
     }
 
     if(CANdevice0Index == 0) {
-        logmsg(LOG_ERR, "Can't find CAN device \"%s\"\n", CANdevice);
+        log_message(LOG_ERR, "Can't find CAN device \"%s\"\n", CANdevice);
         exit(EXIT_FAILURE);
     }
 
-    logmsg(LOG_DEBUG, "Starting Node ID %d(0x%02X)\n", nodeId, nodeId);
+    log_message(LOG_DEBUG, "Starting Node ID %d(0x%02X)\n", nodeId, nodeId);
 
     // Verify, if OD structures have proper alignment of initial values
     if(CO_OD_RAM.FirstWord != CO_OD_RAM.LastWord) {
-        logmsg(LOG_ERR, "Program init - Error in CO_OD_RAM.\n");
+        log_message(LOG_ERR, "Program init - Error in CO_OD_RAM.\n");
         exit(EXIT_FAILURE);
     }
     if(CO_OD_EEPROM.FirstWord != CO_OD_EEPROM.LastWord) {
-        logmsg(LOG_ERR, "Program init - Error in CO_OD_EEPROM.\n");
+        log_message(LOG_ERR, "Program init - Error in CO_OD_EEPROM.\n");
         exit(EXIT_FAILURE);
     }
     if(CO_OD_ROM.FirstWord != CO_OD_ROM.LastWord) {
-        logmsg(LOG_ERR, "Program init - Error in CO_OD_ROM.\n");
+        log_message(LOG_ERR, "Program init - Error in CO_OD_ROM.\n");
         exit(EXIT_FAILURE);
     }
 
     // Catch signals SIGINT and SIGTERM
     if(signal(SIGINT, sigHandler) == SIG_ERR) {
-        logmsg(LOG_ERR, "Program init - SIGINIT handler creation failed");
+        log_message(LOG_ERR, "Program init - SIGINIT handler creation failed");
         exit(EXIT_FAILURE);
     }
     if(signal(SIGTERM, sigHandler) == SIG_ERR) {
-        logmsg(LOG_ERR, "Program init - SIGTERM handler creation failed");
+        log_message(LOG_ERR, "Program init - SIGTERM handler creation failed");
         exit(EXIT_FAILURE);
     }
 
     // increase variable each startup. Variable is automatically stored in non-volatile memory.
-    logmsg(LOG_DEBUG, "Power count=%u ...\n", ++OD_powerOnCounter);
+    log_message(LOG_DEBUG, "Power count=%u ...\n", ++OD_powerOnCounter);
 
     while(reset != CO_RESET_APP && reset != CO_RESET_QUIT && CO_endProgram == 0) {
         CO_ReturnError_t err;
 
-        logmsg(LOG_DEBUG, "Communication reset ...\n");
+        log_message(LOG_DEBUG, "Communication reset ...\n");
 
 
         // Wait other threads (command interface).
@@ -214,7 +214,7 @@ int main (int argc, char *argv[]) {
         // initialize CANopen
         err = CO_init(&CANdevice0Index, nodeId, 0);
         if(err != CO_ERROR_NO)
-            logmsg(LOG_ERR, "Communication reset - initialization failed\n");
+            log_message(LOG_ERR, "Communication reset - initialization failed\n");
 
         // Configure callback functions for task control
         CO_EM_initCallback(CO->em, taskMain_cbSignal);
@@ -231,7 +231,7 @@ int main (int argc, char *argv[]) {
             // Configure epoll for mainline
             mainline_epoll_fd = epoll_create(4);
             if(mainline_epoll_fd == -1)
-                logmsg(LOG_ERR, "Program init - epoll_create mainline failed\n");
+                log_message(LOG_ERR, "Program init - epoll_create mainline failed\n");
 
             // Init mainline
             taskMain_init(mainline_epoll_fd, &OD_performance[ODA_performance_mainCycleMaxTime]);
@@ -239,7 +239,7 @@ int main (int argc, char *argv[]) {
             // Configure epoll for rt_thread
             rt_thread_epoll_fd = epoll_create(2);
             if(rt_thread_epoll_fd == -1)
-                logmsg(LOG_ERR, "Program init - epoll_create rt_thread failed\n");
+                log_message(LOG_ERR, "Program init - epoll_create rt_thread failed\n");
 
             // Init taskRT
             CANrx_taskTmr_init(rt_thread_epoll_fd, TMR_TASK_INTERVAL_NS, &OD_performance[ODA_performance_timerCycleMaxTime]);
@@ -248,7 +248,7 @@ int main (int argc, char *argv[]) {
 
             // Create rt_thread
             if(pthread_create(&rt_thread_id, NULL, rt_thread, NULL) != 0)
-                logmsg(LOG_ERR, "Program init - rt_thread creation failed\n");
+                log_message(LOG_ERR, "Program init - rt_thread creation failed\n");
 
             // Set priority for rt_thread
             if(rtPriority > 0) {
@@ -256,7 +256,7 @@ int main (int argc, char *argv[]) {
 
                 param.sched_priority = rtPriority;
                 if(pthread_setschedparam(rt_thread_id, SCHED_FIFO, &param) != 0)
-                    logmsg(LOG_ERR, "Program init - rt_thread set scheduler failed\n");
+                    log_message(LOG_ERR, "Program init - rt_thread set scheduler failed\n");
             }
 
             // set up general ODFs
@@ -273,7 +273,7 @@ int main (int argc, char *argv[]) {
         pthread_mutex_unlock(&CO_CAN_VALID_mtx);
 
         reset = CO_RESET_NOT;
-        logmsg(LOG_DEBUG, "running\n");
+        log_message(LOG_DEBUG, "running\n");
 
         while(reset == CO_RESET_NOT && CO_endProgram == 0) {
             int ready;
@@ -301,7 +301,7 @@ int main (int argc, char *argv[]) {
     // join threads
     CO_endProgram = 1;
     if(pthread_join(rt_thread_id, NULL) != 0) {
-        logmsg(LOG_ERR, "Program end - pthread_join failed");
+        log_message(LOG_ERR, "Program end - pthread_join failed");
     }
 
     // stop dbus services threads
@@ -313,13 +313,13 @@ int main (int argc, char *argv[]) {
     taskMain_close();
     CO_delete(&CANdevice0Index);
 
-    logmsg(LOG_DEBUG, "%s on %s (nodeId=0x%02X) - finished.\n\n", argv[0], CANdevice, nodeId);
+    log_message(LOG_DEBUG, "%s on %s (nodeId=0x%02X) - finished.\n\n", argv[0], CANdevice, nodeId);
 
     // Flush all buffers (and reboot)
     if(reset == CO_RESET_APP) {
         sync();
         if(reboot(LINUX_REBOOT_CMD_RESTART) != 0) {
-            logmsg(LOG_ERR, "Program end - reboot failed");
+            log_message(LOG_ERR, "Program end - reboot failed");
         }
     }
 

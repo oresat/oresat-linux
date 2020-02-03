@@ -2,7 +2,7 @@
 #include "CO_SDO.h"
 #include "OD_helpers.h"
 #include "file_transfer_ODF.h"
-#include "error_logging.h"
+#include "log_message.h"
 #include "application.h"
 #include <systemd/sd-bus.h>
 #include <stdio.h>

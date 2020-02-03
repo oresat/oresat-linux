@@ -1,7 +1,7 @@
 #include "CANopen.h"
 #include "CO_driver.h"
 #include "OD_helpers.h"
-#include "error_logging.h"
+#include "log_message.h"
 #include "file_transfer_ODF.h"
 #include <string.h>
 #include <stdio.h>
@@ -50,13 +50,13 @@ static CO_SDO_abortCode_t read_file_data(CO_ODF_arg_t *ODF_arg);
 
 static int ft_lock_mtx(void) {
     if(pthread_mutex_lock(&FT_ODF_mtx) != 0) 
-        fprintf(stderr, "File transfer mutex lock failed");
+        log_message(LOG_ERR, "File transfer mutex lock failed");
     return 0;
 }
 
 static int ft_unlock_mtx(void) {
     if(pthread_mutex_unlock(&FT_ODF_mtx) != 0) 
-        fprintf(stderr, "File transfer mutex unlock failed");
+        log_message(LOG_ERR, "File transfer mutex unlock failed");
     return 0;
 }
 

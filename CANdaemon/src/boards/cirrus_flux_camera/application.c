@@ -2,7 +2,7 @@
 #include "CO_SDO.h"
 #include "OD_helpers.h"
 #include "file_transfer_ODF.h"
-#include "error_logging.h"
+#include "log_message.h"
 #include "application.h"
 #include <systemd/sd-bus.h>
 #include <stdio.h>
@@ -32,7 +32,7 @@ int app_dbus_setup(void) {
     /* Connect to the bus */
     r = sd_bus_open_system(&bus);
     if (r < 0) {
-        fprintf(stderr, "Failed to connect to systemd bus.\n");
+        log_message(LOG_ERR, "Failed to connect to systemd bus.\n");
         return r;
     }
 
@@ -76,14 +76,14 @@ CO_SDO_abortCode_t CFC_ODF(CO_ODF_arg_t *ODF_arg) {
             &m,
             NULL);
     if (r < 0) {
-        fprintf(stderr, "Failed to issue method call.");
+        log_message(LOG_DEBUG, "Failed to issue LatestImage method call.");
         return CO_SDO_AB_GENERAL;
     }
 
     /* Parse the response message */
     r = sd_bus_message_read(m, "s", &file_path);
     if (r < 0) {
-        fprintf(stderr, "Failed to parse response message.");
+        log_message(LOG_DEBUG, "Failed to parse response message from LatestImage.");
         return CO_SDO_AB_GENERAL;
     }
 
