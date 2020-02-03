@@ -162,7 +162,7 @@ if(${LINUX_DISTRIBUTION} MATCHES "Debian")
     set(CPACK_PACKAGE_VERSION 0.0.1) # TODO link to github version??
     set(CPACK_PACKAGE_CONTACT "rmedick@pdx.edu")
     set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "CAN systemd controller")
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS "cmake (>= 3.13.4-1), make (>= 4.2.1-1.2), gcc (>= 4:8.3.0-1), libsystemd-dev (>= 241-7~deb10u2rcnee0~buster+20191124)")
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libsystemd-dev (>= 241-7~deb10u2rcnee0~buster+20191124)")
     set(CPACK_DEBIAN_PACKAGE_SECTION "embedded")
     set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "http://www.oresat.org")
     execute_process(COMMAND dpkg --print-architecture OUTPUT_VARIABLE CPACK_DEBIAN_PACKAGE_ARCHITECTURE OUTPUT_STRIP_TRAILING_WHITESPACE)
