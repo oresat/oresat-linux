@@ -17,7 +17,7 @@ The CANdaemon is based off of [CANopenSocket], but with dbus interfaces to commi
 ## Features
 - Follows the CiA (CAN-in-Automation) specs for [CANopen-Specs]. 
 - Follows the [ECSS-CANBus-Extended-Protocal] on top of CiA specs.
-- Allows the CAN Network Manager to have control of daemons and power setting thru [systemd].
+- Allows the CAN Network Manager to have control of daemons and power setting thru [Systemd].
 - Uses sd-bus for dbus communication (systemd dbus) to daemons.
 - Easy to add more DBus clients.
 
@@ -58,6 +58,8 @@ The CANdaemon is based off of [CANopenSocket], but with dbus interfaces to commi
 ## Useful References
 - [CAN-Wikipedia]
 - [CANopenSocket]
+- [Daemons]
+- [Systemd]
 - [Systemd-DBus]
 - [DBus-Specs]
 - [CANopen-Specs]
@@ -71,6 +73,7 @@ The CANdaemon is based off of [CANopenSocket], but with dbus interfaces to commi
 <!-- References -->
 [CAN-Wikipedia]:https://en.wikipedia.org/wiki/CAN_bus
 [CANopenSocket]:https://github.com/CANopenNode/CANopenSocket
+[Daemon]:https://www.freedesktop.org/software/systemd/man/daemon.html
 [Systemd]:https://freedesktop.org/wiki/Software/systemd/
 [Systemd-DBus]:https://www.freedesktop.org/wiki/Software/systemd/dbus/
 [DBus-Specs]:https://dbus.freedesktop.org/doc/dbus-specification.html
