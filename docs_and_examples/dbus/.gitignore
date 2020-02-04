@@ -1,3 +1,4 @@
 sd-bus-method-example
 sd-bus-property-example
 sd-bus-signal-example
+sd-bus-read-changed-signal

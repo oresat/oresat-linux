@@ -1,0 +1,9 @@
+#!/bin/sh
+
+PKG_NAME=oresat-linux-updater
+
+# this package is updating make sure the daemon is stop
+if [ -f "/usr/bin/$PKGNAME" ]; then 
+	systemctl stop $PKG_NAME
+	rm -f /run/$PKG_NAME.pid
+fi

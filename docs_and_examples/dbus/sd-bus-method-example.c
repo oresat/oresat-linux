@@ -6,8 +6,8 @@
 #include <systemd/sd-bus.h>
 
 
+#define DESTINATION     "org.example.project.oresat"
 #define INTERFACE_NAME  "org.example.project.oresat"
-#define BUS_NAME        INTERFACE_NAME
 #define OBJECT_PATH     "/org/example/project/oresat"
 
 
@@ -52,7 +52,7 @@ int call_hello_method(sd_bus *bus) {
         return -1;
 
     r = sd_bus_call_method(bus,
-                           BUS_NAME,
+                           DESTINATION,
                            OBJECT_PATH,
                            INTERFACE_NAME,
                            "Hello",
@@ -86,7 +86,7 @@ int call_multiply_method(sd_bus *bus) {
         return -1;
 
     r = sd_bus_call_method(bus,
-                           BUS_NAME,
+                           DESTINATION,
                            OBJECT_PATH,
                            INTERFACE_NAME,
                            "Multiply",
@@ -120,7 +120,7 @@ int call_quit_method(sd_bus *bus) {
         return -1;
 
     r = sd_bus_call_method(bus,
-                           BUS_NAME,
+                           DESTINATION,
                            OBJECT_PATH,
                            INTERFACE_NAME,
                            "Quit",
@@ -216,7 +216,7 @@ int server(void) {
     dbusError(r, "Failed to connect to system bus:");
 
     /* Take a well-known service name so that clients can find us */
-    r = sd_bus_request_name(bus, BUS_NAME, SD_BUS_NAME_ALLOW_REPLACEMENT);
+    r = sd_bus_request_name(bus, DESTINATION, SD_BUS_NAME_ALLOW_REPLACEMENT);
     dbusError(r, "Failed to acquire service name. \nIs "INTERFACE_NAME".conf in /etc/dbus-1/system.d/ ?");
 
     /* Install the vtable */
@@ -241,7 +241,7 @@ int server(void) {
         dbusError(r, "Failed to wait on bus.");
     }
 
-    r = sd_bus_release_name(bus, BUS_NAME);
+    r = sd_bus_release_name(bus, DESTINATION);
     dbusError(r, "Failed to release service name.");
 
     sd_bus_slot_unref(slot);
