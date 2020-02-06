@@ -6,7 +6,8 @@ DEAD_NODE_TIME = 600
 
 # Expanded frame data class
 class FrameData(Frame):
-    def __init__(self, src):
+    def __init__(self, src, ndev):
+        self.ndev = ndev
         self.last_modified = time.time()
         self.is_extended_id = src.is_extended_id
         self.dlc = src.dlc
