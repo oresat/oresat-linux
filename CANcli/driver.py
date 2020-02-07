@@ -20,7 +20,7 @@ def main(window):
 
     # Table Setup
     tables = [ FrameTable("Heartbeat", table_size),
-               FrameTable("RDO's", table_size),
+               FrameTable("SDO's", table_size),
                FrameTable("Miscellaneous", table_size) ]
 
     # Open the standard output
@@ -30,9 +30,8 @@ def main(window):
     curses.curs_set(0)
 
     # Open the sockets
-    # dev_names = [ "vcan0" ]
-    dev_names = [ "vcan0",
-                  "vcan1" ]
+    dev_names = [ "can0" ]
+    #dev_names = [ "vcan0", "vcan1" ]
     devs = []
     for name in dev_names:
         dev = socketcan.SocketCanDev(name)
@@ -65,8 +64,8 @@ def main(window):
             id = new_frame.id
 
             # Figure out the right table to put the new data in
-            if(id >= 700 and id < 800): tables[0].add(new_frame)
-            elif(id >= 500 and id < 700): tables[1].add(new_frame)
+            if(id >= 0x700 and id < 0x800): tables[0].add(new_frame)
+            elif(id >= 0x581 and id < 0x67F): tables[1].add(new_frame)
             else: tables[2].add(new_frame)
 
             for i, table in enumerate(tables):
