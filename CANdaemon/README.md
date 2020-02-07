@@ -37,6 +37,7 @@ The CANdaemon is based off of [CANopenSocket], but with dbus interfaces to commi
 - Running CANdaemon
     - `./candaemon` as a process
     - `./candaemon -d` as a daemon
+    - `./candaemon -l <device>` to specify device. Defaults to can0.
 - Installing binary and daemon service file (usefull for testing)
     - `sudo make install` or `sudo ninja install`
 - Building deb binary package on a beaglebone (or debian based armhf system)
