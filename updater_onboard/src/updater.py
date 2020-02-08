@@ -9,7 +9,7 @@ from enum import Enum
 import threading, os, sys, re, yaml, subprocess, apt_pkg, apt.debfile, shutil, time
 
 
-DBUS_INTERFACE_NAME = "org.OreSat.Updater"
+DBUS_INTERFACE_NAME = "org.OreSat.LinuxUpdater"
 UPDATES_DIR = '/tmp/oresat-linux-updater/archives/'
 WORKING_DIR = '/tmp/oresat-linux-updater/working/'
 
@@ -24,7 +24,7 @@ class State(Enum):
 class LinuxUpdater(object):
     dbus = """
     <node>
-        <interface name="org.OreSat.Updater">
+        <interface name="org.OreSat.LinuxUpdater">
             <property name="CurrentState" type="d" access="read"/>
             <property name="CurrentArchiveFile" type="s" access="read"/>
             <property name="AvailableArchiveFiles" type="d" access="read"/>
