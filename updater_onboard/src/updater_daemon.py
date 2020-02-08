@@ -17,23 +17,13 @@ class MyDaemon:
                 # exit first parent
                 sys.exit(0) 
         except OSError as err: 
-            sys.stderr.write('fork #1 failed: {0}\n'.format(err))
+            sys.stderr.write('fork failed: {0}\n'.format(err))
             sys.exit(1)
 
         # decouple from parent environment
         os.chdir('/') 
         os.setsid() 
         os.umask(0) 
-
-        # do second fork
-        try: 
-            pid = os.fork() 
-            if pid > 0:
-                # exit from second parent
-                sys.exit(0) 
-        except OSError as err: 
-            sys.stderr.write('fork #2 failed: {0}\n'.format(err))
-            sys.exit(1) 
 
         # redirect standard file descriptors
         sys.stdout.flush()
@@ -77,58 +67,10 @@ class MyDaemon:
         self.daemonize()
         self.run()
 
-    def stop(self):
-        """Stop the daemon."""
-
-        # Get the pid from the pidfile
-        try:
-            with open(self.pidfile,'r') as pf:
-                pid = int(pf.read().strip())
-        except IOError:
-            pid = None
-
-        if not pid:
-            message = "pidfile {0} does not exist. " + \
-                    "Daemon not running?\n"
-            sys.stderr.write(message.format(self.pidfile))
-            return # not an error in a restart
-
-        # Try killing the daemon process	
-        try:
-            while 1:
-                os.kill(pid, signal.SIGTERM)
-                time.sleep(0.1)
-        except OSError as err:
-            e = str(err.args)
-            if e.find("No such process") > 0:
-                if os.path.exists(self.pidfile):
-                    os.remove(self.pidfile)
-            else:
-                print (str(err.args))
-                sys.exit(1)
-
-    def restart(self):
-        """Restart the daemon."""
-        self.stop()
-        self.start()
-
     def run(self):
         updater.start_linux_updater()
 
 if __name__ == "__main__":
         daemon = MyDaemon('/run/oresat-linux-updater.pid')
-        if len(sys.argv) == 2:
-                if 'start' == sys.argv[1]:
-                        daemon.start()
-                elif 'stop' == sys.argv[1]:
-                        daemon.stop()
-                elif 'restart' == sys.argv[1]:
-                        daemon.restart()
-                else:
-                        print("Unknown command")
-                        sys.exit(2)
-                sys.exit(0)
-        else:
-                print("usage: %s start|stop|restart" % sys.argv[0])
-                sys.exit(2)
+        daemon.start()
 
