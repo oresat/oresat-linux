@@ -26,7 +26,6 @@ class LinuxUpdater(object):
     <node>
         <interface name="org.OreSat.Updater">
             <property name="CurrentState" type="d" access="read"/>
-            <property name="ComputerName" type="s" access="readwrite"/>
             <property name="CurrentArchiveFile" type="s" access="read"/>
             <property name="AvailableArchiveFiles" type="d" access="read"/>
             <property name="ErrorMessage" type="s" access="read"/>
@@ -48,11 +47,6 @@ class LinuxUpdater(object):
         # make directories for updater, if not found
         Path(UPDATES_DIR).mkdir(parents=True, exist_ok=True) 
         Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
-
-        # set computer_name to hostname
-        self._computer_name = "" # encase hostname is missing
-        with open("/etc/hostname", "r") as f:
-            self._computer_name = f.readline().strip()
 
         # set local fields
         self._current_state = State.SLEEP.value
@@ -84,19 +78,6 @@ class LinuxUpdater(object):
     @property
     def ErrorMessage(self):
         return self._error_message
-
-
-    @property
-    def ComputerName(self):
-        return self._computer_name
-
-
-    @ComputerName.setter
-    def ComputerName(self, value):
-        self.__lock.acquire()
-        self._computer_name = value.lower()
-        self.__lock.release()
-
 
     @property
     def CurrentArchiveFile(self):
@@ -260,12 +241,16 @@ class LinuxUpdater(object):
             return
 
         # remove packages
-        self.__parse_remove_instructions("all", archive_instruction)
-        self.__parse_remove_instructions(self.computer_name, archive_instruction)
+        pkgs = archive_instruction["install-packages"]
+        for p in pkgs:
+            if not instal_pkg(WORKING_DIR + p):
+                self.__update_error("install pkg failed: " + p)
 
         # install packages
-        self.__parse_install_instructions("all", archive_instruction)
-        self.__parse_install_instructions(self.computer_name, archive_instruction)
+        pkgs = archive_instruction["remove-packages"]
+        for p in pkgs:
+            if not remove_pkg(WORKING_DIR + p):
+                self.__update_error("remove pkg failed: " + p)
 
         self.__lock.acquire()
 
@@ -279,36 +264,6 @@ class LinuxUpdater(object):
         
         self.__lock.release()
         return
-
-
-    def __parse_install_instructions(self, computer_name, archive_instruction):
-        """ follows the insstruction for computr name in the archive instruction """
-        install_string = name + "-install-pkgs"
-        if install_string not in archive_instruction: 
-            return False # no instruction for that computer name
-
-        pkgs = archive_instruction[install_string]
-        for p in pkgs:
-            if not instal_pkg(WORKING_DIR + p):
-                self.__update_error("install pkg failed: " + p)
-                return False
-
-        return True
-
-
-    def __parse_remove_instructions(self, computer_name, archive_instruction):
-        """ follows the insstruction for computr name in the archive instruction """
-        remove_string = name + "-remove-pkgs"
-        if remove_string not in archive_instruction: 
-            return False # no instruction for that computer name
-
-        pkgs = archive_instruction[remove_string]
-        for p in pkgs:
-            if not remove_pkg(WORKING_DIR + p):
-                self.__update_error("remove pkg failed: " + p)
-                return False
-
-        return True
 
 
 def instal_pkg(file_path):
