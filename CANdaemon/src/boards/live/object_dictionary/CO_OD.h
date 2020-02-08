@@ -95,7 +95,7 @@
 
 /*******************************************************************************
    FILE INFO:
-      FileName:     Template_objDict.eds
+      FileName:     live_OD.eds
       FileVersion:  0
       CreationTime: 11:32AM
       CreationDate: 11-07-2019
@@ -107,7 +107,7 @@
    DEVICE INFO:
       VendorName:     Portland State Aerospace Society
       VendorNumber    0
-      ProductName:    Template
+      ProductName:    Live
       ProductNumber:  0
 ******************************************************************************/
 
@@ -769,7 +769,7 @@ struct sCO_OD_RAM{
 /*1005      */ UNSIGNED32      COB_ID_SYNCMessage;
 /*1006      */ UNSIGNED32      communicationCyclePeriod;
 /*1007      */ UNSIGNED32      synchronousWindowLength;
-/*1008      */ VISIBLE_STRING  manufacturerDeviceName[11];
+/*1008      */ VISIBLE_STRING  manufacturerDeviceName[6];
 /*1009      */ VISIBLE_STRING  manufacturerHardwareVersion[4];
 /*100a      */ VISIBLE_STRING  manufacturerSoftwareVersion[4];
 /*1010      */ UNSIGNED32      storeParameters[1];
@@ -850,7 +850,7 @@ extern struct sCO_OD_EEPROM CO_OD_EEPROM;
 
 /*1008, Data Type: VISIBLE_STRING */
         #define OD_manufacturerDeviceName                           CO_OD_RAM.manufacturerDeviceName
-        #define ODL_manufacturerDeviceName_stringLength             11
+        #define ODL_manufacturerDeviceName_stringLength             6
 
 /*1009, Data Type: VISIBLE_STRING */
         #define OD_manufacturerHardwareVersion                      CO_OD_RAM.manufacturerHardwareVersion
