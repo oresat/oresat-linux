@@ -72,25 +72,38 @@ int main (int argc, char *argv[]) {
     CO_NMT_reset_cmd_t reset = CO_RESET_NOT;
     int CANdevice0Index = 0;
     bool_t firstRun = true;
-    char* CANdevice = "can1";         /* CAN device, configurable by arguments. */
-    int nodeId = OD_CANNodeID;      /* Use value from Object Dictionary or set to 1..127 by arguments */
-    CANdevice0Index = if_nametoindex(CANdevice);
+    char* CANdevice = NULL;
+    int nodeId = OD_CANNodeID; // use OD value
 
     // Register signal handlers
     signal(SIGINT, NULL);
     signal(SIGTERM, NULL);
 
     // Command line argument processing
-    while ((c = getopt(argc, argv, "d")) != -1) {
+    while ((c = getopt(argc, argv, "dl:")) != -1) {
         switch (c) {
             case 'd':
                 daemon_flag = true;
                 break;
+            case 'l':
+                CANdevice = optarg;
+                break;
+            case '?':
+                if (optopt == 'l')
+                    fprintf(stderr, "flag l requires a argument\n");
+                else
+                    fprintf(stderr, "Uknown flag\n");
+                exit(1);
             default:
-                fprintf(stderr, "Usage: %s [-d]", argv[0]);
+                fprintf(stderr, "Usage: %s [-d] [-l link]\n", argv[0]);
                 exit(1);
         }
     }
+
+    if (CANdevice == NULL)
+        CANdevice = "can1";
+
+    CANdevice0Index = if_nametoindex(CANdevice);
 
     setlogmask(LOG_UPTO(LOG_NOTICE));
     openlog(argv[0], LOG_PID|LOG_CONS, LOG_DAEMON);
