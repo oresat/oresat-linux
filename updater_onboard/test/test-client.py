@@ -7,7 +7,7 @@ from gi.repository import GLib
 
 
 INTERFACE_NAME = "org.OreSat.Updater"
-EXAMPLE_UPDATE_DIR = "/home/debian/oresat-linux/updater_onboard/test/example_updates/"
+EXAMPLE_UPDATE_DIR = "/home/debian/oresat-linux/updater_onboard/test/example-updates/"
 
 
 if __name__=="__main__":

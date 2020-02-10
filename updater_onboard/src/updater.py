@@ -148,7 +148,7 @@ class LinuxUpdater(object):
             if self._current_state == State.FAILED.value:
                 self.__failed_state()
             elif self._current_state == State.UPDATE.value:
-                self.update()
+                self.__update_state()
             else:
                 time.sleep(1)
 
@@ -156,7 +156,7 @@ class LinuxUpdater(object):
     def __update_error(self, message):
         self.__lock.acquire()
         self._error_message = message
-        self._current_state = State.ERROR.value
+        self._current_state = State.FAILED.value
         self.__lock.release()
 
 
@@ -241,23 +241,25 @@ class LinuxUpdater(object):
             return
 
         # remove packages
-        pkgs = archive_instruction["install-packages"]
-        for p in pkgs:
-            if not instal_pkg(WORKING_DIR + p):
-                self.__update_error("install pkg failed: " + p)
+        if "remove-package" in archive_instruction:
+            pkgs = archive_instruction["remove-packages"]
+            for p in pkgs:
+                if not remove_pkg(WORKING_DIR + p):
+                    self.__update_error("Package " + p + " failed to be removed.")
 
         # install packages
-        pkgs = archive_instruction["remove-packages"]
-        for p in pkgs:
-            if not remove_pkg(WORKING_DIR + p):
-                self.__update_error("remove pkg failed: " + p)
+        if "install-package" in archive_instruction:
+            pkgs = archive_instruction["install-packages"]
+            for p in pkgs:
+                if not install_pkg(WORKING_DIR + p):
+                    self.__update_error("Package " + p + " failed to be installed.")
 
         self.__lock.acquire()
 
         # clear working dir and remove update deb pkg
         shutil.rmtree(WORKING_DIR)
         Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
-        os.remove_pkg(archive_file_path)
+        os.remove(archive_file_path)
         self._archive_file_name = ""
         self._available_archive_files -= 1
         self._current_state = State.SLEEP.value
@@ -266,7 +268,7 @@ class LinuxUpdater(object):
         return
 
 
-def instal_pkg(file_path):
+def install_pkg(file_path):
     """ output will be 0 if it completes install, anything else fails """
     deb = apt.debfile.DebPackage(file_path)
     if deb.check() and deb.install() == 0: # valid package and install worked
