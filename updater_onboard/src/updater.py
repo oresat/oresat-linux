@@ -93,7 +93,7 @@ class LinuxUpdater(object):
     # dbus methods
 
 
-    def AddUpdateFile(self, file_path):
+    def AddArchiveFile(self, file_path):
         """ copies file into UPDATES_DIR """
         if(file_path[0] != '/'):
             self.__update_error("not an absolute path: " + file_path)
