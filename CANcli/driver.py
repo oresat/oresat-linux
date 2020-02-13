@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 import curses, time
 from canard.hw import socketcan
-from frame_data import FrameData
+from frame_data import FrameData, HeartbeatFrame
 from frame_table import FrameTable
 
 DEBUG = False
 
+def display_hearbeat():
+    pass
+
 def main(window):
-    table_size = 16
+    table_size = 8
 
     # Init the colors
     # Color pair 0: Default White/Black
@@ -30,9 +33,9 @@ def main(window):
     curses.curs_set(0)
 
     # Open the sockets
-    # dev_names = [ "vcan0" ]
-    dev_names = [ "vcan0",
-                  "vcan1" ]
+    dev_names = [ "vcan0" ]
+    # dev_names = [ "vcan0",
+    #               "vcan1" ]
     devs = []
     for name in dev_names:
         dev = socketcan.SocketCanDev(name)
@@ -61,13 +64,23 @@ def main(window):
         for dev in devs:
             # Set a timeout for recieving data, to enforce RR check
             # dev.settimeout(1)
-            new_frame = FrameData(dev.recv(), dev.ndev)
-            id = new_frame.id
+            raw_frame = dev.recv()
+            new_frame = None
+            id = raw_frame.id
 
             # Figure out the right table to put the new data in
-            if(id >= 700 and id < 800): tables[0].add(new_frame)
-            elif(id >= 500 and id < 700): tables[1].add(new_frame)
-            else: tables[2].add(new_frame)
+            if(id >= 700 and id < 800):
+                new_frame = FrameData(raw_frame, dev.ndev)
+                tnum = 0
+            elif(id >= 500 and id < 700):
+                new_frame = FrameData(raw_frame, dev.ndev)
+                tnum = 1
+            else:
+                new_frame = FrameData(raw_frame, dev.ndev)
+                tnum = 2
+
+            new_frame.id %= 100
+            tables[tnum].add(new_frame)
 
             for i, table in enumerate(tables):
                 # Calculate the header padding

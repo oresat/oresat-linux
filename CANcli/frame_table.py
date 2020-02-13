@@ -1,8 +1,15 @@
+from enum import Enum
 from frame_data import FrameData
 
+class FrameType(Enum):
+    self.HEARBEAT
+    self.RDO
+    self.MISC
+
 class FrameTable:
-    def __init__(self, name="", max_table_size=16):
+    def __init__(self, name="", type=FrameType.MISC, max_table_size=16):
         self.name = name
+        self.type = type
         self.max_table_size = max_table_size
         self.table = {}
 

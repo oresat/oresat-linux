@@ -17,6 +17,3 @@ class FrameData(Frame):
 
     def is_stale(self): return ((time.time() - self.last_modified) >= STALE_NODE_TIME)
     def is_dead(self): return ((time.time() - self.last_modified) >= DEAD_NODE_TIME)
-
-    def __str__(self):
-        return str((self.id, time.ctime(self.last_modified), self.data, self.is_stale(), self.is_dead()))
