@@ -95,7 +95,7 @@
 
 /*******************************************************************************
    FILE INFO:
-      FileName:     StarTracker_objDict.eds
+      FileName:     star_tracker_OD.eds
       FileVersion:  0
       CreationTime: 11:32AM
       CreationDate: 11-07-2019
@@ -217,11 +217,6 @@
                UNSIGNED32     overflow;
                BOOLEAN        refreshFileList;
                }              OD_sendFileControl_t;
-/*3100    */ typedef struct {
-               UNSIGNED8      maxSubIndex;
-               INTEGER8       currentState;
-               INTEGER8       getLatestImage;
-               }              OD_starTrackerStatusControl_t;
 /*3101    */ typedef struct {
                UNSIGNED8      maxSubIndex;
                INTEGER32      declination;
@@ -731,11 +726,7 @@
         #define OD_3003_8_sendFileControl_refreshFileList           8
 
 /*3100 */
-        #define OD_3100_starTrackerStatusControl                    0x3100
-
-        #define OD_3100_0_starTrackerStatusControl_maxSubIndex      0
-        #define OD_3100_1_starTrackerStatusControl_currentState     1
-        #define OD_3100_2_starTrackerStatusControl_getLatestImage   2
+        #define OD_3100_testCamera                                  0x3100
 
 /*3101 */
         #define OD_3101_orienation                                  0x3101
@@ -802,7 +793,7 @@ struct sCO_OD_RAM{
 /*3001      */ OD_receiveFile_t receiveFile;
 /*3002      */ DOMAIN          senfFileList[127];
 /*3003      */ OD_sendFileControl_t sendFileControl;
-/*3100      */ OD_starTrackerStatusControl_t starTrackerStatusControl;
+/*3100      */ INTEGER8        testCamera;
 /*3101      */ OD_orienation_t orienation;
 
                UNSIGNED32     LastWord;
@@ -977,8 +968,8 @@ extern struct sCO_OD_EEPROM CO_OD_EEPROM;
 /*3003, Data Type: sendFileControl_t */
         #define OD_sendFileControl                                  CO_OD_RAM.sendFileControl
 
-/*3100, Data Type: starTrackerStatusControl_t */
-        #define OD_starTrackerStatusControl                         CO_OD_RAM.starTrackerStatusControl
+/*3100, Data Type: INTEGER8 */
+        #define OD_testCamera                                       CO_OD_RAM.testCamera
 
 /*3101, Data Type: orienation_t */
         #define OD_orienation                                       CO_OD_RAM.orienation
