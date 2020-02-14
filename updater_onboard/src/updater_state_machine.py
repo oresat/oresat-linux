@@ -4,7 +4,7 @@
 from enum import Enum
 
 
-# all state for linux updater, do NOT uses auto() since we DO care about the actual value.
+# all states for linux updater, do NOT uses auto() since we DO care about the values.
 class State(Enum):
     FAILED = 0
     SLEEP = 1
@@ -16,7 +16,7 @@ class State(Enum):
 
 class UpdaterStateMachine():
     def __init__(self, init_state=State.SLEEP.value):
-        self.__valid_transistion = {
+        self.__valid_transition = {
                 State.FAILED.value : [State.FAILED.value, State.SLEEP.value, State.FORCE.value],
                 State.SLEEP.value : [State.SLEEP.value, State.UPDATE.value, State.FORCE.value],
                 State.PRE-UPDATE.value : [State.FAILED.value, State.SLEEP.value, State.PRE-UPDATE.value, State.UPDATE.vaue],
@@ -26,7 +26,7 @@ class UpdaterStateMachine():
                 }
 
         # figure out initial state
-        if new_state in self.__valid_transistion:
+        if new_state in self.__valid_transition:
             self._current_state = init_state
         else:
             self._current_state = State.FAILED.value
@@ -36,14 +36,14 @@ class UpdaterStateMachine():
         # (int) -> bool
         """ 
         Check if the state change is valid.
-        Returns true if valid and transistion happend
+        Returns true if valid and transition happend
         Returns false if errored.
         """
 
-        # check if new_state is a valid transistion
-        if new_state not in self.__valid_transistion(self._current_state):
+        # check if new_state is a valid transition
+        if new_state not in self.__valid_transition(self._current_state):
             self._current_state = State.FAILED.value
-            return False # not a valid transistion
+            return False # not a valid transition
 
         self._current_state = new_state
         return True
