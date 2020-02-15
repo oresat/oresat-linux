@@ -2,68 +2,46 @@
 
 
 from pathlib import Path
-from pydbus.generic import signal
-from pydbus import SystemBus
-from gi.repository import GLib
 from enum import Enum
 import threading, os, sys, re, yaml, subprocess, apt_pkg, apt.debfile, shutil, time
+import updater_state_machine
 
 
-DBUS_INTERFACE_NAME = "org.OreSat.LinuxUpdater"
-UPDATES_DIR = '/tmp/oresat-linux-updater/archives/'
+CACHE_DIR = '/tmp/oresat-linux-updater/cache/'
 WORKING_DIR = '/tmp/oresat-linux-updater/working/'
 
 
-# all state for linux updater, uses auto() since we don't care about the actual value
-class State(Enum):
-    FAILED = 0
-    SLEEP = 1
-    UPDATE = 2
-
-
 class LinuxUpdater(object):
-    dbus = """
-    <node>
-        <interface name="org.OreSat.LinuxUpdater">
-            <property name="CurrentState" type="d" access="read"/>
-            <property name="CurrentArchiveFile" type="s" access="read"/>
-            <property name="AvailableArchiveFiles" type="d" access="read"/>
-            <property name="ErrorMessage" type="s" access="read"/>
-            <method name='AddArchiveFile'>
-                <arg type='s' name='file_path' direction='in'/>
-                <arg type='b' name='output' direction='out'/>
-            </method>
-            <method name='StartUpdate'>
-                <arg type='b' name='output' direction='out'/>
-            </method>
-            <method name='GetAptListOutput'>
-                <arg type='b' name='output' direction='out'/>
-            </method>
-        </interface>
-    </node>
-    """
-
     def __init__(self):
         # make directories for updater, if not found
-        Path(UPDATES_DIR).mkdir(parents=True, exist_ok=True) 
+        Path(CACHE_DIR).mkdir(parents=True, exist_ok=True) 
         Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
 
-        # set local fields
+        # state machine set up
         self._current_state = State.SLEEP.value
-        self._error_message = ""
+        self._state_machine = UpdaterStateMachine() 
+
+        # archive fields set up
         self._archive_file_name = ""
-        self._available_archive_files = len(os.listdir(UPDATES_DIR))
+        self._available_archive_files = len(os.listdir(CACHE_DIR))
+
+        # thread set up
         self.__lock = threading.Lock()
         self.__running = True
         self.__working_thread = threading.Thread(target=self.__working_loop)
-
-        # start working thread
-        self.__working_thread.start()
+        self.__working_thread.start() # start working thread
 
 
     def __del__(self):
         """ del updater process """
-        self.end()
+        self.quit()
+
+
+    def quit(self):
+        """ Use to stop all threads nicely """
+        self.__running = False
+        if self.__working_thread.is_alive():
+            self.__working_thread.join()
 
 
     # ------------------------------------------------------------------------
@@ -71,21 +49,17 @@ class LinuxUpdater(object):
 
 
     @property
-    def CurrentState(self):
-        return self._current_state
+    def current_state(self):
+        return self._state_machine.current_state
 
 
     @property
-    def ErrorMessage(self):
-        return self._error_message
-
-    @property
-    def CurrentArchiveFile(self):
+    def current_archive_file(self):
         return self._archive_file_name
 
 
     @property
-    def AvailableArchiveFiles(self):
+    def available_archive_files(self):
         return self._available_archive_files
 
 
@@ -93,8 +67,8 @@ class LinuxUpdater(object):
     # dbus methods
 
 
-    def AddArchiveFile(self, file_path):
-        """ copies file into UPDATES_DIR """
+    def add_archiveFile(self, file_path):
+        """ copies file into CACHE_DIR """
         if(file_path[0] != '/'):
             self.__update_error("not an absolute path: " + file_path)
             return False
@@ -108,10 +82,10 @@ class LinuxUpdater(object):
         """
 
         self.__lock.acquire()
-        ret = shutil.copy(file_path, UPDATES_DIR)
+        ret = shutil.copy(file_path, CACHE_DIR)
 
-        if UPDATES_DIR in ret:
-            self._available_archive_files = len(os.listdir(UPDATES_DIR)) # not += 1
+        if CACHE_DIR in ret:
+            self._available_archive_files = len(os.listdir(CACHE_DIR)) # not += 1
             # this will handle file overrides
             self.__lock.release()
             return True
@@ -120,13 +94,13 @@ class LinuxUpdater(object):
         return False # failed to copy
 
 
-    def StartUpdate(self):
+    def start_update(self):
         """ Start updaing if in sleep state """
         rv = True
 
-        if(self._current_state == State.SLEEP.value):
+        if self._state_machine.current_state == State.SLEEP.value:
             self.__lock.acquire()
-            self._current_state = State.UPDATE.value
+            self._state_machine.change_state(State.UPDATE.value)
             self.__lock.release()
         else:
             rv = False
@@ -134,7 +108,7 @@ class LinuxUpdater(object):
         return True
 
 
-    def GetAptListOutput(self):#TODO
+    def get_apt_list_output(self):#TODO
         """ To stop updaing """
         return True
 
@@ -145,26 +119,12 @@ class LinuxUpdater(object):
 
     def __working_loop(self):
         while(self.__running):
-            if self._current_state == State.FAILED.value:
+            if self._state_machine.current_state == State.SLEEP.value:
                 self.__failed_state()
-            elif self._current_state == State.UPDATE.value:
+            elif self._state_machine.current_state == State.UPDATE.value:
                 self.__update_state()
             else:
                 time.sleep(1)
-
-
-    def __update_error(self, message):
-        self.__lock.acquire()
-        self._error_message = message
-        self._current_state = State.FAILED.value
-        self.__lock.release()
-
-
-    def end(self):
-        """ Use to stop all threads nicely """
-        self.__running = False
-        if self.__working_thread.is_alive():
-            self.__working_thread.join()
 
 
     def __failed_state(self, err):
@@ -177,9 +137,9 @@ class LinuxUpdater(object):
 
         # remove all updater files 
         shutil.rmtree(WORKING_DIR)
-        shutil.rmtree(UPDATES_DIR)
+        shutil.rmtree(CACHE_DIR)
         Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
-        Path(UPDATES_DIR).mkdir(parents=True, exist_ok=True) 
+        Path(CACHE_DIR).mkdir(parents=True, exist_ok=True) 
         
         #reset fields not reset by __update_error()
         self._available_archive_files = 0
@@ -190,7 +150,7 @@ class LinuxUpdater(object):
         # TODO revert update here
 
         self.__lock.acquire()
-        self._current_state = State.SLEEP.value
+        self._state_machine.change_state(State.SLEEP.value)
         self.__lock.release()
 
 
@@ -205,21 +165,21 @@ class LinuxUpdater(object):
         archive_file_path = ""
 
         # see if any update file exist
-        list_of_files = os.listdir(UPDATES_DIR)
+        list_of_files = os.listdir(CACHE_DIR)
         if not list_of_files:
             self.__lock.acquire()
-            self._current_state = State.SLEEP.value
+            self._state_machine.change_state(State.SLEEP.value)
             self.__lock.release()
             return # done, empty, no update files
 
         self.__lock.acquire()
         self._archive_file_name = list_of_files[0] # get 1st file
-        archive_file_path = UPDATES_DIR + self._archive_file_name
+        archive_file_path = CACHE_DIR + self._archive_file_name
         self.__lock.release()
 
         # copy file into working dir
         ret_path = shutil.copy(archive_file_path, WORKING_DIR)
-        if UPDATES_DIR in ret_path:
+        if CACHE_DIR in ret_path:
             self.__update_error("Failed to copy into working dir")
             return
 
@@ -262,7 +222,7 @@ class LinuxUpdater(object):
         os.remove(archive_file_path)
         self._archive_file_name = ""
         self._available_archive_files -= 1
-        self._current_state = State.SLEEP.value
+        self._state_machine.change_state(State.SLEEP.value)
         
         self.__lock.release()
         return
@@ -294,17 +254,4 @@ def open_archive_file(file_path): # TODO FLIF?
     #create a str with the directory name by slicing off the .tar.gz extension
     return True # file_name[0:len(file_path)-7]
 
-
-def start_linux_updater():
-    bus = SystemBus()
-    loop = GLib.MainLoop()
-    emit = LinuxUpdater()
-    bus.publish(DBUS_INTERFACE_NAME, emit)
-
-    try:
-        loop.run()
-    except KeyboardInterrupt as e:
-        loop.quit()
-        emit.end()
-        print("\nExit by Control C")
 
