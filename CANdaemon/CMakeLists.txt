@@ -27,35 +27,6 @@ message(STATUS "Board ${BOARD} selected")
 
 
 ##############################################################################
-# Deal with git submodule
-
-find_package(Git)
-if(NOT GIT_FOUND)
-    message(FATAL_ERROR "git check failed")
-endif()
-if(NOT EXISTS "src/CANopenNode/.git")
-    message(STATUS "Running: git submoduke update --init")
-    execute_process(COMMAND git submodule update --init WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-endif()
-
-
-##############################################################################
-# Release vs debug modes (set CFLAGS, LDFLAGS, etc)
-# to use: cmake -DCMAKE_BUILD_TYPE=Debug . 
-
-# default to release
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release)
-endif()
-
-set(CMAKE_C_FLAGS "-Wall -Wextra")
-set(CMAKE_C_FLAGS_DEBUG "-g")
-set(CMAKE_C_FLAGS_RELEASE "-O3")
-
-set(CMAKE_EXE_LINKER_FLAGS "-pthread -lsystemd")
-
-
-##############################################################################
 # Check Linux distribution / verion / kernel version
 
 set(LINUX_DISTRIBUTION "")
@@ -75,6 +46,49 @@ if(EXISTS "/etc/os-release")
 else()
     message(FATAL_ERROR "Missing /etc/os-release. Not a Linux based system?")
 endif()
+
+
+##############################################################################
+# Deal with dependencies
+
+# pthreads
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+
+# pkg-config
+find_package(PkgConfig REQUIRED) 
+
+# libsystemd
+pkg_check_modules(LIBSYSTEMD REQUIRED libsystemd)
+
+
+##############################################################################
+# Deal with git submodule
+
+find_package(Git)
+if(NOT GIT_FOUND)
+    message(FATAL_ERROR "git check failed")
+endif()
+if(NOT EXISTS "./src/CANopenNode/.git")
+    message(STATUS "Running: git submoduke update --init")
+    execute_process(COMMAND git submodule update --init WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
+
+##############################################################################
+# Release vs debug modes (set CFLAGS, LDFLAGS, etc)
+# to use: cmake -DCMAKE_BUILD_TYPE=Debug . 
+
+# default to release
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
+
+set(CMAKE_C_FLAGS "-Wall -Wextra")
+set(CMAKE_C_FLAGS_DEBUG "-g")
+set(CMAKE_C_FLAGS_RELEASE "-O3")
+
+#set(CMAKE_EXE_LINKER_FLAGS "-pthread") #-lsystemd")
 
 
 ##############################################################################
@@ -139,6 +153,9 @@ set(SOURCE_FILES
 # Create an executable
 
 add_executable(candaemon ${SOURCE_FILES})
+target_link_libraries(candaemon ${LIBSYSTEMD_LIBRARIES} Threads::Threads)
+target_include_directories(candaemon PUBLIC ${LIBSYSTEMD_INCLUDE_DIRS})
+target_compile_options(candaemon PUBLIC ${LIBSYSTEMD_CFLAGS_OTHER})
 
 
 ############################################################
