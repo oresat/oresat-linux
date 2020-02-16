@@ -17,10 +17,5 @@ int app_dbus_setup(void);
  */
 int app_dbus_end(void);
 
-/**
- * Callbacks for getting the latest image from the test camera process and adding to the send bufffer.
- */
-CO_SDO_abortCode_t test_camera_ODF(CO_ODF_arg_t *ODF_arg);
-
 
 #endif
