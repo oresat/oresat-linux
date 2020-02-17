@@ -11,6 +11,7 @@ def Settings( **kwargs ):
             '-pthread',
             # includes
             '-I./boards/template',
+            '-I./boards/template/object_dictionary',
             '-I./common',
             '-I./socketCAN',
             '-I./CANopenNode',
