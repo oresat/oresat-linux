@@ -3,7 +3,7 @@
 
 from pathlib import Path
 from enum import Enum
-import threading, os, sys, re, yaml, subprocess, apt_pkg, apt.debfile, shutil, time
+import threading, os, sys, re, yaml, subprocess, apt_pkg, apt.debfile, shutil, time, syslog, tarfile
 import updater_state_machine
 
 
@@ -14,12 +14,12 @@ WORKING_DIR = '/tmp/oresat-linux-updater/working/'
 class LinuxUpdater(object):
     def __init__(self):
         # make directories for updater, if not found
-        Path(CACHE_DIR).mkdir(parents=True, exist_ok=True) 
+        Path(CACHE_DIR).mkdir(parents=True, exist_ok=True)
         Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
 
         # state machine set up
         self._current_state = State.SLEEP.value
-        self._state_machine = UpdaterStateMachine() 
+        self._state_machine = UpdaterStateMachine()
 
         # archive fields set up
         self._archive_file_name = ""
@@ -70,14 +70,14 @@ class LinuxUpdater(object):
     def add_archiveFile(self, file_path):
         """ copies file into CACHE_DIR """
         if(file_path[0] != '/'):
-            self.__update_error("not an absolute path: " + file_path)
+            syslog.syslog(syslog.LOG_ERR, "not an absolute path: " + file_path)
             return False
 
         # TODO fix this
         """
         # check for valid update file
         if not re.match(r"(update-\d\d\d\d-\d\d-\d\d-\d\d-\d\d\.tar\.gz)", self.__archive_file_path):
-            self.__update_error("Not a valid update file")
+            syslog.syslog(syslog.LOG_ERR, "Not a valid update file")
             return
         """
 
@@ -128,20 +128,19 @@ class LinuxUpdater(object):
 
 
     def __failed_state(self, err):
-        """ 
-        Update failed reverting all part of update and clearing 
+        """
+        Update failed reverting all part of update and clearing
         working and update directories.
         """
 
         self.__lock.acquire()
 
-        # remove all updater files 
+        # remove all updater files
         shutil.rmtree(WORKING_DIR)
         shutil.rmtree(CACHE_DIR)
         Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
-        Path(CACHE_DIR).mkdir(parents=True, exist_ok=True) 
-        
-        #reset fields not reset by __update_error()
+        Path(CACHE_DIR).mkdir(parents=True, exist_ok=True)
+
         self._available_archive_files = 0
         self._archive_file_name = ""
 
@@ -155,10 +154,10 @@ class LinuxUpdater(object):
 
 
     def __update_state(self):
-        """ 
-        Load oldest update file if one exist 
+        """
+        Load oldest update file if one exist
         Update thread function.
-        Finds the oldest update file and starts update 
+        Finds the oldest update file and starts update
         """
 
         archive_instruction = {}
@@ -180,13 +179,17 @@ class LinuxUpdater(object):
         # copy file into working dir
         ret_path = shutil.copy(archive_file_path, WORKING_DIR)
         if CACHE_DIR in ret_path:
-            self.__update_error("Failed to copy into working dir")
+            syslog.syslog(syslog.LOG_ERR, "Failed to copy into working dir")
             return
 
         # open_archive_file update file
-        if not open_archive_file(ret_path):
-            self.__update_error("Open archive failed")
+        t = tarfile.open(ret_path, "r:gz")
+        if not t:
+            syslog.syslog(syslog.LOG_ERR, "Open archive failed")
             return
+        else:
+            t.extractall()
+            t.close()
 
         # load instructins file
         try:
@@ -194,10 +197,10 @@ class LinuxUpdater(object):
                 # load instructions data into dictionary
                 archive_instruction = yaml.safe_load(file_object)
                 if not archive_instruction:
-                    self.__update_error("Not a valid yml file")
+                    syslog.syslog(syslog.LOG_ERR, "Not a valid yml file")
                     return
         except IOError:
-            self.__update_error("Instructions file not accessible")
+            syslog.syslog(syslog.LOG_ERR, "Instructions file not accessible")
             return
 
         # remove packages
@@ -205,14 +208,14 @@ class LinuxUpdater(object):
             pkgs = archive_instruction["remove-packages"]
             for p in pkgs:
                 if not remove_pkg(WORKING_DIR + p):
-                    self.__update_error("Package " + p + " failed to be removed.")
+                    syslog.syslog(syslog.LOG_ERR, "Package " + p + " failed to be removed.")
 
         # install packages
         if "install-package" in archive_instruction:
             pkgs = archive_instruction["install-packages"]
             for p in pkgs:
                 if not install_pkg(WORKING_DIR + p):
-                    self.__update_error("Package " + p + " failed to be installed.")
+                    syslog.syslog(syslog.LOG_ERR, "Package " + p + " failed to be installed.")
 
         self.__lock.acquire()
 
@@ -223,7 +226,7 @@ class LinuxUpdater(object):
         self._archive_file_name = ""
         self._available_archive_files -= 1
         self._state_machine.change_state(State.SLEEP.value)
-        
+
         self.__lock.release()
         return
 
@@ -240,18 +243,4 @@ def remove_pkg(file_path): # TODO change to python3-apt
     bashCommand = "sudo apt-get -qq remove ./"+ file_path
     output = subprocess.check_call(['bash','-c', bashCommand])
     return True
-
-
-def open_archive_file(file_path): # TODO FLIF?
-    """
-    contents of .tar.gz file are extracted to a directory with the same
-    name as the tar file file without the .tar.gz extension
-    """
-    
-    bashCommand = "tar -xzf " + file_path + " -C " + WORKING_DIR
-    output = subprocess.check_call(['bash','-c', bashCommand])
-
-    #create a str with the directory name by slicing off the .tar.gz extension
-    return True # file_name[0:len(file_path)-7]
-
 
