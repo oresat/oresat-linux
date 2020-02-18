@@ -19,7 +19,7 @@ class UpdaterStateMachine():
         self.__valid_transition = {
                 State.FAILED.value : [State.FAILED.value, State.SLEEP.value, State.FORCE.value],
                 State.SLEEP.value : [State.SLEEP.value, State.UPDATE.value, State.FORCE.value],
-                State.PREUPDATE.value : [State.FAILED.value, State.SLEEP.value, State.PREUPDATE.value, State.UPDATE.vaue],
+                State.PREUPDATE.value : [State.FAILED.value, State.SLEEP.value, State.PREUPDATE.value, State.UPDATE.value],
                 State.UPDATE.value : [State.SLEEP.value, State.UPDATE.value, State.REVERT.value],
                 State.REVERT.value : [State.SLEEP.value, State.REVERT.value],
                 State.FORCE.value : [State.SLEEP.value, State.FAILED.value, State.FORCE.value]
@@ -34,7 +34,7 @@ class UpdaterStateMachine():
 
     def change_state(self, new_state):
         # (int) -> bool
-        """ 
+        """
         Check if the state change is valid.
         Returns true if valid and transition happend
         Returns false if errored.

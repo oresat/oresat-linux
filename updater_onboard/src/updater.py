@@ -4,7 +4,7 @@
 from pathlib import Path
 from enum import Enum
 import threading, os, sys, re, yaml, subprocess, apt_pkg, apt.debfile, shutil, time, syslog, tarfile
-import updater_state_machine
+from updater_state_machine import UpdaterStateMachine, State
 
 
 CACHE_DIR = '/tmp/oresat-linux-updater/cache/'
@@ -18,8 +18,8 @@ class LinuxUpdater(object):
         Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
 
         # state machine set up
-        self._current_state = State.SLEEP.value
         self._state_machine = UpdaterStateMachine()
+        self._state_machine.current_state = State.SLEEP.value
 
         # archive fields set up
         self._archive_file_name = ""
@@ -244,3 +244,4 @@ def remove_pkg(file_path): # TODO change to python3-apt
     output = subprocess.check_call(['bash','-c', bashCommand])
     return True
 
+LinuxUpdater()
