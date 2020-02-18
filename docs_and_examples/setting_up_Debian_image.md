@@ -3,6 +3,12 @@
 ## uboot overlays
 Change these lines in /boot/uEnv.txt
 ```
+uboot_overlay_addr4=/lib/firmware/<file4>.dtbo
+uboot_overlay_addr5=/lib/firmware/<file5>.dtbo
+enable_uboot_cape_universal=1
+```
+to
+```
 uboot_overlay_addr4=/lib/firmware/BB-BONE-eMMC1-01-00A0.dtbo
 uboot_overlay_addr5=/lib/firmware/PB-CAN1-00A0.dtbo
 #enable_uboot_cape_universal=1
