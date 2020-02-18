@@ -3,7 +3,6 @@ Description=Allow OreSat Linux board to be updated.
 
 [Service]
 Type=forking
-Restart=on-failure
 PIDFile=/run/oresat-linux-updater.pid
 ExecStart=/usr/bin/python3 /usr/share/oresat-linux-updater/updater_daemon.py
 

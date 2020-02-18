@@ -9,10 +9,10 @@ then
 fi
 
 DAEMON_NAME='oresat-linux-updater'
-INSTALL_PATH='/usr/bin/'$DAEMON_NAME'/'
+INSTALL_PATH='/usr/share/'$DAEMON_NAME'/'
 
 if [ ! -f $INSTALL_PATH ]; then
-    mkdir DAEMON_NAME
+    mkdir -p $INSTALL_PATH
 fi
 
 echo 'stoping '$DAEMON_NAME' deamon if it is running'
@@ -22,7 +22,7 @@ rm -rf $INSTALL_PATH
 
 echo 'Copying python scripts to /opt/'$DAEMON_NAME
 mkdir -p $INSTALL_PATH
-cp ./src/updater_.py $INSTALL_PATH
+cp ./src/updater.py $INSTALL_PATH
 cp ./src/updater_daemon.py $INSTALL_PATH
 cp ./src/updater_state_machine.py $INSTALL_PATH
 
