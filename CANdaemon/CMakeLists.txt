@@ -56,7 +56,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 # pkg-config
-find_package(PkgConfig REQUIRED) 
+find_package(PkgConfig REQUIRED)
 
 # libsystemd
 pkg_check_modules(LIBSYSTEMD REQUIRED libsystemd)
@@ -77,14 +77,14 @@ endif()
 
 ##############################################################################
 # Release vs debug modes (set CFLAGS, LDFLAGS, etc)
-# to use: cmake -DCMAKE_BUILD_TYPE=Debug . 
+# to use: cmake -DCMAKE_BUILD_TYPE=Debug .
 
 # default to release
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
-set(CMAKE_C_FLAGS "-Wall -Wextra")
+set(CMAKE_C_FLAGS "-Wall")
 set(CMAKE_C_FLAGS_DEBUG "-g")
 set(CMAKE_C_FLAGS_RELEASE "-O3")
 
@@ -94,7 +94,7 @@ set(CMAKE_C_FLAGS_RELEASE "-O3")
 ##############################################################################
 # Check if make or ninja
 
-if(CMAKE_MAKE_PROGRAM MATCHES "make") 
+if(CMAKE_MAKE_PROGRAM MATCHES "make")
     set(CMAKE_MAKE_PROGRAM_PRETTY_NAME "make")
 endif()
 if(CMAKE_MAKE_PROGRAM MATCHES "ninja")
