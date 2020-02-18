@@ -43,10 +43,11 @@ DNS=8.8.8.8
 ```
 
 ### Enable systemd-networkd
-`sudo systemctl enable systemd-networkd`
-`sudo systemctl enable systemd-resolved` If using static config.
+- `sudo systemctl enable systemd-networkd`
+- `sudo systemctl enable systemd-resolved` If using static config.
 
-### Add override.conf to /etc/systemd/system/systemd-networkd-wait-online.service.d
+### Set up [systemd-networkd-wait-online] for CAN, used by CANdaemon
+Make file `/etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf`.
 ```
 [Service]
 ExecStart=
@@ -54,3 +55,4 @@ ExecStart=/lib/systemd/systemd-networkd-wait-online --interface=can1
 ```
 
 [systemd-networkd]:https://wiki.archlinux.org/index.php/Systemd-networkd
+[systemd-networkd-wait-online]:https://www.freedesktop.org/software/systemd/man/systemd-networkd-wait-online.service.html
