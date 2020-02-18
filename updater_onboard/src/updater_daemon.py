@@ -37,11 +37,11 @@ class LinuxUpdaterDbus(object):
         self._updater = LinuxUpdater()
 
 
-        def __del__(self):
-            self._updater.quit()
+    def __del__(self):
+        self._updater.quit()
 
 
-        @property
+    @property
     def CurrentState(self):
         return self._updater.current_state
 
@@ -81,19 +81,19 @@ if __name__ == "__main__":
         sys.stderr.write("pid file {0} already exist.\n".format(PID_FILE))
         sys.exit(1)
 
-    try: 
-        pid = os.fork() 
+    try:
+        pid = os.fork()
         if pid > 0:
             # exit from parent
-            sys.exit(0) 
-    except OSError as err: 
+            sys.exit(0)
+    except OSError as err:
         sys.stderr.write('fork failed: {0}\n'.format(err))
         sys.exit(1)
 
     # decouple from parent environment
-    os.chdir('/') 
-    os.setsid() 
-    os.umask(0) 
+    os.chdir('/')
+    os.setsid()
+    os.umask(0)
 
     # redirect standard file descriptors
     sys.stdout.flush()
@@ -112,7 +112,7 @@ if __name__ == "__main__":
 
     # make updater
     updater = LinuxUpdaterDbus()
-    
+
     # set up dbus wrapper
     bus = SystemBus()
     bus.publish(DBUS_INTERFACE_NAME, updater)

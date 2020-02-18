@@ -8,7 +8,7 @@ from enum import Enum
 class State(Enum):
     FAILED = 0
     SLEEP = 1
-    PRE-UPDATE = 2
+    PREUPDATE = 2
     UPDATE = 3
     REVERT = 4
     FORCE = 5
@@ -19,7 +19,7 @@ class UpdaterStateMachine():
         self.__valid_transition = {
                 State.FAILED.value : [State.FAILED.value, State.SLEEP.value, State.FORCE.value],
                 State.SLEEP.value : [State.SLEEP.value, State.UPDATE.value, State.FORCE.value],
-                State.PRE-UPDATE.value : [State.FAILED.value, State.SLEEP.value, State.PRE-UPDATE.value, State.UPDATE.vaue],
+                State.PREUPDATE.value : [State.FAILED.value, State.SLEEP.value, State.PREUPDATE.value, State.UPDATE.vaue],
                 State.UPDATE.value : [State.SLEEP.value, State.UPDATE.value, State.REVERT.value],
                 State.REVERT.value : [State.SLEEP.value, State.REVERT.value],
                 State.FORCE.value : [State.SLEEP.value, State.FAILED.value, State.FORCE.value]
