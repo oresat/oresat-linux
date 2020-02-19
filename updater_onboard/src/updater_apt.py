@@ -28,7 +28,7 @@ class UpdaterApt():
         cache, all package removals can happen at the same time.
         """
 
-        for pkg in package_names
+        for pkg in package_names:
             package = self._cache[pkg_name]
             if package == None:
                 syslog.syslog(syslog.LOG_ERR, pkg_name + " not in cache.")

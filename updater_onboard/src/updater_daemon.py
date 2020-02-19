@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 
+from pydbus import SystemBus
+from gi.repository import GLib
 import sys, os
-import updater
+from updater import LinuxUpdater
 
 
 PID_FILE = '/run/oresat-linux-updater.pid'
@@ -28,9 +30,15 @@ class LinuxUpdaterDbus(object):
                 <method name='GetAptListOutput'>
                     <arg type='b' name='output' direction='out'/>
                 </method>
-                <property name="CurrentState" type="d" access="read"/>
-                <property name="CurrentArchiveFile" type="s" access="read"/>
-                <property name="AvailableArchiveFiles" type="d" access="read"/>
+                <property name="CurrentState" type="d" access="read">
+                    <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
+                </property>
+                <property name="CurrentArchiveFile" type="s" access="read">
+                    <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
+                </property>
+                <property name="AvailableArchiveFiles" type="d" access="read">
+                    <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
+                </property>
             </interface>
         </node>
         """
@@ -111,11 +119,11 @@ if __name__ == "__main__":
         f.write(pid + '\n')
 
     # make updater
-    updater = LinuxUpdaterDbus()
+    emit = LinuxUpdaterDbus()
 
     # set up dbus wrapper
     bus = SystemBus()
-    bus.publish(DBUS_INTERFACE_NAME, updater)
+    bus.publish(DBUS_INTERFACE_NAME, emit)
 
     # start dbus wrapper
     loop = GLib.MainLoop()

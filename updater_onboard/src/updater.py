@@ -19,8 +19,7 @@ class LinuxUpdater(object):
         Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
 
         # state machine set up
-        self._state_machine = UpdaterStateMachine()
-        self._state_machine.current_state = State.SLEEP.value
+        self._state_machine = UpdaterStateMachine(State.SLEEP.value)
 
         # apt set up
         self._updater_apt = UpdaterApt()
@@ -32,15 +31,8 @@ class LinuxUpdater(object):
         # thread set up
         self.__lock = threading.Lock()
         self.__running = True
-        self.__working_thread = threading.Thread(target=self.__working_loop)
+        self.__working_thread = threading.Thread(target=self.__working_loop, name="working-thread")
         self.__working_thread.start() # start working thread
-
-
-    def __del__(self):
-        """ del updater process """
-        self.__running = False
-        if self.__working_thread.is_alive():
-            self.__working_thread.join()
 
 
     def quit(self):
@@ -305,5 +297,3 @@ class LinuxUpdater(object):
 
         return True
 
-
-LinuxUpdater()
