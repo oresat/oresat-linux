@@ -3,8 +3,9 @@
 
 from pathlib import Path
 from enum import Enum
-import threading, os, sys, re, yaml, subprocess, apt_pkg, apt.debfile, shutil, time, syslog, tarfile
+import threading, os, sys, re, subprocess, shutil, time, syslog, tarfile
 from updater_state_machine import UpdaterStateMachine, State
+from updater_apt import UpdaterApt
 
 
 CACHE_DIR = '/tmp/oresat-linux-updater/cache/'
@@ -20,6 +21,9 @@ class LinuxUpdater(object):
         # state machine set up
         self._state_machine = UpdaterStateMachine()
         self._state_machine.current_state = State.SLEEP.value
+
+        # apt set up
+        self._updater_apt = UpdaterApt()
 
         # archive fields set up
         self._archive_file_name = ""
@@ -68,6 +72,7 @@ class LinuxUpdater(object):
 
 
     def add_archiveFile(self, file_path):
+        # (str) -> bool
         """ copies file into CACHE_DIR """
         if(file_path[0] != '/'):
             syslog.syslog(syslog.LOG_ERR, "not an absolute path: " + file_path)
@@ -95,6 +100,7 @@ class LinuxUpdater(object):
 
 
     def start_update(self):
+        # () -> bool
         """ Start updaing if in sleep state """
         rv = True
 
@@ -110,6 +116,7 @@ class LinuxUpdater(object):
 
     def get_apt_list_output(self):#TODO
         """ To stop updaing """
+        # () -> bool
         return True
 
 
@@ -118,49 +125,35 @@ class LinuxUpdater(object):
 
 
     def __working_loop(self):
+        # () -> bool
         while(self.__running):
-            if self._state_machine.current_state == State.SLEEP.value:
-                self.__failed_state()
-            elif self._state_machine.current_state == State.UPDATE.value:
-                self.__update_state()
-            else:
+            if self._state_machine.current_state == State.FAILED.value:
                 time.sleep(1)
+            elif self._state_machine.current_state == State.SLEEP.value:
+                time.sleep(1)
+            elif self._state_machine.current_state == State.PREUPDATE.value:
+                self.__pre_update()
+            elif self._state_machine.current_state == State.UPDATE.value:
+                self.__update()
+            elif self._state_machine.current_state == State.REVERT.value:
+                self.__revert()
+            elif self._state_machine.current_state == State.FORCE.value:
+                self.__force()
+            else: # should not happen
+                syslog.syslog(syslog.LOG_ERR, "current_state is set to an unknowned state.")
+                self.__lock.acquire()
+                self._state_machine.change_state(State.FAILED.value)
+                self.__lock.release()
 
 
-    def __failed_state(self, err):
-        """
-        Update failed reverting all part of update and clearing
-        working and update directories.
-        """
-
-        self.__lock.acquire()
-
-        # remove all updater files
-        shutil.rmtree(WORKING_DIR)
-        shutil.rmtree(CACHE_DIR)
-        Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
-        Path(CACHE_DIR).mkdir(parents=True, exist_ok=True)
-
-        self._available_archive_files = 0
-        self._archive_file_name = ""
-
-        self.__lock.release()
-
-        # TODO revert update here
-
-        self.__lock.acquire()
-        self._state_machine.change_state(State.SLEEP.value)
-        self.__lock.release()
-
-
-    def __update_state(self):
+    def __pre_update(self):
+        # () -> bool
         """
         Load oldest update file if one exist
         Update thread function.
         Finds the oldest update file and starts update
         """
 
-        archive_instruction = {}
         archive_file_path = ""
 
         # see if any update file exist
@@ -169,7 +162,7 @@ class LinuxUpdater(object):
             self.__lock.acquire()
             self._state_machine.change_state(State.SLEEP.value)
             self.__lock.release()
-            return # done, empty, no update files
+            return True # done, empty, no update files
 
         self.__lock.acquire()
         self._archive_file_name = list_of_files[0] # get 1st file
@@ -180,42 +173,36 @@ class LinuxUpdater(object):
         ret_path = shutil.copy(archive_file_path, WORKING_DIR)
         if CACHE_DIR in ret_path:
             syslog.syslog(syslog.LOG_ERR, "Failed to copy into working dir")
-            return
+            return False
 
         # open_archive_file update file
         t = tarfile.open(ret_path, "r:gz")
         if not t:
             syslog.syslog(syslog.LOG_ERR, "Open archive failed")
-            return
+            return False
         else:
             t.extractall()
             t.close()
 
-        # load instructins file
-        try:
-            with open(WORKING_DIR + "instructions.yml", "r") as file_object:
-                # load instructions data into dictionary
-                archive_instruction = yaml.safe_load(file_object)
-                if not archive_instruction:
-                    syslog.syslog(syslog.LOG_ERR, "Not a valid yml file")
-                    return
-        except IOError:
-            syslog.syslog(syslog.LOG_ERR, "Instructions file not accessible")
-            return
+        self.__lock.acquire()
+        self._state_machine.change_state(State.UPDATE.value)
+        self.__lock.release()
+        return True
 
-        # remove packages
-        if "remove-package" in archive_instruction:
-            pkgs = archive_instruction["remove-packages"]
-            for p in pkgs:
-                if not remove_pkg(WORKING_DIR + p):
-                    syslog.syslog(syslog.LOG_ERR, "Package " + p + " failed to be removed.")
 
-        # install packages
-        if "install-package" in archive_instruction:
-            pkgs = archive_instruction["install-packages"]
-            for p in pkgs:
-                if not install_pkg(WORKING_DIR + p):
-                    syslog.syslog(syslog.LOG_ERR, "Package " + p + " failed to be installed.")
+    def __update(self):
+        # () -> bool
+        """
+        Load oldest update file if one exist
+        Update thread function.
+        Finds the oldest update file and starts update
+        """
+
+        if not self.__parse_update_file():
+            self.__lock.acquire()
+            self._state_machine.change_state(State.REVERT.value)
+            self.__lock.release()
+            return False
 
         self.__lock.acquire()
 
@@ -228,20 +215,93 @@ class LinuxUpdater(object):
         self._state_machine.change_state(State.SLEEP.value)
 
         self.__lock.release()
-        return
-
-
-def install_pkg(file_path):
-    """ output will be 0 if it completes install, anything else fails """
-    deb = apt.debfile.DebPackage(file_path)
-    if deb.check() and deb.install() == 0: # valid package and install worked
         return True
-    return False
 
 
-def remove_pkg(file_path): # TODO change to python3-apt
-    bashCommand = "sudo apt-get -qq remove ./"+ file_path
-    output = subprocess.check_call(['bash','-c', bashCommand])
-    return True
+    def __revert(self, err):
+        # (str) -> bool
+        """
+        Update failed reverting all part of update and clearing
+        working and update directories.
+        """
+
+        # TODO do revert
+
+        self.__lock.acquire()
+
+        # remove all updater files
+        shutil.rmtree(WORKING_DIR)
+        shutil.rmtree(CACHE_DIR)
+        Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
+        Path(CACHE_DIR).mkdir(parents=True, exist_ok=True)
+
+        self._available_archive_files = 0
+        self._archive_file_name = ""
+
+
+        self._state_machine.change_state(State.SLEEP.value)
+        self.__lock.release()
+        return True
+
+
+    def __force(self):
+        # () -> bool
+        """
+        """
+
+        if not self.__parse_update_file():
+            self.__lock.acquire()
+            self._state_machine.change_state(State.FAILED.value)
+            self.__lock.release()
+            return False
+
+        self.__lock.acquire()
+
+        # clear working dir and remove update deb pkg
+        shutil.rmtree(WORKING_DIR)
+        Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
+        os.remove(archive_file_path)
+        self._archive_file_name = ""
+        self._available_archive_files -= 1
+        self._state_machine.change_state(State.SLEEP.value)
+
+        self.__lock.release()
+        return True
+
+
+    def __parse_update_file(self):
+        # () -> bool
+        """
+        Install all deb files in WORKING_DIR, remove all packages listed in
+        remove.txt, and run all bash script in WORKING_DIR.
+        """
+
+        deb_files = []
+        remove_pkgs = []
+
+        # install packages
+        for file in glob.glob(WORKING_DIR + "*.deb"):
+            deb_files.append(file)
+
+        if deb_files.size > 0:
+            if not self._updater_apt.remove_packages(deb_files):
+                syslog.syslog(syslog.LOG_ERR, "Remove package failed.")
+                return False
+
+        # remove packages
+        with open(WORKING_DIR + 'remove.txt', 'r') as f:
+            pkg = f.readline().strip()
+            if not self._updater_apt.install_package(pkg):
+                syslog.syslog(syslog.LOG_ERR, "Install package failed.")
+                return False
+
+        # run bash scripts
+        for file in glob.glob(WORKING_DIR + "*.sh"):
+            if subprocess.run(["/bin/bash/ ", file]) != 0:
+                syslog.syslog(syslog.LOG_ERR, file + " exited with failure.")
+                return False
+
+        return True
+
 
 LinuxUpdater()
