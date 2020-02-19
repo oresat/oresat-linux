@@ -26,7 +26,7 @@ class UpdaterStateMachine():
                 }
 
         # figure out initial state
-        if new_state in self.__valid_transition:
+        if init_state in self.__valid_transition:
             self._current_state = init_state
         else:
             self._current_state = State.FAILED.value

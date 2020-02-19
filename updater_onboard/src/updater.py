@@ -38,7 +38,9 @@ class LinuxUpdater(object):
 
     def __del__(self):
         """ del updater process """
-        self.quit()
+        self.__running = False
+        if self.__working_thread.is_alive():
+            self.__working_thread.join()
 
 
     def quit(self):
