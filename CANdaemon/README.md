@@ -12,7 +12,7 @@
 
 The CANdaemon is based off of [CANopenSocket], but with dbus interfaces to commicate and control daemons. The CANdaemon can commicate with main process ([GPS], [StarTracker], [OreSatLive], or the Cirrus Flux Camera daemons) and the Linux Updater. The CANdaemon is ment to be a node on the CANbus, not the Network Manager.
 
-![](https://github.com/oresat/oresat-linux/blob/master/CANdaemon/docs/OreSatLinuxDiagram.jpg)
+![](docs/OreSatLinuxDiagram.jpg)
 
 ## Features
 - Follows the CiA (CAN-in-Automation) specs for [CANopen-Specs]. 
@@ -33,7 +33,7 @@ The CANdaemon is based off of [CANopenSocket], but with dbus interfaces to commi
     - `cmake -DBOARD=<board> ..` or `cmake -GNinja -DBOARD=<board> ..`
     - `make` or `ninja`
 - Optional cmake flags:
-    - `-DCMAKE_BUILD_TYPE=Debug` to turn on -g, -Wall, and -Wextra flags
+    - `-DCMAKE_BUILD_TYPE=Debug` to turn on -g -Wall flags
 - Running CANdaemon
     - `./candaemon` as a process
     - `./candaemon -d` as a daemon
