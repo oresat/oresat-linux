@@ -3,8 +3,8 @@ Description=Allow OreSat Linux board to be updated.
 
 [Service]
 Type=forking
-PIDFile=/run/oresat-linux-updater.pid
-ExecStart=/usr/bin/python3 /usr/share/oresat-linux-updater/updater_daemon.py
+PIDFile=/run/oresat-linux-updaterd.pid
+ExecStart=/usr/bin/python3 /usr/share/oresat-linux-updater/updater_main.py
 
 [Install]
 WantedBy=multi-user.target

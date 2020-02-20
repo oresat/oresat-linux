@@ -20,9 +20,9 @@ systemctl stop $DAEMON_NAME.service
 
 rm -rf $INSTALL_PATH
 
-echo 'Copying python scripts to '$INSTALL_PATH'/src'
+echo 'Copying python scripts to '$INSTALL_PATH'/'
 mkdir -p $INSTALL_PATH
-cp -r ./src $INSTALL_PATH
+cp -r ./src/*.py $INSTALL_PATH
 
 echo 'Copying daemon service file to /usr/lib/systemd/system/'
 cp ./$DAEMON_NAME.service /usr/lib/systemd/system/
