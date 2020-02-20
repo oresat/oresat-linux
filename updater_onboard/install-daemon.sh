@@ -8,8 +8,8 @@ then
     exit
 fi
 
-DAEMON_NAME='oresat-linux-updater'
-INSTALL_PATH='/usr/share/'$DAEMON_NAME'/'
+DAEMON_NAME='oresat-linux-updaterd'
+INSTALL_PATH='/opt/'$DAEMON_NAME'/'
 
 if [ ! -f $INSTALL_PATH ]; then
     mkdir -p $INSTALL_PATH
@@ -20,17 +20,15 @@ systemctl stop $DAEMON_NAME.service
 
 rm -rf $INSTALL_PATH
 
-echo 'Copying python scripts to /opt/'$DAEMON_NAME
+echo 'Copying python scripts to '$INSTALL_PATH'/src'
 mkdir -p $INSTALL_PATH
-cp ./src/updater.py $INSTALL_PATH
-cp ./src/updater_daemon.py $INSTALL_PATH
-cp ./src/updater_state_machine.py $INSTALL_PATH
+cp -r ./src $INSTALL_PATH
 
 echo 'Copying daemon service file to /usr/lib/systemd/system/'
-cp ./src/$DAEMON_NAME.service /usr/lib/systemd/system/
+cp ./$DAEMON_NAME.service /usr/lib/systemd/system/
 
 echo 'Copying dbus config file to /usr/share/dbus-1/system.d/'
-cp ./src/org.OreSat.LinuxUpdater.conf /usr/share/dbus-1/system.d/
+cp ./org.OreSat.LinuxUpdater.conf /usr/share/dbus-1/system.d/
 
 sleep 1
 

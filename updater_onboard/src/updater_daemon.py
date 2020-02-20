@@ -1,84 +1,16 @@
 #!/usr/bin/env python3
 
 
+import sys, os
 from pydbus import SystemBus
 from gi.repository import GLib
-import sys, os
-from updater import LinuxUpdater
+from updater_dbus import LinuxUpdaterDbus
 
 
 PID_FILE = '/run/oresat-linux-updater.pid'
-DBUS_INTERFACE_NAME = "org.OreSat.LinuxUpdater"
 
 
-class LinuxUpdaterDbus(object):
-    dbus = """
-    <node>
-        <interface name="org.OreSat.LinuxUpdater">
-            <method name='AddArchiveFile'>
-                <arg type='s' name='file_path' direction='in'/>
-                <arg type='b' name='output' direction='out'/>
-            </method>
-            <method name='StartUpdate'>
-                <arg type='b' name='output' direction='out'/>
-            </method>
-            <method name='ForceUpdate'>
-                <arg type='s' name='file_path' direction='in'/>
-                <arg type='b' name='output' direction='out'/>
-            </method>
-            <method name='GetAptListOutput'>
-                <arg type='b' name='output' direction='out'/>
-            </method>
-            <property name="CurrentState" type="d" access="read">
-                <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
-            </property>
-            <property name="CurrentArchiveFile" type="s" access="read">
-                <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
-            </property>
-            <property name="AvailableArchiveFiles" type="d" access="read">
-                <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
-            </property>
-        </interface>
-    </node>
-    """
-
-
-    def __init__(self):
-        self._updater = LinuxUpdater()
-
-
-    def __del__(self):
-        self._updater.quit()
-
-
-    @property
-    def CurrentState(self):
-        return self._updater.current_state
-
-
-    @property
-    def CurrentArchiveFile(self):
-        return self._updater.current_archive_file
-
-
-    @property
-    def AvailableArchiveFiles(self):
-        return self._updater.available_archive_files
-
-
-    def AddArchiveFile(self, file_path):
-        return self._updater.add_archive_file(file_path)
-
-
-    def StartUpdate(self):
-        return self._updater.start_update()
-
-
-    def GetAptListOutput(self):
-        return self._updater.get_apt_list_output()
-
-
-if __name__ == "__main__":
+def daemonize():
     # Check for a pidfile to see if the daemon is already running
     try:
         with open(PID_FILE,'r') as pf:
@@ -120,6 +52,32 @@ if __name__ == "__main__":
     with open(PID_FILE,'w+') as f:
         f.write(pid + '\n')
 
+
+def usage():
+    message = """"
+        usage:\n \
+        python3 updater_daemon      : to run as a process
+        python3 updater_daemon -d   : to run as a daemon
+        python3 updater_daemon -h   : this
+        """
+
+    print(message)
+
+
+if __name__ == "__main__":
+    daemon_flag = False
+
+    opts, args = getpid.getpid(sys.argv[1:], "dh")
+    for opt, arg in opts:
+        if opt == "d":
+            daemon_flag = True
+        elif opt == "h":
+            usage()
+            exit(0)
+
+    if daemon_flag:
+        daemonize()
+
     # make updater
     updater = LinuxUpdaterDbus()
 
@@ -133,6 +91,7 @@ if __name__ == "__main__":
         loop.run()
     except KeyboardInterrupt as e:
         loop.quit()
+        updater.quit()
 
     # remove pid file
     os.remove(PID_FILE)
