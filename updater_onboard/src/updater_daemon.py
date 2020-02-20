@@ -12,36 +12,38 @@ DBUS_INTERFACE_NAME = "org.OreSat.LinuxUpdater"
 
 
 class LinuxUpdaterDbus(object):
+    dbus = """
+    <node>
+        <interface name="org.OreSat.LinuxUpdater">
+            <method name='AddArchiveFile'>
+                <arg type='s' name='file_path' direction='in'/>
+                <arg type='b' name='output' direction='out'/>
+            </method>
+            <method name='StartUpdate'>
+                <arg type='b' name='output' direction='out'/>
+            </method>
+            <method name='ForceUpdate'>
+                <arg type='s' name='file_path' direction='in'/>
+                <arg type='b' name='output' direction='out'/>
+            </method>
+            <method name='GetAptListOutput'>
+                <arg type='b' name='output' direction='out'/>
+            </method>
+            <property name="CurrentState" type="d" access="read">
+                <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
+            </property>
+            <property name="CurrentArchiveFile" type="s" access="read">
+                <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
+            </property>
+            <property name="AvailableArchiveFiles" type="d" access="read">
+                <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
+            </property>
+        </interface>
+    </node>
+    """
+
+
     def __init__(self):
-        self.dbus = """
-        <node>
-            <interface name="org.OreSat.LinuxUpdater">
-                <method name='AddArchiveFile'>
-                    <arg type='s' name='file_path' direction='in'/>
-                    <arg type='b' name='output' direction='out'/>
-                </method>
-                <method name='StartUpdate'>
-                    <arg type='b' name='output' direction='out'/>
-                </method>
-                <method name='ForceUpdate'>
-                    <arg type='s' name='file_path' direction='in'/>
-                    <arg type='b' name='output' direction='out'/>
-                </method>
-                <method name='GetAptListOutput'>
-                    <arg type='b' name='output' direction='out'/>
-                </method>
-                <property name="CurrentState" type="d" access="read">
-                    <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
-                </property>
-                <property name="CurrentArchiveFile" type="s" access="read">
-                    <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
-                </property>
-                <property name="AvailableArchiveFiles" type="d" access="read">
-                    <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
-                </property>
-            </interface>
-        </node>
-        """
         self._updater = LinuxUpdater()
 
 
@@ -61,7 +63,7 @@ class LinuxUpdaterDbus(object):
 
     @property
     def AvailableArchiveFiles(self):
-        return self._updater.available_archive_file
+        return self._updater.available_archive_files
 
 
     def AddArchiveFile(self, file_path):
@@ -119,11 +121,11 @@ if __name__ == "__main__":
         f.write(pid + '\n')
 
     # make updater
-    emit = LinuxUpdaterDbus()
+    updater = LinuxUpdaterDbus()
 
     # set up dbus wrapper
     bus = SystemBus()
-    bus.publish(DBUS_INTERFACE_NAME, emit)
+    bus.publish(DBUS_INTERFACE_NAME, updater)
 
     # start dbus wrapper
     loop = GLib.MainLoop()
@@ -133,4 +135,4 @@ if __name__ == "__main__":
         loop.quit()
 
     # remove pid file
-    os.remove(self.delpid)
+    os.remove(PID_FILE)
