@@ -7,15 +7,18 @@ class FrameType(Enum):
     MISC = 2
 
 class FrameTable:
-    def __init__(self, name="", type=FrameType.MISC, max_table_size=16):
+    def __init__(self, name="", type=FrameType.MISC, max_table_size=None):
         self.name = name
         self.type = type
-        self.max_table_size = max_table_size
         self.table = {}
+        self.max_table_size = max_table_size
 
     def add(self, frame):
-        if(len(self.table) < self.max_table_size or (self.table.get(frame.id) is not None)):
-            self.table[frame.id] = frame
+        if(self.max_table_size is not None):
+            if(len(self.table) < self.max_table_size \
+                    or (self.table.get(frame.id) is not None)):
+                self.table[frame.id] = frame
+        else: self.table[frame.id] = frame
 
     def __len__(self): return len(self.table)
 
