@@ -5,25 +5,25 @@ It is controlled through a dbus interface.
 
 ## Repo layout
 - **debian_pkg_maker/** - Scripts / files to make debian package.
-    - **deb-pkg-files/** - 
-        - **control** - 
-        - **postinst** - 
-        - **postrm** - 
-        - **preinst** -
-        - **prerm** - 
-    - **make-deb-package.sh** -
-    - **oresat-linux-updaterd.service** - 
+    - **deb-pkg-files/** - Contents of data.tar.gz in oresat-linux-updater *.deb file.
+        - **control** - Contents of `apt show oresat-linux-updater`.
+        - **postinst** - post install file for debian package.
+        - **postrm** -  post remove file for debian package.
+        - **preinst** - pre install file for debian package.
+        - **prerm** - pre remove file for debian package.
+    - **make-deb-package.sh** - Make oresat-linux-updater *.deb file.
+    - **oresat-linux-updaterd.service** - systemd daemon service file used in *.deb file.
 - **docs** - Documention.
 - **install-daemon.sh** - Install oresat-linux-updeter in /opt/.
-- **oresat-linux-updater.service** - systemd daemon service file,
-- **org.OreSat.LinuxUpdater.conf** - systemd dbus config file,
+- **oresat-linux-updaterd.service** - systemd daemon service file for install-daemon.sh.
+- **org.OreSat.LinuxUpdater.conf** - systemd dbus config file.
 - **README.md** - README.
 - **src/** - python3 source code.
-    - **updater_apt.py** - Wrapper class to handle python3-apt and apt.
-    - **updater_daemon.py** - The main() for project
-    - **updater_dbus.py** - 
-    - **updater.py** - 
-    - **updater_state_machine.py** - 
+    - **updater_apt.py** - python3-apt Wrapper class.
+    - **updater_main.py** - The main for project, has daemonizing code.
+    - **updater_dbus.py** - Dbus wrapper for updater.py.
+    - **updater.py** - The main controller class handling the states.
+    - **updater_state_machine.py** - Simple class to handle state transitions.
 - **test/** - Test scripts source file. TODO
 
 ## Dependacies
@@ -34,7 +34,7 @@ It is controlled through a dbus interface.
 - **oresat-linux-updater/** - Main directory for all of oresat-linux-updater directories / files.
     - **working/** - Directory for when StartUpdate() is called the oldest archive file (if one exist) contents are put in it and process.
     - **cache/** - Directory for holding archives.
-    - **apt_list_file.txt** - A file with content of `apt list --installed`. It is made in Pre-Update state, used for reverting. Can get a copy with AptListOuput() dbus method. On boot up if this file exist and revert.txt does not exit, the updater will resume an update with the contents of the working directory.
+    - **apt_list_file.txt** - A file with content of `apt list --installed`. It is made in Pre-Update state, used for reverting. Can get a copy with AptListOuput() dbus method. On boot up, if this file exist and revert.txt does not exist, the updater will resume an update with the contents of the working directory.
     - **revert.txt** - A file to mark reverting is / has happened. On boot up of the oresat-linux-updater this file will be used to figure out if what state to go to in boot up. If it contains "inprocess", the updater was stop in the middle of an update, therefor resume a revert. If it contains "failed", the revert failed, goto failed on boot. If it doesn't exist, it was not reverting, check for apt_list_file.txt. 
 
 ### States Machine
@@ -61,9 +61,9 @@ It is controlled through a dbus interface.
 | AvailableArchiveFiles | Number of archive file available.                 | Uint32    | Readonly      |
 
 ## Usage
-- `python3 src/updater_daemon.py` To run as a process
-- `python3 src/updater_daemon.py -d` To run as a daemon
-- `python3 src/updater_daemon.py -h` For help output
+- `python3 src/updater_main.py` To run as a process
+- `python3 src/updater_main.py -d` To run as a daemon
+- `python3 src/updater_main.py -h` For help output
 
 ## Building Debian images
 - Only works on a Debian as it requires dpkg.
