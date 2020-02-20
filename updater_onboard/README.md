@@ -14,17 +14,18 @@ It is controlled through a dbus interface.
     - **make-deb-package.sh** - Make oresat-linux-updater *.deb file.
     - **oresat-linux-updaterd.service** - systemd daemon service file used in *.deb file.
 - **docs** - Documention.
+- **src/** - python3 source code.
+    - **updater.py** - The main controller class handling the states.
+    - **updater_apt.py** - python3-apt Wrapper class.
+    - **updater_dbus.py** - Dbus wrapper for updater.py.
+    - **updater_main.py** - The main for project, has daemonizing code.
+    - **updater_state_machine.py** - Simple class to handle state transitions.
+- **test/** - Test scripts source file. TODO
+    - **test-client.py** - TODO
 - **install-daemon.sh** - Install oresat-linux-updeter in /opt/.
 - **oresat-linux-updaterd.service** - systemd daemon service file for install-daemon.sh.
 - **org.OreSat.LinuxUpdater.conf** - systemd dbus config file.
 - **README.md** - README.
-- **src/** - python3 source code.
-    - **updater_apt.py** - python3-apt Wrapper class.
-    - **updater_main.py** - The main for project, has daemonizing code.
-    - **updater_dbus.py** - Dbus wrapper for updater.py.
-    - **updater.py** - The main controller class handling the states.
-    - **updater_state_machine.py** - Simple class to handle state transitions.
-- **test/** - Test scripts source file. TODO
 
 ## Dependacies
 - `sudo apt install python3 python3-pydbus python3-apt`
