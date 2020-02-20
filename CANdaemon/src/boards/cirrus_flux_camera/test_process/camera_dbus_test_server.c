@@ -9,9 +9,9 @@
 #include <systemd/sd-bus.h>
 
 
-#define INTERFACE_NAME  "org.OreSat.CameraBoard"
-#define BUS_NAME        INTERFACE_NAME
-#define OBJECT_PATH     "/org/OreSat/CameraBoard"
+#define DESTINATION     "org.OreSat.CirrusFluxCamera"
+#define BUS_NAME        "org.OreSat.CirrusFluxCamera"
+#define OBJECT_PATH     "/org/OreSat/CirrusFluxCamera"
 
 
 /* static data */
@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
     r = sd_bus_add_object_vtable(bus,
                                  &slot,
                                  OBJECT_PATH,
-                                 INTERFACE_NAME,
+                                 DESTINATION,
                                  method_vtable,
                                  NULL);
     dbusAssertFailure(r, "Failed to issue method call:");

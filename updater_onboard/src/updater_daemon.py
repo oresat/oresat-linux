@@ -1,134 +1,128 @@
 #!/usr/bin/env python3
 
-import sys, os, time, atexit, signal
-import daemon
+
+import sys, os
 import updater
 
-class MyDaemon:
-    def __init__(self, pidfile):
-        self.pidfile = pidfile
 
-    def daemonize(self):
-        """Deamonize class. UNIX double fork mechanism."""
+PID_FILE = '/run/oresat-linux-updater.pid'
+DBUS_INTERFACE_NAME = "org.OreSat.LinuxUpdater"
 
-        try: 
-            pid = os.fork() 
-            if pid > 0:
-                # exit first parent
-                sys.exit(0) 
-        except OSError as err: 
-            sys.stderr.write('fork #1 failed: {0}\n'.format(err))
-            sys.exit(1)
 
-        # decouple from parent environment
-        os.chdir('/') 
-        os.setsid() 
-        os.umask(0) 
+class LinuxUpdaterDbus(object):
+    def __init__(self):
+        self.dbus = """
+        <node>
+            <interface name="org.OreSat.LinuxUpdater">
+                <method name='AddArchiveFile'>
+                    <arg type='s' name='file_path' direction='in'/>
+                    <arg type='b' name='output' direction='out'/>
+                </method>
+                <method name='StartUpdate'>
+                    <arg type='b' name='output' direction='out'/>
+                </method>
+                <method name='ForceUpdate'>
+                    <arg type='s' name='file_path' direction='in'/>
+                    <arg type='b' name='output' direction='out'/>
+                </method>
+                <method name='GetAptListOutput'>
+                    <arg type='b' name='output' direction='out'/>
+                </method>
+                <property name="CurrentState" type="d" access="read"/>
+                <property name="CurrentArchiveFile" type="s" access="read"/>
+                <property name="AvailableArchiveFiles" type="d" access="read"/>
+            </interface>
+        </node>
+        """
+        self._updater = LinuxUpdater()
 
-        # do second fork
-        try: 
-            pid = os.fork() 
-            if pid > 0:
-                # exit from second parent
-                sys.exit(0) 
-        except OSError as err: 
-            sys.stderr.write('fork #2 failed: {0}\n'.format(err))
-            sys.exit(1) 
 
-        # redirect standard file descriptors
-        sys.stdout.flush()
-        sys.stderr.flush()
-        si = open(os.devnull, 'r')
-        so = open(os.devnull, 'a+')
-        se = open(os.devnull, 'a+')
+    def __del__(self):
+        self._updater.quit()
 
-        os.dup2(si.fileno(), sys.stdin.fileno())
-        os.dup2(so.fileno(), sys.stdout.fileno())
-        os.dup2(se.fileno(), sys.stderr.fileno())
 
-        # write pidfile
-        atexit.register(self.delpid)
+    @property
+    def CurrentState(self):
+        return self._updater.current_state
 
-        pid = str(os.getpid())
-        with open(self.pidfile,'w+') as f:
-            f.write(pid + '\n')
 
-    def delpid(self):
-        os.remove(self.pidfile)
+    @property
+    def CurrentArchiveFile(self):
+        return self._updater.current_archive_file
 
-    def start(self):
-        """Start the daemon."""
 
-        # Check for a pidfile to see if the daemon already runs
-        try:
-            with open(self.pidfile,'r') as pf:
+    @property
+    def AvailableArchiveFiles(self):
+        return self._updater.available_archive_file
 
-                pid = int(pf.read().strip())
-        except IOError:
-            pid = None
 
-        if pid:
-            message = "pidfile {0} already exist. " + \
-                "Daemon already running?\n"
-            sys.stderr.write(message.format(self.pidfile))
-            sys.exit(1)
+    def AddArchiveFile(self, file_path):
+        return self._updater.add_archive_file(file_path)
 
-        # Start the daemon
-        self.daemonize()
-        self.run()
 
-    def stop(self):
-        """Stop the daemon."""
+    def StartUpdate(self):
+        return self._updater.start_update()
 
-        # Get the pid from the pidfile
-        try:
-            with open(self.pidfile,'r') as pf:
-                pid = int(pf.read().strip())
-        except IOError:
-            pid = None
 
-        if not pid:
-            message = "pidfile {0} does not exist. " + \
-                    "Daemon not running?\n"
-            sys.stderr.write(message.format(self.pidfile))
-            return # not an error in a restart
+    def GetAptListOutput(self):
+        return self._updater.get_apt_list_output()
 
-        # Try killing the daemon process	
-        try:
-            while 1:
-                os.kill(pid, signal.SIGTERM)
-                time.sleep(0.1)
-        except OSError as err:
-            e = str(err.args)
-            if e.find("No such process") > 0:
-                if os.path.exists(self.pidfile):
-                    os.remove(self.pidfile)
-            else:
-                print (str(err.args))
-                sys.exit(1)
-
-    def restart(self):
-        """Restart the daemon."""
-        self.stop()
-        self.start()
-
-    def run(self):
-        updater.start_linux_updater()
 
 if __name__ == "__main__":
-        daemon = MyDaemon('/run/oresat-linux-updater.pid')
-        if len(sys.argv) == 2:
-                if 'start' == sys.argv[1]:
-                        daemon.start()
-                elif 'stop' == sys.argv[1]:
-                        daemon.stop()
-                elif 'restart' == sys.argv[1]:
-                        daemon.restart()
-                else:
-                        print("Unknown command")
-                        sys.exit(2)
-                sys.exit(0)
-        else:
-                print("usage: %s start|stop|restart" % sys.argv[0])
-                sys.exit(2)
+    # Check for a pidfile to see if the daemon is already running
+    try:
+        with open(PID_FILE,'r') as pf:
 
+            pid = int(pf.read().strip())
+    except IOError:
+        pid = None
+
+    if pid:
+        sys.stderr.write("pid file {0} already exist.\n".format(PID_FILE))
+        sys.exit(1)
+
+    try:
+        pid = os.fork()
+        if pid > 0:
+            # exit from parent
+            sys.exit(0)
+    except OSError as err:
+        sys.stderr.write('fork failed: {0}\n'.format(err))
+        sys.exit(1)
+
+    # decouple from parent environment
+    os.chdir('/')
+    os.setsid()
+    os.umask(0)
+
+    # redirect standard file descriptors
+    sys.stdout.flush()
+    sys.stderr.flush()
+    si = open(os.devnull, 'r')
+    so = open(os.devnull, 'a+')
+    se = open(os.devnull, 'a+')
+
+    os.dup2(si.fileno(), sys.stdin.fileno())
+    os.dup2(so.fileno(), sys.stdout.fileno())
+    os.dup2(se.fileno(), sys.stderr.fileno())
+
+    pid = str(os.getpid())
+    with open(PID_FILE,'w+') as f:
+        f.write(pid + '\n')
+
+    # make updater
+    updater = LinuxUpdaterDbus()
+
+    # set up dbus wrapper
+    bus = SystemBus()
+    bus.publish(DBUS_INTERFACE_NAME, updater)
+
+    # start dbus wrapper
+    loop = GLib.MainLoop()
+    try:
+        loop.run()
+    except KeyboardInterrupt as e:
+        loop.quit()
+
+    # remove pid file
+    os.remove(self.delpid)

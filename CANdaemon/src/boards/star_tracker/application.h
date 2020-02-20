@@ -2,6 +2,10 @@
 #define APPLICATION_H
 
 
+#include "CANopen.h"
+#include "CO_driver.h"
+
+
 /**
  * Function is called on program startup.
  */

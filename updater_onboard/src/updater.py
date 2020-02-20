@@ -2,74 +2,46 @@
 
 
 from pathlib import Path
-from pydbus.generic import signal
-from pydbus import SystemBus
-from gi.repository import GLib
 from enum import Enum
-import threading, os, sys, re, yaml, subprocess, apt_pkg, apt.debfile, shutil, time
+import threading, os, sys, re, yaml, subprocess, apt_pkg, apt.debfile, shutil, time, syslog, tarfile
+from updater_state_machine import UpdaterStateMachine, State
 
 
-DBUS_INTERFACE_NAME = "org.OreSat.Updater"
-UPDATES_DIR = '/tmp/oresat-linux-updater/archives/'
+CACHE_DIR = '/tmp/oresat-linux-updater/cache/'
 WORKING_DIR = '/tmp/oresat-linux-updater/working/'
 
 
-# all state for linux updater, uses auto() since we don't care about the actual value
-class State(Enum):
-    FAILED = 0
-    SLEEP = 1
-    UPDATE = 2
-
-
 class LinuxUpdater(object):
-    dbus = """
-    <node>
-        <interface name="org.OreSat.Updater">
-            <property name="CurrentState" type="d" access="read"/>
-            <property name="ComputerName" type="s" access="readwrite"/>
-            <property name="CurrentArchiveFile" type="s" access="read"/>
-            <property name="AvailableArchiveFiles" type="d" access="read"/>
-            <property name="ErrorMessage" type="s" access="read"/>
-            <method name='AddArchiveFile'>
-                <arg type='s' name='file_path' direction='in'/>
-                <arg type='b' name='output' direction='out'/>
-            </method>
-            <method name='StartUpdate'>
-                <arg type='b' name='output' direction='out'/>
-            </method>
-            <method name='GetAptListOutput'>
-                <arg type='b' name='output' direction='out'/>
-            </method>
-        </interface>
-    </node>
-    """
-
     def __init__(self):
         # make directories for updater, if not found
-        Path(UPDATES_DIR).mkdir(parents=True, exist_ok=True) 
+        Path(CACHE_DIR).mkdir(parents=True, exist_ok=True)
         Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
 
-        # set computer_name to hostname
-        self._computer_name = "" # encase hostname is missing
-        with open("/etc/hostname", "r") as f:
-            self._computer_name = f.readline().strip()
+        # state machine set up
+        self._state_machine = UpdaterStateMachine()
+        self._state_machine.current_state = State.SLEEP.value
 
-        # set local fields
-        self._current_state = State.SLEEP.value
-        self._error_message = ""
+        # archive fields set up
         self._archive_file_name = ""
-        self._available_archive_files = len(os.listdir(UPDATES_DIR))
+        self._available_archive_files = len(os.listdir(CACHE_DIR))
+
+        # thread set up
         self.__lock = threading.Lock()
         self.__running = True
         self.__working_thread = threading.Thread(target=self.__working_loop)
-
-        # start working thread
-        self.__working_thread.start()
+        self.__working_thread.start() # start working thread
 
 
     def __del__(self):
         """ del updater process """
-        self.end()
+        self.quit()
+
+
+    def quit(self):
+        """ Use to stop all threads nicely """
+        self.__running = False
+        if self.__working_thread.is_alive():
+            self.__working_thread.join()
 
 
     # ------------------------------------------------------------------------
@@ -77,34 +49,17 @@ class LinuxUpdater(object):
 
 
     @property
-    def CurrentState(self):
-        return self._current_state
+    def current_state(self):
+        return self._state_machine.current_state
 
 
     @property
-    def ErrorMessage(self):
-        return self._error_message
-
-
-    @property
-    def ComputerName(self):
-        return self._computer_name
-
-
-    @ComputerName.setter
-    def ComputerName(self, value):
-        self.__lock.acquire()
-        self._computer_name = value.lower()
-        self.__lock.release()
-
-
-    @property
-    def CurrentArchiveFile(self):
+    def current_archive_file(self):
         return self._archive_file_name
 
 
     @property
-    def AvailableArchiveFiles(self):
+    def available_archive_files(self):
         return self._available_archive_files
 
 
@@ -112,25 +67,25 @@ class LinuxUpdater(object):
     # dbus methods
 
 
-    def AddUpdateFile(self, file_path):
-        """ copies file into UPDATES_DIR """
+    def add_archiveFile(self, file_path):
+        """ copies file into CACHE_DIR """
         if(file_path[0] != '/'):
-            self.__update_error("not an absolute path: " + file_path)
+            syslog.syslog(syslog.LOG_ERR, "not an absolute path: " + file_path)
             return False
 
         # TODO fix this
         """
         # check for valid update file
         if not re.match(r"(update-\d\d\d\d-\d\d-\d\d-\d\d-\d\d\.tar\.gz)", self.__archive_file_path):
-            self.__update_error("Not a valid update file")
+            syslog.syslog(syslog.LOG_ERR, "Not a valid update file")
             return
         """
 
         self.__lock.acquire()
-        ret = shutil.copy(file_path, UPDATES_DIR)
+        ret = shutil.copy(file_path, CACHE_DIR)
 
-        if UPDATES_DIR in ret:
-            self._available_archive_files = len(os.listdir(UPDATES_DIR)) # not += 1
+        if CACHE_DIR in ret:
+            self._available_archive_files = len(os.listdir(CACHE_DIR)) # not += 1
             # this will handle file overrides
             self.__lock.release()
             return True
@@ -139,13 +94,13 @@ class LinuxUpdater(object):
         return False # failed to copy
 
 
-    def StartUpdate(self):
+    def start_update(self):
         """ Start updaing if in sleep state """
         rv = True
 
-        if(self._current_state == State.SLEEP.value):
+        if self._state_machine.current_state == State.SLEEP.value:
             self.__lock.acquire()
-            self._current_state = State.UPDATE.value
+            self._state_machine.change_state(State.UPDATE.value)
             self.__lock.release()
         else:
             rv = False
@@ -153,7 +108,7 @@ class LinuxUpdater(object):
         return True
 
 
-    def GetAptListOutput(self):#TODO
+    def get_apt_list_output(self):#TODO
         """ To stop updaing """
         return True
 
@@ -164,43 +119,28 @@ class LinuxUpdater(object):
 
     def __working_loop(self):
         while(self.__running):
-            if self._current_state == State.FAILED.value:
+            if self._state_machine.current_state == State.SLEEP.value:
                 self.__failed_state()
-            elif self._current_state == State.UPDATE.value:
-                self.update()
+            elif self._state_machine.current_state == State.UPDATE.value:
+                self.__update_state()
             else:
                 time.sleep(1)
 
 
-    def __update_error(self, message):
-        self.__lock.acquire()
-        self._error_message = message
-        self._current_state = State.ERROR.value
-        self.__lock.release()
-
-
-    def end(self):
-        """ Use to stop all threads nicely """
-        self.__running = False
-        if self.__working_thread.is_alive():
-            self.__working_thread.join()
-
-
     def __failed_state(self, err):
-        """ 
-        Update failed reverting all part of update and clearing 
+        """
+        Update failed reverting all part of update and clearing
         working and update directories.
         """
 
         self.__lock.acquire()
 
-        # remove all updater files 
+        # remove all updater files
         shutil.rmtree(WORKING_DIR)
-        shutil.rmtree(UPDATES_DIR)
+        shutil.rmtree(CACHE_DIR)
         Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
-        Path(UPDATES_DIR).mkdir(parents=True, exist_ok=True) 
-        
-        #reset fields not reset by __update_error()
+        Path(CACHE_DIR).mkdir(parents=True, exist_ok=True)
+
         self._available_archive_files = 0
         self._archive_file_name = ""
 
@@ -209,43 +149,47 @@ class LinuxUpdater(object):
         # TODO revert update here
 
         self.__lock.acquire()
-        self._current_state = State.SLEEP.value
+        self._state_machine.change_state(State.SLEEP.value)
         self.__lock.release()
 
 
     def __update_state(self):
-        """ 
-        Load oldest update file if one exist 
+        """
+        Load oldest update file if one exist
         Update thread function.
-        Finds the oldest update file and starts update 
+        Finds the oldest update file and starts update
         """
 
         archive_instruction = {}
         archive_file_path = ""
 
         # see if any update file exist
-        list_of_files = os.listdir(UPDATES_DIR)
+        list_of_files = os.listdir(CACHE_DIR)
         if not list_of_files:
             self.__lock.acquire()
-            self._current_state = State.SLEEP.value
+            self._state_machine.change_state(State.SLEEP.value)
             self.__lock.release()
             return # done, empty, no update files
 
         self.__lock.acquire()
         self._archive_file_name = list_of_files[0] # get 1st file
-        archive_file_path = UPDATES_DIR + self._archive_file_name
+        archive_file_path = CACHE_DIR + self._archive_file_name
         self.__lock.release()
 
         # copy file into working dir
         ret_path = shutil.copy(archive_file_path, WORKING_DIR)
-        if UPDATES_DIR in ret_path:
-            self.__update_error("Failed to copy into working dir")
+        if CACHE_DIR in ret_path:
+            syslog.syslog(syslog.LOG_ERR, "Failed to copy into working dir")
             return
 
         # open_archive_file update file
-        if not open_archive_file(ret_path):
-            self.__update_error("Open archive failed")
+        t = tarfile.open(ret_path, "r:gz")
+        if not t:
+            syslog.syslog(syslog.LOG_ERR, "Open archive failed")
             return
+        else:
+            t.extractall()
+            t.close()
 
         # load instructins file
         try:
@@ -253,65 +197,41 @@ class LinuxUpdater(object):
                 # load instructions data into dictionary
                 archive_instruction = yaml.safe_load(file_object)
                 if not archive_instruction:
-                    self.__update_error("Not a valid yml file")
+                    syslog.syslog(syslog.LOG_ERR, "Not a valid yml file")
                     return
         except IOError:
-            self.__update_error("Instructions file not accessible")
+            syslog.syslog(syslog.LOG_ERR, "Instructions file not accessible")
             return
 
         # remove packages
-        self.__parse_remove_instructions("all", archive_instruction)
-        self.__parse_remove_instructions(self.computer_name, archive_instruction)
+        if "remove-package" in archive_instruction:
+            pkgs = archive_instruction["remove-packages"]
+            for p in pkgs:
+                if not remove_pkg(WORKING_DIR + p):
+                    syslog.syslog(syslog.LOG_ERR, "Package " + p + " failed to be removed.")
 
         # install packages
-        self.__parse_install_instructions("all", archive_instruction)
-        self.__parse_install_instructions(self.computer_name, archive_instruction)
+        if "install-package" in archive_instruction:
+            pkgs = archive_instruction["install-packages"]
+            for p in pkgs:
+                if not install_pkg(WORKING_DIR + p):
+                    syslog.syslog(syslog.LOG_ERR, "Package " + p + " failed to be installed.")
 
         self.__lock.acquire()
 
         # clear working dir and remove update deb pkg
         shutil.rmtree(WORKING_DIR)
         Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
-        os.remove_pkg(archive_file_path)
+        os.remove(archive_file_path)
         self._archive_file_name = ""
         self._available_archive_files -= 1
-        self._current_state = State.SLEEP.value
-        
+        self._state_machine.change_state(State.SLEEP.value)
+
         self.__lock.release()
         return
 
 
-    def __parse_install_instructions(self, computer_name, archive_instruction):
-        """ follows the insstruction for computr name in the archive instruction """
-        install_string = name + "-install-pkgs"
-        if install_string not in archive_instruction: 
-            return False # no instruction for that computer name
-
-        pkgs = archive_instruction[install_string]
-        for p in pkgs:
-            if not instal_pkg(WORKING_DIR + p):
-                self.__update_error("install pkg failed: " + p)
-                return False
-
-        return True
-
-
-    def __parse_remove_instructions(self, computer_name, archive_instruction):
-        """ follows the insstruction for computr name in the archive instruction """
-        remove_string = name + "-remove-pkgs"
-        if remove_string not in archive_instruction: 
-            return False # no instruction for that computer name
-
-        pkgs = archive_instruction[remove_string]
-        for p in pkgs:
-            if not remove_pkg(WORKING_DIR + p):
-                self.__update_error("remove pkg failed: " + p)
-                return False
-
-        return True
-
-
-def instal_pkg(file_path):
+def install_pkg(file_path):
     """ output will be 0 if it completes install, anything else fails """
     deb = apt.debfile.DebPackage(file_path)
     if deb.check() and deb.install() == 0: # valid package and install worked
@@ -324,30 +244,4 @@ def remove_pkg(file_path): # TODO change to python3-apt
     output = subprocess.check_call(['bash','-c', bashCommand])
     return True
 
-
-def open_archive_file(file_path): # TODO FLIF?
-    """
-    contents of .tar.gz file are extracted to a directory with the same
-    name as the tar file file without the .tar.gz extension
-    """
-    
-    bashCommand = "tar -xzf " + file_path + " -C " + WORKING_DIR
-    output = subprocess.check_call(['bash','-c', bashCommand])
-
-    #create a str with the directory name by slicing off the .tar.gz extension
-    return True # file_name[0:len(file_path)-7]
-
-
-def start_linux_updater():
-    bus = SystemBus()
-    loop = GLib.MainLoop()
-    emit = LinuxUpdater()
-    bus.publish(DBUS_INTERFACE_NAME, emit)
-
-    try:
-        loop.run()
-    except KeyboardInterrupt as e:
-        loop.quit()
-        emit.end()
-        print("\nExit by Control C")
-
+LinuxUpdater()

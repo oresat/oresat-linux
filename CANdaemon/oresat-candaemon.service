@@ -6,7 +6,7 @@ After=network-online.target
 [Service]
 Type=forking
 PIDFile=/run/oresat-candaemon.pid
-ExecStart=/usr/bin/candaemon -d
+ExecStart=/usr/bin/candaemon -l can1 -d
 Restart=on-failure
 User=root
 Group=root

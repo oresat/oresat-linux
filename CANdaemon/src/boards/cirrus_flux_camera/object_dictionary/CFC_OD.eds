@@ -1,10 +1,10 @@
 [FileInfo]
-FileName=CameraBoard_objDict.eds
+FileName=CFC_OD.eds
 FileVersion=0
 FileRevision=0
 LastEDS=
 EDSVersion=4.0
-Description=OreSat CameraBoard Object Dictionary
+Description=OreSat CFC Object Dictionary
 CreationTime=11:32AM
 CreationDate=11-07-2019
 CreatedBy=Ryan Medick
@@ -15,7 +15,7 @@ ModifiedBy=
 [DeviceInfo]
 VendorName=Portland State Aerospace Society
 VendorNumber=0
-ProductName=Camera Board
+ProductName=Cirrus Flux Camera
 ProductNumber=0
 RevisionNumber=0
 BaudRate_10=1
@@ -296,7 +296,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0009
 AccessType=const
-DefaultValue=CANopenNode
+DefaultValue=Cirrus Flux Camera
 PDOMapping=0
 
 [1009]
@@ -305,7 +305,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0009
 AccessType=const
-DefaultValue=3.00
+DefaultValue=1.00
 PDOMapping=0
 
 [100A]
@@ -314,7 +314,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0009
 AccessType=const
-DefaultValue=3.00
+DefaultValue=1.00
 PDOMapping=0
 
 [1010]
@@ -1742,7 +1742,7 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0005
 AccessType=rw
-DefaultValue=0x12
+DefaultValue=0x22
 PDOMapping=0
 
 [2102]

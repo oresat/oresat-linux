@@ -13,16 +13,16 @@
         <ProfileTechnology>Canopen</ProfileTechnology>
       </ISO15745Reference>
     </ProfileHeader>
-    <ProfileBody xsi:type="ProfileBody_Device_CANopen" formatName="CANopen" formatVersion="1.0" fileName="CameraBoard_objDict.eds" fileCreator="Ryan Medick" fileCreationDate="2019-11-07" fileCreationTime="11:32:00.0000000-08:00" fileModificationDate="2019-11-07" fileModificationTime="11:32:00.0000000-08:00" fileModifiedBy="" fileVersion="0" supportedLanguages="en">
+    <ProfileBody xsi:type="ProfileBody_Device_CANopen" formatName="CANopen" formatVersion="1.0" fileName="CFC_OD.eds" fileCreator="Ryan Medick" fileCreationDate="2019-11-07" fileCreationTime="11:32:00.0000000-08:00" fileModificationDate="2019-11-07" fileModificationTime="11:32:00.0000000-08:00" fileModifiedBy="" fileVersion="0" supportedLanguages="en">
       <DeviceIdentity>
         <vendorName readOnly="true">Portland State Aerospace Society</vendorName>
         <vendorID>0</vendorID>
         <deviceFamily />
         <productFamily readOnly="true" />
-        <productName readOnly="true">Camera Board</productName>
+        <productName readOnly="true">Cirrus Flux Camera</productName>
         <productID>0</productID>
         <productText readOnly="true">
-          <description lang="en">FileDescription=OreSat CameraBoard Object Dictionary|EdsVersion=4.0|FileRevision=0|RevisionNum=0</description>
+          <description lang="en">FileDescription=OreSat CFC Object Dictionary|EdsVersion=4.0|FileRevision=0|RevisionNum=0</description>
         </productText>
         <version versionType="SW" />
         <version versionType="FW" />
@@ -173,7 +173,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="CANopenNode" />
+            <defaultValue value="Cirrus Flux Camera" />
           </parameter>
           <parameter uniqueID="UID_PARAM_1009" access="const">
             <label lang="en">Manufacturer hardware version</label>
@@ -181,7 +181,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="3.00" />
+            <defaultValue value="1.00" />
           </parameter>
           <parameter uniqueID="UID_PARAM_100a" access="const">
             <label lang="en">Manufacturer software version</label>
@@ -189,7 +189,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="3.00" />
+            <defaultValue value="1.00" />
           </parameter>
           <parameter uniqueID="UID_PARAM_1010" access="readWrite">
             <label lang="en">Store parameters</label>
@@ -1549,7 +1549,7 @@
             <denotation>
               <label lang="en" />
             </denotation>
-            <defaultValue value="0x12" />
+            <defaultValue value="0x22" />
           </parameter>
           <parameter uniqueID="UID_PARAM_2102" access="readWrite">
             <label lang="en">CAN bit rate</label>
@@ -2936,7 +2936,7 @@
         <ProfileTechnology>Canopen</ProfileTechnology>
       </ISO15745Reference>
     </ProfileHeader>
-    <ProfileBody xsi:type="ProfileBody_CommunicationNetwork_CANopen" formatName="CANopen" formatVersion="1.0" fileName="CameraBoard_objDict.eds" fileCreator="Ryan Medick" fileCreationDate="2019-11-07" fileCreationTime="11:32:00.0000000-08:00" fileModificationDate="2019-11-07" fileVersion="0" supportedLanguages="en">
+    <ProfileBody xsi:type="ProfileBody_CommunicationNetwork_CANopen" formatName="CANopen" formatVersion="1.0" fileName="CFC_OD.eds" fileCreator="Ryan Medick" fileCreationDate="2019-11-07" fileCreationTime="11:32:00.0000000-08:00" fileModificationDate="2019-11-07" fileVersion="0" supportedLanguages="en">
       <ApplicationLayers>
         <CANopenObjectList>
           <CANopenObject index="1000" name="Device type" objectType="7" dataType="0007" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_1000" />
@@ -3178,7 +3178,7 @@
             <CANopenSubObject subIndex="0002" name="Epoch time base ms" objectType="7" dataType="001B" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_213002" />
             <CANopenSubObject subIndex="0003" name="Epoch time offset ms" objectType="7" dataType="0007" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" PDOmapping="RPDO" uniqueIDRef="UID_PARAM_213003" />
           </CANopenObject>
-          <CANopenObject index="3000" name="Systemd Control" objectType="9" dataType="0005" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3000" subNumber="3">
+          <CANopenObject index="3000" name="Systemd Control" objectType="9" dataType="0000" lowLimit="" highLimit="" accessType="rw" actualValue="" denotation="" edseditor_extenstion_storagelocation="RAM" PDOmapping="no" uniqueIDRef="UID_PARAM_3000" subNumber="3">
             <CANopenSubObject subIndex="0000" name="max sub-index" objectType="7" dataType="0005" lowLimit="" highLimit="" accessType="ro" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300000" />
             <CANopenSubObject subIndex="0001" name="Restart" objectType="7" dataType="000F" lowLimit="" highLimit="" accessType="wo" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300001" />
             <CANopenSubObject subIndex="0002" name="Poweroff" objectType="7" dataType="000F" lowLimit="" highLimit="" accessType="wo" actualValue="" denotation="" PDOmapping="no" uniqueIDRef="UID_PARAM_300002" />

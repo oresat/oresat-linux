@@ -6,5 +6,5 @@
  */
 void log_message(int priority, const char *fmt, ...);
 
-/* canopen.* needs this*/
+// canopen.* needs this
 void CO_errExit(char* msg);

@@ -24,16 +24,16 @@ CO_SDO_abortCode_t systemd_ODF(CO_ODF_arg_t *ODF_arg) {
     sd_bus *bus = NULL;
     int r;
 
-    /* Connect to the bus */
+    // Connect to the bus
     if (sd_bus_open_system(&bus) < 0)
         return CO_SDO_AB_GENERAL;
 
-    /* can't read parameters, write only */
+    // can't read parameters, write only
     if (ODF_arg->reading == true)
         return CO_SDO_AB_WRITEONLY;
 
     switch (ODF_arg->subIndex) {
-        case 1 : /* reboot Linux system */
+        case 1 : // reboot Linux system
             r = sd_bus_call_method(
                     bus,
                     DESTINATION,
@@ -45,10 +45,10 @@ CO_SDO_abortCode_t systemd_ODF(CO_ODF_arg_t *ODF_arg) {
                     NULL);
             if (r < 0)
                 ret = CO_SDO_AB_GENERAL;
-            
+
             break;
 
-        case 2 : /* poweroff Linux system */
+        case 2 : // poweroff Linux system
             r = sd_bus_call_method(
                     bus,
                     DESTINATION,
@@ -64,9 +64,9 @@ CO_SDO_abortCode_t systemd_ODF(CO_ODF_arg_t *ODF_arg) {
             break;
 
         default :
-            ret = CO_SDO_AB_SUB_UNKNOWN; 
+            ret = CO_SDO_AB_SUB_UNKNOWN;
     }
-    
+
     sd_bus_error_free(&error);
     sd_bus_unref(bus);
     return ret;

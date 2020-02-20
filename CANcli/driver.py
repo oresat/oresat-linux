@@ -102,10 +102,10 @@ def main(window):
     curses.cbreak()
     curses.curs_set(0)
 
-    # Open the socketsC
-    dev_names = [ "vcan0" ]
-    # dev_names = [ "vcan0",
-    #               "vcan1" ]
+    # Open the sockets
+    dev_names = [ "can0" ]
+    #dev_names = [ "vcan0", "vcan1" ]
+  
     devs = []
     for name in dev_names:
         dev = socketcan.SocketCanDev(name)

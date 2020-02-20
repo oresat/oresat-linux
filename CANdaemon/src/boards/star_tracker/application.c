@@ -21,19 +21,15 @@ static bool             end_program = false;
 
 
 // Static functions headers
-static int read_orientation_cb(sd_bus_message *m, void *userdata, sd_bus_error *ret_error);
+static int coor_cb(sd_bus_message *m, void *userdata, sd_bus_error *ret_error);
 static void* app_signal_thread(void* arg);
-
-
-// ***************************************************************************
-// app dbus functions
 
 
 int app_dbus_setup(void) {
     int r;
     void* userdata = NULL;
 
-    /* Connect to the bus */
+    // Connect to the bus
     r = sd_bus_open_system(&bus);
     if (r < 0) {
         log_message(LOG_ERR, "Failed to connect to systemd bus.\n");
@@ -47,7 +43,7 @@ int app_dbus_setup(void) {
             OBJECT_PATH,
             "org.freedesktop.DBus.Properties",
             "PropertiesChanged", 
-            read_orientation_cb, 
+            coor_cb, 
             userdata);
     if (r < 0) {
         log_message(LOG_ERR, "Failed to add new signal match.\n");
@@ -91,19 +87,25 @@ int app_dbus_end(void) {
 // other star tracker functions
 
 
-static int read_orientation_cb(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
+static int coor_cb(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
     double declination, right_ascension, orientation = 0.0;
+    char *temp = NULL;
 
-    if (sd_bus_get_property(bus, DESTINATION, OBJECT_PATH, INTERFACE_NAME, "DEC", ret_error, &m, "ddd") < 0)
+    if (sd_bus_get_property(bus, DESTINATION, OBJECT_PATH, INTERFACE_NAME, "coor", ret_error, &m, "(ddds)") < 0)
         return 1; // failed to get property
     
-    if (sd_bus_message_read(m, "ddd", &declination, &right_ascension, &orientation) < 0)
+    if (sd_bus_message_read(m, "ddds", &declination, &right_ascension, &orientation, temp) < 0)
         return 1; // failed to decode dbus property
 
     // update OD
     app_writeOD(0x3101, 1, &declination, sizeof(declination));
     app_writeOD(0x3101, 2, &right_ascension, sizeof(right_ascension));
     app_writeOD(0x3101, 3, &orientation, sizeof(orientation));
+    
+    if(temp != NULL) {
+        free(temp);
+        temp = NULL;
+    }
 
     return 0;
 }
@@ -129,4 +131,4 @@ static void* app_signal_thread(void* arg) {
     sd_bus_error_free(&err);
     return NULL;
 }
-
+*/

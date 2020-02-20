@@ -27,35 +27,6 @@ message(STATUS "Board ${BOARD} selected")
 
 
 ##############################################################################
-# Deal with git submodule
-
-find_package(Git)
-if(NOT GIT_FOUND)
-    message(FATAL_ERROR "git check failed")
-endif()
-if(NOT EXISTS "src/CANopenNode/.git")
-    message(STATUS "Running: git submoduke update --init")
-    execute_process(COMMAND git submodule update --init WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-endif()
-
-
-##############################################################################
-# Release vs debug modes (set CFLAGS, LDFLAGS, etc)
-# to use: cmake -DCMAKE_BUILD_TYPE=Debug . 
-
-# default to release
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release)
-endif()
-
-set(CMAKE_C_FLAGS "-Wall -Wextra")
-set(CMAKE_C_FLAGS_DEBUG "-g")
-set(CMAKE_C_FLAGS_RELEASE "-O3")
-
-set(CMAKE_EXE_LINKER_FLAGS "-pthread -lsystemd")
-
-
-##############################################################################
 # Check Linux distribution / verion / kernel version
 
 set(LINUX_DISTRIBUTION "")
@@ -78,9 +49,52 @@ endif()
 
 
 ##############################################################################
+# Deal with dependencies
+
+# pthreads
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+
+# pkg-config
+find_package(PkgConfig REQUIRED)
+
+# libsystemd
+pkg_check_modules(LIBSYSTEMD REQUIRED libsystemd)
+
+
+##############################################################################
+# Deal with git submodule
+
+find_package(Git)
+if(NOT GIT_FOUND)
+    message(FATAL_ERROR "git check failed")
+endif()
+if(NOT EXISTS "./src/CANopenNode/.git")
+    message(STATUS "Running: git submoduke update --init")
+    execute_process(COMMAND git submodule update --init WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
+
+##############################################################################
+# Release vs debug modes (set CFLAGS, LDFLAGS, etc)
+# to use: cmake -DCMAKE_BUILD_TYPE=Debug .
+
+# default to release
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
+
+set(CMAKE_C_FLAGS "-Wall")
+set(CMAKE_C_FLAGS_DEBUG "-g")
+set(CMAKE_C_FLAGS_RELEASE "-O3")
+
+#set(CMAKE_EXE_LINKER_FLAGS "-pthread") #-lsystemd")
+
+
+##############################################################################
 # Check if make or ninja
 
-if(CMAKE_MAKE_PROGRAM MATCHES "make") 
+if(CMAKE_MAKE_PROGRAM MATCHES "make")
     set(CMAKE_MAKE_PROGRAM_PRETTY_NAME "make")
 endif()
 if(CMAKE_MAKE_PROGRAM MATCHES "ninja")
@@ -139,6 +153,9 @@ set(SOURCE_FILES
 # Create an executable
 
 add_executable(candaemon ${SOURCE_FILES})
+target_link_libraries(candaemon ${LIBSYSTEMD_LIBRARIES} Threads::Threads)
+target_include_directories(candaemon PUBLIC ${LIBSYSTEMD_INCLUDE_DIRS})
+target_compile_options(candaemon PUBLIC ${LIBSYSTEMD_CFLAGS_OTHER})
 
 
 ############################################################
@@ -162,7 +179,7 @@ if(${LINUX_DISTRIBUTION} MATCHES "Debian")
     set(CPACK_PACKAGE_VERSION 0.0.1) # TODO link to github version??
     set(CPACK_PACKAGE_CONTACT "rmedick@pdx.edu")
     set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "CAN systemd controller")
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS "cmake (>= 3.13.4-1), make (>= 4.2.1-1.2), gcc (>= 4:8.3.0-1), libsystemd-dev (>= 241-7~deb10u2rcnee0~buster+20191124)")
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libsystemd-dev (>= 241-7~deb10u2rcnee0~buster+20191124)")
     set(CPACK_DEBIAN_PACKAGE_SECTION "embedded")
     set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "http://www.oresat.org")
     execute_process(COMMAND dpkg --print-architecture OUTPUT_VARIABLE CPACK_DEBIAN_PACKAGE_ARCHITECTURE OUTPUT_STRIP_TRAILING_WHITESPACE)

@@ -1,5 +1,5 @@
 [FileInfo]
-FileName=StarTracker_objDict.eds
+FileName=star_tracker_OD.eds
 FileVersion=0
 FileRevision=0
 LastEDS=
@@ -3253,31 +3253,7 @@ DefaultValue=0
 PDOMapping=0
 
 [3100]
-ParameterName=Star Tracker Status/Control
-ObjectType=0x9
-;StorageLocation=RAM
-SubNumber=0x3
-
-[3100sub0]
-ParameterName=max sub-index
-ObjectType=0x7
-;StorageLocation=RAM
-DataType=0x0005
-AccessType=ro
-DefaultValue=2
-PDOMapping=0
-
-[3100sub1]
-ParameterName=Current State
-ObjectType=0x7
-;StorageLocation=RAM
-DataType=0x0002
-AccessType=rw
-DefaultValue=0
-PDOMapping=0
-
-[3100sub2]
-ParameterName=Get Latest Image
+ParameterName=Test camera
 ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0002
