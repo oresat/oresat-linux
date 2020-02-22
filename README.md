@@ -11,7 +11,7 @@ Some of our systems need more computing power, so they're given a [Sitara AM335x
 All A8 onboard OreSat will all have 3 daemons; the candaemon, the Linux updater, and the main process. 
 ![](https://github.com/oresat/oresat-linux-candaemon/blob/master/docs/OreSatLinuxDiagram.jpg)
 
-### candaemon
+### [oresat-linux-candaemon]
 OreSat uses [CAN] for commucation between systems onboard and follows the [CANopen] specifications.
 The candaemon acts a front end for all of OreSat Linux daemons and is build on top of [CANopenNode]. 
 It allows the [C3], Oresat' CAN Network Manger, to control or get data from daemons on the Linux board. 
@@ -22,27 +22,27 @@ See the [candaemon] repo for more info.
 
 ### Linux updater
 A daemon that allows the Linux board to be updated over dbus.
-See the [Linux updater] repo for more info.
+See the [oresat-linux-updater] repo for more info.
 
-### Main Process
-| Project               | Hardware  | Software  |
-| --------------------- |:---------:| :-------: |
-| SDR GPS               | [GPS HW]  | [GPS SW]  |
-| Star Tracker          | [ST HW]   | [ST SW]   |
-| OreSat Live           | [Live HW] | [Live SW] |
-| Cirrus Flux Camera    | TBD       | TBD       |
+### Main Process Repo
+| Project               | Hardware                  | Software                          |
+| --------------------- |:-------------------------:| :-------------------------------: |
+| SDR GPS               | [oresat-gps-hardware]     | [oresat-gps-software]             |
+| Star Tracker          | [oresat-star-tracker      | [oresat-star-tracker-software]    |
+| OreSat Live           | [oresat-dxwifi-hardware]  | [oresat-dxwifi-software]          |
+| Cirrus Flux Camera    | TBD                       | TBD                               |
 
 
 
 <!-- OreSat repos -->
-[GPS SW]:https://github.com/oresat/oresat-gps-software
-[GPS HW]:https://github.com/oresat/oresat-gps-hardware
-[ST HW]:https://github.com/oresat/oresat-star-tracker
-[ST SW]:https://github.com/oresat/oresat-star-tracker-software
-[Live HW]:https://github.com/oresat/oresat-dxwifi-hardware
-[Live SW]:https://github.com/oresat/oresat-dxwifi-software
-[candaemon]:https://github.com/oresat/oresat-linux-candaemon
-[Linux updater]:https://github.com/oresat/oresat-linux-updater
+[oresat-gps-software]:https://github.com/oresat/oresat-gps-software
+[oresat-gps-hardware]:https://github.com/oresat/oresat-gps-hardware
+[oresat-star-tracker]:https://github.com/oresat/oresat-star-tracker
+[oresat-star-tracker-software]:https://github.com/oresat/oresat-star-tracker-software
+[oresat-dxwifi-hardware]:https://github.com/oresat/oresat-dxwifi-hardware
+[[oresat-dxwifi-software]:https://github.com/oresat/oresat-dxwifi-software
+[oresat-linux-candaemon]:https://github.com/oresat/oresat-linux-candaemon
+[oresat-linux-updater]:https://github.com/oresat/oresat-linux-updater
 [C3]:https://github.com/oresat/oresat-c3
 
 <!-- Other repos -->
