@@ -15,7 +15,7 @@ All A8 onboard OreSat will all have 3 daemons; the candaemon, the Linux updater,
 OreSat uses [CAN] for commucation between systems onboard and follows the [CANopen] specifications.
 The candaemon acts a front end for all of OreSat Linux daemons and is build on top of [CANopenNode]. 
 It allows the [C3], Oresat' CAN Network Manger, to control or get data from daemons on the Linux board. 
-It will use [DBus] to inter-process communication with daemons. 
+It uses [DBus] for inter-process communication with daemons. 
 Therefor the main projects can be implemented in any programing language that has [DBus] library 
 and not worry about finding / making a CAN library following [CANopen] specifications for that language.
 See the [oresat-linux-candaemon] repo for more info.
