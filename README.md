@@ -50,6 +50,6 @@ See the [Linux updater] repo for more info.
 
 <!-- Other links -->
 [CAN]:https://en.wikipedia.org/wiki/CAN_bus
-[CANopen]:https://en.wikipedia.org/wiki/CANopen`
+[CANopen]:https://en.wikipedia.org/wiki/CANopen
 [DBus]:https://en.wikipedia.org/wiki/D-Bus
 [Sitara AM335x]:https://www.ti.com/processors/sitara-arm/am335x-cortex-a8/overview.html
