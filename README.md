@@ -18,7 +18,7 @@ It allows the [C3], Oresat' CAN Network Manger, to control or get data from daem
 It will use [DBus] to inter-process communication with daemons. 
 Therefor the main projects can be implemented in any programing language that has [DBus] library 
 and not worry about finding / making a CAN library following [CANopen] specifications for that language.
-See the [candaemon] repo for more info.
+See the [oresat-linux-candaemon] repo for more info.
 
 ### [oresat-linux-updater]
 A daemon that allows the Linux board to be updated over dbus.
