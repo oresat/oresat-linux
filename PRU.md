@@ -1,5 +1,5 @@
 # Programmable Real-time Unit Industrial Communications Subsystem (PRU-ICSS or PRU)
-The AM335x has two PRU. For oresat an idea is use them to get images from camera sensor. Good guides can be found: [PRU-ICSS], [TI PRU-ICSS / PRU_ICSG], and [TI PRU Training].
+The AM335x has two PRU. For oresat an idea is use them to get images from camera sensor. Good guides can be found: [PRU-ICSS], [TI PRU-ICSS / PRU_ICSSG], and [TI PRU Training].
 
 ## OreSat projects using PRUs
  - [oresat-star-tracker-software](https://github.com/oresat/oresat-star-tracker-software)
