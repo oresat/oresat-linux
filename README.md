@@ -20,7 +20,7 @@ Therefor the main projects can be implemented in any programing language that ha
 and not worry about finding / making a CAN library following [CANopen] specifications for that language.
 See the [candaemon] repo for more info.
 
-### Linux updater
+### [oresat-linux-updater]
 A daemon that allows the Linux board to be updated over dbus.
 See the [oresat-linux-updater] repo for more info.
 
@@ -28,7 +28,7 @@ See the [oresat-linux-updater] repo for more info.
 | Project               | Hardware                  | Software                          |
 | --------------------- |:-------------------------:| :-------------------------------: |
 | SDR GPS               | [oresat-gps-hardware]     | [oresat-gps-software]             |
-| Star Tracker          | [oresat-star-tracker      | [oresat-star-tracker-software]    |
+| Star Tracker          | [oresat-star-tracker]     | [oresat-star-tracker-software]    |
 | OreSat Live           | [oresat-dxwifi-hardware]  | [oresat-dxwifi-software]          |
 | Cirrus Flux Camera    | TBD                       | TBD                               |
 
@@ -40,7 +40,7 @@ See the [oresat-linux-updater] repo for more info.
 [oresat-star-tracker]:https://github.com/oresat/oresat-star-tracker
 [oresat-star-tracker-software]:https://github.com/oresat/oresat-star-tracker-software
 [oresat-dxwifi-hardware]:https://github.com/oresat/oresat-dxwifi-hardware
-[[oresat-dxwifi-software]:https://github.com/oresat/oresat-dxwifi-software
+[oresat-dxwifi-software]:https://github.com/oresat/oresat-dxwifi-software
 [oresat-linux-candaemon]:https://github.com/oresat/oresat-linux-candaemon
 [oresat-linux-updater]:https://github.com/oresat/oresat-linux-updater
 [C3]:https://github.com/oresat/oresat-c3
