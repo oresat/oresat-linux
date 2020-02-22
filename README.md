@@ -26,7 +26,7 @@ See the [oresat-linux-updater] repo for more info.
 
 ### Main Process Repo
 | Project               | Hardware                  | Software                          |
-| --------------------- |:-------------------------:| :-------------------------------: |
+|-----------------------|---------------------------|-----------------------------------|
 | SDR GPS               | [oresat-gps-hardware]     | [oresat-gps-software]             |
 | Star Tracker          | [oresat-star-tracker]     | [oresat-star-tracker-software]    |
 | OreSat Live           | [oresat-dxwifi-hardware]  | [oresat-dxwifi-software]          |
