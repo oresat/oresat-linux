@@ -1,3 +1,0 @@
-[submodule "CANdaemon/CANopenNode"]
-	path = CANdaemon/src/CANopenNode
-	url = https://github.com/heliochronix/CANopenNode.git
