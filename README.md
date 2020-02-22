@@ -9,7 +9,7 @@ Some of our systems need more computing power, so they're given a [Sitara AM335x
 
 ## General Board Design
 All A8 onboard OreSat will all have 3 daemons; the candaemon, the Linux updater, and the main process. 
-![](https://github.com/oresat/oresat-linux-candaemon/docs/OreSatLinuxDiagram.jpg)
+![](https://github.com/oresat/oresat-linux-candaemon/blob/master/docs/OreSatLinuxDiagram.jpg)
 
 ### candaemon
 OreSat uses [CAN] for commucation between systems onboard and follows the [CANopen] specifications.
