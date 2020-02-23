@@ -40,12 +40,12 @@ A guide / standards with reasonings for OreSat Linux.
 - The candaemon and Linux updater are the only enabled OreSat daemons. The main process daemon will **not** be enabled.
     - *The candaemon needs to enable due to it being the main way to control the Linux board over the CANbus.*
     - *The updaters need to be enable to resume updates or reverts after power shutdowns incase packages are in a broken state (a broken candaemon is a dead board).*
-    - *The C3 card will tell the a Linux board's candaemon to turn on the main process when the C3 card want it up.*
+    - *The C3 card will tell the a Linux board's candaemon to turn on the main process when the C3 card wants it up.*
 
 ### DBus
 - Use DBus
-    - *A lot of lanagues have support for dbus bindings, see [freedesktopn dbus bindings] for a list.*
-    - *The candaemon acts as the frontend and interface for the CANbus, therefor the main projects can be implemented in mostly any programing language and not have to worry about finding / making a CAN library following [CANopen] specifications for that specific language.*
+    - *A lot of lanagues have support for dbus bindings, see [freedesktop dbus bindings] for a list.*
+    - *The candaemon acts as the frontend and interface for the CANbus, therefor the main projects can be implemented in mostly any programing language and not have to worry about finding / making a CAN library following [CANopen] 301 specifications for that specific language.*
 - Only use system dbus **not** session dbus (aka user dbus). Install conf files to `/usr/share/dbus-1/system.d/`.
     - *No users, so no user dbus space.*
 - Follow dbus config file naming of `org.OreSat.LinuxBoard`, ie `org.OreSat.StarTracker`.
@@ -76,7 +76,7 @@ A guide / standards with reasonings for OreSat Linux.
 ## OreSat Linux updater standards
 The linux updater will call `systemctl daemon-reload`.
 
-
+[CANopen]:https://en.wikipedia.org/wiki/CANopen
 [sd-bus]:https://github.com/systemd/systemd/blob/master/src/systemd/sd-bus.h
 [pydbus]:https://github.com/LEW21/pydbus
-[freedesktopn dbus bindings]:https://www.freedesktop.org/wiki/Software/DBusBindings/
+[freedesktop dbus bindings]:https://www.freedesktop.org/wiki/Software/DBusBindings/
