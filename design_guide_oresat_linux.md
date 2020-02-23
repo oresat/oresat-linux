@@ -1,5 +1,11 @@
 # OreSat Linux standards
-A guide / standards with reasonings for OreSat Linux.
+A design guide / notes / standards with reasonings for OreSat Linux.
+
+
+## Operating System
+- Use Debian kernel 4.19. An image can be found here[here](https://elinux.org/Beagleboard:BeagleBoneBlack_Debian#Debian_Buster_Console_Snapshot).
+    - *Support for pru.*
+    - *Beagleboard made the image, they added a lot on nice tools (uboot overlay scripts / pru kernel module).*
 
 
 ## General system
@@ -8,13 +14,8 @@ A guide / standards with reasonings for OreSat Linux.
     - *Easy to configure networks to enable on boot up (only really need CAN).*
 
 
-## OreSat Linux candaemon app standards
-- All apps have a app_dbus_setup() and app_dbus_end(). Everything else is left upto the app programmer. 
-- Use [sd-bus] for dbus interface.
-
-
-## OreSat main process standards
-
+## OreSat board's main process standards
+A guide / standards with reasonings for main process on all OreSat Linux boards.
 ### Directories workspace
 - Working dir is `/`.
     - *Root process.*
@@ -73,8 +74,9 @@ A guide / standards with reasonings for OreSat Linux.
     - *We use debian on the satellite. Makes updating the app easy.*
 
 
-## OreSat Linux updater standards
-The linux updater will call `systemctl daemon-reload`.
+## OreSat Linux candaemon app standards
+See[design_guide_candaemon_app.md](https://github.com/oresat/oresat-linux-candaemon/blob/master/docs/design_guide_candaemon_app.md).
+
 
 [CANopen]:https://en.wikipedia.org/wiki/CANopen
 [sd-bus]:https://github.com/systemd/systemd/blob/master/src/systemd/sd-bus.h
