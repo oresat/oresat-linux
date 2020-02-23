@@ -3,7 +3,7 @@ A design guide / notes / standards with reasonings for OreSat Linux.
 
 
 ## Operating System
-- Use Debian kernel 4.19. An image can be found here[here](https://elinux.org/Beagleboard:BeagleBoneBlack_Debian#Debian_Buster_Console_Snapshot).
+- Use Debian kernel 4.19. An image can be found [here](https://elinux.org/Beagleboard:BeagleBoneBlack_Debian#Debian_Buster_Console_Snapshot).
     - *Support for pru.*
     - *Beagleboard made the image, they added a lot on nice tools (uboot overlay scripts / pru kernel module).*
 
@@ -75,7 +75,7 @@ A guide / standards with reasonings for main process on all OreSat Linux boards.
 
 
 ## OreSat Linux candaemon app standards
-See[design_guide_candaemon_app.md](https://github.com/oresat/oresat-linux-candaemon/blob/master/docs/design_guide_candaemon_app.md).
+See [design_guide_candaemon_app.md](https://github.com/oresat/oresat-linux-candaemon/blob/master/docs/design_guide_candaemon_app.md).
 
 
 [CANopen]:https://en.wikipedia.org/wiki/CANopen
