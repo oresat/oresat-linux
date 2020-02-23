@@ -8,7 +8,10 @@ Some of our systems need more computing power, so they're given a [Sitara AM335x
 
 
 ## General Board Design
-All A8 onboard OreSat will all have 3 daemons; the candaemon, the Linux updater, and the main process. 
+All AM335x onboard OreSat will all have 3 daemons; the candaemon, the Linux updater, and the main process. 
+The candaemon will interface with other OreSat Linux daemon over [DBus].
+If you are curious on why OreSat Linux systems will have this daemon and dbus set up see: 
+[oresat_linux_standards.md](oresat_linux_standards.md)
 ![](https://github.com/oresat/oresat-linux-candaemon/blob/master/docs/OreSatLinuxDiagram.jpg)
 
 ### [oresat-linux-candaemon]
@@ -16,22 +19,21 @@ OreSat uses [CAN] for commucation between systems onboard and follows the [CANop
 The candaemon acts a front end for all of OreSat Linux daemons and is build on top of [CANopenNode]. 
 It allows the [C3], Oresat' CAN Network Manger, to control or get data from daemons on the Linux board. 
 It uses [DBus] for inter-process communication with daemons. 
-Therefor the main projects can be implemented in any programing language that has [DBus] library 
-and not worry about finding / making a CAN library following [CANopen] specifications for that language.
+Basically it is a CAN controlled daemon controller that uses DBus to talk and control other daemons including systemd.
 See the [oresat-linux-candaemon] repo for more info.
 
 ### [oresat-linux-updater]
 A daemon that allows the Linux board to be updated over dbus.
 See the [oresat-linux-updater] repo for more info.
 
-### Main Process Repo
+### Main Processes
+See their repos for infomation on what they are and how they work.
 | Project               | Hardware                  | Software                          |
 |-----------------------|---------------------------|-----------------------------------|
 | SDR GPS               | [oresat-gps-hardware]     | [oresat-gps-software]             |
 | Star Tracker          | [oresat-star-tracker]     | [oresat-star-tracker-software]    |
 | OreSat Live           | [oresat-dxwifi-hardware]  | [oresat-dxwifi-software]          |
 | Cirrus Flux Camera    | TBD                       | TBD                               |
-
 
 
 <!-- OreSat repos -->
