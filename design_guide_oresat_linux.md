@@ -1,4 +1,4 @@
-# OreSat Linux standards
+# OreSat Linux design guide
 A design guide / notes / standards with reasonings for OreSat Linux.
 
 
