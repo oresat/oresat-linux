@@ -1,20 +1,18 @@
 #!/usr/bin/env python3
 
-from pydbus.generic import signal
 from pydbus import SystemBus
 from gi.repository import GLib
 import sys
 import random
 
-INTERFACE_NAME = "org.example.project.oresat"
-bus = SystemBus() # connect to bus
-loop = GLib.MainLoop() # only used by server
+INTERFACE_NAME = "org.OreSat.Example"
 
 
 # ----------------------------------------------------------------------------
 # Client
 
-def client():
+def client_main():
+    bus = SystemBus() # connect to bus
     the_object = bus.get(INTERFACE_NAME)
 
     print("Calling Hello method")
@@ -33,10 +31,10 @@ def client():
 # Server
 
 
-class Server_XML(object):
+class Test_Server(object):
     dbus = """
     <node>
-        <interface name="org.example.project.oresat">
+        <interface name="org.OreSat.Example">
             <method name='Hello'>
                 <arg type='s' name='input' direction='in'/>
                 <arg type='s' name='output' direction='out'/>
@@ -67,10 +65,12 @@ class Server_XML(object):
         """removes this object from the DBUS connection and exits"""
         loop.quit()
 
-def server():
-    # Setup server to emit signals over the DBus
-    emit = Server_XML()
-    bus.publish(INTERFACE_NAME, emit)
+def server_main():
+    bus = SystemBus() # connect to bus
+    loop = GLib.MainLoop() # only used by server
+
+    test_server = Test_Server()
+    bus.publish(INTERFACE_NAME, test_server)
 
     # Run loop with graceful ctrl C exiting.
     try:
@@ -83,11 +83,18 @@ def server():
 # ----------------------------------------------------------------------------
 
 
+def usage():
+    print("Input error\n python3 pydbus-method-example.py <Mode>\n Where <Mode> is server or client\n");
+    sys.exit(1)
+
 if __name__=="__main__":
+    if len(sys.arg != 2:
+        usage()
+
     if(sys.argv[1] == "server"):
-        server()
+        server_main()
     elif(sys.argv[1] == "client"):
-        client()
+        client_main()
     else:
-        print("Input error\n python3 pydbus-method-example.py <Mode>\n Where <Mode> is server or client\n");
+        usage()
 

@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
-from pydbus.generic import signal
 from pydbus import SystemBus
 from gi.repository import GLib
 import sys
 
 
-INTERFACE_NAME = "org.example.project.oresat"
+INTERFACE_NAME = "org.OreSat.Example"
 
 
 def cb_server_signal_emission(*args):
@@ -21,13 +20,14 @@ def main():
     loop = GLib.MainLoop()
 
     # Subscribe to bus to monitor for all server signals emissions
-    bus.subscribe(iface = INTERFACE_NAME, 
-                  signal_fired = cb_server_signal_emission)    
-    
+    bus.subscribe(iface = INTERFACE_NAME,
+                  signal_fired = cb_server_signal_emission)
+
     # Run loop with graceful ctrl C exiting.
     try:
         loop.run()
     except KeyboardInterrupt as e:
         loop.quit()
 
-main()
+if __name__=="__main__":
+    main()

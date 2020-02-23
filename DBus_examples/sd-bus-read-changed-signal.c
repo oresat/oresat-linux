@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <systemd/sd-bus.h>
 
-#define DESTINATION     "org.example.project.oresat"
-#define INTERFACE_NAME  "org.example.project.oresat"
-#define OBJECT_PATH     "/org/example/project/oresat"
+#define DESTINATION     "org.OreSat.Example"
+#define INTERFACE_NAME  "org.OreSat.Example"
+#define OBJECT_PATH     "/org/OreSat/Example"
 
 static sd_bus *bus = NULL;
 
@@ -13,13 +13,13 @@ static int read_test2_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_e
     int r;
 
     r = sd_bus_get_property(
-            bus, 
-            DESTINATION, 
-            OBJECT_PATH, 
-            INTERFACE_NAME, 
-            "Test2",  
-            ret_error, 
-            &m, 
+            bus,
+            DESTINATION,
+            OBJECT_PATH,
+            INTERFACE_NAME,
+            "Test2",
+            ret_error,
+            &m,
             "u");
     if (r < 0) {
         fprintf(stderr, "Get property failed.");
@@ -53,8 +53,8 @@ int main(int argc, char *argv[]) {
             NULL,
             OBJECT_PATH,
             "org.freedesktop.DBus.Properties",
-            "PropertiesChanged", 
-            read_test2_cb, 
+            "PropertiesChanged",
+            read_test2_cb,
             userdata
         );
     if(r < 0) {

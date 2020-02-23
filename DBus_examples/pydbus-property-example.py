@@ -7,15 +7,14 @@ import sys
 import random
 import time
 
-INTERFACE_NAME = "org.example.project.oresat"
-bus = SystemBus() # connect to bus
-loop = GLib.MainLoop() # only used by server
+INTERFACE_NAME = "org.OreSat.Example"
 
 
 # ----------------------------------------------------------------------------
 # Client
 
-def client():
+def client_main():
+    bus = SystemBus() # connect to bus
     the_object = bus.get(INTERFACE_NAME)
 
     while True:
@@ -30,14 +29,14 @@ def client():
 # Server
 
 
-class Server_XML(object):
+class Test_Server(object):
     dbus = """
     <node>
-        <interface name="org.example.project.oresat">
+        <interface name="org.OreSat.Example">
             <property name="Test1" type="d" access="read">
                 <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
             </property>
-            <property name="Test2" type="u" access="readwrite"> 
+            <property name="Test2" type="u" access="readwrite">
                 <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
             </property>
         </interface>
@@ -46,7 +45,7 @@ class Server_XML(object):
     def __init__(self):
         self._Test1 = 12.3
         self._Test2 = 1
-    
+
     @property
     def Test1(self):
         return self._Test1
@@ -62,10 +61,13 @@ class Server_XML(object):
 
     PropertiesChanged = signal()
 
-def server():
+def server_main():
+    bus = SystemBus() # connect to bus
+    loop = GLib.MainLoop() # only used by server
+
     # Setup server to emit signals over the DBus
-    emit = Server_XML()
-    bus.publish(INTERFACE_NAME, emit)
+    test_server = Test_Server()
+    bus.publish(INTERFACE_NAME, test_server)
 
     # Run loop with graceful ctrl C exiting.
     try:
@@ -77,12 +79,18 @@ def server():
 
 # ----------------------------------------------------------------------------
 
+def usage():
+    print("Input error\n python3 pydbus-property-example.py <Mode>\n Where <Mode> is server or client\n")
+    sys.exit(1)
 
 if __name__=="__main__":
+    if len(sys.arg != 2:
+        usage()
+
     if(sys.argv[1] == "server"):
-        server()
+        server_main()
     elif(sys.argv[1] == "client"):
-        client()
+        client_main()
     else:
-        print("Input error\n python3 pydbus-method-example.py <Mode>\n Where <Mode> is server or client\n");
+        usage()
 

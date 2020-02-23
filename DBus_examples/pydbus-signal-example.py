@@ -7,9 +7,7 @@ import sys
 import random
 
 
-INTERFACE_NAME = "org.example.project.oresat"
-bus = SystemBus() # connect to bus
-loop = GLib.MainLoop()
+INTERFACE_NAME = "org.OreSat.Example"
 
 
 # ----------------------------------------------------------------------------
@@ -23,10 +21,11 @@ def cb_server_signal_emission(*args):
     print("Data: ", args[4])
 
 
-def client():
+def client_main():
+    bus = SystemBus() # connect to bus
     # Subscribe to bus to monitor for all server signals emissions
-    bus.subscribe(iface = INTERFACE_NAME, 
-                  signal_fired = cb_server_signal_emission)    
+    bus.subscribe(iface = INTERFACE_NAME,
+                  signal_fired = cb_server_signal_emission)
     # Run loop with graceful ctrl C exiting.
     try:
         loop.run()
@@ -38,10 +37,10 @@ def client():
 # Server
 
 
-class Server_XML(object):
+class Test_Server(object):
     dbus = """
     <node>
-        <interface name="org.example.project.oresat">
+        <interface name="org.OreSat.Example">
             <signal name="DataSignal">
                 <arg type='i'/>
                 <arg type='d'/>
@@ -55,7 +54,7 @@ class Server_XML(object):
     DataSignal = signal()
     HelloSignal = signal()
 
-emit = Server_XML()
+test_server = Test_Server()
 
 
 def send_Hello_signal():
@@ -67,21 +66,24 @@ def send_Hello_signal():
 def send_data_signal():
     random_int = random.randint(0,1000)
     random_double = random.uniform(0,100.0)
-    
+
     emit.DataSignal(random_int, random_double)
-    
+
     print(random_int, random_double)
 
     return True # must return true if use timeout_add_secounds
 
 
-def server():
+def server_main():
+    bus = SystemBus() # connect to bus
+    loop = GLib.MainLoop()
+
     # Setup server to emit signals over the DBus
-    bus.publish(INTERFACE_NAME, emit)
+    bus.publish(INTERFACE_NAME, test_server)
 
     # loop signal emit
-    GLib.timeout_add_seconds(interval=1, function=send_Hello_signal) 
-    GLib.timeout_add_seconds(interval=3, function=send_data_signal) 
+    GLib.timeout_add_seconds(interval=1, function=send_Hello_signal)
+    GLib.timeout_add_seconds(interval=3, function=send_data_signal)
 
     # Run loop with graceful ctrl C exiting.
     try:
@@ -93,12 +95,18 @@ def server():
 
 # ----------------------------------------------------------------------------
 
+def usage():
+    print("Input error\n python3 pydbus-signal-example.py <Mode>\n Where <Mode> is server or client\n");
+    sys.exit(1)
 
 if __name__=="__main__":
+    if len(sys.arg != 2:
+        usage()
+
     if(sys.argv[1] == "server"):
-        server()
+        server_main()
     elif(sys.argv[1] == "client"):
-        client()
+        client_main()
     else:
-        print("Input error\n python3 pydbus-method-example.py <Mode>\n Where <Mode> is server or client\n");
+        usage()
 

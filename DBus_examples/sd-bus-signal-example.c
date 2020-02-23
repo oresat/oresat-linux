@@ -4,32 +4,28 @@
 #include <stdbool.h>
 #include <errno.h>
 #include <systemd/sd-bus.h>
-#include <pthread.h>
 
 
-#define DESTINATION     "org.example.project.oresat"
-#define INTERFACE_NAME  "org.example.project.oresat"
-#define OBJECT_PATH     "/org/example/project/oresat"
-#define WAIT_TIME       1000000 // mircroseconds
-
-
-/* static data */
-static sd_bus_slot *slot = NULL;
-static sd_bus *bus = NULL;
-static bool endProgram = 0;
+#define DESTINATION     "org.OreSat.Example"
+#define INTERFACE_NAME  "org.OreSat.Example"
+#define OBJECT_PATH     "/org/OreSat/Example"
+#define WAIT_TIME       1 // seconds
 
 
 /*****************************************************************************/
+/* Since all dbus function return negative errno values on failure,
+ * these functionare just useful easy assert functions.
+ */
 
 
-void dbusError(int r, char* err) {
+void dbus_assert_error(int r, char* err) {
     if (r < 0)
         fprintf(stderr, "%s %s\n", err, strerror(-r));
     return;
 }
 
 
-void dbusErrorExit(int r, char* err) {
+void dbus_assert_error_exit(int r, char* err) {
     if (r < 0) {
         fprintf(stderr, "%s %s\n", err, strerror(-r));
         exit(0);
@@ -48,7 +44,7 @@ static int hello_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret
     char * message_string = NULL;
 
     r = sd_bus_message_read(m, "s", &message_string);
-    dbusError(r, "Failed to parse hello signal");
+    dbus_assert_error(r, "Failed to parse hello signal");
 
     printf("%s\n", message_string);
 
@@ -64,7 +60,7 @@ static int data_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_
     int32_t message_int = 0;
 
     r = sd_bus_message_read(m, "id", &message_int, &message_double);
-    dbusError(r, "Failed to parse data signal");
+    dbus_assert_error(r, "Failed to parse data signal");
 
     printf("%d %f\n", message_int, message_double);
 
@@ -73,35 +69,39 @@ static int data_signal_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_
 
 
 int client(void) {
+    sd_bus_slot *slot = NULL;
+    sd_bus *bus = NULL;
     int r;
 
-    /* Connect to the bus */
+    // Connect to the bus
     r = sd_bus_open_system(&bus);
-    dbusErrorExit(r, "Failed to connect to system bus.");
+    dbus_assert_error_exit(r, "Failed to connect to system bus.");
 
-    r = sd_bus_add_match(bus,
-                         &slot,
-                         "type='signal', path='"OBJECT_PATH"', interface='"INTERFACE_NAME"', member='HelloSignal'", 
-                         hello_signal_cb, 
-                         NULL);
-    dbusErrorExit(r, "Add data signal match error.");
+    r = sd_bus_add_match(
+            bus,
+            &slot,
+            "type='signal', path='"OBJECT_PATH"', interface='"INTERFACE_NAME"', member='HelloSignal'",
+            hello_signal_cb,
+            NULL);
+    dbus_assert_error_exit(r, "Add data signal match error.");
 
-    r = sd_bus_add_match(bus,
-                         &slot,
-                         "type='signal', path='"OBJECT_PATH"', interface='"INTERFACE_NAME"', member='DataSignal'", 
-                         data_signal_cb, 
-                         NULL);
-    dbusErrorExit(r, "Add data signal match error.");
+    r = sd_bus_add_match(
+            bus,
+            &slot,
+            "type='signal', path='"OBJECT_PATH"', interface='"INTERFACE_NAME"', member='DataSignal'",
+            data_signal_cb,
+            NULL);
+    dbus_assert_error_exit(r, "Add data signal match error.");
 
     while(1) {
         r = sd_bus_process(bus, NULL);
-        dbusError(r, "Bus Process failed.");
+        dbus_assert_error(r, "Bus Process failed.");
 
         if(r > 0)
             continue;
 
         r = sd_bus_wait(bus, (uint64_t)-1);
-        dbusError(r, "Bus wait failed.");
+        dbus_assert_error(r, "Bus wait failed.");
     }
 
     sd_bus_slot_unref(slot);
@@ -123,77 +123,64 @@ static const sd_bus_vtable vtable[] = {
     SD_BUS_VTABLE_END
 };
 
-void* send_signals_thread(void *arg) {
+
+int server(void) {
+    sd_bus_slot *slot = NULL;
+    sd_bus *bus = NULL;
     char test_string[] = "Hello world!";
     int32_t test_int = 5;
     double test_double = 10.0;
     int r;
 
+    // Connect to the bus
+    r = sd_bus_open_system(&bus);
+    dbus_assert_error_exit(r, "Failed to connect to system bus.");
+
+    // Take a well-known service name so that clients can find us
+    r = sd_bus_request_name(bus, DESTINATION, SD_BUS_NAME_ALLOW_REPLACEMENT);
+    dbus_assert_error(r, "Failed to acquire service name. \nIs "INTERFACE_NAME".conf in /etc/dbus-1/system.d/ ?");
+
+    // Install the vtable
+    r = sd_bus_add_object_vtable(
+            bus,
+            &slot,
+            OBJECT_PATH,
+            INTERFACE_NAME,
+            vtable,
+            NULL);
+    dbus_assert_error(r, "Failed to add vtable.");
+
     while(1) {
         //send messages
-        r = sd_bus_emit_signal(bus,
-                               OBJECT_PATH,
-                               INTERFACE_NAME,
-                               "HelloSignal",
-                               "s",
-                               test_string);
-        dbusError(r, "Hello signal message failed:");
+        r = sd_bus_emit_signal(
+                bus,
+                OBJECT_PATH,
+                INTERFACE_NAME,
+                "HelloSignal",
+                "s",
+                test_string);
+        dbus_assert_error(r, "Hello signal message failed:");
 
         printf("%s\n", test_string);
 
-        r = sd_bus_emit_signal(bus,
-                               OBJECT_PATH,
-                               INTERFACE_NAME,
-                               "DataSignal",
-                               "id",
-                                test_int,
-                                test_double);
-        dbusError(r, "Data signal message failed:");
+        //send messages
+        r = sd_bus_emit_signal(
+                bus,
+                OBJECT_PATH,
+                INTERFACE_NAME,
+                "DataSignal",
+                "id",
+                test_int,
+                test_double);
+        dbus_assert_error(r, "Data signal message failed:");
 
         printf("%d %f\n", test_int, test_double);
 
-        usleep(WAIT_TIME);
-    }
-}
-
-int server(void) {
-    pthread_t send_signals_thread_id;
-    int r;
-    
-    /* Connect to the bus */
-    r = sd_bus_open_system(&bus);
-    dbusErrorExit(r, "Failed to connect to system bus.");
-
-    /* Take a well-known service name so that clients can find us */
-    r = sd_bus_request_name(bus, DESTINATION, SD_BUS_NAME_ALLOW_REPLACEMENT);
-    dbusError(r, "Failed to acquire service name. \nIs "INTERFACE_NAME".conf in /etc/dbus-1/system.d/ ?");
-
-    /* Install the vtable */
-    r = sd_bus_add_object_vtable(bus,
-                                 &slot,
-                                 OBJECT_PATH,
-                                 INTERFACE_NAME,
-                                 vtable,
-                                 NULL);
-    dbusError(r, "Failed to add vtable.");
-
-    pthread_create(&send_signals_thread_id, NULL, send_signals_thread, NULL);
-
-    while(endProgram == 0) {
-        /* Process requests */
-        r = sd_bus_process(bus, NULL);
-        dbusError(r, "Failed to process bus.");
-
-        if (r > 0) /* we processed a request, try to process another one, right-away */
-            continue;
-
-        /* Wait for the next request to process */
-        r = sd_bus_wait(bus, (uint64_t) -1);
-        dbusError(r, "Failed to wait on bus.");
+        sleep(WAIT_TIME);
     }
 
     r = sd_bus_release_name(bus, DESTINATION);
-    dbusError(r, "Failed to release service name.");
+    dbus_assert_error(r, "Failed to release service name.");
 
     sd_bus_slot_unref(slot);
     sd_bus_unref(bus);
