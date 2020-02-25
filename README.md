@@ -11,7 +11,7 @@ Some of our systems need more computing power, so they're given a [Sitara AM335x
 All AM335x onboard OreSat will all have 3 daemons; the candaemon, the Linux updater, and the main process. 
 The candaemon will interface with other OreSat Linux daemon over [DBus].
 If you are curious on why OreSat Linux systems will have this daemon and dbus set up see: 
-[oresat_linux_standards.md](oresat_linux_standards.md)
+[design_guide_oresat_linux.md](design_guide_oresat_linux.md)
 ![](https://github.com/oresat/oresat-linux-candaemon/blob/master/docs/OreSatLinuxDiagram.jpg)
 
 ### [oresat-linux-candaemon]
