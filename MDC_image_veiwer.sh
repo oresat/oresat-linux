@@ -4,34 +4,35 @@
 
 firstImage=0
 outputImageName="latest_image"
+NODE=0x22
 
 a=1
 while [[ $a -eq 1 ]]; do
-    temp=`./../CANopenComm/canopencomm 0x12 r 0x3100 0 u8` # take an image
-    
-    sleep 5
-    
-    temp=`./../CANopenComm/canopencomm 0x12 r 0x3003 8 u8` # refresh file list
+    temp=`./../CANopenComm/canopencomm $NODE r 0x3100 0 u8` # take an image
 
-    fileAvalible=`./../CANopenComm/canopencomm 0x12 r 0x3003 6 u32`
+    sleep 5
+
+    temp=`./../CANopenComm/canopencomm $NODE r 0x3003 8 u8` # refresh file list
+
+    fileAvalible=`./../CANopenComm/canopencomm $NODE r 0x3003 6 u32`
     fileAvalible="${fileAvalible:6}"  #remove data length and 0x from output
     fileAvalible=`echo $fileAvalible | tr [a-z] [A-Z]` # captize hex values
     fileAvalible=`echo -e $fileAvalible | tr -d '[:space:]'` # remove any whitespace
     fileAvalible=`echo "obase=10; ibase=16; $fileAvalible" | bc` # hex to dec
 
     while [[ $fileAvalible -gt 00000000 ]]; do
-        fileName=`./../CANopenComm/canopencomm 0x12 r 0x3003 2 d`
+        fileName=`./../CANopenComm/canopencomm $NODE r 0x3003 2 d`
         fileName="${fileName:3}" # remove starting 3 chars
         fileName="${fileName::-2}" # remove last 2 chars
         fileName=`echo $fileName | xxd -r -p` # convert hex string into ascii string
-        
-        # check for image file types
-        if [[ $fileName =~ .*".bmp" ]] || [[ $fileName =~ .*".jpg" ]] || [[ $fileName =~ .*".jpeg" ]]; then 
 
-            fileData=`./../CANopenComm/canopencomm 0x12 r 0x3003 3 d`
-            
+        # check for image file types
+        if [[ $fileName =~ .*".bmp" ]] || [[ $fileName =~ .*".jpg" ]] || [[ $fileName =~ .*".jpeg" ]]; then
+
+            fileData=`./../CANopenComm/canopencomm $NODE r 0x3003 3 d`
+
             outputImageName="/tmp/output.bin"
-            
+
             eval `convert $outputImageName -fill white -pointsize 50 -annotate +50+50 "$fileName $(date)" $outputImageName`
 
             # start feh on the first image
@@ -40,15 +41,15 @@ while [[ $a -eq 1 ]]; do
                 firstImage=1
             fi
         fi
-        
-        temp=`./../CANopenComm/canopencomm 0x12 r 0x3003 5 u8` # delete image on linux board
 
-        fileAvalible=`./../CANopenComm/canopencomm 0x12 r 0x3003 6 u32`
+        temp=`./../CANopenComm/canopencomm $NODE r 0x3003 5 u8` # delete image on linux board
+
+        fileAvalible=`./../CANopenComm/canopencomm $NODE r 0x3003 6 u32`
         fileAvalible="${fileAvalible:6}"  #remove data length and 0x from output
         fileAvalible=`echo $fileAvalible | tr [a-z] [A-Z]` # captize hex values
         fileAvalible=`echo -e $fileAvalible | tr -d '[:space:]'` # remove any whitespace
         fileAvalible=`echo "obase=10; ibase=16; $fileAvalible" | bc` # hex to dec
-    done 
+    done
 
-    sleep 300 
+    sleep 300
 done
