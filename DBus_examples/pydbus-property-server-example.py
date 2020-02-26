@@ -1,32 +1,13 @@
 #!/usr/bin/env python3
 
+
 from pydbus.generic import signal
 from pydbus import SystemBus
 from gi.repository import GLib
-import sys
-import random
-import time
+import threading, time
+
 
 INTERFACE_NAME = "org.OreSat.Example"
-
-
-# ----------------------------------------------------------------------------
-# Client
-
-def client_main():
-    bus = SystemBus() # connect to bus
-    the_object = bus.get(INTERFACE_NAME)
-
-    while True:
-        print(the_object.Test1)
-        print(the_object.Test2)
-        the_object.Test2+=1
-        time.sleep(1)
-
-
-
-# ----------------------------------------------------------------------------
-# Server
 
 
 class Test_Server(object):
@@ -42,26 +23,47 @@ class Test_Server(object):
         </interface>
     </node>
     """
+
+
+    PropertiesChanged = signal()
+
+
     def __init__(self):
         self._Test1 = 12.3
         self._Test2 = 1
+        self.__running = True
+        self.__working_thread = threading.Thread(target=self.__working_loop)
+        self.__working_thread.start() # start working thread
+
 
     @property
     def Test1(self):
         return self._Test1
 
+
     @property
     def Test2(self):
         return self._Test2
+
 
     @Test2.setter
     def Test2(self, value):
         self._Test2 = value
         self.PropertiesChanged(INTERFACE_NAME, {"Test2": self._Test2}, [])
 
-    PropertiesChanged = signal()
 
-def server_main():
+    def __working_loop(self):
+        while (self.__running == True):
+            self._Test1 += 1.0
+            self.PropertiesChanged(INTERFACE_NAME, {"Test1": self._Test1}, [])
+            time.sleep(1)
+
+
+    def quit(self):
+        self.__running = False
+
+
+if __name__=="__main__":
     bus = SystemBus() # connect to bus
     loop = GLib.MainLoop() # only used by server
 
@@ -74,23 +76,5 @@ def server_main():
         loop.run()
     except KeyboardInterrupt as e:
         loop.quit()
-        print("\nExit by Control C")
-
-
-# ----------------------------------------------------------------------------
-
-def usage():
-    print("Input error\n python3 pydbus-property-example.py <Mode>\n Where <Mode> is server or client\n")
-    sys.exit(1)
-
-if __name__=="__main__":
-    if len(sys.arg != 2:
-        usage()
-
-    if(sys.argv[1] == "server"):
-        server_main()
-    elif(sys.argv[1] == "client"):
-        client_main()
-    else:
-        usage()
+        test_server.quit()
 

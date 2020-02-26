@@ -9,7 +9,7 @@
 static sd_bus *bus = NULL;
 
 static int read_test2_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_error) {
-    uint32_t test_int = 0;
+    double test_double = 0;
     int r;
 
     r = sd_bus_get_property(
@@ -17,21 +17,21 @@ static int read_test2_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_e
             DESTINATION,
             OBJECT_PATH,
             INTERFACE_NAME,
-            "Test2",
+            "Test1",
             ret_error,
             &m,
-            "u");
+            "d");
     if (r < 0) {
         fprintf(stderr, "Get property failed.");
         return 0;
     }
 
     /* decode dbus property */
-    r = sd_bus_message_read(m, "u", &test_int);
+    r = sd_bus_message_read(m, "d", &test_double);
     if (r<0)
         fprintf(stderr, "Read message failed.");
     else
-        printf("%d\n", test_int);
+        printf("%f\n", test_double);
 
     return 0;
 }

@@ -1,40 +1,13 @@
 #!/usr/bin/env python3
 
+
 from pydbus.generic import signal
 from pydbus import SystemBus
 from gi.repository import GLib
-import sys
 import random
 
 
 INTERFACE_NAME = "org.OreSat.Example"
-
-
-# ----------------------------------------------------------------------------
-# Client
-
-
-def cb_server_signal_emission(*args):
-    """
-    Callback on emitting signal from server
-    """
-    print("Data: ", args[4])
-
-
-def client_main():
-    bus = SystemBus() # connect to bus
-    # Subscribe to bus to monitor for all server signals emissions
-    bus.subscribe(iface = INTERFACE_NAME,
-                  signal_fired = cb_server_signal_emission)
-    # Run loop with graceful ctrl C exiting.
-    try:
-        loop.run()
-    except KeyboardInterrupt as e:
-        loop.quit()
-
-
-# ----------------------------------------------------------------------------
-# Server
 
 
 class Test_Server(object):
@@ -51,8 +24,11 @@ class Test_Server(object):
         </interface>
     </node>
     """
+
+
     DataSignal = signal()
     HelloSignal = signal()
+
 
 test_server = Test_Server()
 
@@ -74,7 +50,7 @@ def send_data_signal():
     return True # must return true if use timeout_add_secounds
 
 
-def server_main():
+if __name__=="__main__":
     bus = SystemBus() # connect to bus
     loop = GLib.MainLoop()
 
@@ -90,23 +66,4 @@ def server_main():
         loop.run()
     except KeyboardInterrupt as e:
         loop.quit()
-        print("\nExit by Control C")
-
-
-# ----------------------------------------------------------------------------
-
-def usage():
-    print("Input error\n python3 pydbus-signal-example.py <Mode>\n Where <Mode> is server or client\n");
-    sys.exit(1)
-
-if __name__=="__main__":
-    if len(sys.arg != 2:
-        usage()
-
-    if(sys.argv[1] == "server"):
-        server_main()
-    elif(sys.argv[1] == "client"):
-        client_main()
-    else:
-        usage()
 
