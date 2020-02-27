@@ -5,7 +5,10 @@ from gi.repository import GLib
 import sys
 
 
-INTERFACE_NAME = "org.OreSat.Example"
+DESTINATION = "org.OreSat.Example"
+#INTERFACE_NAME = "org.OreSat.Example"
+INTERFACE_NAME = "org.freedesktop.DBus.Properties"
+OBJECT_PATH = "/org/OreSat/Example"
 
 
 def cb_server_signal_emission(*args):
@@ -19,9 +22,7 @@ def main():
     bus = SystemBus() # connect to bus
     loop = GLib.MainLoop()
 
-    # Subscribe to bus to monitor for all server signals emissions
-    bus.subscribe(iface = INTERFACE_NAME,
-                  signal_fired = cb_server_signal_emission)
+    bus.subscribe(sender=DESTINATION, iface=INTERFACE_NAME, signal="PropertiesChanged", object=OBJECT_PATH, arg0=None, flags=0, signal_fired=cb_server_signal_emission)
 
     # Run loop with graceful ctrl C exiting.
     try:
