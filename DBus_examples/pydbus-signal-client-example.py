@@ -5,22 +5,37 @@ from pydbus import SystemBus
 from gi.repository import GLib
 
 
-INTERFACE_NAME = "org.OreSat.Example"
-
-
-def cb_server_signal_emission(*args):
+def hello_cb(*args):
     """
     Callback on emitting signal from server
     """
-    print("Data: ", args[4])
+    print("Hello Signal: ", args[4])
+
+
+def data_cb(*args):
+    """
+    Callback on emitting signal from server
+    """
+    print("Data Signal: ", args[4])
 
 
 if __name__=="__main__":
     bus = SystemBus() # connect to bus
     loop = GLib.MainLoop()
 
-    # Subscribe to bus to monitor for all server signals emissions
-    bus.subscribe(iface = INTERFACE_NAME,  signal_fired = cb_server_signal_emission)
+    bus.subscribe(
+            sender="org.OreSat.Example",
+            iface="org.OreSat.Example",
+            signal="HelloSignal",
+            signal_fired=hello_cb,
+            object="/org/OreSat/Example")
+
+    bus.subscribe(
+            sender="org.OreSat.Example",
+            iface="org.OreSat.Example",
+            signal="DataSignal",
+            signal_fired=data_cb,
+            object="/org/OreSat/Example")
 
     try:
         loop.run()

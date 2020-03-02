@@ -19,6 +19,7 @@ typedef struct {
 } Object;
 
 
+static sd_bus *bus = NULL;
 static Object test_obj = {12.3, 1};
 static bool running = true;
 
@@ -37,7 +38,6 @@ void *data_thread(void *arg);
 
 
 int main(int argc, char *argv[]) {
-    sd_bus *bus = NULL;
     sd_bus_slot *slot = NULL;
     pthread_t thread_id;
     int r;
@@ -100,8 +100,18 @@ int main(int argc, char *argv[]) {
 
 
 void *data_thread(void *arg){
+    int r;
     while(running) {
         ++test_obj.test1;
+        r = sd_bus_emit_properties_changed(
+                bus,
+                OBJECT_PATH,
+                INTERFACE_NAME,
+                "Test1",
+                NULL);
+        if(r < 0)
+            fprintf(stderr, "Failed to release service name.");
+
         printf("%f\n",test_obj.test1);
         sleep(1);
     }
