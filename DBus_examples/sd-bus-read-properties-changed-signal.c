@@ -9,7 +9,7 @@
 static sd_bus *bus = NULL;
 
 static int read_test2_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_error) {
-    double test_double = 0;
+    double test_double = 0.0;
     int r;
 
     r = sd_bus_get_property(
@@ -38,48 +38,40 @@ static int read_test2_cb(sd_bus_message *m, void *user_data, sd_bus_error *ret_e
 
 
 int main(int argc, char *argv[]) {
-    sd_bus_error err = SD_BUS_ERROR_NULL;
-    void* userdata = NULL;
+    sd_bus_slot *slot = NULL;
+    int r;
 
     /* Connect to the bus */
     if(sd_bus_open_system(&bus) < 0) {
         fprintf(stderr, "Failed to connect to systemd bus.\n");
-        exit(0);
+        exit(EXIT_FAILURE);
     }
 
-    int r = sd_bus_match_signal(
+    r = sd_bus_add_match(
             bus,
-            NULL,
-            NULL,
-            OBJECT_PATH,
-            "org.freedesktop.DBus.Properties",
-            "PropertiesChanged",
+            &slot,
+            "type='signal', path='"OBJECT_PATH"', interface='org.freedesktop.DBus.Properties', member='PropertiesChanged'",
             read_test2_cb,
-            userdata
-        );
+            NULL);
     if(r < 0) {
         fprintf(stderr, "Failed to add new signal match.\n");
-        exit(0);
+        exit(EXIT_FAILURE);
     }
 
     while(1) {
         /* Process requests */
         r = sd_bus_process(bus, NULL);
-        if ( r < 0)
-            fprintf(stderr, "Failed to processA bus.\n");
+        if (r < 0)
+            fprintf(stderr, "Failed to process bus.\n");
         else if (r > 0) /* we processed a request, try to process another one, right-away */
             continue;
 
         /* Wait for the next request to process */
-        if (sd_bus_wait(bus, UINT64_MAX) < 0) {
+        if(sd_bus_wait(bus, (uint64_t)-1) < 0)
             fprintf(stderr, "Bus wait failed.\n");
-        }
-
     }
 
-    sd_bus_error_free(&err);
+    sd_bus_slot_unref(slot);
     sd_bus_unref(bus);
-
-    return 0;
+    return EXIT_SUCCESS;
 }
-

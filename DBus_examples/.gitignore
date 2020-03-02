@@ -1,4 +1,7 @@
-sd-bus-method-example
-sd-bus-property-example
-sd-bus-signal-example
-sd-bus-read-changed-signal
+sd-bus-method-client-example
+sd-bus-method-server-example
+sd-bus-property-client-example
+sd-bus-property-server-example
+sd-bus-read-properties-changed-signal
+sd-bus-signal-client-example
+sd-bus-signal-server-example

@@ -1,21 +1,17 @@
 CC= gcc
 CFLAGS= -g -Wall
-LDFLAGS= $(shell pkg-config --libs libsystemd)
+LDFLAGS= $(shell pkg-config --libs libsystemd) -pthread
 
-all: sd-bus-method-example sd-bus-signal-example sd-bus-property-example sd-bus-read-properties-changed-signal
+EXAMPLES = 	sd-bus-method-client-example 		\
+		sd-bus-method-server-example		\
+		sd-bus-property-client-example		\
+		sd-bus-property-server-example 		\
+		sd-bus-read-properties-changed-signal 	\
+		sd-bus-signal-client-example		\
+		sd-bus-signal-server-example
 
-sd-bus-method-example:
-	$(CC) $@.c -o $@ $(CFLAGS) $(LDFLAGS)
-
-sd-bus-signal-example:
-	$(CC) $@.c -o $@ $(CFLAGS) $(LDFLAGS)
-
-sd-bus-property-example:
-	$(CC) $@.c -o $@ $(CFLAGS) $(LDFLAGS)
-
-sd-bus-read-changed-signal:
-	$(CC) $@.c -o $@ $(CFLAGS) $(LDFLAGS)
+all: $(EXAMPLES)
+	$(CC) $(CFLAGS) $(LDFLAGS) $<.c -o $<
 
 clean:
-	rm -f sd-bus-method-example sd-bus-signal-example sd-bus-property-example sd-bus-read-properties-changed-signal
-
+	rm -f $(EXAMPLES)
