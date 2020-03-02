@@ -18,7 +18,7 @@ def cb_server_signal_emission(*args):
     print("Data: ", args[4])
 
 
-def main():
+if __name__=="__main__":
     bus = SystemBus() # connect to bus
     loop = GLib.MainLoop()
 
@@ -30,5 +30,3 @@ def main():
     except KeyboardInterrupt as e:
         loop.quit()
 
-if __name__=="__main__":
-    main()

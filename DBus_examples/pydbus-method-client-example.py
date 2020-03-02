@@ -8,7 +8,7 @@ from gi.repository import GLib
 INTERFACE_NAME = "org.OreSat.Example"
 
 
-def client_main():
+if __name__=="__main__":
     bus = SystemBus() # connect to bus
     the_object = bus.get(INTERFACE_NAME)
 

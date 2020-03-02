@@ -4,7 +4,7 @@
 from pydbus.generic import signal
 from pydbus import SystemBus
 from gi.repository import GLib
-import random
+import threading, time, random
 
 
 INTERFACE_NAME = "org.OreSat.Example"
@@ -30,40 +30,48 @@ class Test_Server(object):
     HelloSignal = signal()
 
 
-test_server = Test_Server()
+    def __init__(self):
+        self._Test1 = random.randint(0,1000)
+        self._Test2 = random.uniform(0,100.0)
+        self.__running = True
+        self.__working_thread = threading.Thread(target=self.__working_loop)
+        self.__working_thread.start() # start working thread
 
 
-def send_Hello_signal():
-    emit.HelloSignal("Hello world!")
-    print("Hello world")
-    return True # must return true if use timeout_add_secounds
+    def __working_loop(self):
+        data_time_out = 0
+
+        while (self.__running == True):
+            if data_time_out >= 3:
+                self._Test1 = random.randint(0,1000)
+                self._Test2 = random.uniform(0,100.0)
+                self.DataSignal(self._Test1, self._Test2)
+                print(self._Test1, self._Test2)
+                data_time_out = 0
+
+            self.HelloSignal("Hello World!")
+            print("Hello World!")
+
+            data_time_out += 1
+            time.sleep(1)
 
 
-def send_data_signal():
-    random_int = random.randint(0,1000)
-    random_double = random.uniform(0,100.0)
-
-    emit.DataSignal(random_int, random_double)
-
-    print(random_int, random_double)
-
-    return True # must return true if use timeout_add_secounds
+    def quit(self):
+        self.__running = False
 
 
 if __name__=="__main__":
     bus = SystemBus() # connect to bus
     loop = GLib.MainLoop()
+    test_server = Test_Server()
 
     # Setup server to emit signals over the DBus
     bus.publish(INTERFACE_NAME, test_server)
-
-    # loop signal emit
-    GLib.timeout_add_seconds(interval=1, function=send_Hello_signal)
-    GLib.timeout_add_seconds(interval=3, function=send_data_signal)
 
     # Run loop with graceful ctrl C exiting.
     try:
         loop.run()
     except KeyboardInterrupt as e:
+        test_server.quit()
         loop.quit()
 
