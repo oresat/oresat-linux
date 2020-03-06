@@ -23,22 +23,18 @@ Freedesktop explains it best at: [dbus freedesktop](https://www.freedesktop.org/
 ## Example dependencies
 - For debian
     - For the sd-bus version: `apt install gcc make libsystemd-dev pkg-source`
-    - For the Python version: `apt install python3 python-pydbus`
+    - For the Python version: `apt install python3 libsystemd-dev python-pydbus`
 - For arch
-    - For the sd-bus version: `pacman -S gcc make pkg-source`
-    - For the Python version: `pacman -S python3 python-pydbus`
+    - For the sd-bus version: `pacman -S gcc make systemd-lib pkg-source`
+    - For the Python version: `pacman -S python3 systemd-lib python-pydbus`
 
-## How to run
-- `sudo cp org.OreSat..conf /usr/share/dbus-1/system.d/`
-- sd bus examples
+## How to
+- `sudo cp org.OreSat.Example.conf /usr/share/dbus-1/system.d/`
+- Run make on sd-bus examples
     - `make clean all`
-    - run an example (need two terminals)
-        - sudo ./sd-bus-property-example server
-        - sudo ./sd-bus-property-example client
-- pybus examples
-    - run an example (need two terminals)
-        - sudo python3 spybus-property-example server
-        - sudo python3 pybus-property-example client
+- Run an example (need two terminals)
+    - sudo python3 pybus-property-server-example
+    - sudo ./sd-bus-property-client-example
 
 ## Usefull Links
  -  [DBus-Specs](https://dbus.freedesktop.org/doc/dbus-specification.html)
