@@ -28,12 +28,12 @@ See the [oresat-linux-updater] repo for more info.
 
 ### Main Processes
 See their repos for infomation on what they are and how they work.
-| Project               | Hardware                  | Software                          |
-|-----------------------|---------------------------|-----------------------------------|
-| GPS / ADCS            | [oresat-gps-hardware]     | [oresat-gps-software] [oresat-adcs-software]|
-| Star Tracker          | [oresat-star-tracker]     | [oresat-star-tracker-software]    |
-| OreSat Live           | [oresat-dxwifi-hardware]  | [oresat-dxwifi-software]          |
-| Cirrus Flux Camera    | TBD                       | TBD                               |
+| Project               | Hardware                  | Software                                      |
+|-----------------------|---------------------------|-----------------------------------------------|
+| GPS / ADCS            | [oresat-gps-hardware]     | [oresat-gps-software], [oresat-adcs-software] |
+| Star Tracker          | [oresat-star-tracker]     | [oresat-star-tracker-software]                |
+| OreSat Live           | [oresat-dxwifi-hardware]  | [oresat-dxwifi-software]                      |
+| Cirrus Flux Camera    | TBD                       | TBD                                           |
 
 
 <!-- OreSat repos -->
