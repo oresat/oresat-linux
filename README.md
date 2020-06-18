@@ -30,13 +30,14 @@ See the [oresat-linux-updater] repo for more info.
 See their repos for infomation on what they are and how they work.
 | Project               | Hardware                  | Software                          |
 |-----------------------|---------------------------|-----------------------------------|
-| SDR GPS               | [oresat-gps-hardware]     | [oresat-gps-software]             |
+| GPS / ADCS            | [oresat-gps-hardware]     | [oresat-gps-software] [oresat-adcs-software]|
 | Star Tracker          | [oresat-star-tracker]     | [oresat-star-tracker-software]    |
 | OreSat Live           | [oresat-dxwifi-hardware]  | [oresat-dxwifi-software]          |
 | Cirrus Flux Camera    | TBD                       | TBD                               |
 
 
 <!-- OreSat repos -->
+[oresat-adcs-software]:https://github.com/oresat/oresat-adcs-software
 [oresat-gps-software]:https://github.com/oresat/oresat-gps-software
 [oresat-gps-hardware]:https://github.com/oresat/oresat-gps-hardware
 [oresat-star-tracker]:https://github.com/oresat/oresat-star-tracker
