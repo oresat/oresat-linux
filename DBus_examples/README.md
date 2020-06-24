@@ -22,11 +22,11 @@ Freedesktop explains it best at: [dbus freedesktop](https://www.freedesktop.org/
 
 ## Example dependencies
 - For debian
-    - For the sd-bus version: `apt install gcc make libsystemd-dev pkg-source`
-    - For the Python version: `apt install python3 libsystemd-dev python-pydbus`
+    - For the sd-bus version: `gcc make libsystemd-dev pkg-config`
+    - For the Python version: `python3 libsystemd-dev python3-pydbus`
 - For arch
-    - For the sd-bus version: `pacman -S gcc make systemd-lib pkg-source`
-    - For the Python version: `pacman -S python3 systemd-lib python-pydbus`
+    - For the sd-bus version: `gcc make systemd-lib pkg-config`
+    - For the Python version: `python3 systemd-lib python-pydbus`
 
 ## How to
 - `sudo cp org.OreSat.Example.conf /usr/share/dbus-1/system.d/`
