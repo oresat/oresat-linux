@@ -69,4 +69,4 @@ Note:
 8. Now compress the image using the command
 	
 	xz -z -8 -v BBB-eMMC-flasher-debian-7.8-console-armhf-2gb.img
-	
+xz -z -8 -v BBB-eMMC-flasher-debian-7.8-console-armhf-2gb.img	
