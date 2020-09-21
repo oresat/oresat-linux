@@ -129,4 +129,4 @@ systemctl enable systemd-resolved
 ##############################################################################
 # remove internet things
 
-apt -y remove git curl wget rsync connman ca-certificates
+git curl wget rsync connman ca-certificatesapt -y remove git curl wget rsync connman ca-certificates
