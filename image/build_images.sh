@@ -26,13 +26,13 @@ cd image-builder
 # build partitions
 ./RootStock-NG.sh -c $BOARD
 
-cd  deploy/debian-*
+cd  deploy/debian-*/
 
 #must be done as root
 if [ $BOARD == "oresat-generic" ]; then
-    ./setup_sdcard.sh --img-1gb $BOARD --dtb beaglebone
+    ./setup_sdcard.sh --img-1gb $BOARD.img --dtb beaglebone
 else
-    ./setup_sdcard.sh --img-2gb $BOARD --dtb beaglebone
+    ./setup_sdcard.sh --img-2gb $BOARD.img --dtb beaglebone
 fi
 
 cd ../../..
