@@ -21,11 +21,14 @@ fi
 cp ./configs/*.conf ./image-builder/configs/
 cp ./configs/*.sh ./image-builder/target/chroot/
 
-# build partitions
-./image-builder/RootStock-NG.sh -c $BOARD
+cd image-builder
 
-cp ./configs/*.conf ./image-builder/configs/# make .img file
-./image-builder/deploy/debian-*/setup_sdcard.sh --img-2gb startracker --dtb beaglebone
+# build partitions
+./RootStock-NG.sh -c $BOARD
+
+./deploy/debian-*/setup_sdcard.sh --img-2gb startracker --dtb beaglebone
 
 # make tar
-xz -z -8 -v ./image-builder/deploy/debian-*/*.img
+xz -z -8 -v ./deploy/debian-*/*.img
+
+cd ..
