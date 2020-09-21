@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 if [ $# -eq 0 ]; then
     echo "No arguments supplied"
     echo "./build_images <BOARD>"
@@ -20,15 +19,20 @@ fi
 # copy oresat config into correct dirs
 cp ./configs/*.conf ./image-builder/configs/
 cp ./configs/*.sh ./image-builder/target/chroot/
+cp ./configs/*.txt ./image-builder/target/boot/
 
 cd image-builder
 
 # build partitions
 ./RootStock-NG.sh -c $BOARD
 
-./deploy/debian-*/setup_sdcard.sh --img-2gb startracker --dtb beaglebone
+cd  deploy/debian-*
 
-# make tar
-xz -z -8 -v ./deploy/debian-*/*.img
+#must be done as root
+if [ $BOARD == "oresat-generic" ]; then
+    ./setup_sdcard.sh --img-1gb $BOARD --dtb beaglebone
+else
+    ./setup_sdcard.sh --img-2gb $BOARD --dtb beaglebone
+fi
 
-cd ..
+cd ../../..
