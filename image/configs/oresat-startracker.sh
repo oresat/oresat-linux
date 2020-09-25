@@ -111,9 +111,9 @@ echo "ttyGS0" >> /etc/securetty
 ##############################################################################
 # setup systemd-networkd
 
-echo "g_ether" > /etc/modules-load.d/g_ether.conf
-HOST_ADDR= `dmesg | grep "usb0: HOST MAC" | cut -d " " -f 8`
-echo "options g_ether host_addr=$HOST_ADDR" > /etc/modprobe.d/g_ether.conf
+#echo "g_ether" > /etc/modules-load.d/g_ether.conf
+#HOST_ADDR= `dmesg | grep "usb0: HOST MAC" | cut -d " " -f 8`
+#echo "options g_ether host_addr=$HOST_ADDR" > /etc/modprobe.d/g_ether.conf
 
 
 ##############################################################################
