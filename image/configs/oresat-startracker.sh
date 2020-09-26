@@ -139,8 +139,8 @@ DNS=8.8.8.8
 __EOF__
 
 # enable systemd-networkd on boot
-sudo systemctl enable systemd-networkd
-sudo systemctl enable systemd-resolved
+systemctl enable systemd-networkd
+systemctl enable systemd-resolved
 
 
 ##############################################################################
