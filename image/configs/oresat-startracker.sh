@@ -88,14 +88,18 @@ install_swig () {
     git_branch="master"
     git_clone
 
+    cd $git_target_dir
+
     #install
-    .$git_target_dir/autogen.sh
-    .$git_target_dir/configure
-    make -C $git_target_dir/Makefile
-    make -C $git_target_dir/Makefile install
+    ./autogen.sh
+    ./configure
+    make
+    make install
+
+    cd -
 
     #remove repo after install
-    rm -rf /opt/swig
+    rm -rf $git_target_dir
 }
 
 
