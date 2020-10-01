@@ -1,58 +1,14 @@
-# Setting up a default OreSat Debian image
+# Building OreSat Linux images
+- `./build_images.sh <board>` where <board> can be:
+    - dev - A good image for bbb and pocket beagles.
+    - generic - A generic image for custom oresat boards.
+    - startracker - The image for startracker board.
 
-## uboot overlays
-Change these lines in /boot/uEnv.txt
-```
-uboot_overlay_addr4=/lib/firmware/<file4>.dtbo
-uboot_overlay_addr5=/lib/firmware/<file5>.dtbo
-enable_uboot_cape_universal=1
-```
-to
-```
-uboot_overlay_addr4=/lib/firmware/BB-BONE-eMMC1-01-00A0.dtbo
-uboot_overlay_addr5=/lib/firmware/PB-CAN1-00A0.dtbo
-#enable_uboot_cape_universal=1
-```
+# Notes
+- Debian with the Linux kernel 4.19
+- All images will use systemd-networkd for all networking (internet & CAN)
 
-## systemd-networkd
-Read the Arch [systemd-networkd] wiki page. It is a great systemd-networkd guide.
-### Add can config to systemd-networkd
-Make the file `/etc/systemd/network/10-can.network`. Change Name as needed.
-```
-[Match]
-Name=can1
-
-[CAN]
-BitRate=1M
-```
-
-### (Optional) Add static config to systemd-networkd
-Make file `/etc/systemd/network/20-wired.network`. Change Name, Address, Gateway, and DNS as needed.
-```
-[Match]
-Name=usb0
-
-[Link]
-RequiredForOnline=no
-
-[Network]
-Address=10.10.1.2/24
-Gateway=10.10.1.1
-DNS=10.10.1.1
-DNS=8.8.8.8
-```
-
-### Enable systemd-networkd
-- `sudo systemctl enable systemd-networkd`
-- `sudo systemctl enable systemd-resolved` If using static config.
-
-### Set up [systemd-networkd-wait-online] for CAN, used by CANdaemon
-Make file `/etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf`.
-```
-[Service]
-ExecStart=
-ExecStart=/lib/systemd/systemd-networkd-wait-online --interface=can1
-```
-
-[systemd-networkd]:https://wiki.archlinux.org/index.php/Systemd-networkd
-[systemd-networkd-wait-online]:https://www.freedesktop.org/software/systemd/man/systemd-networkd-wait-online.service.html
+# Add more oresat board
+- `cp configs/oresat-generic.conf configs/<board-name>.conf` and change as needed.
+- If a costume `uEnv.txt` is needed for device tree overlays make a `configs/<board-name>-uEnv.txt` and update the `chroot_post_uenv_txt` line in `configs/<board-name.conf`. Note, the custom contents of uEnv.txt will be append to the default uEnv.txt when the image is built.
+- If a costume chroot script is needed `cp configs/oresat-generic.sh configs/<board-name>.sh` and update `chroot_scripts` line in `configs/<board-name>.conf`.
