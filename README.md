@@ -12,7 +12,7 @@ All AM335x onboard OreSat will all have 3 daemons; the candaemon, the Linux upda
 The candaemon will interface with other OreSat Linux daemon over [DBus].
 If you are curious on why OreSat Linux systems will have this daemon and dbus set up see: 
 [design_guide_oresat_linux.md](design_guide_oresat_linux.md)
-![](https://github.com/oresat/oresat-linux-candaemon/blob/master/docs/OreSatLinuxDiagram.jpg)
+![](docs/oresat_linux_diagram.jpg)
 
 ### [oresat-linux-candaemon]
 OreSat uses [CAN] for commucation between systems onboard and follows the [CANopen] specifications.
@@ -26,14 +26,14 @@ See the [oresat-linux-candaemon] repo for more info.
 A daemon that allows the Linux board to be updated over dbus.
 See the [oresat-linux-updater] repo for more info.
 
-### Main Processes
+### Main Services for Boards
 See their repos for infomation on what they are and how they work.
 | Project               | Hardware                  | Software                                      |
 |-----------------------|---------------------------|-----------------------------------------------|
 | GPS / ADCS            | [oresat-gps-hardware]     | [oresat-gps-software], [oresat-adcs-software] |
 | Star Tracker          | [oresat-star-tracker]     | [oresat-star-tracker-software]                |
 | OreSat Live           | [oresat-dxwifi-hardware]  | [oresat-dxwifi-software]                      |
-| Cirrus Flux Camera    | TBD                       | TBD                                           |
+| Cirrus Flux Camera    | [oresat-cfc-hardware]     | TBD                                           |
 
 
 <!-- OreSat repos -->
@@ -44,6 +44,7 @@ See their repos for infomation on what they are and how they work.
 [oresat-star-tracker-software]:https://github.com/oresat/oresat-star-tracker-software
 [oresat-dxwifi-hardware]:https://github.com/oresat/oresat-dxwifi-hardware
 [oresat-dxwifi-software]:https://github.com/oresat/oresat-dxwifi-software
+[oresat-cfc-hardware]:https://github.com/oresat/oresat-cfc-hardware
 [oresat-linux-candaemon]:https://github.com/oresat/oresat-linux-candaemon
 [oresat-linux-updater]:https://github.com/oresat/oresat-linux-updater
 [C3]:https://github.com/oresat/oresat-c3
