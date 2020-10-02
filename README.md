@@ -8,26 +8,31 @@ Some of our systems need more computing power, so they're given a [Sitara AM335x
 
 
 ## General Board Design
-All AM335x onboard OreSat will all have 3 daemons; the candaemon, the Linux updater, and the main process. 
-The candaemon will interface with other OreSat Linux daemon over [DBus].
-If you are curious on why OreSat Linux systems will have this daemon and dbus set up see: 
-[design_guide_oresat_linux.md](design_guide_oresat_linux.md)
-![](docs/oresat_linux_diagram.jpg)
+All AM335x onboard OreSat will atleast have 3 services (aka daemons); the candaemon, the Linux updater, and the main service. 
+OreSat uses [CAN] for commucation between systems onboard and follows the [CANopen] specifications.
 
 ### [oresat-linux-candaemon]
-OreSat uses [CAN] for commucation between systems onboard and follows the [CANopen] specifications.
 The candaemon acts a front end for all of OreSat Linux daemons and is build on top of [CANopenNode]. 
-It allows the [C3], Oresat' CAN Network Manger, to control or get data from daemons on the Linux board. 
+It allows the [C3], Oresat's CAN Network Manger, to control or get data from daemons on the Linux board. 
 It uses [DBus] for inter-process communication with daemons. 
-Basically it is a CAN controlled daemon controller that uses DBus to talk and control other daemons including systemd.
+Basically the candaemon acts as a CANopen interface to all services needed to control the board over [DBus].
+In other words, its a common service to convert CANopen message to DBus messsage and visa versa.
+
+![](docs/oresat_linux_diagram.jpg)
+- systemd interface will allow [C3] board to turn on/off any service on the board.
+- logind to provided power controls.
+- datetimed allow the board time to be changed (useful for CANopen SYNC messages)
+- any custom oresat daemon for the [C3] to control and get data from it.
+
+
 See the [oresat-linux-candaemon] repo for more info.
 
 ### [oresat-linux-updater]
-A daemon that allows the Linux board to be updated over dbus.
+A simple daemon wrapper for apt that allows the Linux board to be updated over dbus using debian packages.
 See the [oresat-linux-updater] repo for more info.
 
-### Main Services for Boards
-See their repos for infomation on what they are and how they work.
+### OreSat Boards
+See their software repo for how their spefic service works.
 | Project               | Hardware                  | Software                                      |
 |-----------------------|---------------------------|-----------------------------------------------|
 | GPS / ADCS            | [oresat-gps-hardware]     | [oresat-gps-software], [oresat-adcs-software] |
