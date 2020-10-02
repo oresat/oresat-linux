@@ -1,4 +1,6 @@
 # OreSat Linux
+[![Issues](https://img.shields.io/github/issues/oresat/oresat-linux)](https://github.com/oresat/oresat-linux/issues)
+
 This repo has all the general design and reasoning behind it for all the Linux boards on OreSat.
 The current Linux boards being SDR GPS, Star Tracker, OreSat Live, and Cirrus Flux Camera (CFC).
 
