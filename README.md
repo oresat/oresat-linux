@@ -35,12 +35,12 @@ See the [oresat-linux-updater] repo for more info.
 
 ### OreSat Boards
 See their software repo for how their spefic service works.
-| Project               | Hardware                  | Software                                      |
-|-----------------------|---------------------------|-----------------------------------------------|
-| GPS / ADCS            | [oresat-gps-hardware]     | [oresat-gps-software], [oresat-adcs-software] |
-| Star Tracker          | [oresat-star-tracker]     | [oresat-star-tracker-software]                |
-| OreSat Live           | [oresat-dxwifi-hardware]  | [oresat-dxwifi-software]                      |
-| Cirrus Flux Camera    | [oresat-cfc-hardware]     | TBD                                           |
+| Project               | Hardware                  | Software                                              |
+|-----------------------|---------------------------|-------------------------------------------------------|
+| GPS / ADCS            | [oresat-gps-hardware]     | [oresat-gps-software], [oresat-adcs-software]         |
+| Star Tracker          | [oresat-star-tracker]     | [oresat-star-tracker-software], [oresar-linux-prucam] |
+| OreSat Live           | [oresat-dxwifi-hardware]  | [oresat-dxwifi-software]                              |
+| Cirrus Flux Camera    | [oresat-cfc-hardware]     | TBD                                                   |
 
 
 <!-- OreSat repos -->
@@ -54,6 +54,7 @@ See their software repo for how their spefic service works.
 [oresat-cfc-hardware]:https://github.com/oresat/oresat-cfc-hardware
 [oresat-linux-candaemon]:https://github.com/oresat/oresat-linux-candaemon
 [oresat-linux-updater]:https://github.com/oresat/oresat-linux-updater
+[oresat-linux-prucam]:https://github.com/oresat/oresat-linux-prucam
 [C3]:https://github.com/oresat/oresat-c3
 
 <!-- Other repos -->
