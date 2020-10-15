@@ -38,7 +38,7 @@ See their software repo for how their spefic service works.
 | Project               | Hardware                  | Software                                              |
 |-----------------------|---------------------------|-------------------------------------------------------|
 | GPS / ADCS            | [oresat-gps-hardware]     | [oresat-gps-software], [oresat-adcs-software]         |
-| Star Tracker          | [oresat-star-tracker]     | [oresat-star-tracker-software], [oresar-linux-prucam] |
+| Star Tracker          | [oresat-star-tracker]     | [oresat-star-tracker-software], [oresat-linux-prucam] |
 | OreSat Live           | [oresat-dxwifi-hardware]  | [oresat-dxwifi-software]                              |
 | Cirrus Flux Camera    | [oresat-cfc-hardware]     | TBD                                                   |
 
