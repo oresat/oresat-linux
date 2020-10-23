@@ -111,6 +111,16 @@ echo "" >> /etc/securetty
 echo "#USB Gadget Serial Port" >> /etc/securetty
 echo "ttyGS0" >> /etc/securetty
 
+##############################################################################
+# set default boot power mode
+
+cat > "/etc/default/cpufrequtils" <<-__EOF__
+GOVERNOR
+__EOF__
+
+##############################################################################
+# setup systemd-networkd
+
 
 ##############################################################################
 # setup systemd-networkd
