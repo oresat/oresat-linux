@@ -81,28 +81,6 @@ git_clone_full () {
 	echo "${git_target_dir} : ${git_repo}" >> /opt/source/list.txt
 }
 
-install_swig () {
-    # clone repo
-    git_repo="https://github.com/swig/swig"
-    git_target_dir="/opt/swig"
-    git_branch="master"
-    git_clone
-
-    cd $git_target_dir
-
-    #install
-    ./autogen.sh
-    ./configure
-    make
-    make install
-
-    cd -
-
-    #remove repo after install
-    rm -rf $git_target_dir
-}
-
-
 ##############################################################################
 
 is_this_qemu
@@ -119,16 +97,16 @@ GOVERNOR="powersave"
 __EOF__
 
 ##############################################################################
-# setup systemd-networkd
+# setup usb ethernet
 
+cat > "/etc/default/bb-boot" <<-__EOF__
+USB_CONFIGURATION="yes"
+USB_NETWORK_DISABLED="yes"
+__EOF__
 
-##############################################################################
-# setup systemd-networkd
-
-#echo "g_ether" > /etc/modules-load.d/g_ether.conf
-#HOST_ADDR= `dmesg | grep "usb0: HOST MAC" | cut -d " " -f 8`
-#echo "options g_ether host_addr=$HOST_ADDR" > /etc/modprobe.d/g_ether.conf
-
+echo "g_ether" > /etc/modules-load.d/g_ether.conf
+HOST_ADDR= `dmesg | grep "usb0: HOST MAC" | cut -d " " -f 8`
+echo "options g_ether host_addr=$HOST_ADDR" > /etc/modprobe.d/g_ether.conf
 
 ##############################################################################
 # setup systemd-networkd
@@ -156,12 +134,27 @@ __EOF__
 systemctl enable systemd-networkd
 systemctl enable systemd-resolved
 
-
 ##############################################################################
 # swig
 
-install_swig
+# clone repo
+git_repo="https://github.com/swig/swig"
+git_target_dir="/opt/swig"
+git_branch="master"
+git_clone
 
+cd $git_target_dir
+
+#install
+./autogen.sh
+./configure
+make
+make install
+
+cd -
+
+#remove repo after install
+rm -rf $git_target_dir
 
 ##############################################################################
 # remove internet things

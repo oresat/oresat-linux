@@ -81,7 +81,6 @@ git_clone_full () {
 	echo "${git_target_dir} : ${git_repo}" >> /opt/source/list.txt
 }
 
-
 ##############################################################################
 
 is_this_qemu
@@ -98,12 +97,16 @@ GOVERNOR="powersave"
 __EOF__
 
 ##############################################################################
-# setup systemd-networkd
+# setup usb ethernet
 
-#echo "g_ether" > /etc/modules-load.d/g_ether.conf
-#HOST_ADDR=`dmesg | grep "usb0: HOST MAC" | cut -d " " -f 8`
-#echo "options g_ether host_addr=$HOST_ADDR" > /etc/modprobe.d/g_ether.conf
+cat > "/etc/default/bb-boot" <<-__EOF__
+USB_CONFIGURATION="yes"
+USB_NETWORK_DISABLED="yes"
+__EOF__
 
+echo "g_ether" > /etc/modules-load.d/g_ether.conf
+HOST_ADDR=`dmesg | grep "usb0: HOST MAC" | cut -d " " -f 8`
+echo "options g_ether host_addr=$HOST_ADDR" > /etc/modprobe.d/g_ether.conf
 
 ##############################################################################
 # setup systemd-networkd
@@ -122,7 +125,6 @@ __EOF__
 # enable systemd-networkd on boot
 systemctl enable systemd-networkd
 systemctl enable systemd-resolved
-
 
 ##############################################################################
 # remove internet things
