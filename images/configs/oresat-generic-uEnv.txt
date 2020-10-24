@@ -1,7 +1,6 @@
 #OreSat generic uEnv.txt 
 
 uboot_overlay_addr4=BB-BONE-eMMC1-01-00A0.dtbo
-uboot_overlay_addr5=PB-CAN1-00A0.dtbo
 disable_uboot_overlay_video=1
 disable_uboot_overlay_audio=1
 disable_uboot_overlay_wireless=1

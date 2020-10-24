@@ -115,7 +115,7 @@ echo "ttyGS0" >> /etc/securetty
 # set default boot power mode
 
 cat > "/etc/default/cpufrequtils" <<-__EOF__
-GOVERNOR
+GOVERNOR="powersave"
 __EOF__
 
 ##############################################################################

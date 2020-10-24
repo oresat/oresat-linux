@@ -94,7 +94,7 @@ echo "ttyGS0" >> /etc/securetty
 # set default boot power mode
 
 cat > "/etc/default/cpufrequtils" <<-__EOF__
-GOVERNOR
+GOVERNOR="powersave"
 __EOF__
 
 ##############################################################################
@@ -107,14 +107,6 @@ __EOF__
 
 ##############################################################################
 # setup systemd-networkd
-
-cat > "/etc/systemd/network/10-can.network" <<-__EOF__
-[Match]
-Name=can1
-
-[CAN]
-BitRate=1M
-__EOF__
 
 cat > "/etc/systemd/network/20-wired.network" <<-__EOF__
 [Match]
