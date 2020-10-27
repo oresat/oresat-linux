@@ -5,9 +5,9 @@
 
 ## How to use
 - `./build_images.sh <board>` where `<board>` can be:
-    - `dev` - A good image for bbb and pocket beagles.
     - `generic` - A generic image for custom oresat boards.
-    - `startracker` - The image for startracker board.
+    - `gps` - The image for oresat GPS board.
+    - `startracker` - The image for oresat startracker board.
 
 ## Add more oresat board
 - `cp configs/oresat-generic.conf configs/<board-name>.conf` and change as needed.
