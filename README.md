@@ -9,6 +9,10 @@ The current Linux boards being SDR GPS, Star Tracker, OreSat Live, and Cirrus Fl
 Some of our systems need more computing power, so they're given a [Sitara AM335x] that can run Linux.
 
 
+## Building OreSat Linux images
+See readme in *images/*
+
+
 ## General Board Design
 All AM335x onboard OreSat will atleast have 3 services (aka daemons); the candaemon, the Linux updater, and the main service. 
 OreSat uses [CAN] for commucation between systems onboard and follows the [CANopen] specifications.
