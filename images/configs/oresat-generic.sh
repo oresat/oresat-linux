@@ -111,6 +111,15 @@ echo "options g_ether host_addr=$HOST_ADDR" > /etc/modprobe.d/g_ether.conf
 ##############################################################################
 # setup systemd-networkd
 
+cat > "/etc/systemd/network/10-can.network" <<-__EOF__
+[Match]
+Name=can1
+
+[CAN]
+BitRate=1M
+__EOF__
+
+
 cat > "/etc/systemd/network/20-wired.network" <<-__EOF__
 [Match]
 Name=usb0
