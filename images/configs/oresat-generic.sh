@@ -100,7 +100,7 @@ __EOF__
 # setup usb ethernet
 
 cat > "/etc/default/bb-boot" <<-__EOF__
-USB_CONFIGURATION="yes"
+USB_CONFIGURATION=enable
 USB_NETWORK_DISABLED="yes"
 __EOF__
 
