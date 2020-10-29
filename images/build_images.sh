@@ -29,11 +29,13 @@ cd image-builder
 
 cd  deploy/debian-*/
 
-#must be done as root
-if [ $BOARD == "oresat-generic" ]; then
-    ./setup_sdcard.sh --img-1gb $BOARD-`date "+%F"`.img --dtb beaglebone
-else
-    ./setup_sdcard.sh --img-2gb $BOARD-`date "+%F"`.img --dtb beaglebone
+# deal with --img flag, 1gb vs 2gb images
+size_flag="--img-1gb"
+img_size=`du debian-*.tar | cut -d " " -f 1`
+if [ $img_size -gt 900000 ]; then
+    size_flag="--img-2gb"
 fi
+    
+sudo ./setup_sdcard.sh $size_flag $BOARD-`date "+%F"`.img --dtb beaglebone
 
 cd ../../..
