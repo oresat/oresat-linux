@@ -19,14 +19,14 @@ echo "" >> /etc/securetty
 echo "#USB Gadget Serial Port" >> /etc/securetty
 echo "ttyGS0" >> /etc/securetty
 
-cat > "/etc/default/bb-boot" <<-__EOF__
-USB_CONFIGURATION=enable
-USB_NETWORK_DISABLED="yes"
-__EOF__
+#cat > "/etc/default/bb-boot" <<-__EOF__
+#USB_CONFIGURATION=enable
+#USB_NETWORK_DISABLED="yes"
+#__EOF__
 
-echo "g_ether" > /etc/modules-load.d/g_ether.conf
-HOST_ADDR=`dmesg | grep "usb0: HOST MAC" | cut -d " " -f 8`
-echo "options g_ether host_addr=$HOST_ADDR" > /etc/modprobe.d/g_ether.conf
+#echo "g_ether" > /etc/modules-load.d/g_ether.conf
+#HOST_ADDR=`dmesg | grep "usb0: HOST MAC" | cut -d " " -f 8`
+#echo "options g_ether host_addr=$HOST_ADDR" > /etc/modprobe.d/g_ether.conf
 
 ##############################################################################
 # setup systemd-networkd
@@ -39,17 +39,17 @@ Name=can1
 BitRate=1M
 __EOF__
 
-cat > "/etc/systemd/network/20-wired.network" <<-__EOF__
-[Match]
-Name=usb0
-
-[Network]
-Address=168.192.6.2/24
-Gateway=168.192.6.1
-DNS=168.192.6.1
-DNS=8.8.8.8
-DNS=8.8.4.4
-__EOF__
+#cat > "/etc/systemd/network/20-wired.network" <<-__EOF__
+#[Match]
+#Name=usb0
+#
+#[Network]
+#Address=168.192.6.2/24
+#Gateway=168.192.6.1
+#DNS=168.192.6.1
+#DNS=8.8.8.8
+#DNS=8.8.4.4
+#__EOF__
 
 # enable systemd-networkd on boot
 systemctl enable systemd-networkd
