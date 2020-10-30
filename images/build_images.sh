@@ -24,17 +24,20 @@ cp ./configs/*.txt ./image-builder/target/boot/
 
 cd image-builder
 
+# clear any previous builds
+rm -rf deploy
+
 # build partitions
 ./RootStock-NG.sh -c $BOARD
 
-cd  deploy/debian-*/
-
 # deal with --img flag, 1gb vs 2gb images
 size_flag="--img-1gb"
-img_size=`du debian-*.tar | cut -d " " -f 1`
+img_size=`du deploy/debian-*.tar | cut -d " " -f 1`
 if [ $img_size -gt 900000 ]; then
     size_flag="--img-2gb"
 fi
+
+cd deploy/debian-*/
     
 sudo ./setup_sdcard.sh $size_flag $BOARD-`date "+%F"`.img --dtb beaglebone
 
