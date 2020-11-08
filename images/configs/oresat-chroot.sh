@@ -89,15 +89,11 @@ __EOF__
 cat > "/opt/growparts.sh" <<-__EOF__
 #!/bin/sh
 
-part_info=`lsblk -b -no SIZE /dev/mmcblk0 | tr -s ' ' | tr -d '\n'`
-total_space=`echo $part_info | cut -d " " -f 1`
-part_space=`echo $part_info | cut -d " " -f 2`
+part_info=\`lsblk -b -no SIZE /dev/mmcblk0 | tr -s ' ' | tr -d '\n'\`
+total_space=\`echo \$part_info | cut -d " " -f 1\`
+part_space=\`echo \$part_info | cut -d " " -f 2\`
 
-echo $total_space
-echo $part_space
-diff=$(($total_space - $part_space))
-echo $diff
-
+diff=\$((\$total_space - \$part_space))
 
 # more than 1M of free space on eMMC or SD card
 if [ diff > 100000 ]; then
