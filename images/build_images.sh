@@ -39,6 +39,6 @@ fi
 
 cd deploy/debian-*/
     
-sudo ./setup_sdcard.sh $size_flag $BOARD-`date "+%F"`.img --dtb beaglebone
+sudo ./setup_sdcard.sh $size_flag $BOARD-`date "+%F"`.img --dtb beaglebone --enable-mainline-pru-rproc
 
 cd ../../..

@@ -13,23 +13,39 @@ GOVERNOR="powersave"
 __EOF__
 
 ##############################################################################
-# setup usb ethernet
+# journald configs
+
+cat > "/etc/systemd/journald.conf" <<-__EOF__
+[Journal]
+SystemMaxUse=50M
+__EOF__
+
+##############################################################################
+# set locales so PAM doesn't log a critial error every hour
+
+localectl set-locale LANG=en_US.UTF-8
+
+##############################################################################
+# serial
 
 echo "" >> /etc/securetty
 echo "#USB Gadget Serial Port" >> /etc/securetty
 echo "ttyGS0" >> /etc/securetty
 
-#cat > "/etc/default/bb-boot" <<-__EOF__
-#USB_CONFIGURATION=enable
-#USB_NETWORK_DISABLED="yes"
-#__EOF__
+##############################################################################
+# setup usb ethernet
 
-#echo "g_ether" > /etc/modules-load.d/g_ether.conf
-#HOST_ADDR=`dmesg | grep "usb0: HOST MAC" | cut -d " " -f 8`
-#echo "options g_ether host_addr=$HOST_ADDR" > /etc/modprobe.d/g_ether.conf
+cat > "/etc/default/bb-boot" <<-__EOF__
+#USB_NETWORK_DISABLED=yes
+USB_CONFIGURATION=enable
+__EOF__
+
+echo "g_ether" > /etc/modules-load.d/g_ether.conf
+HOST_ADDR=`dmesg | tr -s " " | grep "usb0: HOST MAC" | cut -d " " -f 6`
+echo "options g_ether host_addr=$HOST_ADDR" > /etc/modprobe.d/g_ether.conf
 
 ##############################################################################
-# setup systemd-networkd
+# setup systemd-networkd for CAN
 
 cat > "/etc/systemd/network/10-can.network" <<-__EOF__
 [Match]
