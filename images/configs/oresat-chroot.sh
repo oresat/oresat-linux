@@ -1,19 +1,19 @@
 #!/bin/sh -e
 
 ##############################################################################
-# disable root login
+echo "disable root login"
 
 echo "PermitRootLogin prohibit-password" >> /etc/ssh/sshd_config
 
 ##############################################################################
-# set default boot power mode
+echo "set default boot power mode"
 
 cat > "/etc/default/cpufrequtils" <<-__EOF__
 GOVERNOR="powersave"
 __EOF__
 
 ##############################################################################
-# journald configs
+echo "setjournald configs"
 
 cat > "/etc/systemd/journald.conf" <<-__EOF__
 [Journal]
@@ -21,19 +21,19 @@ SystemMaxUse=50M
 __EOF__
 
 ##############################################################################
-# set locales so PAM doesn't log a critial error every hour
+#echo "set locales so PAM doesn't log a critial error every hour"
 
-localectl set-locale LANG=en_US.UTF-8
+#localectl set-locale LANG=en_US.UTF-8
 
 ##############################################################################
-# serial
+echo "setup serial?"
 
 echo "" >> /etc/securetty
 echo "#USB Gadget Serial Port" >> /etc/securetty
 echo "ttyGS0" >> /etc/securetty
 
 ##############################################################################
-# setup usb ethernet
+echo "setup usb ethernet"
 
 cat > "/etc/default/bb-boot" <<-__EOF__
 #USB_NETWORK_DISABLED=yes
@@ -45,7 +45,7 @@ HOST_ADDR=`dmesg | tr -s " " | grep "usb0: HOST MAC" | cut -d " " -f 6`
 echo "options g_ether host_addr=$HOST_ADDR" > /etc/modprobe.d/g_ether.conf
 
 ##############################################################################
-# setup systemd-networkd for CAN
+echo "setup systemd-networkd"
 
 cat > "/etc/systemd/network/10-can.network" <<-__EOF__
 [Match]
@@ -72,11 +72,45 @@ systemctl enable systemd-networkd
 systemctl enable systemd-resolved
 
 ##############################################################################
-# remove internet packages required during build
+echo "add grow partition on 1st boot script"
 
-apt -y purge git git-man curl wget rsync
+cat > "/lib/systemd/system/growparts.service" <<-__EOF__
+[Unit]
+Description=Grow paritions on 1st boot
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh /opt/growparts.sh
+
+[Install]
+WantedBy=multi-user.target
+__EOF__
+
+cat > "/opt/growparts.sh" <<-__EOF__
+#!/bin/sh
+
+part_info=`lsblk -b -no SIZE /dev/mmcblk0 | tr -s ' ' | tr -d '\n'`
+total_space=`echo $part_info | cut -d " " -f 1`
+part_space=`echo $part_info | cut -d " " -f 2`
+
+echo $total_space
+echo $part_space
+diff=$(($total_space - $part_space))
+echo $diff
+
+
+# more than 1M of free space on eMMC or SD card
+if [ diff > 100000 ]; then
+	bash /opt/scripts/tools/grow_partition.sh
+	systemctl disable growparts.service
+	reboot
+fi
+__EOF__
+
+systemctl daemon-reload
+systemctl enable growparts
 
 ##############################################################################
-# remove things we don't want that are install
+echo "remove internet packages required during build"
 
-apt -y purge rtl8723bu-modules-`uname -r` rtl8821cu-modules-`uname -r` nano nano-tiny
+apt -y purge git git-man curl wget rsync
