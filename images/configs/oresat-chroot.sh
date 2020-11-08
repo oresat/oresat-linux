@@ -21,11 +21,6 @@ SystemMaxUse=50M
 __EOF__
 
 ##############################################################################
-#echo "set locales so PAM doesn't log a critial error every hour"
-
-#localectl set-locale LANG=en_US.UTF-8
-
-##############################################################################
 echo "setup serial?"
 
 echo "" >> /etc/securetty
