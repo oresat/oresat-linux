@@ -55,9 +55,9 @@ cat > "/etc/systemd/network/20-wired.network" <<-__EOF__
 Name=usb0
 
 [Network]
-Address=168.192.6.2/24
-Gateway=168.192.6.1
-DNS=168.192.6.1
+Address=192.168.6.2/24
+Gateway=192.168.6.1
+DNS=192.168.6.1
 DNS=8.8.8.8
 DNS=8.8.4.4
 __EOF__
