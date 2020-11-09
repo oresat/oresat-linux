@@ -31,7 +31,7 @@ echo "ttyGS0" >> /etc/securetty
 echo "setup usb ethernet"
 
 cat > "/etc/default/bb-boot" <<-__EOF__
-#USB_NETWORK_DISABLED=yes
+USB_NETWORK_DISABLED=yes
 USB_CONFIGURATION=enable
 __EOF__
 
