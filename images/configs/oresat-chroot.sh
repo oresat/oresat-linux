@@ -92,7 +92,7 @@ part_space=\`echo \$part_info | cut -d " " -f 2\`
 diff=\$((\$total_space - \$part_space))
 
 # more than 1M of free space on eMMC or SD card
-if [ \$diff > 100000 ]; then
+if [ \$diff -gt 100000 ]; then
 	bash /opt/scripts/tools/grow_partition.sh
 	systemctl disable growparts.service
 	reboot
