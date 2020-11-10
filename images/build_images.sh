@@ -4,8 +4,10 @@ if [ $# -eq 0 ]; then
     echo "No arguments supplied"
     echo "./build_images <BOARD>"
     echo "where <BOARD> can be:"
+    echo "  cfc"
     echo "  generic"
     echo "  gps"
+    echo "  live"
     echo "  startracker"
     exit 1
 fi
