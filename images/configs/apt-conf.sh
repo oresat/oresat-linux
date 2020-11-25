@@ -1,4 +1,4 @@
-tempdir=`grep -i tempdir= .project | cut -d "=" -f 2`
+tempdir=`grep -i tempdir= .project | cut -d "=" -f 2 | sed 's/\"//g'`
 
 # to remove install installing recommended and suggestes packages
 cat > "${tempdir}/etc/apt/apt.conf" <<-__EOF__
