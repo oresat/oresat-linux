@@ -34,7 +34,8 @@ rm -rf deploy
 
 # deal with --img flag, 1gb vs 2gb images
 size_flag="--img-1gb"
-img_size=`du deploy/debian*/*.tar | cut -d " " -f 1`
+img_size=`du deploy/debian*.tar`
+img_size=`echo $img_size | tr -s " " | cut -d " " -f 1`
 if [ $img_size -gt 750000 ]; then
     size_flag="--img-2gb"
 fi
