@@ -74,4 +74,10 @@ Disklabel type: dos
 Disk identifier: 0xcbad22ad
 ```
 
-TODO dd image onto storage
+- Download OS image and `dd` it onto the eMMC
+```
+$ sudo dd status=progress if=oresat-startracker-2020-12-19.img of=/dev/sda
+```
+
+- Remove power, change the boot jumper to boot from eMMC, and power up. Board
+  should boot from eMMC
