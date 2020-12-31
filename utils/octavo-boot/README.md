@@ -33,6 +33,7 @@ usb0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
         TX packets 8  bytes 1634 (1.5 KiB)
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 ```
+
 - run the boot script with the network interface and FULL path to `tfptboot`
   directory. NOTE: this should be done within 10~15 seconds of the Octavo board
   being plugged in.
@@ -47,8 +48,9 @@ INFO(tftpd): Transfer of file u-boot-spl-restore.bin completed.
 INFO(octavo-usb-boot): Handling 'AM335x U-Boot SPL' BOOTP packet
 ...
 ```  
-- The above may end in error, but that is ok as long as, after a minute you see
-  a USB mass storage device appear on your system.
+
+- After a minute you see a USB mass storage device appear on your system. After
+  this you can kill the above script
 ```
 # dmesg output
 [177014.042105] usb-storage 1-1.1:1.0: USB Mass Storage device detected
