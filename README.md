@@ -1,53 +1,60 @@
 # OreSat Linux
+
 [![Issues](https://img.shields.io/github/issues/oresat/oresat-linux)](https://github.com/oresat/oresat-linux/issues)
 
-This repo has all the general design and reasoning behind it for all the Linux boards on OreSat.
-The current Linux boards being SDR GPS, Star Tracker, OreSat Live, and Cirrus Flux Camera (CFC).
+This repo has all the image builder, system level documenation, and general
+utils for OreSat Linux software developlement.
 
+## System level documenation
 
-## Why Linux?
-Some of our systems need more computing power, so they're given a [Sitara AM335x] that can run Linux.
+For general design and reasoning behind it for all the Linux boards on OreSat.
 
+### Building Sphinx Docs
+
+- Install `python-sphinx` and `python-sphinx-rtd-theme`
+- `$ make -C docs/`
 
 ## Building OreSat Linux images
-See readme in *images/*
+
+See [images/readme.md](images/README.md)
 
 
-## General Board Design
-All AM335x onboard OreSat will atleast have 3 services (aka daemons); the manager, the Linux updater, and the main service. 
-OreSat uses [CAN] for commucation between systems onboard and follows the [CANopen] specifications.
+## Other OreSat Linux Repos
 
-### [oresat-linux-manager]
-The manager acts a front end for all of OreSat Linux daemons and is build on top of [CANopenNode]. 
-It allows the [C3], Oresat's CAN Network Manger, to control or get data from daemons on the Linux board. 
-It uses [DBus] for inter-process communication with daemons. 
-Basically the manager acts as a CANopen interface to all services needed to control the board over [DBus].
-In other words, its a common service to convert CANopen message to DBus messsage and visa versa.
+### System level Software
 
-![](https://github.com/oresat/oresat-linux-manager/blob/master/docs/oresat-linux-manager.jpg)
-- systemd interface will allow [C3] board to turn on/off any service on the board.
-- logind to provided power controls.
-- datetimed allow the board time to be changed (useful for CANopen SYNC messages)
-- any custom oresat daemon for the [C3] to control and get data from it.
+Common software that is on all Linux Boards
 
+- [oresat-linux-manager]: The front end interface for all OreSat Linux
+boards. Convert CANopen message to DBus message and vice versa.
+- [oresat-linux-updater]: The serive that allow the board to be updated.
+Mostly a wrapper ontop of `apt`.
 
-See the [oresat-linux-manager] repo for more info.
+### GPS / ADCS Board Repos
 
-### [oresat-linux-updater]
-A simple daemon wrapper for apt that allows the Linux board to be updated over dbus using debian packages.
-See the [oresat-linux-updater] repo for more info.
+- [oresat-gps-hardware]: Hardware design for the GPS board.
+- [oresat-gps-software]: SDR GPS service.
+- [oresat-adcs-software]: A ADCS Manager serive that control the ADCS subsystem.
 
-### OreSat Boards
-See their software repo for how their spefic service works.
-| Project               | Hardware                  | Software                                              |
-|-----------------------|---------------------------|-------------------------------------------------------|
-| GPS / ADCS            | [oresat-gps-hardware]     | [oresat-gps-software], [oresat-adcs-software]         |
-| Star Tracker          | [oresat-star-tracker]     | [oresat-star-tracker-software], [oresat-linux-prucam] |
-| OreSat Live           | [oresat-dxwifi-hardware]  | [oresat-dxwifi-software]                              |
-| Cirrus Flux Camera    | [oresat-cfc-hardware]     | TBD                                                   |
+### Star Tracker Board Repos
 
+- [oresat-star-tracker]: Hardware design for the Star Tracker board.
+- [oresat-star-tracker-software]: The Star Tracker service.
+- [oresat-linux-prucam]: A kernel module for interfacing to camera with a PRU.
+Also includes a python3 library wrapper.
+
+### OreSat Live Board Repos
+
+- [oresat-dxwifi-hardware]: Hardware design for the OreSat Live board.
+- [oresat-dxwifi-software]:
+
+### CFC (Cirrus Flux Camera) Board Repos
+
+- [oresat-cfc-hardware]: Hardware design for the CFC board.
 
 <!-- OreSat repos -->
+[oresat-linux-manager]:https://github.com/oresat/oresat-linux-manager
+[oresat-linux-updater]:https://github.com/oresat/oresat-linux-updater
 [oresat-adcs-software]:https://github.com/oresat/oresat-adcs-software
 [oresat-gps-software]:https://github.com/oresat/oresat-gps-software
 [oresat-gps-hardware]:https://github.com/oresat/oresat-gps-hardware
@@ -56,16 +63,4 @@ See their software repo for how their spefic service works.
 [oresat-dxwifi-hardware]:https://github.com/oresat/oresat-dxwifi-hardware
 [oresat-dxwifi-software]:https://github.com/oresat/oresat-dxwifi-software
 [oresat-cfc-hardware]:https://github.com/oresat/oresat-cfc-hardware
-[oresat-linux-manager]:https://github.com/oresat/oresat-linux-manager
-[oresat-linux-updater]:https://github.com/oresat/oresat-linux-updater
 [oresat-linux-prucam]:https://github.com/oresat/oresat-linux-prucam
-[C3]:https://github.com/oresat/oresat-c3
-
-<!-- Other repos -->
-[CANopenNode]:https://github.com/CANopenNode/CANopenNode
-
-<!-- Other links -->
-[CAN]:https://en.wikipedia.org/wiki/CAN_bus
-[CANopen]:https://en.wikipedia.org/wiki/CANopen
-[DBus]:https://en.wikipedia.org/wiki/D-Bus
-[Sitara AM335x]:https://www.ti.com/processors/sitara-arm/am335x-cortex-a8/overview.html

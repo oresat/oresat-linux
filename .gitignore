@@ -3,3 +3,4 @@ mono_crash.*
 nohup.out
 __pycache__
 image-builder
+build/
