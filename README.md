@@ -5,6 +5,10 @@
 This repo has all the image builder, system level documenation, and general
 utils for OreSat Linux software developlement.
 
+## Building OreSat Linux images
+
+See [images/readme.md](images/README.md)
+
 ## System level documenation
 
 For general design and reasoning behind it for all the Linux boards on OreSat.
@@ -14,23 +18,17 @@ For general design and reasoning behind it for all the Linux boards on OreSat.
 - Install `python-sphinx` and `python-sphinx-rtd-theme`
 - `$ make -C docs/`
 
-## Building OreSat Linux images
-
-See [images/readme.md](images/README.md)
-
-
 ## Other OreSat Linux Repos
 
 ### System level Software
 
-Common software that is on all Linux Boards
+Common software that is on all OreSat Linux Boards.
 
-- [oresat-linux-manager]: The front end interface for all OreSat Linux
-boards. Convert CANopen message to DBus message and vice versa.
-- [oresat-linux-updater]: The serive that allow the board to be updated.
-Mostly a wrapper ontop of `apt`.
+- [oresat-linux-manager]: The front end for all software on a OreSat Linux
+boards. Converts CANopen messages to DBus messages and vice versa.
+- [oresat-linux-updater]: The service that allows the board to be updated.
 
-### GPS / ADCS Board Repos
+### GPS Board Repos
 
 - [oresat-gps-hardware]: Hardware design for the GPS board.
 - [oresat-gps-software]: SDR GPS service.
