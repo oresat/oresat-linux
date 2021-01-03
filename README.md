@@ -9,6 +9,8 @@ utils for OreSat Linux software developlement.
 
 See [images/readme.md](images/README.md)
 
+Images are hosted at [https://debian.oresat.org/images/](https://debian.oresat.org/images/)
+
 ## System level documenation
 
 For general design and reasoning behind it for all the Linux boards on OreSat.
@@ -24,8 +26,7 @@ For general design and reasoning behind it for all the Linux boards on OreSat.
 
 Common software that is on all OreSat Linux Boards.
 
-- [oresat-linux-manager]: The front end for all software on a OreSat Linux
-boards. Converts CANopen messages to DBus messages and vice versa.
+- [oresat-linux-manager]: The front end service for all OreSat Linux boards.
 - [oresat-linux-updater]: The service that allows the board to be updated.
 
 ### GPS Board Repos
@@ -39,7 +40,6 @@ boards. Converts CANopen messages to DBus messages and vice versa.
 - [oresat-star-tracker]: Hardware design for the Star Tracker board.
 - [oresat-star-tracker-software]: The Star Tracker service.
 - [oresat-linux-prucam]: A kernel module for interfacing to camera with a PRU.
-Also includes a python3 library wrapper.
 
 ### OreSat Live Board Repos
 
