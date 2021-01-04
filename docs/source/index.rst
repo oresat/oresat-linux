@@ -7,9 +7,10 @@ What is OreSat?
 OreSat is a small open source satellite from Oregon by PSAS (Portland State
 Aerospace Society).
 
-If you are looking for more info on OreSat, go checkout  
-`oresat-website <https://www.oresat.org/>`_ and
-`oresat-github <https://github.com/oresat>`_
+.. note::
+
+    If you are looking for more info on OreSat, go checkout  
+    `OreSat Website`_ and `OreSat GitHub`_
 
 Glossary
 --------
@@ -49,14 +50,14 @@ Hardware info for OreSat Linux boards.
     am335x
 
 
-Project / Repos
----------------
-Links to OreSat Linx projects repos
+OreSat Linux Repos
+-------------------
+Links to OreSat Linux repos
 
 .. toctree::
     :maxdepth: 2
 
-    projects/index
+    repos
 
 
 Indices and tables
@@ -65,3 +66,8 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+
+.. _OreSat Website: https://www.oresat.org/
+.. _OreSat GitHub: https://github.com/oresat
+

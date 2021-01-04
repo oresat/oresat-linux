@@ -1,69 +1,50 @@
-OreSat Linux Projects
-=====================
+OreSat Linux Repos
+==================
 
-OreSat Linux System Software
-----------------------------
-Software that is used for or by all OreSat Linux boards.
+System Level Software Repos
+---------------------------
 
-**OreSat Linux Images**
+Common software that is on all OreSat Linux Boards.
 
-Repo: `oresat-linux`_
+- `oresat-linux`_ Image builder, the source for these docs, and general utilities.
+- `oresat-linux-manager`_ The front end service for all OreSat Linux boards.
+- `oresat-linux-updater`_ The service that allows the board to be updated.
 
-**OreSat Linux Manager**
+GPS Board Repos
+---------------
 
-Repo: `oresat-linux-manager`_
+- `oresat-gps-hardware`_ Hardware design for the GPS board.
+- `oresat-gps-software`_ SDR GPS service.
+- `oresat-adcs-software`_ The ADCS Manager service that controls the ADCS subsystem.
 
-**OreSat Linux Updater**
+Star Tracker Board Repos
+------------------------
 
-Repo: `oresat-linux-updater`_
+- `oresat-star-tracker`_ Hardware design for the Star Tracker board.
+- `oresat-star-tracker-software`_ The Star Tracker service.
+- `oresat-linux-prucam`_ A kernel module for interfacing to camera with a PRU.
 
-OreSat Star Tracker
--------------------
-TBD
+OreSat Live Board Repos
+-----------------------
 
-**Hardware**
+- `oresat-dxwifi-hardware`_ Hardware design for the OreSat Live board.
+- `oresat-dxwifi-software`_
 
-repo: `oresat-star-tracker`_
+CFC (Cirrus Flux Camera) Board Repos
+------------------------------------
 
-**Star Tracker Service**
-
-repos: `oresat-star-tracker-software`_ 
-
-**prucam kernel module**
-
-repos: `oresat-linux-prucam`_
-
-OreSat GPS
-----------
-SDR GPS
-
-**Hardware**
-
-repo: `oresat-gps-hardware`_
-
-**GPS Service**
-
-repo: `oresat-gps-software`_
-
-OreSat CFC
-----------
-TBD
-
-**Hardware**
-
-Hardware repo: `oresat-cfc-hardware`_
-
-OreSat Live
------------
-TBD
+- `oresat-cfc-hardware`_ Hardware design for the CFC board.
 
 .. OreSat repos
 .. _oresat-linux: https://github.com/oresat/oresat-linux
 .. _oresat-linux-manager: https://github.com/oresat/oresat-linux-manager
 .. _oresat-linux-updater: https://github.com/oresat/oresat-linux-updater
-.. _oresat-linux-prucam: https://github.com/oresat/oresat-linux-prucam
+.. _oresat-adcs-software: https://github.com/oresat/oresat-adcs-software
+.. _oresat-gps-software: https://github.com/oresat/oresat-gps-software
+.. _oresat-gps-hardware: https://github.com/oresat/oresat-gps-hardware
 .. _oresat-star-tracker: https://github.com/oresat/oresat-star-tracker
 .. _oresat-star-tracker-software: https://github.com/oresat/oresat-star-tracker-software
-.. _oresat-gps-hardware: https://github.com/oresat/oresat-gps-hardware
-.. _oresat-gps-software: https://github.com/oresat/oresat-gps-software
+.. _oresat-dxwifi-hardware: https://github.com/oresat/oresat-dxwifi-hardware
+.. _oresat-dxwifi-software: https://github.com/oresat/oresat-dxwifi-software
 .. _oresat-cfc-hardware: https://github.com/oresat/oresat-cfc-hardware
+.. _oresat-linux-prucam: https://github.com/oresat/oresat-linux-prucam

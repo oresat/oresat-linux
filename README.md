@@ -18,7 +18,7 @@ For general design and reasoning behind it for all the Linux boards on OreSat.
 ### Building Sphinx Docs
 
 - Install `python-sphinx` and `python-sphinx-rtd-theme`
-- `$ make -C docs/`
+- `$ make html -C docs/`
 
 ## Other OreSat Linux Repos
 
