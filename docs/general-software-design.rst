@@ -57,12 +57,12 @@ unique filenames.
 **Format Rules:**
 
 - all lowercase
-- `board`: The board name / acronym; ie gps, st (aka star tracker), live, or cfc.
+- **board**: The board name / acronym; ie gps, st (aka star tracker), live, or cfc.
   This will allow the `C3`_ to know which board to write the file to.
-- `keyword`: A **unique** key for the service for OLM to use when the file is
+- **keyword**: A **unique** key for the service for OLM to use when the file is
   being deliver to it; ie If a file has the "update" keyword, OLM will move it
   to location  defined by the OreSat Linux Updater app.
-- `date`: The date the archive file was made. Must be in the YY-MM-DD-HH-mm-ss
+- **date**: The date the archive file was made. Must be in the YY-MM-DD-HH-mm-ss
   format, all sub fields are always 2 digit intergers.
 
     - YY: last two digits of the year
@@ -72,8 +72,8 @@ unique filenames.
     - mm: minute
     - ss: second
 
-- `fileformat`: Can be anything.
-- '_' is only used to seperate the `board`, `keyword`, and `date` fields and
+- **fileformat**: Can be anything.
+- '_' is only used to seperate the **board**, **keyword**, and **date** fields and
   nowhere else.
 
 **Example, a update to the GPS board**::
@@ -95,6 +95,7 @@ Other features
 - Interfaces with logind to provided power controls (poweroff and reboot).
 - Interfaces with datetimed allow the board time to be changed
   (useful for CANopen SYNC messages)
+- Follows the `CCSDS Time Code Format`_ (CCSDS 301.0-B-4) standards.
 
 OreSat Linux Updater
 --------------------
@@ -154,9 +155,9 @@ dictionaries with type and item fields. The instructions will be run in order.
 
 The instruction types can be
 
-- `install_pkg`: Install a deb package from the archive file
-- `remove_pkg`: Remove a deb package.
-- `bash_script`: Run a bash script 
+- **install_pkg**: Install a deb package from the archive file.
+- **remove_pkg**: Remove a deb package.
+- **bash_script**: Run a bash script from the archive file.
 
 **Example instructions.txt**::
 

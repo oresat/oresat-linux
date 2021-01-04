@@ -2,6 +2,9 @@ Welcome to OreSat Linux's documentation!
 ========================================
 Documenation for the Linux boards at the system level.
 
+.. warning::
+    This is still a work in progress.
+
 What is OreSat?
 ---------------
 OreSat is a small open source satellite from Oregon by PSAS (Portland State
