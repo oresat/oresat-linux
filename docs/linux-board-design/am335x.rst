@@ -33,32 +33,6 @@ TI PRU Code Generation Tools
 
 - Or get it directy from TI at `<https://www.ti.com/tool/download/PRU-CGT-2-1>`_. The ARM-A8 Installer for PRU CGT one.
 
-CAN on AM335x
--------------
-
-Enabling CAN1 on the BeagleBone Black (pins P9_19 P9_20)
-
-- Edit /boot/uEnt.txt
-    - add line `dtb-overlay=/lib/firmware/BB-CAN1-00A0.dtbo` under Custom Cape
-    - comment out `enable_uboot_cape_universal=1`
-    - reboot BeagleBone
-- Turn on CAN0
-    .. code-block:: bash
-        
-        $ sudo ip link set can0 up type can bitrate 1000000
-
-
-Enabling CAN1 on the pocketbeagle (pins P2_09 P2_11)
-
-- Edit /boot/uEnt.txt
-    - add line `dtb-overlay=/lib/firmware/PB-CAN1-00A0.dtbo` under Custom Cape
-    - comment out `enable_uboot_cape_universal=1`
-    - reboot PocktetBeagle
-- Turn on CAN1
-    .. code-block:: bash
-
-        $ sudo ip link set can1 up type can bitrate 1000000
-
 Device Tree
 -----------
 ARM uses a device tree to set hardware descriptions like memory sizing, pin
@@ -72,30 +46,7 @@ but it limited to kernel they modified to support it. It is done by device tree
 overlays. As the name implies, these are device tree binary overlay are just
 applied ontop of the actual device tree.
 
-**How to make dtbo files**
-
-Device tree on mainline Linux are not dynamic, meaning it's not able to change
-or be patched on runtime or by userspace, but it can be recompiled as needed.
-
-- Install device tree compiler
-
-.. code-block:: bash
-
-    sudo apt install device-tree-compiler
-
-- Compile dts into dtb
-
-.. code-block:: bash
-
-    dtc -I dts -O dtb -f devicetree_file_name.dts -o devicetree_file_name.dtb
-
-- Disassemble dtb into dts
-
-.. code-block:: bash
-
-    dtc -I dtb -O dts -f devicetree_file_name.dtb -o devicetree_file_name.dts
-
-Useful Links
+**Useful Links**
 
 - `Device-Tree-Specs <https://www.devicetree.org/specifications/>`_
 - `Device-Tree-Reference <https://elinux.org/Device_Tree_Reference>`_

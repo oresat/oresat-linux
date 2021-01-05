@@ -24,14 +24,15 @@ Glossary
     glossary
 
 
-OreSat Linux System Design
---------------------------
-Overview on how the OreSat system level software works
+General Board Software Design
+=============================
+All Linux board on OreSat will at least have 3 services (aka daemons); OLM,
+OreSat Linux Updater, and at least main service. 
 
 .. toctree::
     :maxdepth: 2
-
-    general-software-design
+    
+    linux-board-design/index
 
 OreSat Software Standards
 -------------------------
@@ -39,19 +40,8 @@ The design guide for all OreSat software
 
 .. toctree::
     :maxdepth: 2
-    
-    software-guide
 
-
-OreSat Linux Hardware
----------------------
-Hardware info for OreSat Linux boards.
-
-.. toctree::
-    :maxdepth: 2
-    
-    am335x
-
+    standards/index
 
 OreSat Linux Repos
 -------------------
