@@ -1,14 +1,12 @@
-OreSat Linux Standards
-======================
+OreSat Linux Software Standards
+===============================
 
 .. toctree::
     :maxdepth: 2
 
-    debian-packages
+    oresat-projects
     file-transfer
-    update_archive_files
-    daemons
-    kernel-modules
+    update-archive-files
 
 .. OreSat repos
 .. _oresat-linux-manager: https://github.com/oresat/oresat-linux-manager

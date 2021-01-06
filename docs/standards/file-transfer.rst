@@ -17,10 +17,10 @@ filename format.
 - **keyword**: A **unique** key for the service for OLM to use when the file is
   being deliver to it; ie If a file has the "update" keyword, OLM will move it
   to location defined by the OreSat Linux Updater app.
-- **date**: The date the archive file was made. Must be in the YY-MM-DD-HH-mm-ss
-  format, all sub fields are always 2 digit intergers.
+- **date**: The date the archive file was made. Must be in the YYYY-MM-DD-HH-mm-ss
+  format, with the expection of year, all sub fields are always 2 digit intergers.
 
-    - YY: last two digits of the year
+    - YYYY: year
     - MM: month
     - DD: day
     - HH: hour (24-hour clock)
@@ -33,7 +33,7 @@ filename format.
 
 **Example, a update to the GPS board**::
 
-   gps_update_21-10-03-14-30-27.tar.gz
+   gps_update_2021-10-03-14-30-27.tar.gz
 
 
 .. OreSat repos

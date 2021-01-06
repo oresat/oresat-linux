@@ -1,10 +1,9 @@
-OreSat Linux Enviroment
-=======================
+OreSat Linux Design
+===================
 
 .. toctree::
     :maxdepth: 2
 
     am335x
-    debian
     oresat-linux-manager
     oresat-linux-updater

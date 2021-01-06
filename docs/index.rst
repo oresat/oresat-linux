@@ -1,5 +1,6 @@
 Welcome to OreSat Linux's documentation!
 ========================================
+
 Documenation for the Linux boards at the system level.
 
 .. warning::
@@ -7,8 +8,9 @@ Documenation for the Linux boards at the system level.
 
 What is OreSat?
 ---------------
-OreSat is a small open source satellite from Oregon by PSAS (Portland State
-Aerospace Society).
+
+OreSat is a open source CubeSat from Oregon by PSAS (Portland State Aerospace
+Society).
 
 .. note::
 
@@ -24,36 +26,37 @@ Glossary
     glossary
 
 
-General Board Software Design
-=============================
-All Linux board on OreSat will at least have 3 services (aka daemons); OLM,
-OreSat Linux Updater, and at least main service. 
+General OreSat Linux Board Design
+---------------------------------
 
 .. toctree::
     :maxdepth: 2
     
-    linux-board-design/index
+    design/index
 
-OreSat Software Standards
--------------------------
-The design guide for all OreSat software
+OreSat Linux Software Standards
+-------------------------------
 
 .. toctree::
     :maxdepth: 2
-
+    
     standards/index
 
-OreSat Linux Repos
--------------------
-Links to OreSat Linux repos
+OreSat Linux repos
+------------------
 
 .. toctree::
     :maxdepth: 2
-
+    
     repos
 
+OreSat Linux Links
+-------------------
+- All Oresat Linux Packages can be found at https://debian.oresat.org/packages/
+- All Oresat Linux images can be found at https://debian.oresat.org/images/
 
-Indices and tables
+
+Indices and Tables
 ==================
 
 * :ref:`genindex`

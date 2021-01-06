@@ -1,18 +1,14 @@
 Update Archive Files
 ====================
 
-OreSat Linux boards cane be updated thru the `oresat-linux-updater`_ daemon. It
-is mostly a simple daemon wrapper for apt install local Debian package. It also 
-supports running bash scipts, but all updates should be done with deb packages. 
-
-Update archive files should be a .tar.gz archive file and follow OLM's file
+Update archive files should be a .tar.gz archive file and follow the file
 transfer filename format with the keyword "update". The date field in the
 filename will be used to determine the next file to use as the oldest file is
 always used.
 
 **Example, a update to the GPS board**::
 
-   gps_update_21-10-03-14-30-27.tar.gz
+   gps_update_2021-10-03-14-30-27.tar.gz
 
 An update archive should contant deb files, bash scripts, files used by 
 bash script, and **always** include a instructions.txt file. If there is no

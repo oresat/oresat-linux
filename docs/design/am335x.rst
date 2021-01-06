@@ -1,0 +1,52 @@
+AM335x
+======
+Some of our OreSat systems need more computing power, so they’re given a 
+`AM335x`_ that can run Linux. It is commonly found in Beagleboard's 
+`PocketBeagle`_.
+
+Key features of the AM335X:
+
+    - A single core 1GHz ARM Cortex A8 processor
+    - 2x 200Mhz PRU (Programable Realtime Processors)
+    - Version with 1GB of RAM
+    - 3D Graphics Accelerator
+    - Support for UART, CAN, I2C, & SPI 
+
+See https://www.ti.com/processors/sitara-arm/am335x-cortex-a8/overview.html for 
+a full list of features of the AM335x.
+
+Programmable Real-time Unit (PRU)
+---------------------------------
+The AM335x has two PRU. For OreSat an idea is use them to get images from
+camera sensors.
+
+Good guides can be found at:
+
+    - `PRU-ICSS`_
+    - `TI PRU-ICSS / PRU_ICSSG`_
+    - `TI PRU Training`_
+
+OreSat project(s) using PRUs:
+
+    - `oresat-linux-prucam`_
+
+TI PRU Code Generation Tools
+
+- On Debian, apt can be used to get it 
+
+.. code-block:: bash
+
+ apt install ti-pru-cgt-installer
+
+- Or get it directy from TI at https://www.ti.com/tool/download/PRU-CGT-2-1.
+  The ARM-A8 Installer for PRU CGT one.
+
+.. oresat repos
+.. _oresat-linux-prucam: https://github.com/oresat/oresat-linux-prucam
+
+.. other links
+.. _AM335x: https://octavosystems.com/octavo_products/osd335x-sm/
+.. _PocketBeagle: https://beagleboard.org/pocket
+.. _PRU-ICSS: https://processors.wiki.ti.com/index.php/PRU-ICSS
+.. _TI PRU-ICSS / PRU_ICSSG: http://software-dl.ti.com/processor-sdk-linux/esd/docs/latest/linux/Foundational_Components_PRU-ICSS_PRU_ICSSG.html
+.. _TI PRU Training: https://processors.wiki.ti.com/index.php/PRU_Training:_Hands-on_Labs

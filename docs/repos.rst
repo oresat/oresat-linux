@@ -1,37 +1,50 @@
 OreSat Linux Repos
 ==================
 
-System Level Software Repos
----------------------------
+System Level Software
+---------------------
 
-Common software that is on all OreSat Linux Boards.
+Common software that is on or used by all OreSat Linux Boards.
 
-- `oresat-linux`_ Image builder, the source for these docs, and general utilities.
-- `oresat-linux-manager`_ The front end service for all OreSat Linux boards.
-- `oresat-linux-updater`_ The service that allows the board to be updated.
+- `oresat-linux`_ Image builder, the source for these docs, and general 
+  utilities.
+- `oresat-linux-manager`_ The front end daemon for all OreSat Linux boards.
+- `oresat-linux-updater`_ The daemon that allows the board to be updated.
 
-GPS Board Repos
----------------
+GPS Board
+---------
+
+SDR GPS receiver to calculate the location of satellite. Also will include
+software for off loading the controls for ACS subsystem.
 
 - `oresat-gps-hardware`_ Hardware design for the GPS board.
-- `oresat-gps-software`_ SDR GPS service.
-- `oresat-adcs-software`_ The ADCS Manager service that controls the ADCS subsystem.
+- `oresat-gps-software`_ SDR GPS daemon.
+- `oresat-adcs-software`_ The ADCS Manager daemon that controls the ADCS
+  subsystem.
 
-Star Tracker Board Repos
-------------------------
+Star Tracker Board
+------------------
+
+Camera system that takes images of stars and uses the pattern of the stars let
+to figure out which way the satellite is pointing.
 
 - `oresat-star-tracker`_ Hardware design for the Star Tracker board.
-- `oresat-star-tracker-software`_ The Star Tracker service.
+- `oresat-star-tracker-software`_ The Star Tracker daemon.
 - `oresat-linux-prucam`_ A kernel module for interfacing to camera with a PRU.
 
-OreSat Live Board Repos
------------------------
+OreSat Live Board
+-----------------
+
+A board with a camera and intenna for sending live video of Earth over long 
+distance WiFi.
 
 - `oresat-dxwifi-hardware`_ Hardware design for the OreSat Live board.
 - `oresat-dxwifi-software`_
 
-CFC (Cirrus Flux Camera) Board Repos
-------------------------------------
+CFC (Cirrus Flux Camera) Board
+------------------------------
+
+Short wave infrared camera to map cirrus clouds.
 
 - `oresat-cfc-hardware`_ Hardware design for the CFC board.
 
