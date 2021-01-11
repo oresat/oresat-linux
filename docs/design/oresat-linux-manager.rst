@@ -38,7 +38,7 @@ Apps will:
 
 - Defines the interface between CANopen's Object Dicationary and a daemon DBus
   interface.
-- Register OreSat daemon with the daemon controller.
+- Register OreSat daemons with the daemon controller.
 - Register filename keywords with file transfer system, so OLM can move 
   all files written to the Linux board over CAN to the correct directory.
 
@@ -49,16 +49,17 @@ OreSat Daemon Control
 OLM connects to systemd `DBus`_ and provides a API to the Network Manager on 
 the CAN bus. So in other words, OLM provides an API for `C3`_ to turn any
 OreSat daemon on or off. It will on provide this option to only OreSat daemons
-that are register, all non OreSat daemons can not be control, and all OreSat 
+that are register, all non OreSat daemons cannot be control, and all OreSat 
 daemons not registered will never be used. Supports up to 127 OreSat daemons.
 
 File Transfer
 -------------
 
-OreSat Linux Manager supports both reading and writing files to the linux board
+OreSat Linux Manager supports both reading and writing files to the Linux board
 over CAN. Files written to OLM must be properly format as the filename defines 
-what OLM will do with the keyword feild. If the keyword is not register with OLM,
-the file will be delete as OLM will not know what to do with the file.
+what OLM will do with it. There is a keyword field in the filenames. If the
+keyword is not register with OLM, the file will be delete as OLM will not know
+what to do with the file.
 
 .. toctree::
     :maxdepth: 2
@@ -76,8 +77,8 @@ performance mode (1GHz on AM335x).
 Other features
 --------------
 
-- Provide a copy of journald system logs.
-- Provides info about the Linux Board; ie disk usage, RAM usage, etc.
+- OLM can get a copy of journald system logs.
+- It provides info about the Linux Board; ie disk usage, RAM usage, etc.
 - Interfaces with logind to provided power controls (poweroff and reboot).
 - Interfaces with datetimed allow the board time to be changed
   (useful for CANopen SYNC messages)

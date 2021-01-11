@@ -22,8 +22,8 @@ Debian Packages
 ---------------
 
 All OreSat software should be put in a Debian package, so it can easily be
-updated with the `oresat-linux-updater`_. Projects that use compiled 
-langauges should make binary debian package (precompile), less compliling 
+updated with the `oresat-linux-updater`_. Also, projects that use compiled 
+langauges should make binary debian package (precompile) as the less compliling
 on the satellite the better.
 
 All OreSat Linux packages are upload to https://debian.oresat.org/packages/, so

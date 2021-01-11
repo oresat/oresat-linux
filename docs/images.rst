@@ -10,7 +10,7 @@ To decompress them::
 Notes about all images
 ----------------------
 
-- All use Debian with the TI 4.19 kernel.
+- All images use Debian with the TI 4.19 kernel.
 - All images have the user oresat with password temppwd.
 - Root login over ssh is disabled.
 - The CPU freqency governor is set to powersave (300Mhz on AM335x) on boot
@@ -52,7 +52,7 @@ configurations required for that board.
 Building Images
 ---------------
 
-See https://github.com/oresat/oresat-linux/images
+See https://github.com/oresat/oresat-linux/tree/master/images
 
 .. _BeagleBoneBlack: https://beagleboard.org/black/
 .. _PocketBeagle: https://beagleboard.org/pocket

@@ -4,7 +4,7 @@ Some of our OreSat systems need more computing power, so they’re given a
 `AM335x`_ that can run Linux. It is commonly found in Beagleboard's 
 `PocketBeagle`_.
 
-Key features of the AM335X:
+Key features of the AM335x:
 
     - A single core 1GHz ARM Cortex A8 processor
     - 2x 200Mhz PRU (Programable Realtime Processors)
@@ -39,7 +39,7 @@ TI PRU Code Generation Tools
 
 .. code-block:: bash
 
- apt install ti-pru-cgt-installer
+ $ sudo apt install ti-pru-cgt-installer
 
 - Or get it directy from TI at https://www.ti.com/tool/download/PRU-CGT-2-1.
   The ARM-A8 Installer for PRU CGT one.
