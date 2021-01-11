@@ -18,12 +18,15 @@ CANopen specifications can be found at https://can-cia.org/groups/specifications
 Overview
 --------
 
-The manager acts a front end for all of OreSat Linux daemons on all OreSat 
-boards and is build on top of `CANopenNode`_. It allows the `C3`_, Oresat's CAN
-Network Manger, to control or get data from daemons on the Linux board. It uses
-`DBus`_ for inter-process communication with daemons. Basically, OLM is a 
-common daemon on all OreSat Linux boards to convert CANopen message to DBus
-messsage and visa versa.
+The OreSat Linux Manager is the front end interface to a Linux board over a 
+CANbus for the `C3`_, Oresat's CANopen Network Manger, to use. It will allow
+the `C3`_ to control OreSat daemons and it provides the interface for daemons
+to put data onto object dictionary and on the on the CANbus. It uses 
+`CANopenNode`_ for all CANopen protocols and uses `DBus`_ for inter-process 
+communication with other daemons.
+
+Every OreSat board will have it's own version as every board will have 
+different OreSat daemons for OLM to interface to.
 
 .. image:: oresat-linux-manager.jpg
 
@@ -37,7 +40,7 @@ Apps will:
   interface.
 - Register OreSat daemon with the daemon controller.
 - Register filename keywords with file transfer system, so OLM can move 
-  all files written to the Linux board over CAN, to the correct directory.
+  all files written to the Linux board over CAN to the correct directory.
 
 
 OreSat Daemon Control
@@ -47,7 +50,7 @@ OLM connects to systemd `DBus`_ and provides a API to the Network Manager on
 the CAN bus. So in other words, OLM provides an API for `C3`_ to turn any
 OreSat daemon on or off. It will on provide this option to only OreSat daemons
 that are register, all non OreSat daemons can not be control, and all OreSat 
-daemons not registered will never be used. Supports up to 126 OreSat daemons.
+daemons not registered will never be used. Supports up to 127 OreSat daemons.
 
 File Transfer
 -------------
@@ -68,7 +71,7 @@ Power Saving
 To save on power, when only OLM is running, it will set the CPU frequency 
 governor to powersave mode (300Mhz on AM335x), and when at least one 
 OreSat dameon is running it will change the CPU frequency governor to 
-performance (1GHz on AM335x).
+performance mode (1GHz on AM335x).
 
 Other features
 --------------

@@ -42,8 +42,16 @@ OreSat Linux Software Standards
     
     standards/index
 
-OreSat Linux repos
-------------------
+OreSat Linux Images
+-------------------
+
+.. toctree::
+    :maxdepth: 2
+    
+    images
+
+OreSat Linux Git Repos
+----------------------
 
 .. toctree::
     :maxdepth: 2

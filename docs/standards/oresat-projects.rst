@@ -1,15 +1,14 @@
 OreSat Linux Project Standards
 ==============================
 
-All OreSat Linux board will use Debian. All OreSat software projects should 
-either be a Daemon or a Linux kernel module.
+.. note:: All OreSat software projects should either be a daemon or a Linux
+   kernel module.
 
 Debian
 ------
 
-All Linux board will use the 4.19 TI Debian kernel as it has support for PRUs.
-Both `TI`_ and `beagleboard`_ has so much support for that kernel with 
-`Octavo A8`_.
+All Linux boards will use the 4.19 TI Debian kernel as it has support for PRUs
+on the `Octavo A8`_ from `TI`_ and `beagleboard`_.
 
 Only `APT`_  will be used as a package manager. The goal is to avoid using other 
 pacakge managers like `pip`_ as much as possible. Don't want to have to deal with
@@ -22,40 +21,36 @@ All OreSat Linux images are host at https://debian.oresat.org/images/.
 Debian Packages
 ---------------
 
-All oresat software should be put in a Debian package, so it can easily be
+All OreSat software should be put in a Debian package, so it can easily be
 updated with the `oresat-linux-updater`_. Projects that use compiled 
 langauges should make binary debian package (precompile), less compliling 
 on the satellite the better.
 
 All OreSat Linux packages are upload to https://debian.oresat.org/packages/, so
-they can be added to OreSat images. 
+they can be used to build OreSat Linux images. 
 
 Daemons
 -------
 
 There is no human user to start a process when the board is powered on, so all
-oresat programs shoule be daemonized (aka Linux Service) that can be control 
+OreSat programs should be a daemon (aka Linux Service) so it can be control 
 with systemd. The `oresat-linux-manager`_ will use systemd to start or stop 
-OreSat daemons.
+OreSat daemons as command by the `C3`_ board.
 
-The `oresat-linux-manager`_ is the only enabled OreSat daemon (starts on boot)
-as it is the front end API to the board. 
+The `oresat-linux-manager`_ is the only enabled (starts on boot) OreSat daemon
+as it is the front end to the board. 
 
-Follow deamon service file naming of oresat-<name>d.service, ie 
+Follow deamon service file naming of oresat-<name>d.service, e.g.
 oresat-gpsd.service.
 
-Daemons should log to syslog so jounrnald can log. OLM can copy so they can be
-sent back to Earth for debugging.
+Daemons should log to syslog (journald will grab those logs), so if the logs
+are needed OLM can easily copy them and give them to the `C3`_.
 
-All oresat daemons will use DBus to interface with the `oresat-linux-manager`_.
-Since `oresat-linux-manager`_ is the front end to the Linux board and handels 
-all the CANbus commication, so other oresat daemon don't need to handle the 
-following the CANopen sepcifications. Also, DBus has bindings in alot of 
-langauges.
+All OreSat daemons will use DBus to interface with the `oresat-linux-manager`_.
 
-OreSat daemons should only use system dbus not session dbus (aka user dbus).
-Follow dbus config file naming of org.oresat.<service>, ie 
-org.oresat.startracker.
+OreSat daemons should use session dbus (aka user dbus) unless it is a root
+process then use the system dbus. If the daemon uses system dbus follow dbus
+config file naming format of org.oresat.<service>, e.g. org.oresat.startracker.
 
 **DBus Library recomendataions**
 
@@ -70,10 +65,12 @@ org.oresat.startracker.
 Kernel Modules
 --------------
 
-Uses `DKMS`_, it will make installing and packaging kernel module easier. And 
-its nice to no worry about updating kernel modules when kernel updates.
+Uses `DKMS`_ as it will make installing and packaging kernel module easier. 
+Also, it's nice to no worry about updating kernel modules if the kernel needs
+to be updated.
 
 .. OreSat repos
+.. _C3: https://github.com/oresat/oresat-c3
 .. _oresat-linux-manager: https://github.com/oresat/oresat-linux-manager
 .. _oresat-linux-updater: https://github.com/oresat/oresat-linux-updater
 

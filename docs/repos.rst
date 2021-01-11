@@ -9,7 +9,7 @@ Common software that is on or used by all OreSat Linux Boards.
 - `oresat-linux`_ Image builder, the source for these docs, and general 
   utilities.
 - `oresat-linux-manager`_ The front end daemon for all OreSat Linux boards.
-- `oresat-linux-updater`_ The daemon that allows the board to be updated.
+- `oresat-linux-updater`_ A daemon that allows all boards to be updated.
 
 GPS Board
 ---------

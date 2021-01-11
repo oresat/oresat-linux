@@ -17,8 +17,11 @@ a full list of features of the AM335x.
 
 Programmable Real-time Unit (PRU)
 ---------------------------------
-The AM335x has two PRU. For OreSat an idea is use them to get images from
-camera sensors.
+
+A PRU is a microcontroller that shares pins and other resource with the core
+processor allowing for custom interface to other hardware like cameras. The 
+AM335x has two PRUs. For OreSat an idea is use them to get images from camera
+sensors.
 
 Good guides can be found at:
 
@@ -50,3 +53,4 @@ TI PRU Code Generation Tools
 .. _PRU-ICSS: https://processors.wiki.ti.com/index.php/PRU-ICSS
 .. _TI PRU-ICSS / PRU_ICSSG: http://software-dl.ti.com/processor-sdk-linux/esd/docs/latest/linux/Foundational_Components_PRU-ICSS_PRU_ICSSG.html
 .. _TI PRU Training: https://processors.wiki.ti.com/index.php/PRU_Training:_Hands-on_Labs
+
