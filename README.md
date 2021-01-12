@@ -16,11 +16,15 @@ Images are hosted at [https://debian.oresat.org/images/](https://debian.oresat.o
 
 See [OreSat Linux ReadTheDocs](https://oresat-linux.readthedocs.io/en/latest/)
 
-Building Sphinx Docs:
+Manually building the System level docs:
 
-- Install `python-sphinx` and `python-sphinx-rtd-theme`
+- Install dependencies
+  - On Arch Linux: `$ sudo pacman -S python-sphinx python-sphinx-rtd-theme`
+  - On Debian Linux: `$ sudo apt install python3-sphinx python3-sphinx-rtd-theme`
+  - With pip: `$ pip install sphinx sphinx-rtd-theme`
 - `$ make html -C docs/`
+- open `docs/build/html/index.html` in a browser.
 
 ## Other OreSat Linux Repos
 
-See [docs/repos.rst](docs/repos.rst) for a list of other OreSat repos.
+See [docs/repos.rst](docs/repos.rst) for a list of other OreSat Linux repos.
