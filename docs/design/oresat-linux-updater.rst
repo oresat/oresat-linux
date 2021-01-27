@@ -15,11 +15,6 @@ with deb packages.
 OreSat Linux boards are updated with Update Archive Files. They will contain 
 all deb files and bash scripts.
 
-.. toctree::
-    :maxdepth: 2
-
-    ../standards/update-archive-files
-
 If an update fails in any way, an  error signal will be sent to OLM and all
 updates in the cache will be  deleted, as it is assume newer update required
 the older updates to be run first.

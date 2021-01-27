@@ -6,7 +6,6 @@ OreSat Linux Software Standards
 
     oresat-projects
     file-transfer
-    update-archive-files
 
 .. OreSat repos
 .. _oresat-linux-manager: https://github.com/oresat/oresat-linux-manager
