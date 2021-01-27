@@ -8,7 +8,7 @@ if [ $# -eq 0 ]; then
     echo "  generic"
     echo "  gps"
     echo "  live"
-    echo "  startracker"
+    echo "  star-tracker"
     exit 1
 fi
 
