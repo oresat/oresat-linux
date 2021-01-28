@@ -22,7 +22,7 @@ Notes about all images
 - The static IP address is 192.168.6.2 and will route internet from a host 
   with an IP address of 192.168.6.1.
 - The CAN1 bus is enabled.
-- The hostname is set to the name of board it's for; ie generic, startracker,
+- The hostname is set to the name of board it's for; ie generic, star-tracker,
   etc.
 
 Generic Image
