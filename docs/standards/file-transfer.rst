@@ -7,33 +7,25 @@ filename format.
 
 **File Format**::
 
-   board_keyword_date.fileformat
+   board_keyword_datetime.fileformat
 
 **Format Rules:**
 
 - all lowercase
-- **board**: The board name / acronym; ie gps, st (aka star tracker), live, or cfc.
+- **board**: The board name / acronym; ie gps, st (aka star tracker), live, or
+  cfc.
   This will allow the `C3`_ to know which board to write the file to.
 - **keyword**: A **unique** key for the service for OLM to use when the file is
   being deliver to it; ie If a file has the "update" keyword, OLM will move it
   to location defined by the OreSat Linux Updater app.
-- **date**: The date the archive file was made. Must be in the YYYY-MM-DD-HH-mm-ss
-  format, with the expection of year, all sub fields are always 2 digit intergers.
-
-    - YYYY: year
-    - MM: month
-    - DD: day
-    - HH: hour (24-hour clock)
-    - mm: minute
-    - ss: second
-
+- **datetime**: The interger Unix time the file was made.
 - **.fileformat**: Optional. Can be anything.
-- '_' is only used to seperate the **board**, **keyword**, and **date** fields and
-  nowhere else.
+- '_' is only used to seperate the **board**, **keyword**, and **datetime**
+  fields and nowhere else.
 
 **Example, a update to the GPS board**::
 
-   gps_update_2021-10-03-14-30-27.tar.gz
+   gps_update_161272609.tar.xz
 
 
 .. OreSat repos
