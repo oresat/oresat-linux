@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'OreSat Linux'
-copyright = '2020, Portland State Aerospace Society'
+copyright = '2021, Portland State Aerospace Society'
 author = 'Ryan Medick'
 
 
