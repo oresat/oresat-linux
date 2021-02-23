@@ -1,10 +1,14 @@
 Welcome to OreSat Linux's documentation!
 ========================================
 
-Documenation for the Linux boards at the system level.
+Documenation for the OreSat Linux boards at the system level.
 
 .. warning::
     This is still a work in progress.
+
+.. note:: This is **not** the documentation for any of the M0 or M4 boards
+   running ChibiOS or the ground station software, see `OreSat Firmware`_ or
+   `UniClOGS Software`_ respectively.
 
 What is OreSat?
 ---------------
@@ -74,4 +78,7 @@ Indices and Tables
 
 .. _OreSat Website: https://www.oresat.org/
 .. _OreSat GitHub: https://github.com/oresat
+
+.. _OreSat Firmware: https://github.com/oresat/oresat-firmware
+.. _UniClOGS Software: https://uniclogs-software.readthedocs.io/en/latest/
 

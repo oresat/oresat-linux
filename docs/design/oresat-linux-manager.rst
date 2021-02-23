@@ -8,12 +8,16 @@ OLM (OreSat Linux Manager)
 
 Background
 ----------
+
 The communication bus on OreSat is a CAN bus. All board on OreSat follow the
-CANopen spec and use the `CANopenNode`_ library. **Note** All OreSat board
-follow the `CCSDS Time Code Format`_ (CCSDS 301.0-B-4), not the CANopen
+CANopen specifications and use the `CANopenNode`_ library. **Note** All OreSat
+board follow the `CCSDS Time Code Format`_ (CCSDS 301.0-B-4), not the CANopen
 specification.
 
 CANopen specifications can be found at https://can-cia.org/groups/specifications/
+
+The `C3`_ is the flight computer for OreSat. It can turn boards on or off thru
+the OPD (OreSat Power Domain) and is CANopen Network Manager.
 
 Overview
 --------
@@ -22,7 +26,7 @@ The OreSat Linux Manager is the front end interface to a Linux board over a
 CANbus for the `C3`_, Oresat's CANopen Network Manger, to use. It will allow
 the `C3`_ to control OreSat daemons and it provides the interface for daemons
 to put data onto object dictionary and on the on the CANbus. It uses 
-`CANopenNode`_ for all CANopen protocols and uses `DBus`_ for inter-process 
+`CANopenNode`_ for all CANopen protocols and uses `D-Bus`_ for inter-process 
 communication with other daemons.
 
 Every OreSat board will have it's own version as every board will have 
@@ -32,11 +36,12 @@ different OreSat daemons for OLM to interface to.
 
 App system
 ----------
-Every DBus interface will have it own app.
+
+Every D-Bus interface will have it own app acting as the driver for OLM to use.
 
 Apps will:
 
-- Defines the interface between CANopen's Object Dicationary and a daemon DBus
+- Defines the interface between CANopen's Object Dicationary and a daemon D-Bus
   interface.
 - Register OreSat daemons with the daemon controller.
 - Register filename keywords with file transfer system, so OLM can move 
@@ -46,7 +51,7 @@ Apps will:
 OreSat Daemon Control
 ---------------------
 
-OLM connects to systemd `DBus`_ and provides a API to the Network Manager on 
+OLM connects to systemd `D-Bus`_ and provides a API to the Network Manager on 
 the CAN bus. So in other words, OLM provides an API for `C3`_ to turn any
 OreSat daemon on or off. It will on provide this option to only OreSat daemons
 that are register, all non OreSat daemons cannot be control, and all OreSat 
@@ -95,5 +100,5 @@ Other features
 .. Other links
 .. _CAN: https://en.wikipedia.org/wiki/CAN_bus
 .. _CANopen: https://en.wikipedia.org/wiki/CANopen
-.. _DBus: https://en.wikipedia.org/wiki/D-Bus
+.. _D-Bus: https://en.wikipedia.org/wiki/D-Bus
 .. _CCSDS Time Code Format: https://public.ccsds.org/Pubs/301x0b4e1.pdf

@@ -46,13 +46,13 @@ oresat-gpsd.service.
 Daemons should log to syslog (journald will grab those logs), so if the logs
 are needed OLM can easily copy them and give them to the `C3`_.
 
-All OreSat daemons will use DBus to interface with the `oresat-linux-manager`_.
+All OreSat daemons will use D-Bus to interface with the `oresat-linux-manager`_.
 
 OreSat daemons should use session dbus (aka user dbus) unless it is a root
 process then use the system dbus. If the daemon uses system dbus follow dbus
 config file naming format of org.oresat.<service>, e.g. org.oresat.startracker.
 
-**DBus Library recomendataions**
+**D-Bus Library recomendataions**
 
 - For C or C++ use `sd-bus`_ as it is the dbus library as it is built into 
   systemd.
@@ -86,6 +86,6 @@ to be updated.
 .. _pip: https://pypi.org/project/pip/
 .. _TI: https://www.ti.com/processors/sitara-arm/am335x-cortex-a8/overview.html
 .. _Octavo A8: https://octavosystems.com/octavo_products/osd335x-sm/
-.. _DBus: https://en.wikipedia.org/wiki/D-Bus
-.. _freedesktop dbus bindings: https://www.freedesktop.org/wiki/Software/DBusBindings/
+.. _D-Bus: https://en.wikipedia.org/wiki/D-Bus
+.. _freedesktop dbus bindings: https://www.freedesktop.org/wiki/Software/D-BusBindings/
 .. _beagleboard: https://beagleboard.org/

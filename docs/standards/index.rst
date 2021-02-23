@@ -20,7 +20,7 @@ OreSat Linux Software Standards
 .. Other links
 .. _CAN: https://en.wikipedia.org/wiki/CAN_bus
 .. _CANopen: https://en.wikipedia.org/wiki/CANopen
-.. _DBus: https://en.wikipedia.org/wiki/D-Bus
+.. _D-Bus: https://en.wikipedia.org/wiki/D-Bus
 .. _DKMS: https://github.com/dell/dkms
 .. _beagleboard: https://beagleboard.org/
-.. _freedesktop dbus bindings: https://www.freedesktop.org/wiki/Software/DBusBindings/
+.. _freedesktop dbus bindings: https://www.freedesktop.org/wiki/Software/D-BusBindings/

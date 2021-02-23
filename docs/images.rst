@@ -31,7 +31,7 @@ Generic Image
 The generic image is the image all other images are derived from. It has no 
 OreSat packages installed, not even OLM, so it is a great image to use for
 development. This image should work fine on all OreSat Boards, a 
-`BeagleBoneBlack`_, or a `PocketBeagle`_.
+`BeagleBone Black`_, or a `PocketBeagle`_.
 
 If the generic image is used for development, it may be nice to always have 
 the CPU freqency at 1GHz. To set the cpufreq to 1GHz on boot edit 
@@ -54,6 +54,6 @@ Building Images
 
 See https://github.com/oresat/oresat-linux/tree/master/images
 
-.. _BeagleBoneBlack: https://beagleboard.org/black/
+.. _BeagleBone Black: https://beagleboard.org/black/
 .. _PocketBeagle: https://beagleboard.org/pocket
 .. _systemd-networkd: https://wiki.archlinux.org/index.php/Systemd-networkd

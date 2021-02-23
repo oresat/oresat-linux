@@ -7,7 +7,7 @@ filename format.
 
 **File Format**::
 
-   board_keyword_datetime.fileformat
+   board_keyword_datetime.extension
 
 **Format Rules:**
 
@@ -22,6 +22,7 @@ filename format.
 - **.fileformat**: Optional. Can be anything.
 - '_' is only used to seperate the **board**, **keyword**, and **datetime**
   fields and nowhere else.
+- '.' is only used in the filename extension
 
 **Example, a update to the GPS board**::
 
@@ -42,7 +43,7 @@ filename format.
 .. Other links
 .. _CAN: https://en.wikipedia.org/wiki/CAN_bus
 .. _CANopen: https://en.wikipedia.org/wiki/CANopen
-.. _DBus: https://en.wikipedia.org/wiki/D-Bus
+.. _D-Bus: https://en.wikipedia.org/wiki/D-Bus
 .. _DKMS: https://github.com/dell/dkms
 .. _beagleboard: https://beagleboard.org/
-.. _freedesktop dbus bindings: https://www.freedesktop.org/wiki/Software/DBusBindings/
+.. _freedesktop dbus bindings: https://www.freedesktop.org/wiki/Software/D-BusBindings/
