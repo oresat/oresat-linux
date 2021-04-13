@@ -1,0 +1,55 @@
+/* OreSat DxWiFi overlay */
+
+#include <dt-bindings/pinctrl/am33xx.h>
+
+/dts-v1/;
+/plugin/;
+
+/ {
+    compatible = "ti,beaglebone", "ti,beaglebone-black", "ti,beaglebone-green"; 
+
+    // identification
+    part-number = "BEAGLELOGIC";
+    version = "00A0";
+
+    fragment@0 {
+        target-path="/";
+        __overlay__ {
+            chosen {
+                overlays {
+                    dxwifi-00A0 = __TIMESTAMP__;
+	        };
+            };
+        };
+    };
+
+    // overlay to enable dxwifi GPIO
+    fragment@1 {
+        target = <&ocp>;
+        __overlay__ {
+            cape-universal {
+                compatible = "gpio-of-helper";
+                status = "okay";
+                pinctrl-names = "default";
+                pinctrl-0 = <&dxwifi_pins>; /* this must point to pinmux name below */
+
+                trigger {
+                    gpio-name = "trigger";
+                    gpio = <&gpio3 2 0>; /* mii1_rx_er */
+                    input;
+                    dir-changeable;
+                };
+            };
+        };
+    };
+
+    // overlay to enable dxwifi GPIO pinmux.
+    fragment@2 {
+        target = <&am33xx_pinmux>;
+        __overlay__ {
+            dxwifi_pins: dxwifi_pins { pinctrl-single,pins = <
+                AM33XX_IOPAD(AM335X_PIN_MII1_TX_CLK, PIN_OUTPUT | INPUT_EN | MUX_MODE7)  /* mii1_tx_clk == trigger */
+            >; };
+        };
+    };
+};
