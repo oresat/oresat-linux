@@ -29,6 +29,13 @@ Glossary
 
     glossary
 
+Onboarding Guide
+----------------
+
+.. toctree::
+    :maxdepth: 2
+
+    onboarding_guide
 
 General OreSat Linux Board Design
 ---------------------------------
