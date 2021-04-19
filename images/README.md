@@ -11,7 +11,7 @@ Uses beagleboard's [image-builder](https://github.com/beagleboard/image-builder)
   - `generic` - A generic image for custom OreSat boards. All other images are
 derived from this image.
   - `gps` - The image the OreSat's GPS board.
-  - `live` - The image for the OreSat Live board.
+  - `dxwifi` - The image for the OreSat DxWiFi board.
   - `star-tracker` - The image for the OreSat's Star Tracker board.
 
 ## Notes on images generated

@@ -5,9 +5,9 @@ if [ $# -eq 0 ]; then
     echo "./build_images <BOARD>"
     echo "where <BOARD> can be:"
     echo "  cfc"
+    echo "  dxwifi"
     echo "  generic"
     echo "  gps"
-    echo "  live"
     echo "  star-tracker"
     exit 1
 fi
