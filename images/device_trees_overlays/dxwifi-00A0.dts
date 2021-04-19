@@ -35,7 +35,7 @@
 
                 trigger {
                     gpio-name = "trigger";
-                    gpio = <&gpio3 2 0>; /* mii1_rx_er */
+                    gpio = <&gpio3 9 0>; /* mii1_tx_clk */
                     input;
                     dir-changeable;
                 };
