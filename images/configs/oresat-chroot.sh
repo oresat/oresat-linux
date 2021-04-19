@@ -85,7 +85,8 @@ __EOF__
 cat > "/opt/growparts.sh" <<-__EOF__
 #!/bin/sh
 
-part_info=\`lsblk -b -no SIZE /dev/mmcblk0 | tr -s ' ' | tr -d '\n'\`
+root_part=\`df | tr -s ' ' | grep ' /\$' | cut -d " " -f 1\`
+part_info=\`lsblk -b -no SIZE \$root_part | tr -s ' ' | tr -d '\n'\`
 total_space=\`echo \$part_info | cut -d " " -f 1\`
 part_space=\`echo \$part_info | cut -d " " -f 2\`
 
