@@ -40,8 +40,12 @@
                     dir-changeable;
                 };
 
-                //TODO copy of trigger here but for uart2_rx?
-                //TODO copy of trigger here but for uart2_tx?
+                lna {
+                    gpio-name = "lna";
+                    gpio = <&gpio3 4 0>; /* mii1_rx_dv */
+                    input;
+                    dir-changeable;
+                };
             };
         };
     };
@@ -52,6 +56,7 @@
         __overlay__ {
             gps_pins: gps_pins { pinctrl-single,pins = <
                 AM33XX_IOPAD(AM335X_PIN_MII1_RX_ER, PIN_OUTPUT | INPUT_EN | MUX_MODE7)  /* mii1_rx_er == trigger */
+                AM33XX_IOPAD(AM335X_PIN_MII1_RX_DV, PIN_OUTPUT | INPUT_EN | MUX_MODE7)  /* mii1_rx_er == lna */
             >; };
         };
     };
@@ -62,7 +67,7 @@
         __overlay__ {
             uart2_alt_pins: uart2_alt_pins { pinctrl-single,pins = <
                 AM33XX_IOPAD(AM335X_PIN_MII1_RX_CLK, PIN_OUTPUT_PULLDOWN | MUX_MODE1)   /* mii1_rx_clk == uart2_tx */
-                AM33XX_IOPAD(AM335X_PIN_MII1_TX_CLK, PIN_INPUT_PULLUP | MUX_MODE1)	    /* mii1_tx_clk == uart2_trx */
+                AM33XX_IOPAD(AM335X_PIN_MII1_TX_CLK, PIN_INPUT_PULLUP | MUX_MODE1)	/* mii1_tx_clk == uart2_trx */
             >; };
         };
     };
