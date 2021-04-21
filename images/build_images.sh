@@ -38,7 +38,7 @@ done
 
 # copy oresat config into correct dirs
 cp ./configs/*.conf ./image-builder/configs/
-cp ./chroot_script/*.sh ./image-builder/target/chroot/
+cp ./chroot_scripts/*.sh ./image-builder/target/chroot/
 cp ./uEnv/*.txt ./image-builder/target/boot/
 
 # override setup_sdcard script
