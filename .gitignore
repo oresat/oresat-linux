@@ -4,3 +4,5 @@ nohup.out
 __pycache__
 image-builder
 build/
+bb.org-overlays/
+*.dtbo

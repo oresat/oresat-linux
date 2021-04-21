@@ -9,3 +9,6 @@ __EOF__
 # add oresat debian repo
 echo "deb [trusted=yes] https://debian.oresat.org/packages ./" >> ${tempdir}/etc/apt/sources.list
 apt update
+
+# add all oresat dtbo
+cp ../device_trees_overlays/*.dtbo $tempdir/lib/firmware/
