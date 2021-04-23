@@ -20,6 +20,9 @@ echo $NODE_ID
 BOARD="oresat-"$1
 echo $BOARD
 
+DATE=`date "+%F"`
+NAME="$BOARD-$DATE"
+
 if [ ! -d image-builder ]; then
     git clone https://github.com/beagleboard/image-builder
 fi
@@ -36,9 +39,8 @@ make
 cd ..
 
 # copy all new dtbo
-for filename in `ls device_trees_overlays`
-do
-  cp -- bb.org-overlays/src/arm/"$filename" device_trees_overlays/"$(basename -- "$filename" .dts).dtbo"
+for filename in `ls device_trees_overlays/*.dts`; do
+    cp -- bb.org-overlays/src/arm/$(basename "$filename") device_trees_overlays/"$(basename -- "$filename" .dts).dtbo"
 done
 
 # copy oresat config into correct dirs
@@ -46,6 +48,7 @@ cp ./configs/*.conf ./image-builder/configs/
 cp ./chroot_scripts/*.sh ./image-builder/target/chroot/
 cp ./uEnv/*.txt ./image-builder/target/boot/
 
+# add olm config
 echo "\
 
 ##############################################################################
@@ -72,7 +75,10 @@ rm -rf deploy
 
 cd deploy/debian-*/
 
-# .img file
-sudo ./setup_sdcard.sh $BOARD-`date "+%F"`.img --dtb beaglebone --enable-mainline-pru-rproc
+# make .img file
+sudo ./setup_sdcard.sh $NAME.img --dtb beaglebone --enable-mainline-pru-rproc
+zstd $NAME.img
 
 cd ../../..
+
+mv image-builder/deploy/debian-*/$NAME.img.zst .

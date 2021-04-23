@@ -6,3 +6,5 @@ image-builder
 build/
 bb.org-overlays/
 *.dtbo
+*.img
+*.img.zst
