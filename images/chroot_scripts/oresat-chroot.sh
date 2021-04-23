@@ -67,43 +67,6 @@ systemctl enable systemd-networkd
 systemctl enable systemd-resolved
 
 ##############################################################################
-echo "add grow partition on 1st boot script"
-
-cat > "/lib/systemd/system/growparts.service" <<-__EOF__
-[Unit]
-Description=Grow paritions on 1st boot
-After=generic-board-startup.service
-
-[Service]
-Type=oneshot
-ExecStart=/bin/sh /opt/growparts.sh
-
-[Install]
-WantedBy=multi-user.target
-__EOF__
-
-cat > "/opt/growparts.sh" <<-__EOF__
-#!/bin/sh
-
-root_part=\`df | tr -s ' ' | grep ' /\$' | cut -d " " -f 1\`
-part_info=\`lsblk -b -no SIZE \$root_part | tr -s ' ' | tr -d '\n'\`
-total_space=\`echo \$part_info | cut -d " " -f 1\`
-part_space=\`echo \$part_info | cut -d " " -f 2\`
-
-diff=\$((\$total_space - \$part_space))
-
-# more than 1M of free space on eMMC or SD card
-if [ \$diff -gt 100000 ]; then
-	bash /opt/scripts/tools/grow_partition.sh
-	systemctl disable growparts.service
-	reboot
-fi
-__EOF__
-
-systemctl daemon-reload
-systemctl enable growparts
-
-##############################################################################
 echo "remove internet packages required during build"
 
 apt -y purge git git-man curl wget rsync
