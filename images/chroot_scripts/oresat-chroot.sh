@@ -69,4 +69,4 @@ systemctl enable systemd-resolved
 ##############################################################################
 echo "remove internet packages required during build"
 
-apt -y purge git git-man curl wget rsync
+apt -y purge git git-man curl wget rsync ifupdown
