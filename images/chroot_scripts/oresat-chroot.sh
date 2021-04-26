@@ -8,9 +8,15 @@ echo "PermitRootLogin prohibit-password" >> /etc/ssh/sshd_config
 ##############################################################################
 echo "set default boot power mode"
 
+if [ hostname != "dev" ]; then
 cat > "/etc/default/cpufrequtils" <<-__EOF__
 GOVERNOR="powersave"
 __EOF__
+else
+cat > "/etc/default/cpufrequtils" <<-__EOF__
+GOVERNOR="performance"
+__EOF__
+fi
 
 ##############################################################################
 echo "setjournald configs"

@@ -7,6 +7,7 @@ if [ $# -ne 1 ]; then
     echo ""
     echo "where <BOARD> can be:"
     echo "  cfc"
+    echo "  dev"
     echo "  dxwifi"
     echo "  generic"
     echo "  gps"
