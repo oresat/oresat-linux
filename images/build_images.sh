@@ -40,7 +40,7 @@ cd ..
 
 # copy all new dtbo
 for filename in `ls device_trees_overlays/*.dts`; do
-    cp -- bb.org-overlays/src/arm/$(basename "$filename") device_trees_overlays/"$(basename -- "$filename" .dts).dtbo"
+    cp bb.org-overlays/src/arm/$(basename "$filename" .dts).dtbo device_trees_overlays/
 done
 
 # copy oresat config into correct dirs
@@ -77,6 +77,8 @@ cd deploy/debian-*/
 
 # make .img file
 sudo ./setup_sdcard.sh $NAME.img --dtb beaglebone --enable-mainline-pru-rproc
+
+# compress
 zstd $NAME.img
 
 cd ../../..
