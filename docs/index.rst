@@ -54,6 +54,14 @@ OreSat Linux Images
     
     images
 
+Guides
+------
+
+.. toctree::
+    :maxdepth: 2
+    
+    guides/index
+
 OreSat Linux Git Repos
 ----------------------
 
