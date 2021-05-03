@@ -29,25 +29,24 @@ Glossary
 
     glossary
 
-
-General OreSat Linux Board Design
----------------------------------
-
-.. toctree::
-    :maxdepth: 2
-    
-    design/index
-
-OreSat Linux Software Standards
--------------------------------
+General Design
+--------------
 
 .. toctree::
     :maxdepth: 2
     
+    general_design/index
+
+Standards
+---------
+
+.. toctree::
+    :maxdepth: 2
+
     standards/index
 
-OreSat Linux Images
--------------------
+Linux Images
+------------
 
 .. toctree::
     :maxdepth: 2
@@ -62,8 +61,8 @@ Guides
     
     guides/index
 
-OreSat Linux Git Repos
-----------------------
+Git Repositories
+----------------
 
 .. toctree::
     :maxdepth: 2

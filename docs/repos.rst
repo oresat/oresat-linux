@@ -1,24 +1,24 @@
-OreSat Linux Repos
-==================
+Git Repositories
+================
 
 System Level Software
 ---------------------
 
 Common software that is on or used by all OreSat Linux Boards.
 
-- `oresat-linux`_ Image builder, the source for these docs, and general 
-  utilities.
+- `oresat-linux`_ Image builder, the source for this documentation, and
+  general utilities.
 - `oresat-linux-manager`_ The front end daemon for all OreSat Linux boards.
 - `oresat-linux-updater`_ A daemon that allows all boards to be updated.
 
 GPS Board
 ---------
 
-SDR GPS receiver to calculate the location of satellite. Also will include
-software for off loading the controls for ACS subsystem.
+SDR/Hardware GPS receiver to calculate the location of satellite. Also will
+include software for off loading the controls for ACS subsystem.
 
 - `oresat-gps-hardware`_ Hardware design for the GPS board.
-- `oresat-gps-software`_ SDR GPS daemon.
+- `oresat-gps-software`_ GPS daemon.
 - `oresat-adcs-software`_ The ADCS Manager daemon that controls the ADCS
   subsystem.
 
@@ -32,19 +32,20 @@ to figure out which way the satellite is pointing.
 - `oresat-star-tracker-software`_ The Star Tracker daemon.
 - `oresat-linux-prucam`_ A kernel module for interfacing to camera with a PRU.
 
-OreSat Live Board
------------------
+DxWiFi Board
+------------
 
 A board with a camera and intenna for sending live video of Earth over long 
-distance WiFi.
+distance WiFi. This is apart of the OreSat Live payload mission.
 
 - `oresat-dxwifi-hardware`_ Hardware design for the OreSat Live board.
-- `oresat-dxwifi-software`_
+- `oresat-dxwifi-software`_  Software for OreSat's 2.4GHz WiFi transmission system
+- `oresat-live-software`_ Software for both the satellite and ground components of OreSat Live. 
 
 CFC (Cirrus Flux Camera) Board
 ------------------------------
 
-Short wave infrared camera to map cirrus clouds.
+Short wave infrared camera to map cirrus clouds. Another payload for OreSat.
 
 - `oresat-cfc-hardware`_ Hardware design for the CFC board.
 
@@ -59,5 +60,6 @@ Short wave infrared camera to map cirrus clouds.
 .. _oresat-star-tracker-software: https://github.com/oresat/oresat-star-tracker-software
 .. _oresat-dxwifi-hardware: https://github.com/oresat/oresat-dxwifi-hardware
 .. _oresat-dxwifi-software: https://github.com/oresat/oresat-dxwifi-software
+.. _oresat-live-software: https://github.com/oresat/oresat-live-software
 .. _oresat-cfc-hardware: https://github.com/oresat/oresat-cfc-hardware
 .. _oresat-linux-prucam: https://github.com/oresat/oresat-linux-prucam

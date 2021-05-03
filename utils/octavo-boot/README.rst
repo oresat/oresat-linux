@@ -1,17 +1,23 @@
 Octavo USB-eMMC Flasher
 =======================
 
-This software allows you to flash to the Octavo's eMMC via USB. It is based on
-the guide here: 
+This software allows a host computer to flash to the Octavo's eMMC via USB. It
+is based on the guide here: 
 https://octavosystems.com/app_notes/programming-emmc-with-usb/
 
-However, I use python instead of `dhcpd` and `xinetd` so it could be run as
+However, python is used instead of `dhcpd` and `xinetd` so it could be run as
 a standalone script instead of needing to setup multiple services
 
-You must first download the support files and put them in the proper directory
-
-Files
+Setup
 -----
+
+First clone the oresat-linux repo
+
+.. code-block::
+
+   $ git clone https://github.com/oresat/oresat-linux
+   $ cd oresat-linux/octavo-boot/
+
 
 Download the project files
     
@@ -29,9 +35,9 @@ Unzip and rename folder
 Boot Octavo via USB as USB mass storage
 ---------------------------------------
 
-- ensure Octavo board is in SD card boot mode but there is **NO** SD car inserted.
-- plug in Octavo board and see it appear as network interface. For example, on
-  my machine it appears as `usb0`
+- Ensure Octavo board is in SD card boot mode but there is **NO** SD car inserted.
+- Plug in Octavo board and see it appear as network interface. For example, it can 
+  appears as `usb0`
 
 .. code-block::
 
@@ -44,7 +50,7 @@ Boot Octavo via USB as USB mass storage
             TX packets 8  bytes 1634 (1.5 KiB)
             TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
-- run the boot script with the network interface and FULL path to `tfptboot`
+- Run the boot script with the network interface and absolute path to the `tfptboot`
   directory. **NOTE:** this should be done within 10~15 seconds of the Octavo board
   being plugged in.
 
@@ -60,8 +66,8 @@ Boot Octavo via USB as USB mass storage
     INFO(octavo-usb-boot): Handling 'AM335x U-Boot SPL' BOOTP packet
     ...
 
-- After a minute you see a USB mass storage device appear on your system. After
-  this you can kill the above script
+- After a minute a USB mass storage device appear on the host system. After
+  this, it is safe to kill the above script
 
  .. code-block::
 

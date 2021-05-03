@@ -1,5 +1,5 @@
-OreSat Linux Software Standards
-===============================
+Software Standards
+==================
 
 .. toctree::
     :maxdepth: 2

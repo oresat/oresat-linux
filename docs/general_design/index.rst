@@ -1,5 +1,5 @@
-OreSat Linux Design
-===================
+General Design
+==============
 
 .. toctree::
     :maxdepth: 2

@@ -1,14 +1,14 @@
-OreSat Linux Images
-===================
+Linux Images
+============
 
 All OreSat Linux Repos are hosted at https://debian.oresat.org/images/
 
-To decompress them::
-
-    $ zstd -d oresat-*.img.zst
-
 Notes about all images
 ----------------------
+
+- All img are compress with zstd. To decompress them::
+
+    $ zstd -d oresat-*.img.zst
 
 - All images use Debian with the TI 4.19 kernel.
 - All images have the user oresat with password temppwd.
@@ -16,43 +16,57 @@ Notes about all images
 - The CPU freqency governor is set to powersave (300Mhz on AM335x) on boot
 - Both eMMC0 and CAN1 device tree overlays are enabled.
 - Apt has both suggested and recommended autoinstall turned off.
-- **On the 1st boot**, it will grow the partition to fill the eMMC (or SD card)
-  and reboot automatically. This may take several minutes.
 - All use `systemd-networkd`_ for networking.
 - The static IP address is 192.168.6.2 and will route internet from a host 
   with an IP address of 192.168.6.1.
 - The CAN1 bus is enabled.
 - The hostname is set to the name of board it's for; ie generic, star-tracker,
   etc.
+- All image are minimize to reduce the size of the `.img`, so the image will
+  need to be expanded on first boot.
 
-Generic Image
--------------
+Images
+------
 
-The generic image is the image all other images are derived from. It has no 
+**oresat-dev-*.img**
+
+The dev image is the image all other images are derived from. It has no 
 OreSat packages installed, not even OLM, so it is a great image to use for
 development. This image should work fine on all OreSat Boards, a 
 `BeagleBone Black`_, or a `PocketBeagle`_.
 
-If the generic image is used for development, it may be nice to always have 
-the CPU freqency at 1GHz. To set the cpufreq to 1GHz on boot edit 
-`/etc/default/cpufrequtils` to be `GOVERNOR="performance"` and/or 
-set it to performance mode now::
+**oresat-generic-*.img**
 
-    sudo cpufreq-set -g performance
+This a basicly the dev image with only OLM and the oresat linux updater
+installed.
 
-Specific Board Images
----------------------
+**oresat-<board>-*.img**
 
-.. warning:: These images expect the hardware for their specific board, so the
-   the software on these image may not work on other hardware.
-
-All specific board images are the generic image plus all software and system 
+All specific board images are the dev image plus all software and system 
 configurations required for that board. 
 
-Building Images
----------------
+.. warning:: Board specific images expect the hardware for their specific
+   board, so the the software on these image may not work on other hardware.
 
-See https://github.com/oresat/oresat-linux/tree/master/images
+Common changes to do on first boot
+----------------------------------
+
+- To expanded the image to use the entire SD card / eMMC run::
+ 
+    $ sudo ./opt/scripts/tools/grow_partition.sh
+    $ sudo reboot
+
+- Stop / disable OLM::
+
+    $ sudo systemctl stop oresat-linux-managerd
+    $ sudo systemctl disable oresat-linux-managerd
+
+- It may be nice to always have the CPU freqency at 1GHz. Make sure to stop
+  and disable OLM first, if it is installed. To set the cpufreq to 1GHz on boot
+  edit `/etc/default/cpufrequtils` to be `GOVERNOR="performance"` and/or set it
+  to performance mode now::
+
+    $ sudo cpufreq-set -g performance
 
 .. _BeagleBone Black: https://beagleboard.org/black/
 .. _PocketBeagle: https://beagleboard.org/pocket

@@ -10,9 +10,9 @@ Debian
 All Linux boards will use the 4.19 TI Debian kernel as it has support for PRUs
 on the `Octavo A8`_ from `TI`_ and `beagleboard`_.
 
-Only `APT`_  will be used as a package manager. The goal is to avoid using other 
-pacakge managers like `pip`_ as much as possible. Don't want to have to deal with
-multiple package managers.
+Only `APT`_  will be used as a package manager. The goal is to avoid using
+other pacakge managers like `pip`_ as much as possible. It would be a pain to
+deal with multiple package managers.
 
 All networking will be handled by systemd-networkd. 
 
@@ -46,11 +46,11 @@ oresat-gpsd.service.
 Daemons should log to syslog (journald will grab those logs), so if the logs
 are needed OLM can easily copy them and give them to the `C3`_.
 
-All OreSat daemons will use D-Bus to interface with the `oresat-linux-manager`_.
+All OreSat daemons will use D-Bus to for inter-process commications with 
+`oresat-linux-manager`_.
 
-OreSat daemons should use session dbus (aka user dbus) unless it is a root
-process then use the system dbus. If the daemon uses system dbus follow dbus
-config file naming format of org.oresat.<service>, e.g. org.oresat.startracker.
+OreSat daemons should use system dbus. The dbus config file naming format
+should be org.OreSat.<service>, e.g. org.OreSat.StarTracker.
 
 **D-Bus Library recomendataions**
 
@@ -58,7 +58,7 @@ config file naming format of org.oresat.<service>, e.g. org.oresat.startracker.
   systemd.
 - For modern C++ (>= C++11) use `sdbus-cpp`_ as it is a nice modern C++ wrapper
   ontop of `sd-bus`_.
-- For Python3 use `pydbus`_ as it is easy to use and mantained.
+- For Python3 use `pydbus`_ as it is easy to use.
 - For others? A list of supported dbus library for other langauges can be found
   at `freedesktop dbus bindings`_
 

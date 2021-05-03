@@ -6,3 +6,5 @@ Guides
 
     building_images_link
     octavo_boot_link
+    pru
+    device_trees
