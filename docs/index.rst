@@ -1,14 +1,19 @@
 Welcome to OreSat Linux's documentation!
 ========================================
 
-Documenation for the OreSat Linux boards at the system level.
+Documenation for the embedded Linux boards on OreSat.
+
+The goal of this documentation is to provide a overview of the OreSat Linux
+enviroment on OreSat Linux boards, a high level overview of each OreSat Linux
+board, and provide any helpful resources/guides for development on OreSat Linux
+boards.
 
 .. warning::
     This is still a work in progress.
 
-.. note:: This is **not** the documentation for any of the M0 or M4 boards
-   running ChibiOS or the ground station software, see `OreSat Firmware`_ or
-   `UniClOGS Software`_ respectively.
+.. note:: This is **not** the documentation for any of the Cortex-M0 or 
+   Cortex-M4 boards running ChibiOS or the ground station software, see 
+   `OreSat Firmware`_ or `UniClOGS Software`_ respectively.
 
 What is OreSat?
 ---------------
@@ -20,6 +25,17 @@ Society).
 
     If you are looking for more info on OreSat, go checkout  
     `OreSat Website`_ and `OreSat GitHub`_
+
+Why Linux?
+----------
+
+Some of subsystems on OreSat need extra computing power, so they’re given
+hardware that can run Linux.
+
+Linux is Open Source.
+
+This also remove the restriction of baremetal, allowing software to be written
+in languages like Python, Java, Haskell, etc as needed.
 
 Glossary
 --------
@@ -36,14 +52,6 @@ General Design
     :maxdepth: 2
     
     general_design/index
-
-Standards
----------
-
-.. toctree::
-    :maxdepth: 2
-
-    standards/index
 
 Linux Images
 ------------

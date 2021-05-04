@@ -19,7 +19,7 @@
         State University. See https://www.pdxaerospace.org/
 
     D-Bus
-        Desktop Bus. Inter-process communication system provided by systemd.
+        Desktop Bus. Inter-process communication system common on Linux.
         See https://www.freedesktop.org/wiki/Software/dbus/
 
     DKMS

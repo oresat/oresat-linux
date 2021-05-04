@@ -39,8 +39,10 @@ A board with a camera and intenna for sending live video of Earth over long
 distance WiFi. This is apart of the OreSat Live payload mission.
 
 - `oresat-dxwifi-hardware`_ Hardware design for the OreSat Live board.
-- `oresat-dxwifi-software`_  Software for OreSat's 2.4GHz WiFi transmission system
-- `oresat-live-software`_ Software for both the satellite and ground components of OreSat Live. 
+- `oresat-dxwifi-software`_  Software for OreSat's 2.4GHz WiFi transmission
+  system
+- `oresat-live-software`_ Software for both the satellite and ground components
+  of OreSat Live. 
 
 CFC (Cirrus Flux Camera) Board
 ------------------------------
@@ -48,6 +50,15 @@ CFC (Cirrus Flux Camera) Board
 Short wave infrared camera to map cirrus clouds. Another payload for OreSat.
 
 - `oresat-cfc-hardware`_ Hardware design for the CFC board.
+
+Support Software
+----------------
+
+Support software projects for other OreSat projects.
+
+- `CANopen-Monitor`_ An NCurses-based TUI application for tracking activity
+  over a CAN bus and decoding messages.
+- `oresat-tpane`_ A NCurses library for easier development of TUI applications.
 
 .. OreSat repos
 .. _oresat-linux: https://github.com/oresat/oresat-linux
@@ -63,3 +74,5 @@ Short wave infrared camera to map cirrus clouds. Another payload for OreSat.
 .. _oresat-live-software: https://github.com/oresat/oresat-live-software
 .. _oresat-cfc-hardware: https://github.com/oresat/oresat-cfc-hardware
 .. _oresat-linux-prucam: https://github.com/oresat/oresat-linux-prucam
+.. _CANopen-Monitor: https://github.com/oresat/CANopen-Monitor
+.. _oresat-tpane: https://github.com/oresat/oresat-tpane

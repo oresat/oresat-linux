@@ -19,7 +19,7 @@
 
 project = 'OreSat Linux'
 copyright = '2021, Portland State Aerospace Society'
-author = 'Ryan Medick'
+author = 'PSAS'
 
 
 # -- General configuration ---------------------------------------------------
