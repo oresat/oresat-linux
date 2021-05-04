@@ -61,6 +61,14 @@ Linux Images
     
     images
 
+Boards
+------
+
+.. toctree::
+    :maxdepth: 2
+    
+    boards/index
+
 Guides
 ------
 
