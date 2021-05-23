@@ -1,0 +1,50 @@
+
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/pinctrl/am33xx.h>
+
+/ {
+  // disable the P1_28_pinmux as we define our own
+  fragment@0 {
+    target = <&ocp>;
+    __overlay__ {
+      P1_28_pinmux { status = "disabled"; };	/* gpio0_13.uart1_rtsn */
+    };
+  };
+
+  // overlay to enable CFC GPIO
+  fragment@1 {
+    target = <&ocp>;
+    __overlay__ {
+      cape-universal {
+        compatible = "gpio-of-helper";
+        status = "okay";
+        pinctrl-names = "default";
+        pinctrl-0 = <&cfc_pins>; /* this must point to pinmux name below */
+
+        /* must overlay P2_35 because it is used by the pocketbeagle
+           and I could not find a way to delete a node */
+        P2_35 {
+          gpio-name = "sensor_enable";
+          gpio = <&gpio2 22 0>;
+          input; // TODO remove
+          dir-changeable; // TODO remove
+        };
+      };
+    };
+  };
+
+  // overlay the pinmux with the pin modes we need
+  fragment@2 {
+    target = <&am33xx_pinmux>;
+    __overlay__ {
+      cfc_pins: pinmux_cfc_pins {
+            pinctrl-single,pins = <
+              AM33XX_IOPAD(AM335X_PIN_LCD_VSYNC, PIN_OUTPUT_PULLDOWN | INPUT_EN | MUX_MODE7)
+              >;
+      };
+    };
+  };
+};
