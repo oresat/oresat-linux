@@ -56,7 +56,7 @@
         __overlay__ {
             sdr_gps_pins: sdr_gps_pins {
                 pinctrl-single,pins = <
-	            AM33XX_IOPAD(AM335X_PIN_MII1_RX_DV, PIN_OUT | INPUT_EN | MUX_MODE7) /* (L19) gmii1_rxdv.gpio3[4] */
+	            AM33XX_IOPAD(AM335X_PIN_MII1_RX_DV, PIN_OUTPUT | INPUT_EN | MUX_MODE7) /* (L19) gmii1_rxdv.gpio3[4] */
                     AM33XX_IOPAD(AM335X_PIN_MII1_TXD3, PIN_INPUT | MUX_MODE7) /* (M17) gmii1_txd3.gpio0[16] */
                 >;
             };
@@ -71,7 +71,7 @@
                 pinctrl-single,pins = <
                     AM33XX_IOPAD(AM335X_PIN_MII1_COL, PIN_INPUT | MUX_MODE2) /* (J19) gmii1_col.spi1_sclk */
                     AM33XX_IOPAD(AM335X_PIN_MII1_CRS, PIN_INPUT | MUX_MODE2) /* (J18) gmii1_crs.spi1_d0 */
-                    AM33XX_IOPAD(AM335X_PIN_MII1_REF_CLK, PIN_INPUT | MUX_MODE2) /* (K18) rmii1_refclk.spi1_cs0 */
+                    AM33XX_IOPAD(AM335X_PIN_RMII1_REF_CLK, PIN_INPUT | MUX_MODE2) /* (K18) rmii1_refclk.spi1_cs0 */
                 >;
             };
         };
