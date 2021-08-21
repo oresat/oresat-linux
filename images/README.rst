@@ -16,7 +16,7 @@ Set up
 
   .. code-block::
 
-    $ sudo apt install git device-tree-complier zstd
+    $ sudo apt install git zstd device-tree-compiler make cpp m4 gcc dosfstools kpartx wget parted
 
 - clone the oresat-linux repo
 
@@ -27,7 +27,8 @@ Set up
 Build Image
 -----------
 
-.. note:: On a pocketbeagle or a beagleboard black this will take >40 minutes
+.. note:: On a PocketBeagle or a BeagleBoard Black this will take ~40 minutes.
+   On a Raspberry Pi 3B it takes ~20 minutes.
 
 .. code-block::
 
@@ -36,7 +37,8 @@ Build Image
   
 where <board> can be
     - **cfc** - The image for OreSat's CFC (Cirrus Flux Camera) board.
-    - **dev** - A basic image for development. All other images are derived from this image.
+    - **dev** - A basic image for development. All other images are derived
+      from this image.
     - **dxwifi** - The image for the OreSat DxWiFi board.
     - **generic** - A generic image for custom OreSat boards.
     - **gps** - The image the OreSat's GPS board.
