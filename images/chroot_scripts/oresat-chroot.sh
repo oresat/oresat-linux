@@ -8,7 +8,8 @@ echo "PermitRootLogin prohibit-password" >> /etc/ssh/sshd_config
 ##############################################################################
 echo "set default boot power mode"
 
-if [ hostname != "dev" ]; then
+HOSTNAME=`hostname`
+if [ $HOSTNAME != "dev" ]; then
 cat > "/etc/default/cpufrequtils" <<-__EOF__
 GOVERNOR="powersave"
 __EOF__
@@ -75,6 +76,6 @@ systemctl enable systemd-resolved
 ##############################################################################
 echo "remove internet packages required during build"
 
-if [ hostname != "dev" ]; then
+if [ $HOSTNAME != "dev" ]; then
 apt -y purge git git-man curl wget rsync
 fi
