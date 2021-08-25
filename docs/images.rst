@@ -17,8 +17,10 @@ Notes about all images
 - Both eMMC0 and CAN1 device tree overlays are enabled.
 - Apt has both suggested and recommended autoinstall turned off.
 - All use `systemd-networkd`_ for networking.
-- The static IP address is 192.168.6.2 and will route internet from a host 
-  with an IP address of 192.168.6.1.
+- Has two staic IP address just like BeagleBoard's images; `192.168.6.2` (for
+  \*nix based) or `192.168.7.2` (for Windows).
+- Images will try to route internet from hosts an IP addresses of `192.168.6.1`
+  and  `192.168.7.1`.
 - The CAN1 bus is enabled.
 - The hostname is set to the name of board it's for; ie generic, star-tracker,
   etc.

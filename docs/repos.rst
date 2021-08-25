@@ -49,7 +49,8 @@ CFC (Cirrus Flux Camera) Board
 
 Short wave infrared camera to map cirrus clouds. Another payload for OreSat.
 
-- `oresat-cfc-hardware`_ Hardware design for the CFC board.
+- `oresat-cfc-software`_ CFC daemon.
+- `oresat-linux-prucam`_ A kernel module for interfacing to camera with a PRU.
 
 Support Software
 ----------------
@@ -72,7 +73,7 @@ Support software projects for other OreSat projects.
 .. _oresat-dxwifi-hardware: https://github.com/oresat/oresat-dxwifi-hardware
 .. _oresat-dxwifi-software: https://github.com/oresat/oresat-dxwifi-software
 .. _oresat-live-software: https://github.com/oresat/oresat-live-software
-.. _oresat-cfc-hardware: https://github.com/oresat/oresat-cfc-hardware
+.. _oresat-cfc-software: https://github.com/oresat/oresat-cfc-software
 .. _oresat-linux-prucam: https://github.com/oresat/oresat-linux-prucam
 .. _CANopen-Monitor: https://github.com/oresat/CANopen-Monitor
 .. _oresat-tpane: https://github.com/oresat/oresat-tpane

@@ -45,6 +45,14 @@ Glossary
 
     glossary
 
+Getting Started
+---------------
+
+.. toctree::
+    :maxdepth: 2
+
+    getting_started
+
 General Design
 --------------
 
