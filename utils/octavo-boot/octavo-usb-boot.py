@@ -9,6 +9,7 @@ import os
 import netifaces
 import sys
 import threading
+import time
 
 log = logging.getLogger("octavo-usb-boot")
 handler = logging.StreamHandler(stream=sys.stdout)
@@ -35,6 +36,9 @@ def bootp_server():
     while True:
         # wait for the interface to come up
         wait_interface()
+
+        # wait a sec for the server to start
+        time.sleep(2)
 
         # start the BOOTP/DHCP server
         server = BOOTPServer(iface, "")
