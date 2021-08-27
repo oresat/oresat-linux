@@ -8,7 +8,7 @@ echo "PermitRootLogin prohibit-password" >> /etc/ssh/sshd_config
 ##############################################################################
 echo "set default boot power mode"
 
-HOSTNAME=`hostname`
+HOSTNAME=`cat /etc/hostname`
 if [ $HOSTNAME != "dev" ]; then
 cat > "/etc/default/cpufrequtils" <<-__EOF__
 GOVERNOR="powersave"
