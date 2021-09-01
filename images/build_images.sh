@@ -55,7 +55,7 @@ echo "\
 ##############################################################################
 echo \"adding OLM config\"
 
-cat >> \"/etc/oresat-linux-manager.conf\" <<-__EOF__
+cat > \"/etc/oresat-linux-manager.conf\" <<-__EOF__
 [Bus]
 Name=can1
 
