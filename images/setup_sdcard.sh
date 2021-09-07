@@ -2062,7 +2062,7 @@ check_root
 if [ -f "${media}" ] ; then
         rm -rf "${media}" || true
 fi
-img_size=`du armhf-rootfs-debian-buster.tar`
+img_size=`du armhf-rootfs-debian-bullseye.tar`
 gsize=`echo $img_size | tr -s " " | cut -d " " -f 1`
 gsize=$(($gsize + (250 * 1024))) 
 dd if=/dev/zero of="${media}" bs=1024 count=0 seek=$gsize

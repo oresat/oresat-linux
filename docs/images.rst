@@ -10,7 +10,7 @@ Notes about all images
 
     $ zstd -d oresat-*.img.zst
 
-- All images use Debian with the TI 4.19 kernel.
+- All images use Debian with the TI 5.10 kernel.
 - All images have the user oresat with password temppwd.
 - Root login over ssh is disabled.
 - The CPU freqency governor is set to powersave (300Mhz on AM335x) on boot

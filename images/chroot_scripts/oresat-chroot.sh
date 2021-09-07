@@ -28,13 +28,6 @@ SystemMaxUse=50M
 __EOF__
 
 ##############################################################################
-echo "setup serial?"
-
-echo "" >> /etc/securetty
-echo "#USB Gadget Serial Port" >> /etc/securetty
-echo "ttyGS0" >> /etc/securetty
-
-##############################################################################
 echo "setup systemd-networkd"
 
 cat > "/etc/systemd/network/10-can.network" <<-__EOF__
