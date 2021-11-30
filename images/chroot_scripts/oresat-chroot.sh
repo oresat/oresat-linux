@@ -34,6 +34,9 @@ cat > "/etc/systemd/network/10-can.network" <<-__EOF__
 [Match]
 Name=can1
 
+[Link]
+RequiredForOnline=no
+
 [CAN]
 BitRate=1M
 __EOF__
