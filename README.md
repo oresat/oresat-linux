@@ -3,12 +3,16 @@
 [![Issues](https://img.shields.io/github/issues/oresat/oresat-linux)](https://github.com/oresat/oresat-linux/issues)
 [![Documentation Status](https://readthedocs.org/projects/oresat-linux/badge/?version=latest)](https://oresat-linux.readthedocs.io/en/latest/?badge=latest)
 
-This repo has all the image builder, system level documenation, and general
-utilities for OreSat Linux software development.
+This repo has all the OreSat Linux system level documenation and utilities for
+OreSat Linux boards.
+
+## Utilites
+
+- **Image Builder:** Used to build OreSat Linux images.
+- **Octavo Boot:** Used to flash a OreSat Linux board's eMMC over USB.
+- **Octavo EEPROM:** Used to flash a new OreSat Linux board's EEPROM.
 
 ## OreSat Linux Images
-
-See [images/readme.md](images/README.md) for notes on how to build OreSat Linux images.
 
 Images are hosted at [https://debian.oresat.org/images/](https://debian.oresat.org/images/)
 

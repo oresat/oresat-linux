@@ -1,1 +1,1 @@
-.. include:: ../../utils/octavo-boot/README.rst
+.. include:: ../../octavo-boot/README.rst
