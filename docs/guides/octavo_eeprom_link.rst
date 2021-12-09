@@ -1,1 +1,1 @@
-.. include:: ../../octavo-eeprom/README.rst
+.. include:: ../../octavo_eeprom/README.rst

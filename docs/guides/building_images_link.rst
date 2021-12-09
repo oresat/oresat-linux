@@ -1,1 +1,1 @@
-.. include:: ../../image-builder/README.rst
+.. include:: ../../image_builder/README.rst
