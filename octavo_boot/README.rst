@@ -11,13 +11,19 @@ a standalone script instead of needing to setup multiple services
 Setup
 -----
 
-First clone the oresat-linux repo
+Install dependencies
+
+.. code-block::
+
+   $ sudo apt install ifconfig unzip curl git
+   $ sudo pip3 install -r requirements.txt
+
+Clone the oresat-linux repo
 
 .. code-block::
 
    $ git clone https://github.com/oresat/oresat-linux
    $ cd oresat-linux/octavo-boot/
-
 
 Download the project files
     
@@ -56,7 +62,7 @@ Boot Octavo via USB as USB mass storage
 
 .. code-block::
 
-    $ sudo ./octavo-usb-boot.py usb0 /home/pi/oresat-linux/utils/octavo-boot/tftpboot
+    $ sudo python3 octavo-_usb_boot.py usb0 /home/pi/oresat-linux/utils/octavo-boot/tftpboot
     INFO(tftpd): Serving TFTP requests on usb0/192.168.0.1:69 in /home/pi/oresat-linux/utils/octavo-boot/tftpboot
     INFO(octavo-usb-boot): Handling 'AM335x ROM' BOOTP packet
     INFO(bootpd): Offering to boot client 192.168.0.2
