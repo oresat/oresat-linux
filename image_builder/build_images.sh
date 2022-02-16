@@ -63,9 +63,6 @@ Name=can1
 ID=$NODE_ID
 __EOF__" >> image-builder/target/chroot/oresat-chroot.sh
 
-# override setup_sdcard script
-cp ./setup_sdcard.sh ./image-builder/tools/
-
 cd image-builder
 
 # clear any previous builds
@@ -77,10 +74,10 @@ rm -rf deploy
 cd deploy/debian-*/
 
 # make .img file
-sudo ./setup_sdcard.sh $NAME.img --dtb beaglebone --enable-mainline-pru-rproc
+sudo ./setup_sdcard.sh --img-2gb $NAME.img --dtb beaglebone --enable-mainline-pru-rproc
 
 # compress
-zstd $NAME.img
+zstd $NAME-2gb.img
 
 cd ../../..
 
