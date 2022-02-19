@@ -9,7 +9,6 @@ if [ $# -ne 1 ]; then
     echo "  cfc"
     echo "  dev"
     echo "  dxwifi"
-    echo "  generic"
     echo "  gps"
     echo "  star-tracker"
     exit 1
