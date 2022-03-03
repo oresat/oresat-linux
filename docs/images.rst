@@ -1,7 +1,7 @@
 Linux Images
 ============
 
-All OreSat Linux Repos are hosted at https://debian.oresat.org/images/
+All OreSat Linux Repos are hosted at https://images.oresat.org/
 
 Notes about all images
 ----------------------

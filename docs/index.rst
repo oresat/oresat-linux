@@ -87,8 +87,8 @@ Git Repositories
 
 OreSat Linux Links
 -------------------
-- All Oresat Linux Packages can be found at https://debian.oresat.org/packages/
-- All Oresat Linux images can be found at https://debian.oresat.org/images/
+- All Oresat Linux Packages can be found at https://packages.oresat.org/
+- All Oresat Linux images can be found at https://images.oresat.org/
 
 
 Indices and Tables

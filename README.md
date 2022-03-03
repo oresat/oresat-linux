@@ -14,7 +14,7 @@ OreSat Linux boards.
 
 ## OreSat Linux Images
 
-Images are hosted at [https://debian.oresat.org/images/](https://debian.oresat.org/images/)
+Images are hosted at [https://images.oresat.org/](https://images.oresat.org/)
 
 ## System Level Documenation
 
