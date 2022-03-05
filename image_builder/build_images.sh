@@ -80,4 +80,4 @@ zstd $NAME-2gb.img
 
 cd ../../..
 
-mv image-builder/deploy/debian-*/$NAME.img.zst .
+mv image-builder/deploy/debian-*/$NAME-2gb.img.zst .
