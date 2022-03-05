@@ -7,7 +7,7 @@ APT::Install-Recommends "0";
 __EOF__
 
 # add oresat debian repo
-echo "deb [trusted=yes] https://debian.oresat.org/packages ./" >> ${tempdir}/etc/apt/sources.list
+echo "deb [trusted=yes] https://packages.oresat.org/debian bullseye main" >> ${tempdir}/etc/apt/sources.list
 apt update
 
 # add all oresat dtbo
