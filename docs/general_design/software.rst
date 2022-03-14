@@ -1,6 +1,11 @@
 Software
 ========
 
+.. warning::
+    The OLM (OreSat Linux Manager), multiple daemons, and dbus design is being
+    deprecated in favor of OLAF (OreSat Linux App Framework). See 
+    https://github.com/oresat/oresat-linux-app-framework
+
 In general, all OreSat software projects can be broken up into 3 category:
 
 1. Kernel and firmware level
