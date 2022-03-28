@@ -55,7 +55,7 @@ Common changes to do on first boot
 
 - To expanded the image to use the entire SD card / eMMC run::
  
-    $ sudo ./opt/scripts/tools/grow_partition.sh
+    $ sudo /opt/scripts/tools/grow_partition.sh
     $ sudo reboot
 
 - Stop / disable OLM::
