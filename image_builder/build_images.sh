@@ -14,12 +14,7 @@ if [ $# -ne 1 ]; then
     exit 1
 fi
 
-NODE_ID=`grep "^$1=" node_ids.txt | cut -d "=" -f 2`
-echo $NODE_ID
-
 BOARD="oresat-"$1
-echo $BOARD
-
 DATE=`date "+%F"`
 NAME="$BOARD-$DATE"
 
@@ -47,20 +42,6 @@ done
 cp ./configs/*.conf ./image-builder/configs/
 cp ./chroot_scripts/*.sh ./image-builder/target/chroot/
 cp ./uEnv/*.txt ./image-builder/target/boot/
-
-# add olm config
-echo "\
-
-##############################################################################
-echo \"adding OLM config\"
-
-cat > \"/etc/oresat-linux-manager.conf\" <<-__EOF__
-[Bus]
-Name=can1
-
-[Node]
-ID=$NODE_ID
-__EOF__" >> image-builder/target/chroot/oresat-chroot.sh
 
 cd image-builder
 
