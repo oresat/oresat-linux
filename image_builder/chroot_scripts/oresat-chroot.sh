@@ -20,7 +20,7 @@ __EOF__
 fi
 
 ##############################################################################
-echo "remove internet packages required during build"
+echo "remove internet packages required during build on flight images"
 
 if [ $HOSTNAME != "oresat-dev" ]; then
 apt -y purge git git-man curl wget rsync

@@ -22,22 +22,6 @@ if [ ! -d image-builder ]; then
     git clone https://github.com/beagleboard/image-builder
 fi
 
-if [ ! -d bb.org-overlays ]; then
-    git clone https://github.com/beagleboard/bb.org-overlays
-fi
-
-cp ./device_trees_overlays/*.dts bb.org-overlays/src/arm/
-
-# build dtbo
-cd bb.org-overlays
-make
-cd ..
-
-# copy all new dtbo
-for filename in `ls device_trees_overlays/*.dts`; do
-    cp bb.org-overlays/src/arm/$(basename "$filename" .dts).dtbo device_trees_overlays/
-done
-
 # copy oresat config into correct dirs
 cp ./configs/*.conf ./image-builder/configs/
 cp ./chroot_scripts/*.sh ./image-builder/target/chroot/
