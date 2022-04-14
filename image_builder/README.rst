@@ -16,7 +16,7 @@ Set up
 
   .. code-block::
 
-    $ sudo apt install git zstd device-tree-compiler make cpp m4 gcc dosfstools kpartx wget parted
+    $ sudo apt install git zstd device-tree-compiler make cpp m4 gcc dosfstools kpartx wget parted tree
 
 - clone the oresat-linux repo
 
