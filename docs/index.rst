@@ -67,7 +67,7 @@ Linux Images
 .. toctree::
     :maxdepth: 2
     
-    images
+    images/index
 
 Guides
 ------
