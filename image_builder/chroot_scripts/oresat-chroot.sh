@@ -20,6 +20,34 @@ __EOF__
 fi
 
 ##############################################################################
+echo "add OreSat app daemon"
+
+if [ $HOSTNAME != "oresat-dev" ]; then
+# add config
+cat > "/usr/lib/systemd/system/"$HOSTNAME"d.service" <<-__EOF__
+[Unit]
+Description=OreSat Linux App
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/"$HOSTNAME" -b can1
+Restart=on-failure
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
+Alias=oresatd.service
+__EOF__
+
+# enable daemon
+systemctl daemon-reload
+systemctl enable $HOSTNAME"d.service"
+fi
+
+##############################################################################
 echo "replace BeagleBoard's systemd-networkd config"
 
 # disable networking script
