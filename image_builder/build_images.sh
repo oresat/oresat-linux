@@ -1,9 +1,11 @@
 #!/bin/bash
 
-if [ $# -ne 1 ]; then
+list="cfc dev dxwifi gps star-tracker"
+
+if [[ ! $list =~ (^|[[:space:]])$1($|[[:space:]]) ]]; then
     echo "Invalid arguments"
     echo ""
-    echo "./build_images <BOARD>"
+    echo "./build_images.sh <BOARD>"
     echo ""
     echo "where <BOARD> can be:"
     echo "  cfc"
@@ -62,3 +64,6 @@ zstd $NAME-2gb.img
 cd ../../..
 
 mv image-builder/deploy/debian-*/$NAME-2gb.img.zst .
+
+# generate sha256
+sha256sum $NAME-2gb.img.zst > $NAME-2gb.img.zst.sha256

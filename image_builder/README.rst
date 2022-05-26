@@ -7,7 +7,7 @@ Requirements
 ------------
 
 - Image must be built on a armv7 device running Debian.
-- An internet connection (it has to call `apt` a lot).
+- An internet connection (it has to call ``apt`` a lot).
 
 Set up
 ------
@@ -40,6 +40,5 @@ where <board> can be
     - **dev** - A basic image for development. All other images are derived
       from this image.
     - **dxwifi** - The image for the OreSat DxWiFi board.
-    - **generic** - A generic image for custom OreSat boards.
     - **gps** - The image the OreSat's GPS board.
     - **star-tracker** - The image for the OreSat's Star Tracker board.
