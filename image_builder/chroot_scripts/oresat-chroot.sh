@@ -24,7 +24,7 @@ echo "add OreSat app daemon"
 
 if [ $HOSTNAME != "oresat-dev" ]; then
 # add config
-cat > "/usr/lib/systemd/system/"$HOSTNAME"d.service" <<-__EOF__
+cat > "/etc/systemd/system/"$HOSTNAME"d.service" <<-__EOF__
 [Unit]
 Description=OreSat Linux App
 Wants=network-online.target
@@ -32,7 +32,7 @@ After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/"$HOSTNAME" -b can1
+ExecStart=/usr/bin/"$HOSTNAME" -b can1 -l
 Restart=on-failure
 User=root
 Group=root

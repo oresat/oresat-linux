@@ -31,9 +31,7 @@ fi
 cp ./device_trees_overlays/*.dts bb.org-overlays/src/arm/
 
 # build dtbo
-cd bb.org-overlays
-make
-cd ..
+make -C bb.org-overlays
 
 # copy all new dtbo
 for filename in `ls device_trees_overlays/*.dts`; do
