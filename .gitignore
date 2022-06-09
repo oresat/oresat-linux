@@ -8,3 +8,4 @@ bb.org-overlays/
 *.dtbo
 *.img
 *.img.zst
+*.sha256
