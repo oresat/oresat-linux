@@ -32,7 +32,7 @@ After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/"$HOSTNAME" -b can1 -l
+ExecStart=/usr/local/bin/$HOSTNAME -b can1 -l
 Restart=on-failure
 User=root
 Group=root
@@ -61,10 +61,7 @@ rm /etc/systemd/network/*
 
 cat > "/etc/systemd/network/10-can.network" <<-__EOF__
 [Match]
-Name=can*
-
-[Link]
-RequiredForOnline=no
+Name=can1
 
 [CAN]
 BitRate=1M
@@ -84,6 +81,10 @@ RequiredForOnline=no
 DHCP=yes
 MulticastDNS=yes
 __EOF__
+
+# make sure these are enabled
+systemctl enable systemd-networkd.service
+systemctl enable systemd-resolved.service
 
 ##############################################################################
 echo "remove internet packages required during build on flight images"
