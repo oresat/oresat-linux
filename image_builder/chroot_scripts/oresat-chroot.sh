@@ -82,6 +82,7 @@ RequiredForOnline=no
 
 [Network]
 DHCP=yes
+MulticastDNS=yes
 __EOF__
 
 ##############################################################################

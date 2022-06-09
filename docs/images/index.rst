@@ -23,7 +23,7 @@ required for that specific board.
 Notes about all images
 ----------------------
 
-- All img are compress with zstd. To decompress them::
+- All img are compress with ``zstd``. To decompress them::
 
     $ zstd -d oresat-*.img.zst
 
@@ -32,17 +32,20 @@ Notes about all images
 - On the **first** boot, the image will expand to fill the eMMC or SD card.
 - Root login over ssh is disabled.
 - The CPU freqency governor is set to powersave (300MHz on AM335x) on boot for
-  all flight images. The oresat-dev image has the CPU freqency governor set to
-  performance (1GHz on AM335x).
+  all flight images. The ``oresat-dev`` image has the CPU freqency governor set
+  to performance (1GHz on AM335x).
 - Both eMMC0 and CAN1 device tree overlays are enabled.
-- Apt has both suggested and recommended autoinstall turned off.
+- ``Apt`` has both suggested and recommended autoinstall turned off.
 - All use `systemd-networkd`_ for networking.
 - Has two USB IP Links just like BeagleBoard's images, but they use both us
   DHCP, the first one is for Windows and the second is for a \*nix based OS.
 - eth0 is also set up for DHCP for `BeagleBone Black`_ ethernet jack.
 - The CAN1 bus is enabled.
-- The hostname is set to the name of board it's for; ie oresat-dev,
-  oresat-star-tracker, etc.
+- The hostname is set to the name of board it's for; e.g. ``oresat-dev``,
+  ``oresat-star-tracker``, etc.
+- mDNS (MulticatDNS) is setup with `systemd-networkd`_, so if the host has mDNS
+  enable, boards with OreSat images can be resolved to ``hostname.local``; e.g.:
+  ``oresat-gps.local``
 
 Connecting to board using a OreSat Linux Image
 ----------------------------------------------
