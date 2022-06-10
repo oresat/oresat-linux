@@ -12,5 +12,13 @@ __EOF__
 #echo "deb [trusted=yes] https://packages.oresat.org/debian bullseye main" >> ${tempdir}/etc/apt/sources.list
 #apt update
 
+# add this to use piwheels.org as an extra source
+# piwheels.org has pre-built "manylinux" armhf packages
+# otherwise packages like numpy, psutil, and opencv-python have to be build from pypi source
+cat > "${tempdir}/etc/pip.conf" <<-__EOF__
+[global]
+extra_index_url = https://piwheels.org/simple
+__EOF__
+
 # add all oresat dtbo
 cp ../device_trees_overlays/*.dtbo $tempdir/lib/firmware/
