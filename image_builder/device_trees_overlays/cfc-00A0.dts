@@ -1,9 +1,9 @@
+/* OreSat CFC overlay */
+
+#include "am33xx.h"
 
 /dts-v1/;
 /plugin/;
-
-#include <dt-bindings/gpio/gpio.h>
-#include <dt-bindings/pinctrl/am33xx.h>
 
 / {
   // disable the P1_28_pinmux as we define our own

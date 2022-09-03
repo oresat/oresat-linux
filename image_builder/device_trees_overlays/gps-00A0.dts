@@ -1,6 +1,6 @@
 /* OreSat GPS overlay */
 
-#include <dt-bindings/pinctrl/am33xx.h>
+#include "am33xx.h"
 
 /dts-v1/;
 /plugin/;

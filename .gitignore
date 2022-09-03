@@ -6,6 +6,7 @@ image-builder/
 build/
 bb.org-overlays/
 *.dtbo
+*.dts.tmp
 *.img
 *.img.zst
 *.sha256
