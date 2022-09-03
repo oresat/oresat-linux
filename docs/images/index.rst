@@ -27,7 +27,7 @@ Notes about all images
 
     $ zstd -d oresat-*.img.zst
 
-- All images use Debian 11 (Bullseye) with the TI 5.10 kernel.
+- All images use Debian 11 (Bullseye) with the TI 4.19 kernel.
 - All images have the user debian with password temppwd.
 - On the **first** boot, the image will expand to fill the eMMC or SD card.
 - Root login over ssh is disabled.
