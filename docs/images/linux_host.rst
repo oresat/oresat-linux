@@ -21,15 +21,15 @@ Connecting to OreSat Linux from Linux host
         link/ether 60:64:05:f9:0d:08 brd ff:ff:ff:ff:ff:ff
 
 
-- Make a note of the second connection name. If th is a `enp*` connection it is
-  usually the `enp*i2` one (as show above) or if it is a `enx*` connection it is
-  the one with the higher number at the end of the name.
+- Make a note of the second connection name. If th is a ``enp*`` connection it
+  is usually the ``enp*i2`` one (as show above) or if it is a ``enx*``
+  connection it is the one with the higher number at the end of the name.
 
 - **Only if the Linux host uses** `NetworkManager`_
 
-  - Install `dnsmasq` on your system
+  - Install ``dnsmasq`` on your system
 
-  - In another terminal setup a DHCP server. **Replace** `enp0s20f0u3i2` in the follow
+  - In another terminal setup a DHCP server. **Replace** ``enp0s20f0u3i2`` in the follow
     command with the name found in previous step on your host.
 
     .. note:: This guide use the `nmcli` command as the NetworkManager applet is limited
@@ -41,7 +41,7 @@ Connecting to OreSat Linux from Linux host
 - **Only if the Linux host uses** `systemd-networkd`_
 
   - Setup the DHCP server. With your favorite IDE or text editor make the
-    `/etc/systemd/network/20-oresat-board.network` file and add the following.
+    ``/etc/systemd/network/20-oresat-board.network`` file and add the following.
     **Replace** enp*i2 as needed.
 
       .. code-block:: text
@@ -53,10 +53,9 @@ Connecting to OreSat Linux from Linux host
         Address=10.42.1.1/24
         DHCPServer=true
         IPMasquerade=ipv4
+        MulticastDNS=yes
 
         [DHCPServer]
-        PoolOffset=100
-        PoolSize=20
         EmitDNS=yes
         DNS=9.9.9.9
 
@@ -66,9 +65,9 @@ Connecting to OreSat Linux from Linux host
 
       $ sudo systemctl restart systemd-networkd
 
-- Go back to the terminal with `watch ip a` command running at wait for the
+- Go back to the terminal with ``watch ip a`` command running at wait for the
   address to be set. Make a note of the address and IPv4 address space, it
-  should be something like `10.42.1.1/24`. 
+  should be something like ``10.42.1.1/24``. 
 
   .. code-block:: text
 
@@ -86,9 +85,9 @@ Connecting to OreSat Linux from Linux host
         inet6 fe80::cbcb:674d:2adf/64 scope link noprefixroute
           valid_lft forever preferred_lft forever
 
-- Install `nmap` for your system
+- Install ``nmap`` for your system
 
-- Run nmap to figure out the board's IP address. **Replace** `10.42.1.1/24` in
+- Run nmap to figure out the board's IP address. **Replace** ``10.42.1.1/24`` in
   the follow command to be addres **with** the IPv4 address space found in the
   previous step.
 
@@ -105,10 +104,10 @@ Connecting to OreSat Linux from Linux host
 - That should print out two IP addresses (one is the Linux host and one is the
   OreSat board)
 
-- The terminal with `watch ip a` running is no longer needed.
+- The terminal with ``watch ip a`` running is no longer needed.
 
-- SSH onto the board. Password is `temppwd`. **Replace** `10.42.1.120` in the
-  following command with other address that nmap found
+- SSH onto the board. Password is ``temppwd``. **Replace** ``10.42.1.120`` in
+  the following command with other address that nmap found
 
   .. code-block:: text
 

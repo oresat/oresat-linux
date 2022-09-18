@@ -3,14 +3,14 @@ Connecting to OreSat Linux from MacOS host
 
 - Connect the OreSat Linux board to host using a USB cable
 
-- Goto `System Perference => Network` and wait for the two connections to come
+- Goto ``System Perference => Network`` and wait for the two connections to come
   up
-- Remove the `BeagleBone` connection (the first connection), we will only care
-  about the `BeagleBone 2` connection
+- Remove the ``BeagleBone`` connection (the first connection), we will only care
+  about the ``BeagleBone 2`` connection
 
-- Goto `System Perference => Sharing`, click on `Internet Sharing` (the word,
-  not the checkbox), check the checkbox next to `BeagleBone`, and then check
-  the checkbox for `Internet Sharing`
+- Goto ``System Perference => Sharing``, click on ``Internet Sharing`` (the word,
+  not the checkbox), check the checkbox next to ``BeagleBone``, and then check
+  the checkbox for ``Internet Sharing``
 
 - Open a terminal and watch ifconfig
   
@@ -50,24 +50,28 @@ Connecting to OreSat Linux from MacOS host
       status: active
 
 - Once the bridge show up note the IP address and stop the watch (control-C).
-  In the example `ifconfig` above, the address for the bridge would be
-  `192.168.2.1`.
+  In the example ``ifconfig`` above, the address for the bridge would be
+  ``192.168.2.1``.
 
-- Go back to `System Perference => Network` and edit `BeagleBone 2` and change
-  it to `Using DHCP with manual address` and set the address to the address
-  found from ifconfig. 
+- Go back to ``System Perference => Network`` and edit ``BeagleBone 2`` and
+  change it to ``Using DHCP with manual address`` and set the address to the
+  address found from ifconfig. 
 
-- Wait for the `Subnet Mask` to be set
+- Wait for the ``Subnet Mask`` to be set
 
-- Install `nmap` for your system
+- Install ``nmap`` for your system
   
   - with brew::
 
       $ brew install nmap
 
+  - **or** with MacPorts::
+
+      $ sudo ports install nmap
+
   - **or** download and install from https://nmap.org/download.html/#macosx
 
-- Run nmap to figure out the board's IP address. **Replace** `192.168.2.1/24` in
+- Run nmap to figure out the board's IP address. **Replace** ``192.168.2.1/24`` in
   the follow command to be addres **with** the IPv4 address space found by
   ifconfig.
 
@@ -84,7 +88,7 @@ Connecting to OreSat Linux from MacOS host
 - That should print out two IP addresses (one is the MacOS host and one is the
   OreSat board)
 
-- SSH onto the board. Password is `temppwd`. **Replace** `192.168.2.6` in the
+- SSH onto the board. Password is ``temppwd``. **Replace** ``192.168.2.6`` in the
   following command with other address that nmap found.
 
   .. code-block:: text
