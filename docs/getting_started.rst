@@ -22,7 +22,7 @@ Task board
 ----------
 
 - We try use GitHub Issue and GitHub Projects for all tasks that needed to be
-  done (bug fixes, new features, etc).
+  done (bug fixes, new features, etc). See https://github.com/orgs/oresat/projects/6/views/1
 - Not all things that need to be worked on are addes to GitHub Issues.
 - Anyone is free to work on any GitHub Issue that is not assigned to anyone
   else, but you must assign yourself to the GitHub Issue if you are working on

@@ -18,10 +18,6 @@
         Portland State Aerosapce Society. A student aerospace group at Portland
         State University. See https://www.pdxaerospace.org/
 
-    D-Bus
-        Desktop Bus. Inter-process communication system common on Linux.
-        See https://www.freedesktop.org/wiki/Software/dbus/
-
     DKMS
         Dynamic Kernel Module Support. It is used to automatically reload out of
         tree Linux kernel modules when the kernel is updated.
@@ -47,7 +43,7 @@
         A communication protocol and device profile specification for a CAN 
         bus defined by CAN in Automation. More info at https://can-cia.org/
 
-    OLM
-        OreSat Linux Manager. The front end daemon for all OreSat Linux boards.
-        It converts CANopen messages into D-Bus messages and vice versa. See
-        https://github.com/oresat/oresat-linux-manager
+    OLAF
+        OreSat Linux Application Framework. The pythonic CANopen application
+        framework for all OreSat Linux boards. See
+        https://github.com/oresat/oresat-olaf
