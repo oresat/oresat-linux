@@ -1,26 +1,14 @@
 #!/bin/sh -e
 
+HOSTNAME=`cat /etc/hostname`
+
 ##############################################################################
 echo "disable root login"
 
 echo "PermitRootLogin prohibit-password" >> /etc/ssh/sshd_config
 
 ##############################################################################
-echo "set default boot power mode"
-
-HOSTNAME=`cat /etc/hostname`
-if [ $HOSTNAME != "oresat-dev" ]; then
-cat > "/etc/default/cpufrequtils" <<-__EOF__
-GOVERNOR="powersave"
-__EOF__
-else
-cat > "/etc/default/cpufrequtils" <<-__EOF__
-GOVERNOR="performance"
-__EOF__
-fi
-
-##############################################################################
-echo "add OreSat app daemon"
+echo "add OreSat OLAF app daemon"
 
 if [ $HOSTNAME != "oresat-dev" ]; then
 # add config
@@ -32,7 +20,7 @@ After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/$HOSTNAME -b can1 -l
+ExecStart=/usr/local/bin/$HOSTNAME -b can1 -l -a 0.0.0.0 -p 8000
 Restart=on-failure
 User=root
 Group=root
@@ -45,6 +33,35 @@ __EOF__
 # enable daemon
 systemctl daemon-reload
 systemctl enable $HOSTNAME"d.service"
+fi
+
+##############################################################################
+echo "setup and configure nginx for OreSat OLAF app"
+
+cat > "/etc/nginx/nginx.conf" <<-__EOF__
+events {
+  worker_connections 768;
+}
+
+http {
+  server {
+	  listen 80;
+	  server_name _;
+
+    location / {
+      proxy_pass http://127.0.0.1:8000/;
+      proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;A
+      proxy_set_header X-Forwarded-Proto \$scheme;
+      proxy_set_header X-Forwarded-Host \$host;
+      proxy_set_header X-Forwarded-Prefix /;
+    }
+  }
+}
+__EOF__
+
+# only enable on flight images
+if [ $HOSTNAME != "oresat-dev" ]; then
+systemctl enable nginx.service
 fi
 
 ##############################################################################

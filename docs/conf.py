@@ -17,8 +17,9 @@
 
 # -- Project information -----------------------------------------------------
 
+from datetime import datetime
 project = 'OreSat Linux'
-copyright = '2021, Portland State Aerospace Society'
+copyright = f'{datetime.now().year}, Portland State Aerospace Society'
 author = 'PSAS'
 
 
