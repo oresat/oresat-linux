@@ -39,10 +39,8 @@ A board with a camera and intenna for sending live video of Earth over long
 distance WiFi. This is apart of the OreSat Live payload mission.
 
 - `oresat-dxwifi-hardware`_ Hardware design for the OreSat Live board.
-- `oresat-dxwifi-software`_  Software for OreSat's 2.4GHz WiFi transmission
-  system
-- `oresat-live-software`_ Software for both the satellite and ground components
-  of OreSat Live. 
+- `oresat-dxwifi-software`_  The dxwifi application.
+- `oresat-libdxwifi`_  Library for OreSat's 2.4GHz WiFi transmission system.
 
 CFC (Cirrus Flux Camera) Board
 ------------------------------
@@ -74,7 +72,7 @@ Support software projects for other OreSat projects.
 .. _oresat-prucam-ar013x: https://github.com/oresat/oresat-prucam-ar013x
 .. _oresat-dxwifi-hardware: https://github.com/oresat/oresat-dxwifi-hardware
 .. _oresat-dxwifi-software: https://github.com/oresat/oresat-dxwifi-software
-.. _oresat-live-software: https://github.com/oresat/oresat-live-software
+.. _oresat-libdxwifi: https://github.com/oresat/oresat-libdxwifi
 .. _oresat-cfc-software: https://github.com/oresat/oresat-cfc-software
 .. _oresat-prucam-pirt1280: https://github.com/oresat/oresat-prucam-pirt1280
 .. _CANopen-Monitor: https://github.com/oresat/CANopen-Monitor
