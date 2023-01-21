@@ -31,10 +31,12 @@ All information and guides about PRU can be found at: `TI PRU-ICSS / PRU_ICSSG`_
 
 OreSat project(s) using PRUs: 
 
-    - `oresat-linux-prucam`_
+    - `oresat-prucam-ar013x`_
+    - `oresat-prucam-pirt1280`_
 
 .. oresat repos
-.. _oresat-linux-prucam: https://github.com/oresat/oresat-linux-prucam
+.. _oresat-prucam-ar013x: https://github.com/oresat/oresat-prucam-ar013x
+.. _oresat-prucam-pirt1280: https://github.com/oresat/oresat-prucam-pirt1280
 
 .. other links
 .. _Octavo A8: https://octavosystems.com/octavo_products/osd335x-sm/

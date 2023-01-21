@@ -14,12 +14,12 @@ Common software that is on or used by all OreSat Linux Boards.
 GPS Board
 ---------
 
-SDR/Hardware GPS receiver to calculate the location of satellite. Also will
-include software for off loading the controls for ACS subsystem.
+SDR / Hardware GPS receiver to calculate the location of satellite. Also will
+include software for off loading the controls for ADCS subsystem.
 
 - `oresat-gps-hardware`_ Hardware design for the GPS board.
-- `oresat-gps-software`_ GPS application.
-- `oresat-adcs-software`_ The ADCS Manager library that controls the ADCS
+- `oresat-gps-software`_ The GPS application.
+- `oresat-adcs-software`_ The ADCS library that controls the ADCS
   subsystem.
 
 Star Tracker Board
@@ -39,7 +39,7 @@ A board with a camera and intenna for sending live video of Earth over long
 distance WiFi. This is apart of the OreSat Live payload mission.
 
 - `oresat-dxwifi-hardware`_ Hardware design for the OreSat Live board.
-- `oresat-dxwifi-software`_  The dxwifi application.
+- `oresat-dxwifi-software`_  The DxWiFi application.
 - `oresat-libdxwifi`_  Library for OreSat's 2.4GHz WiFi transmission system.
 
 CFC (Cirrus Flux Camera) Board
@@ -47,7 +47,7 @@ CFC (Cirrus Flux Camera) Board
 
 Short wave infrared camera to map cirrus clouds. Another payload for OreSat.
 
-- `oresat-cfc-software`_ CFC application.
+- `oresat-cfc-software`_ The CFC application.
 - `oresat-prucam-pirt1280`_ A kernel module for interfacing to PIRT1280 camera with PRUs.
 
 Support Software
@@ -62,8 +62,7 @@ Support software projects for other OreSat projects.
 
 .. OreSat repos
 .. _oresat-linux: https://github.com/oresat/oresat-linux
-.. _oresat-linux-manager: https://github.com/oresat/oresat-linux-manager
-.. _oresat-linux-updater: https://github.com/oresat/oresat-linux-updater
+.. _oresat-olaf: https://github.com/oresat/oresat-olaf
 .. _oresat-adcs-software: https://github.com/oresat/oresat-adcs-software
 .. _oresat-gps-software: https://github.com/oresat/oresat-gps-software
 .. _oresat-gps-hardware: https://github.com/oresat/oresat-gps-hardware
