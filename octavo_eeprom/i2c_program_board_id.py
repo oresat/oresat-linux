@@ -1,8 +1,9 @@
-#!/usr/bin/python3
-
-# This script writes the board ID to the EEPROM in the OSD3358 and reads
-# it back afterwards. I ran it on another pocketbealge using i2c-2, but
-# it would probably work on other boards with a i2c peripheral
+#!/usr/bin/env python3
+'''
+This script writes the board ID to the EEPROM in the OSD3358 and reads
+it back afterwards. I ran it on another pocketbealge using i2c-2, but
+it would probably work on other boards with a i2c peripheral
+'''
 
 import io
 import fcntl
@@ -11,7 +12,7 @@ import fcntl
 IOCTL_I2C_SLAVE = 0x0703
 
 # board ID byte array, notice 2 non-ascii hex chars
-board_id = b"\xaaU3\xeeA335PBGL00A21740GPB43424"
+board_id = b'\xaaU3\xeeA335PBGL00A21740GPB43424'
 
 # start of i2c message with EEPROM 16 bit address 0x0000
 msg = bytearray([0x00, 0x00])
@@ -20,7 +21,7 @@ msg = bytearray([0x00, 0x00])
 msg.extend(board_id)
 
 # open the I2C device and set it up to talk to the slave
-f = io.open("/dev/i2c-2", "wb+", buffering=0)
+f = io.open('/dev/i2c-2', 'wb+', buffering=0)
 fcntl.ioctl(f, IOCTL_I2C_SLAVE, 0x50)
 
 # write the board ID message to the EEPROM
@@ -43,4 +44,4 @@ while True:
 
 # read back the board id and print it
 v = f.read(len(board_id))
-print("Board ID:", v)
+print('Board ID:', v)

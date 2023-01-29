@@ -14,7 +14,7 @@ Clone the oresat-linux repo on the PocketBeagle.
     .. code-block::
 
        $ git clone https://github.com/oresat/oresat-linux
-       $ cd oresat-linux/octavo-eeprom/
+       $ cd oresat-linux/octavo_eeprom/
 
 Writing EEPROM
 --------------
@@ -26,6 +26,6 @@ Writing EEPROM
 
     .. code-block::
 
-       $ sudo ./i2c-program-board-id.py
+       $ sudo ./i2c_program_board_id.py
 
 .. _PocketBeagle: https://beagleboard.org/pocket
