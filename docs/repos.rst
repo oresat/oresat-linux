@@ -11,26 +11,15 @@ Common software that is on or used by all OreSat Linux Boards.
 - `oresat-olaf`_ The OreSat Linux App Framework. Framework for all OreSat
   Linux applications.
 
-GPS Board
+C3 Board
 ---------
 
-SDR / Hardware GPS receiver to calculate the location of satellite. Also will
-include software for off loading the controls for ADCS subsystem.
+Command, Control, Commication board. The main flight board.
 
-- `oresat-gps-hardware`_ Hardware design for the GPS board.
-- `oresat-gps-software`_ The GPS application.
-- `oresat-adcs-software`_ The ADCS library that controls the ADCS
-  subsystem.
-
-Star Tracker Board
-------------------
-
-Camera system that takes images of stars and uses the pattern of the stars let
-to figure out which way the satellite is pointing.
-
-- `oresat-star-tracker`_ Hardware design for the Star Tracker board.
-- `oresat-star-tracker-software`_ The Star Tracker application.
-- `oresat-prucam-ar013x`_ A kernel module for interfacing to AR013x camera with PRUs.
+- `oresat-c3`_ Hardware design for the C3 board.
+- `oresat-c3-software`_ The C3 application.
+- ``oresat-ax5043-software`` The AX5043 application.
+- `oresat-adcs-software`_ The ADCS library that controls the ADCS subsystem.
 
 DxWiFi Board
 ------------
@@ -50,6 +39,24 @@ Short wave infrared camera to map cirrus clouds. Another payload for OreSat.
 - `oresat-cfc-software`_ The CFC application.
 - `oresat-prucam-pirt1280`_ A kernel module for interfacing to PIRT1280 camera with PRUs.
 
+GPS Board
+---------
+
+SDR / Hardware GPS receiver to calculate the location of satellite.
+
+- `oresat-gps-hardware`_ Hardware design for the GPS board.
+- `oresat-gps-software`_ The GPS application.
+
+Star Tracker Board
+------------------
+
+Camera system that takes images of stars and uses the pattern of the stars let
+to figure out which way the satellite is pointing.
+
+- `oresat-star-tracker`_ Hardware design for the Star Tracker board.
+- `oresat-star-tracker-software`_ The Star Tracker application.
+- `oresat-prucam-ar013x`_ A kernel module for interfacing to AR013x camera with PRUs.
+
 Support Software
 ----------------
 
@@ -64,6 +71,8 @@ Support software projects for other OreSat projects.
 .. _oresat-linux: https://github.com/oresat/oresat-linux
 .. _oresat-olaf: https://github.com/oresat/oresat-olaf
 .. _oresat-adcs-software: https://github.com/oresat/oresat-adcs-software
+.. _oresat-c3: https://github.com/oresat/oresat
+.. _oresat-c3-software: https://github.com/oresat/oresat-c3-software
 .. _oresat-gps-software: https://github.com/oresat/oresat-gps-software
 .. _oresat-gps-hardware: https://github.com/oresat/oresat-gps-hardware
 .. _oresat-star-tracker: https://github.com/oresat/oresat-star-tracker

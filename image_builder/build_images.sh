@@ -1,6 +1,6 @@
 #!/bin/bash
 
-list="cfc dev dxwifi gps star-tracker"
+list="c3 cfc dev dxwifi gps star-tracker"
 
 if [[ ! $list =~ (^|[[:space:]])$1($|[[:space:]]) ]]; then
     echo "Invalid arguments"
@@ -8,6 +8,7 @@ if [[ ! $list =~ (^|[[:space:]])$1($|[[:space:]]) ]]; then
     echo "./build_images.sh <BOARD>"
     echo ""
     echo "where <BOARD> can be:"
+    echo "  c3"
     echo "  cfc"
     echo "  dev"
     echo "  dxwifi"

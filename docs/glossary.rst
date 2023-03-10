@@ -31,7 +31,7 @@
 
     C3
         Command, communication, and control board. It is the flight computer for
-        OreSat. See https://github.com/oresat/oresat-c3
+        OreSat. See https://github.com/oresat/oresat-c3-software
 
     Daemon
         Long running, background process on Linux. AKA a Linux service.
