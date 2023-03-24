@@ -1,0 +1,38 @@
+#include "am33xx.h"
+
+/dts-v1/;
+/plugin/;
+
+/ {
+  compatible = "ti,beaglebone", "ti,beaglebone-black", "ti,beaglebone-green";
+
+  version = "00A0";
+
+  // identification
+  part-number = "BEAGLELOGIC";
+  version = "00A0";
+
+  fragment@0 {
+    target-path="/";
+    __overlay__ {
+      chosen {
+          overlays {
+            c3-00A0 = __TIMESTAMP__;
+	      };
+      };
+    };
+  };
+
+
+  fragment@1 {
+    target = <&i2c1>;
+    __overlay__ {
+      status = "okay";
+
+      clock-frequency = <100000>;
+
+      #address-cells = <1>;
+      #size-cells = <0>;
+    };
+  };
+}
