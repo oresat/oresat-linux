@@ -9,10 +9,6 @@ APT::Install-Suggests "0";
 APT::Install-Recommends "0";
 __EOF__
 
-# add oresat debian repo
-#echo "deb [trusted=yes] https://packages.oresat.org/debian bullseye main" >> ${tempdir}/etc/apt/sources.list
-#apt update
-
 # add this to use piwheels.org as an extra source
 # piwheels.org has pre-built "manylinux" armhf packages
 # otherwise packages like numpy, psutil, and opencv-python have to be build from pypi source

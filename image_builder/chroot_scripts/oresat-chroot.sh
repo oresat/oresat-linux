@@ -15,8 +15,6 @@ if [ $HOSTNAME != "oresat-dev" ]; then
 cat > "/etc/systemd/system/"$HOSTNAME"d.service" <<-__EOF__
 [Unit]
 Description=OreSat Linux App
-Wants=network-online.target
-After=network-online.target
 
 [Service]
 Type=simple
@@ -70,7 +68,7 @@ echo "replace BeagleBoard's systemd-networkd config"
 # disable networking script
 cat > "/etc/default/bb-boot" <<-__EOF__
 USB_CONFIGURATION=disable
-USB_NETWORK_DISABLED_yes
+#USB_NETWORK_DISABLED=yes
 __EOF__
 
 # remove BeagleBoard's configs
