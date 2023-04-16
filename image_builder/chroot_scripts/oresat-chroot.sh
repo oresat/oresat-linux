@@ -18,7 +18,7 @@ Description=OreSat Linux App
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/$HOSTNAME -b can1 -l -a 0.0.0.0 -p 8000
+ExecStart=/usr/local/bin/$HOSTNAME -b can1 -l
 Restart=on-failure
 User=root
 Group=root
