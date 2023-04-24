@@ -24,8 +24,8 @@ Command, Control, Commication board. The main flight board.
 DxWiFi Board
 ------------
 
-A board with a camera and intenna for sending live video of Earth over long 
-distance WiFi. This is apart of the OreSat Live payload mission.
+A board with a camera and antenna for sending live video of Earth over long 
+distance WiFi. This is a part of the OreSat Live payload mission.
 
 - `oresat-dxwifi-hardware`_ Hardware design for the OreSat Live board.
 - `oresat-dxwifi-software`_  The DxWiFi application.
