@@ -63,6 +63,13 @@ systemctl enable nginx.service
 fi
 
 ##############################################################################
+echo "enable SPIDEV kernel module at boot"
+
+cat > "/etc/modules-load.d/spidev.conf" <<-__EOF__
+spidev
+__EOF__
+
+##############################################################################
 echo "replace BeagleBoard's systemd-networkd config"
 
 # disable networking script
