@@ -22,6 +22,8 @@ ExecStart=/usr/local/bin/$HOSTNAME -b can1 -l
 Restart=on-failure
 User=root
 Group=root
+CPUQuota=100%
+CPUWeight=1000
 
 [Install]
 WantedBy=multi-user.target
