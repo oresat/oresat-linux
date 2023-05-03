@@ -17,7 +17,7 @@ Boards, a `BeagleBone Black`_, or a `PocketBeagle`_.
 .. warning:: Flight images expect the hardware for their specific board, so the
    software on these images may not work on other hardware.
 
-These are the flight images. They have all software and system  configurations
+These are the flight images. They have all software and system configurations
 required for that specific board. 
 
 Notes about all images
@@ -31,9 +31,6 @@ Notes about all images
 - All images have the user debian with password temppwd.
 - On the **first** boot, the image will expand to fill the eMMC or SD card.
 - Root login over ssh is disabled.
-- The CPU freqency governor is set to powersave (300MHz on AM335x) on boot for
-  all flight images. The ``oresat-dev`` image has the CPU freqency governor set
-  to performance (1GHz on AM335x).
 - Both eMMC0 and CAN1 device tree overlays are enabled.
 - ``Apt`` has both suggested and recommended autoinstall turned off.
 - All use `systemd-networkd`_ for networking.
