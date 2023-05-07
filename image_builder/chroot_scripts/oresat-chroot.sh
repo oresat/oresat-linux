@@ -83,17 +83,9 @@ __EOF__
 # remove BeagleBoard's configs
 rm /etc/systemd/network/*
 
-cat > "/etc/systemd/network/10-can.network" <<-__EOF__
-[Match]
-Name=can1
-
-[CAN]
-BitRate=1M
-__EOF__
-
-# usb0 (for Window host)
-# usb1 (for *nix host)
-# eth0 (for BeagleBone Black ethernet port)
+# usb0 is for Window hosts
+# usb1 is for *nix hosts
+# eth0 is for the BeagleBone Black's ethernet port
 cat > "/etc/systemd/network/20-wired.network" <<-__EOF__
 [Match]
 Name=usb0 usb1 eth0
