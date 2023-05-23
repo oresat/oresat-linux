@@ -2,7 +2,7 @@
 # coding=utf-8
 
 # 99.9% of this file is from David Anderson's awesome pTFTPd. However
-# a couple small modifications were made to handle specific boot file 
+# a couple small modifications were made to handle specific boot file
 # responses to specific vendor identifiers. Source:
 # https://github.com/mpetazzoni/ptftpd/blob/master/ptftplib/bootpserver.py
 
@@ -252,9 +252,9 @@ class BOOTPServer(object):
         if pkt.sname and pkt.sname != self.hostname:
             raise UninterestingBootpPacket()
 
-        #ip = self.generate_free_ip()
+        # ip = self.generate_free_ip()
         # use static IP as we know nothing else will be on this interface
-        ip = "192.168.0.2"
+        ip = "192.168.6.2"
         log.info('Offering to boot client %s' % ip)
         log.info('Booting client %s with file %s' % (ip, self.bootfile))
 
@@ -399,6 +399,7 @@ def main():
         return 1
 
     return 0
+
 
 if __name__ == '__main__':
     try:

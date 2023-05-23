@@ -30,7 +30,7 @@ def wait_interface():
             break
 
     # set the ip addr for usb0. I wish there was a more elegant way to do this
-    os.system("/usr/sbin/ifconfig usb0 192.168.0.1 netmask 255.255.255.0")
+    os.system(f"/usr/sbin/ifconfig {iface} 192.168.6.1 netmask 255.255.255.0")
 
 
 def bootp_server():
@@ -62,18 +62,17 @@ def bootp_server():
 
             # return the proper filename based on the vendor identifier
             #
-            # 1. 'AM335x ROM' is the vendor identifier for the first level AM335x ROM 
+            # 1. 'AM335x ROM' is the vendor identifier for the first level AM335x ROM
             # bootloader. Return the uboot SPL to this message
             if pkt.vendor_ident.decode() == "AM335x ROM":
                 server.bootfile = b'u-boot-spl-restore.bin'
-
 
             # 2. 'AM335x U-Boot SPL' is sent by the uboot SPL and in response we send
             # the actual uboot image name
             elif pkt.vendor_ident.decode() == "AM335x U-Boot SPL":
                 server.bootfile = b'u-boot-restore.img'
-    
-            # 3. For some reasons after getting the full uboot image it again needs the 
+
+            # 3. For some reasons after getting the full uboot image it again needs the
             # original SPL, and the vendor identifier sent for this is 'U-Boot/armv7'.
             # I don't know why this is, but it doesn't work without it.
             elif pkt.vendor_ident.decode() == "U-Boot.armv7":
@@ -116,4 +115,3 @@ if __name__ == '__main__':
         sys.exit(main())
     except KeyboardInterrupt:
         pass
-

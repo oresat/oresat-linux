@@ -15,7 +15,7 @@ Install dependencies
 
 .. code-block::
 
-   $ sudo apt install ifconfig unzip curl git
+   $ sudo apt install unzip curl git zstd python3-pip
    $ sudo pip3 install -r requirements.txt
 
 Clone the oresat-linux repo
@@ -62,7 +62,7 @@ Boot Octavo via USB as USB mass storage
 
 .. code-block::
 
-    $ sudo python3 octavo-_usb_boot.py usb0 /home/pi/oresat-linux/utils/octavo-boot/tftpboot
+    $ sudo python3 octavo_usb_boot.py usb0 ./tftpboot
     INFO(tftpd): Serving TFTP requests on usb0/192.168.0.1:69 in /home/pi/oresat-linux/utils/octavo-boot/tftpboot
     INFO(octavo-usb-boot): Handling 'AM335x ROM' BOOTP packet
     INFO(bootpd): Offering to boot client 192.168.0.2
@@ -112,7 +112,7 @@ dd it onto the eMMC
 
 .. code-block::
 
-    $ sudo dd status=progress if=oresat-startracker-2020-12-19.img of=/dev/sda
+    $ sudo dd status=progress if=oresat-star-tracker-2020-12-19.img of=/dev/sda
 
 - Remove power, change the boot jumper to boot from eMMC, and power up. Board
   should boot from eMMC
