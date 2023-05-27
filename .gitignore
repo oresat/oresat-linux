@@ -7,6 +7,6 @@ build/
 bb.org-overlays/
 *.dtbo
 *.dts.tmp
-*.img
+oresat*.img
 *.img.zst
 *.sha256

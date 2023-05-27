@@ -1,6 +1,14 @@
 Octavo EEPROM
 =============
 
+This script will write a id value to the Octavo's EEPROM. When the Octavo is booting,
+U-Boot will read this value in to figure out what device tree to load, before booting
+up Linux.
+
+This script will write the board id of a PocketBeagle to the EEPROM.
+
+Id's can be found in the README of https://github.com/beagleboard/image-builder.
+
 Requriements
 ------------
 

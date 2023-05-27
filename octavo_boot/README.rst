@@ -5,18 +5,11 @@ This software allows a host computer to flash to the Octavo's eMMC via USB. It
 is based on the guide here: 
 https://octavosystems.com/app_notes/programming-emmc-with-usb/
 
-However, python is used instead of `dhcpd` and `xinetd` so it could be run as
-a standalone script instead of needing to setup multiple services
+However, Python is used instead of ``dhcpd`` and ``xinetd`` so it could be run as
+a standalone script instead of needing to setup multiple services.
 
 Setup
 -----
-
-Install dependencies
-
-.. code-block::
-
-   $ sudo apt install unzip curl git zstd python3-pip
-   $ sudo pip3 install -r requirements.txt
 
 Clone the oresat-linux repo
 
@@ -25,25 +18,18 @@ Clone the oresat-linux repo
    $ git clone https://github.com/oresat/oresat-linux
    $ cd oresat-linux/octavo-boot/
 
-Download the project files
-    
-.. code-block::
-
-    $ curl -O https://octavosystems.com/octavosystems.com/wp-content/uploads/2019/02/Programming-eMMC-with-USB-for-OSD335x.zip
-
-Unzip and rename folder
+Install dependencies
 
 .. code-block::
 
-    $ unzip Programming-eMMC-with-USB-for-OSD335x.zip
-    $ mv eMMC\ Flasher\ Project/ tftpboot
+   $ sudo pip3 install -r requirements.txt
 
 Boot Octavo via USB as USB mass storage
 ---------------------------------------
 
 - Ensure Octavo board is in SD card boot mode but there is **NO** SD car inserted.
 - Plug in Octavo board and see it appear as network interface. For example, it can 
-  appears as `usb0`
+  appears as ``usb0``.
 
 .. code-block::
 
@@ -56,9 +42,11 @@ Boot Octavo via USB as USB mass storage
             TX packets 8  bytes 1634 (1.5 KiB)
             TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
-- Run the boot script with the network interface and absolute path to the `tfptboot`
-  directory. **NOTE:** this should be done within 10~15 seconds of the Octavo board
-  being plugged in.
+- Run the boot script with the network interface and absolute path to the
+  ``tfptboot`` directory.
+
+.. note:: This should be done within 10~15 seconds of the Octavo board being
+   plugged in.
 
 .. code-block::
 
@@ -77,7 +65,8 @@ Boot Octavo via USB as USB mass storage
 
  .. code-block::
 
-    # dmesg output
+    $ dmesg -w
+    ...
     [177014.042105] usb-storage 1-1.1:1.0: USB Mass Storage device detected
     [177014.044351] usb-storage 1-1.1:1.0: Quirks match for vid 0525 pid a4a5: 10000
     [177014.044521] scsi host0: usb-storage 1-1.1:1.0
@@ -93,7 +82,7 @@ Boot Octavo via USB as USB mass storage
 
  .. code-block::
 
-    # sudo fdisk -l output
+    $ sudo fdisk -l output
     Disk /dev/sda: 14.7 GiB, 15758000128 bytes, 30777344 sectors
     Disk model: File-Stor Gadget
     Units: sectors of 1 * 512 = 512 bytes
@@ -105,14 +94,24 @@ Boot Octavo via USB as USB mass storage
 Download OS image
 -----------------
 
-OreSat images can be found at https://debian.oresat.org/images/
+OreSat images can be found at https://images.oresat.org
 
-dd it onto the eMMC
--------------------
+Decompress images with ``zstd``
 
 .. code-block::
 
-    $ sudo dd status=progress if=oresat-star-tracker-2020-12-19.img of=/dev/sda
+   $ zstd -d oresat-dev-2023-03-03.img.zst
 
-- Remove power, change the boot jumper to boot from eMMC, and power up. Board
+Write the image onto the eMMC
+-----------------------------
+
+.. warning:: ``dd`` will flash to any storage device, even the one the system is running on, so
+   make sure you have the correct one. ``/dev/sda`` is typically the first HDD or SSD storage
+   device.
+
+.. code-block::
+
+   $ sudo dd status=progress if=oresat-dev-2023-03-03.img of=/dev/sda
+
+- Once ``dd`` is done, remove power, change the boot jumper to boot from eMMC, and power up. Board
   should boot from eMMC
