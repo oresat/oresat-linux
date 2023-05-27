@@ -1,47 +1,55 @@
 #!/usr/bin/env python3
 '''
-This script writes the board ID to the EEPROM in the OSD3358 and reads
-it back afterwards. I ran it on another pocketbealge using i2c-2, but
-it would probably work on other boards with a i2c peripheral
+This script writes the board ID to the EEPROM in the OSD3358 and reads it back afterwards.
 '''
 
-import io
-import fcntl
+import sys
+from argparse import ArgumentParser
 
-# I think this is python ioctl/i2c specific? not sure
-IOCTL_I2C_SLAVE = 0x0703
+from smbus2 import SMBus, i2c_msg
 
-# board ID byte array, notice 2 non-ascii hex chars
-board_id = b'\xaaU3\xeeA335PBGL00A21740GPB43424'
+I2C_ADDR = 0x50
+EEPROM_ADDR = b'0000'
+BOARD_ID = b'\xaaU3\xeeA335PBGL00A21740GPB43424'
 
-# start of i2c message with EEPROM 16 bit address 0x0000
-msg = bytearray([0x00, 0x00])
+parser = ArgumentParser(description='Flash an Octavo A8 EEPROM')
+parser.add_argument('-b', '--bus', default='/dev/i2c-2', help='path to bus; defualt is /dev/i2c-2')
+parser.add_argument('-r', '--read', action='store_true',
+                    help='only read the current value and print it')
+args = parser.parse_args()
 
-# append board ID to address to create full message
-msg.extend(board_id)
 
-# open the I2C device and set it up to talk to the slave
-f = io.open('/dev/i2c-2', 'wb+', buffering=0)
-fcntl.ioctl(f, IOCTL_I2C_SLAVE, 0x50)
+board_id_hex = BOARD_ID.hex(sep=' ')
 
-# write the board ID message to the EEPROM
-f.write(msg)
+if args.read:
+    print(f'Expected Board ID: {board_id_hex}')
+else:
+    write = i2c_msg.write(I2C_ADDR, EEPROM_ADDR + BOARD_ID)
+    with SMBus(args.bus) as bus:
+        bus.i2c_rdwr(write)
+    print(f'Wrote Board ID: {board_id_hex}')
 
-# after receiving the write bytes, the EEPROM takes some time to write it to
-# memory. The chip with NAK during this time, so the datasheet suggests polling
-# the chip via i2c until it acks a command, at which point it can handle more
-# commands. Here we attempt the initial command of reading back what we just
-# wrote(which is a write to 0x0000), and when the chip ACKs the command, we can
+# After receiving the write bytes, the EEPROM takes some time to write it to memory. The chip with
+# NAK during this time, so the datasheet suggests polling the chip via i2c until it acks a command,
+# at which point it can handle more commands. Here we attempt the initial command of reading back
+# what we just wrote (which is a write to 0x0000), and when the chip ACKs the command, we can
 # proceed with the read
+write = i2c_msg.write(I2C_ADDR, EEPROM_ADDR)
+read = i2c_msg.read(I2C_ADDR, len(BOARD_ID))
 while True:
-    # attempt the write to setup a read from 0x0000
     try:
-        f.write(bytearray([0x00, 0x00]))
+        with SMBus(args.bus) as bus:
+            bus.i2c_rdwr(write)
+        with SMBus(args.bus) as bus:
+            bus.i2c_rdwr(write, read)
         break
-    # handle the OSError exception returned when we get a NAK
     except OSError:
-        continue
+        continue  # handle the OSError exception returned when we get a NAK
 
-# read back the board id and print it
-v = f.read(len(board_id))
-print('Board ID:', v)
+
+board_id_hex = bytes(read).hex(sep=' ')
+print(f'Read Board ID: {board_id_hex}')
+
+if bytes(read) != BOARD_ID:
+    print('board id read from eeprom did not match expected board id')
+    sys.exit(1)
