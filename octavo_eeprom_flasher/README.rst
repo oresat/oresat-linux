@@ -1,5 +1,5 @@
-Octavo EEPROM
-=============
+Octavo EEPROM Flasher
+=====================
 
 This script will write a id value to the Octavo's EEPROM. When the Octavo is booting,
 U-Boot will read this value in to figure out what device tree to load, before booting
