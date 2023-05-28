@@ -22,6 +22,8 @@ import socket
 import struct
 import sys
 
+from . import IP_ADDR
+
 log = logging.getLogger('bootpd')
 handler = logging.StreamHandler(stream=sys.stdout)
 handler.setFormatter(logging.Formatter('%(levelname)s(%(name)s): %(message)s'))
@@ -180,6 +182,8 @@ class BootpPacket(object):
         # cookie is right.
         pkt = pkt[8:]
         bootp_fmt = '!4xL20x6s10x64s128xL'
+        otp_fmt = '!4xL20x6s10x64s128xL'                                                                         
+        183         bootp_size = struct.calcsize(bootp_fmt)    
         bootp_size = struct.calcsize(bootp_fmt)
         (xid, mac, sname, cookie) = struct.unpack(bootp_fmt, pkt[:bootp_size])
 
@@ -252,13 +256,11 @@ class BOOTPServer(object):
         if pkt.sname and pkt.sname != self.hostname:
             raise UninterestingBootpPacket()
 
-        # ip = self.generate_free_ip()
         # use static IP as we know nothing else will be on this interface
-        ip = "192.168.6.2"
-        log.info('Offering to boot client %s' % ip)
-        log.info('Booting client %s with file %s' % (ip, self.bootfile))
+        log.info(f'Offering to boot client {IP_ADDR}')
+        log.info(f'Booting client {IP_ADDR} with file {self.bootfile}')
 
-        self.sock.send(self.encode_bootp_reply(pkt, ip))
+        self.sock.send(self.encode_bootp_reply(pkt, IP_ADDR))
 
     def encode_bootp_reply(self, request_pkt, client_ip):
         # Basic BOOTP reply

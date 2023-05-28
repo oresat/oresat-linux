@@ -1,16 +1,15 @@
-#!/usr/bin/python3
-
 import logging
 import os
 import sys
 import threading
 from time import sleep
+from argparse import ArgumentParser
 
-import netifaces
-from ptftplib import tftpserver
-# from ptftplib.tftpserver import TFTPServer
+import psutil
+from ptftplib import BootpPacket, BOOTPServer, TFTPServer, NotBootpPacketError
 
-from bootpserver import BOOTPServer, BootpPacket, NotBootpPacketError
+from . import IP_ADDR
+
 
 log = logging.getLogger("octavo-usb-boot")
 handler = logging.StreamHandler(stream=sys.stdout)
@@ -18,22 +17,18 @@ handler.setFormatter(logging.Formatter('%(levelname)s(%(name)s): %(message)s'))
 log.addHandler(handler)
 log.setLevel(logging.INFO)
 
-iface = ""
-root = ""
 
-
-def wait_interface():
+def wait_interface(iface: str):
     # wait for usb0 appear, forever
     while True:
-        intfs = netifaces.interfaces()
-        if iface in intfs:
+        if iface in psutil.net_if_stats():
             break
 
     # set the ip addr for usb0. I wish there was a more elegant way to do this
-    os.system(f"/usr/sbin/ifconfig {iface} 192.168.6.1 netmask 255.255.255.0")
+    os.system(f"/usr/sbin/ifconfig {iface} {IP_ADDR} netmask 255.255.255.0")
 
 
-def bootp_server():
+def bootp_server(iface: str):
     while True:
         # wait for the interface to come up
         wait_interface()
@@ -85,33 +80,31 @@ def bootp_server():
             server.handle_bootp_request(pkt)
 
 
-def tftp_server():
+def tftp_server(iface: str, root: str):
+
     wait_interface()
+
     sleep(0.1)
-    sys.argv = ['tftpserver', '-v', '-r', iface, root]
-    tftpserver.main()
-    # server = TFTPServer(iface, root, 69, True )
-    # server.serve_forever()
 
+    server = TFTPServer(iface, root, strict_rfc_1360=True)
 
-def main():
-    # get the interface and directory
-    global iface
-    global root
-    iface = sys.argv[1]
-    root = sys.argv[2]
-
-    # start the ftrp server first and wait for it to start
-    t = threading.Thread(target=tftp_server)
-    t.start()
-    sleep(1)
-
-    # start the bootp server
-    bootp_server()
+    try:
+        server.serve_forever()
+    except Exception as e:
+        log.info(e)
 
 
 if __name__ == '__main__':
+    paser = ArgumentParser(description='flash an Octavo A8 eMMC over USB')
+    paser.add_argument('iface', help='the network interface to use')
+    paser.add_argument('root', help='path to tftp data directory')
+    args = paser.parse_args()
+
+    t = threading.Thread(target=tftp_server, args=(args.iface, args.root))
+    t.start()
+    sleep(1)
+
     try:
-        sys.exit(main())
+        bootp_server(args.iface)
     except KeyboardInterrupt:
         pass

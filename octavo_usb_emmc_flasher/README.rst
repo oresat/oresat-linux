@@ -16,7 +16,7 @@ Clone the oresat-linux repo
 .. code-block::
 
    $ git clone https://github.com/oresat/oresat-linux
-   $ cd oresat-linux/octavo-boot/
+   $ cd oresat-linux/octavo_usb_emmc_flasher/
 
 Install dependencies
 
@@ -27,38 +27,62 @@ Install dependencies
 Boot Octavo via USB as USB mass storage
 ---------------------------------------
 
-- Ensure Octavo board is in SD card boot mode but there is **NO** SD car inserted.
-- Plug in Octavo board and see it appear as network interface. For example, it can 
-  appears as ``usb0``.
+- Remove the SD card if there is one. The SD card connector is generally on bottom of OreSat card.
+- Connect a debug board to the OreSat card 
 
-.. code-block::
+ .. image:: ../static/oresat_card_and_debug_board.jpg
 
-    $ ifconfig usb0
-    usb0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-            inet6 fe80::7d10:b6e9:56af:566  prefixlen 64  scopeid 0x20<link>
-            ether ca:03:ae:3a:5b:b8  txqueuelen 1000  (Ethernet)
-            RX packets 2  bytes 784 (784.0 B)
-            RX errors 0  dropped 0  overruns 0  frame 0
-            TX packets 8  bytes 1634 (1.5 KiB)
-            TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+- Put the OreSat card is in SD card boot mode (Box A is image above)
+- Put the debug board in mode 2, aka VUSB straight to power Octavo (Box B in image above).
+- Plug in OreSat card to host (Box C in image above) and see it appear as network interface.
+  For example, it can appears as ``usb0``.
+
+ .. code-block:: 
+
+    $ ip l
+    1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+        link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000
+       link/ether b8:27:eb:bb:98:75 brd ff:ff:ff:ff:ff:ff
+    3: usb0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UNKNOWN mode DEFAULT group default qlen 1000
+       link/ether 9a:1f:85:1c:3d:0e brd ff:ff:ff:ff:ff:ff
 
 - Run the boot script with the network interface and absolute path to the
   ``tfptboot`` directory.
 
-.. note:: This should be done within 10~15 seconds of the Octavo board being
-   plugged in.
+ .. note:: This should be done within 10~15 seconds of the OreSat card being plugged in.
 
-.. code-block::
+ .. code-block::
 
-    $ sudo python3 octavo_usb_boot.py usb0 ./tftpboot
-    INFO(tftpd): Serving TFTP requests on usb0/192.168.0.1:69 in /home/pi/oresat-linux/utils/octavo-boot/tftpboot
+    $ sudo python3 -m emmc_flasher usb0 ./tftpboot
+    INFO(tftpd): Serving TFTP requests on usb0/192.168.6.1:69 in /home/oresat/oresat-linux/octavo_boot/tftpboot
     INFO(octavo-usb-boot): Handling 'AM335x ROM' BOOTP packet
-    INFO(bootpd): Offering to boot client 192.168.0.2
-    INFO(bootpd): Booting client 192.168.0.2 with file b'u-boot-spl-restore.bin'
-    INFO(tftpd): Serving file u-boot-spl-restore.bin to host 192.168.0.2...
+    INFO(bootpd): Offering to boot client 192.168.6.2
+    INFO(bootpd): Booting client 192.168.6.2 with file b'u-boot-spl-restore.bin'
+    INFO(tftpd): Serving file u-boot-spl-restore.bin to host 192.168.6.2...
     INFO(tftpd): Transfer of file u-boot-spl-restore.bin completed.
     INFO(octavo-usb-boot): Handling 'AM335x U-Boot SPL' BOOTP packet
-    ...
+    INFO(bootpd): Offering to boot client 192.168.6.2
+    INFO(bootpd): Booting client 192.168.6.2 with file b'u-boot-restore.img'
+    INFO(octavo-usb-boot): Handling 'AM335x U-Boot SPL' BOOTP packet
+    INFO(bootpd): Offering to boot client 192.168.6.2
+    INFO(bootpd): Booting client 192.168.6.2 with file b'u-boot-restore.img'
+    INFO(tftpd): Serving file u-boot-restore.img to host 192.168.6.2...
+    INFO(tftpd): Transfer of file u-boot-restore.img completed.
+    INFO(octavo-usb-boot): Handling 'U-Boot.armv7' BOOTP packet
+    INFO(bootpd): Offering to boot client 192.168.6.2
+    INFO(bootpd): Booting client 192.168.6.2 with file b'u-boot-spl-restore.bin'
+    INFO(octavo-usb-boot): Handling 'U-Boot.armv7' BOOTP packet
+    INFO(bootpd): Offering to boot client 192.168.6.2
+    INFO(bootpd): Booting client 192.168.6.2 with file b'u-boot-spl-restore.bin'
+    INFO(tftpd): Serving file u-boot-spl-restore.bin to host 192.168.6.2...
+    INFO(tftpd): Transfer of file u-boot-spl-restore.bin completed.
+    INFO(tftpd): Serving file uImage to host 192.168.6.2...
+    INFO(tftpd): Transfer of file uImage completed.
+    INFO(tftpd): Serving file initramfs to host 192.168.6.2...
+    INFO(tftpd): Transfer of file initramfs completed.
+    INFO(tftpd): Serving file osd3358-bsm-refdesign.dtb to host 192.168.6.2...
+    INFO(tftpd): Transfer of file osd3358-bsm-refdesign.dtb completed.
 
 - After a minute a USB mass storage device appear on the host system. After
   this, it is safe to kill the above script
@@ -82,14 +106,12 @@ Boot Octavo via USB as USB mass storage
 
  .. code-block::
 
-    $ sudo fdisk -l output
-    Disk /dev/sda: 14.7 GiB, 15758000128 bytes, 30777344 sectors
-    Disk model: File-Stor Gadget
-    Units: sectors of 1 * 512 = 512 bytes
-    Sector size (logical/physical): 512 bytes / 512 bytes
-    I/O size (minimum/optimal): 512 bytes / 512 bytes
-    Disklabel type: dos
-    Disk identifier: 0xcbad22ad
+    $ lsblk
+    NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+    sda           8:0    1  14.7G  0 disk 
+    mmcblk0     179:0    0 119.3G  0 disk 
+    ├─mmcblk0p1 179:1    0   256M  0 part /boot
+    └─mmcblk0p2 179:2    0   119G  0 part /
 
 Download OS image
 -----------------
@@ -98,7 +120,7 @@ OreSat images can be found at https://images.oresat.org
 
 Decompress images with ``zstd``
 
-.. code-block::
+ .. code-block::
 
    $ zstd -d oresat-dev-2023-03-03.img.zst
 
@@ -107,7 +129,8 @@ Write the image onto the eMMC
 
 .. warning:: ``dd`` will flash to any storage device, even the one the system is running on, so
    make sure you have the correct one. ``/dev/sda`` is typically the first HDD or SSD storage
-   device.
+   device. The ``lsblk`` command will tell you which storage device the system is running off
+   of (it is the one it is mounted to).
 
 .. code-block::
 
