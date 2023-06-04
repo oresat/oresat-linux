@@ -182,8 +182,6 @@ class BootpPacket(object):
         # cookie is right.
         pkt = pkt[8:]
         bootp_fmt = '!4xL20x6s10x64s128xL'
-        otp_fmt = '!4xL20x6s10x64s128xL'                                                                         
-        183         bootp_size = struct.calcsize(bootp_fmt)    
         bootp_size = struct.calcsize(bootp_fmt)
         (xid, mac, sname, cookie) = struct.unpack(bootp_fmt, pkt[:bootp_size])
 

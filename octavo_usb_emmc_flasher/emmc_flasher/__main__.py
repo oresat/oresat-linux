@@ -6,14 +6,17 @@ from time import sleep
 from argparse import ArgumentParser
 
 import psutil
-from ptftplib import BootpPacket, BOOTPServer, TFTPServer, NotBootpPacketError
+from ptftplib.tftpserver import TFTPServer
+from ptftplib import notify
 
 from . import IP_ADDR
+from .bootpserver import BootpPacket, BOOTPServer, NotBootpPacketError
 
+LOGGER_FMT = '%(levelname)s(%(name)s): %(message)s'
 
 log = logging.getLogger("octavo-usb-boot")
 handler = logging.StreamHandler(stream=sys.stdout)
-handler.setFormatter(logging.Formatter('%(levelname)s(%(name)s): %(message)s'))
+handler.setFormatter(logging.Formatter(LOGGER_FMT))
 log.addHandler(handler)
 log.setLevel(logging.INFO)
 
@@ -31,7 +34,7 @@ def wait_interface(iface: str):
 def bootp_server(iface: str):
     while True:
         # wait for the interface to come up
-        wait_interface()
+        wait_interface(iface)
 
         # wait a sec for the server to start
         sleep(2)
@@ -82,11 +85,20 @@ def bootp_server(iface: str):
 
 def tftp_server(iface: str, root: str):
 
-    wait_interface()
+    wait_interface(iface)
 
     sleep(0.1)
 
-    server = TFTPServer(iface, root, strict_rfc_1360=True)
+    # enable verbose logging
+    logger = notify.getLogger('tftpd')
+    notify.StreamEngine.install(
+        logger,
+        stream=sys.stdout,
+        loglevel=logging.INFO,
+        fmt=LOGGER_FMT
+    )
+
+    server = TFTPServer(iface, root, strict_rfc1350=True)
 
     try:
         server.serve_forever()

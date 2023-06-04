@@ -8,6 +8,8 @@ https://octavosystems.com/app_notes/programming-emmc-with-usb/
 However, Python is used instead of ``dhcpd`` and ``xinetd`` so it could be run as
 a standalone script instead of needing to setup multiple services.
 
+.. note:: This seems to most reliable to use a Raspberry Pi for this.
+
 Setup
 -----
 
@@ -32,7 +34,7 @@ Boot Octavo via USB as USB mass storage
 
  .. image:: ../static/oresat_card_and_debug_board.jpg
 
-- Put the OreSat card is in SD card boot mode (Box A is image above)
+- Put the OreSat card is in SD card boot mode (Box A in image above)
 - Put the debug board in mode 2, aka VUSB straight to power Octavo (Box B in image above).
 - Plug in OreSat card to host (Box C in image above) and see it appear as network interface.
   For example, it can appears as ``usb0``.
