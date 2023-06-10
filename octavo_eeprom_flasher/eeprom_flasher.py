@@ -9,11 +9,11 @@ from argparse import ArgumentParser
 from smbus2 import SMBus, i2c_msg
 
 I2C_ADDR = 0x50
-EEPROM_ADDR = b'0000'
+EEPROM_ADDR = b'\x00\x00'
 BOARD_ID = b'\xaaU3\xeeA335PBGL00A21740GPB43424'
 
 parser = ArgumentParser(description='Flash an Octavo A8 EEPROM')
-parser.add_argument('-b', '--bus', default='/dev/i2c-2', help='path to bus; defualt is /dev/i2c-2')
+parser.add_argument('-b', '--bus', type=int, default=2, help='I2C bus number; defualt is 2')
 parser.add_argument('-r', '--read', action='store_true',
                     help='only read the current value and print it')
 args = parser.parse_args()

@@ -32,6 +32,7 @@ Install dependencies
 
 Writing EEPROM
 --------------
+
 - Connect the PocketBeagle’s I2C-2 to the Octavo’s I2C-0 using a Debug Board.
 
  .. image:: ../static/oresat_debug_board.jpg
@@ -41,7 +42,7 @@ Writing EEPROM
 
  .. code-block::
 
-   $ sudo ./eeprom_flasher.py --bus /dev/i2c-2
+   $ sudo ./eeprom_flasher.py --bus 2
 
  .. note:: The ``eeprom_flasher.py`` script has help message, just run the
     script with either the ``-h`` or ``--help`` flag to see it.
