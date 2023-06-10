@@ -23,15 +23,15 @@
         tree Linux kernel modules when the kernel is updated.
 
     CFC
-        Cirrus Flux Camera. One of OreSat payloads and a Linux board.
+        Cirrus Flux Camera. One of OreSat payloads and a Linux card.
 
     SDR
         Software Define Radio. Radio communications that are traditionally
         implemented in hardware are instead implemented in software.
 
     C3
-        Command, communication, and control board. It is the flight computer for
-        OreSat. See https://github.com/oresat/oresat-c3-software
+        Command, communication, and control card. It is the flight computer for
+        OreSat.
 
     Daemon
         Long running, background process on Linux. AKA a Linux service.
@@ -45,5 +45,5 @@
 
     OLAF
         OreSat Linux Application Framework. The pythonic CANopen application
-        framework for all OreSat Linux boards. See
+        framework for all OreSat Linux cards. See
         https://github.com/oresat/oresat-olaf

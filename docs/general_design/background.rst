@@ -5,8 +5,8 @@ CAN and CANopen
 ---------------
 
 The communication bus on OreSat is a CAN bus and the CANopen protocol is used
-on top of it. All OreSat Linux boards use `OLAF (OreSat Linux App Framework)`_
-which is build around the `pythonic CANopen`_ library. All firmware boards
+on top of it. All OreSat Linux cards use `OLAF (OreSat Linux App Framework)`_
+which is build around the `pythonic CANopen`_ library. All firmware cards
 on OreSat use the `CANopenNode`_ stack to handle the CANopen protocols.
 
 Helpful links:
@@ -15,11 +15,11 @@ Helpful links:
 - CANopen protocol overview: https://www.can-cia.org/canopen
 - All CANopen protocol specifications: https://can-cia.org/groups/specifications/
 
-C3 (Command, communication, and control board)
+C3 (Command, communication, and control card)
 ----------------------------------------------
 
 The `C3`_ is the flight computer for OreSat and handle all Earth to satellite
-communications. It can turn boards on or off thru the OPD (OreSat Power
+communications. It can turn other cards on or off thru the OPD (OreSat Power
 Domain) and is CANopen Network Manager.
 
 .. _C3: https://github.com/oresat/oresat-c3

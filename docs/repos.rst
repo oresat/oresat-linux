@@ -4,35 +4,35 @@ Git Repositories
 System Level Software
 ---------------------
 
-Common software that is on or used by all OreSat Linux Boards.
+Common software that is on or used by all OreSat Linux Cards.
 
 - `oresat-linux`_ Image builder, the source for this documentation, and
   general utilities.
 - `oresat-olaf`_ The OreSat Linux App Framework. Framework for all OreSat
   Linux applications. Built ontop of Python's CANopen library.
 
-C3 Board
+C3 Card
 ---------
 
-Command, Control, Commication board. The main flight board.
+Command, Control, Commication card. The main flight card.
 
-- `oresat-c3`_ Hardware design for the C3 board.
+- `oresat-c3`_ Hardware design for the C3 card.
 - `oresat-c3-software`_ The main C3 OLAF-based application.
 - `oresat-ax5043-driver`_ The AX5043 radio driver.
 - `oresat-adcs-software`_ The ADCS library that controls the ADCS subsystem.
 
-DxWiFi Board
+DxWiFi Card
 ------------
 
-A board with a camera and antenna for sending live video of Earth over long 
+A card with a camera and antenna for sending live video of Earth over long 
 distance WiFi. This is a part of the OreSat Live payload mission.
 
-- `oresat-dxwifi-hardware`_ Hardware design for the OreSat Live board.
+- `oresat-dxwifi-hardware`_ Hardware design for the OreSat Live card.
 - `oresat-dxwifi-software`_  The main DxWiFi OLAF-based application.
 - `oresat-live-software`_  TBD
 - `oresat-libdxwifi`_  Library for OreSat's 2.4GHz WiFi transmission system.
 
-CFC (Cirrus Flux Camera) Board
+CFC (Cirrus Flux Camera) Card
 ------------------------------
 
 Short wave infrared camera to map cirrus clouds. Another payload for OreSat.
@@ -40,21 +40,21 @@ Short wave infrared camera to map cirrus clouds. Another payload for OreSat.
 - `oresat-cfc-software`_ The CFC OLAF-based application.
 - `oresat-prucam-pirt1280`_ A kernel module for interfacing to PIRT1280 camera with PRUs.
 
-GPS Board
+GPS Card
 ---------
 
 SDR / Hardware GPS receiver to calculate the location of satellite.
 
-- `oresat-gps-hardware`_ Hardware design for the GPS board.
+- `oresat-gps-hardware`_ Hardware design for the GPS card.
 - `oresat-gps-software`_ The GPS OLAF-based application.
 
-Star Tracker Board
+Star Tracker Card
 ------------------
 
 Camera system that takes images of stars and uses the pattern of the stars let
 to figure out which way the satellite is pointing.
 
-- `oresat-star-tracker`_ Hardware design for the Star Tracker board.
+- `oresat-star-tracker`_ Hardware design for the Star Tracker card.
 - `oresat-star-tracker-software`_ The Star Tracker OLAF-based application.
 - `oresat-prucam-ar013x`_ A kernel module for interfacing to AR013x camera with PRUs.
 

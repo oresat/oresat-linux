@@ -4,9 +4,9 @@ Connecting to OreSat Linux from Linux host
 .. note:: This guide only goes over Linux systems using `NetworkManager`_ or
    `systemd-networkd`_
 
-- Connect the OreSat Linux board to host using a USB cable
+- Connect the OreSat Linux card to host using a USB cable
 - In a terminal run the following command and wait for the two connection from
-  the OreSat Linux board to come up.
+  the OreSat Linux card to come up.
 
   .. code-block:: text
 
@@ -36,12 +36,12 @@ Connecting to OreSat Linux from Linux host
 
     .. code-block:: text
 
-      $ nmcli connection add type ethernet ifname enp0s20f0u3i2 ipv4.method shared con-name oresat-board
+      $ nmcli connection add type ethernet ifname enp0s20f0u3i2 ipv4.method shared con-name oresat-card
 
 - **Only if the Linux host uses** `systemd-networkd`_
 
   - Setup the DHCP server. With your favorite IDE or text editor make the
-    ``/etc/systemd/network/20-oresat-board.network`` file and add the following.
+    ``/etc/systemd/network/20-oresat-card.network`` file and add the following.
     **Replace** enp*i2 as needed.
 
       .. code-block:: text
@@ -87,7 +87,7 @@ Connecting to OreSat Linux from Linux host
 
 - Install ``nmap`` for your system
 
-- Run nmap to figure out the board's IP address. **Replace** ``10.42.1.1/24`` in
+- Run nmap to figure out the card's IP address. **Replace** ``10.42.1.1/24`` in
   the follow command to be addres **with** the IPv4 address space found in the
   previous step.
 
@@ -102,11 +102,11 @@ Connecting to OreSat Linux from Linux host
     Nmap done: 256 IP addresses (4 hosts up) scanned in 2.63 seconds
 
 - That should print out two IP addresses (one is the Linux host and one is the
-  OreSat board)
+  OreSat card)
 
 - The terminal with ``watch ip a`` running is no longer needed.
 
-- SSH onto the board. Password is ``temppwd``. **Replace** ``10.42.1.120`` in
+- SSH onto the card. Password is ``temppwd``. **Replace** ``10.42.1.120`` in
   the following command with other address that nmap found
 
   .. code-block:: text

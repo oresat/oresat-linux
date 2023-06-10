@@ -4,7 +4,7 @@ Hardware
 Octavo A8
 ---------
 
-All Linux boards use a `Octavo A8`_. It is commonly found in Beagleboard's
+All OreSat Linux cards use a `Octavo A8`_. It is commonly found in Beagleboard's
 `PocketBeagle`_.
 
 Key features of the Octavo A8:

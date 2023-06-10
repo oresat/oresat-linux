@@ -12,13 +12,13 @@ The dev image is the recommended development image. It has a bunch of dev tools
 and general libraries installed. This image should work fine on all OreSat
 Boards, a `BeagleBone Black`_, or a `PocketBeagle`_.
 
-**oresat-<board>-*.img**
+**oresat-<card>-*.img**
 
-.. warning:: Flight images expect the hardware for their specific board, so the
+.. warning:: Flight images expect the hardware for their specific card, so the
    software on these images may not work on other hardware.
 
 These are the flight images. They have all software and system configurations
-required for that specific board. 
+required for that specific card. 
 
 Notes about all images
 ----------------------
@@ -38,13 +38,13 @@ Notes about all images
   DHCP, the first one is for Windows and the second is for a \*nix based OS.
 - eth0 is also set up for DHCP for `BeagleBone Black`_ ethernet jack.
 - The CAN1 bus is enabled.
-- The hostname is set to the name of board it's for; e.g. ``oresat-dev``,
+- The hostname is set to the name of card it's for; e.g. ``oresat-dev``,
   ``oresat-star-tracker``, etc.
 - mDNS (MulticatDNS) is setup with `systemd-networkd`_, so if the host has mDNS
-  enable, boards with OreSat images can be resolved to ``hostname.local``; e.g.:
+  enable, cards with OreSat images can be resolved to ``hostname.local``; e.g.:
   ``oresat-gps.local``
 
-Connecting to board using a OreSat Linux Image
+Connecting to card using a OreSat Linux Image
 ----------------------------------------------
 
 .. toctree::

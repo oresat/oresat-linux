@@ -1,15 +1,13 @@
 Software
 ========
 
-.. note::
-
-    The OLM (OreSat Linux Manager), multiple daemons, and dbus design was
-    deprecated in favor of OLAF (OreSat Linux App Framework).
+.. note:: The OLM (OreSat Linux Manager), multiple daemons, and D-Bus design
+   was deprecated in favor of OLAF (OreSat Linux App Framework).
 
 Linux Enviroment
 ----------------
 
-All Linux boards will use the 5.10 TI Debian kernel as it has support for PRUs
+All Linux cards will use the 5.10 TI Debian kernel as it has support for PRUs
 on the `Octavo A8`_ from `TI`_. As well as make use of several projects
 provided by `beagleboard`_.
 
@@ -23,17 +21,15 @@ All networking will be handled by systemd-networkd.
 OLAF
 ----
 
-.. note::
-
-   This is just a high level overview for OLAF. For specifics, see
+.. note::  This is just a high level overview for OLAF. For specifics, see
    `OLAF Read the Docs`_ .
 
 OreSat Linux App Framework (aka OLAF) is a pythonic application framework for all
-OreSat Linux boards. It is built ontop on `python-canopen`_. It is designed to
+OreSat Linux cards. It is built ontop on `python-canopen`_. It is designed to
 handle all the common OreSat CANopen Node functionality including support for ECSS
-CANBus Extended Protocol, file transfer over CAN, and updating the Linux board.
+CANBus Extended Protocol, file transfer over CAN, and updating the Linux card.
 
-Each oresat board will have its own OLAF app that will be daemonized. All python 
+Each oresat card  will have its own OLAF app that will be daemonized. All python 
 projects will package and hosted on `PyPI`_.
 
 

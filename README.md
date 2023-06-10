@@ -4,13 +4,13 @@
 [![Documentation Status](https://readthedocs.org/projects/oresat-linux/badge/?version=latest)](https://oresat-linux.readthedocs.io/en/latest/?badge=latest)
 
 This repo has all the OreSat Linux system level documenation and utilities for
-OreSat Linux boards.
+OreSat Linux cards.
 
 ## Utilites
 
 - **Image Builder:** Used to build OreSat Linux images.
-- **Octavo Boot:** Used to flash a OreSat Linux board's eMMC over USB.
-- **Octavo EEPROM:** Used to flash a new OreSat Linux board's EEPROM.
+- **Octavo USB eMMC Flasher:** Used to flash a OreSat Linux card's eMMC over USB.
+- **Octavo EEPROM Flasher:** Used to flash a new OreSat Linux card's EEPROM.
 
 ## OreSat Linux Images
 
@@ -28,7 +28,8 @@ $ git clone https://github.com/oresat/oresat-linux
 
 Install dependencies
 
-**NOTE**: May need to replace `pip` with `pip3` on your system (it varies based of OS and distro).
+**NOTE**: May need to replace `pip` with `pip3` on your system (it varies on
+OS and distro).
 
 ```bash
 $ pip install -r docs/requirements.txt
