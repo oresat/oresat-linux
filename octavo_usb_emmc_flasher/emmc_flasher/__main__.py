@@ -85,6 +85,9 @@ def bootp_server(iface: str):
 
 def tftp_server(iface: str, root: str):
 
+    # make sure root is absolute path
+    root = os.path.abspath(root)
+
     wait_interface(iface)
 
     sleep(0.1)
