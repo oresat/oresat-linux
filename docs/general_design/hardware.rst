@@ -11,7 +11,7 @@ A very simular SOC can be commonly found in Beagleboard's `PocketBeagle`_.
 Key features of the Octavo A8:
 
     - A single core 1GHz AM335x ARM Cortex-A8 processor
-    - 2x 200Mhz PRU (Programable Real-time Unit)
+    - 2x 200Mhz PRU (Programmable Real-time Unit)
     - A version with 1GB of RAM
     - 3D Graphics Accelerator
     - 6x UART buses

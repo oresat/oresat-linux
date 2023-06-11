@@ -9,11 +9,11 @@ U-Boot
 
 The first piece of software booted up on the AM335x is U-Boot.
 
-U-Boot will read the AM335x EEPROM to figure out what specific device it is
-and will load the device tree assoicated with the value in the EEPROM and then
-boot Linux and pass off the device tree to the Linux kernel.
+U-Boot will read the AM335x EEPROM to figure out what specific device it is,
+the U-Boot will load the device tree associated based of that EEPROM value, and
+then boot Linux and pass off the device tree to the Linux kernel.
 
-See `U-Boot Wikipedia`_ more info.
+See `U-Boot`_ more info.
 
 Device Tree
 -----------
@@ -93,30 +93,6 @@ All Python projects will package and hosted on `PyPI`_ and all non-Python projec
 will have Debian packages, so they can be updated thru OLAF and be used to build
 flight OreSat Linux images.
 
-
-Boot Process
-------------
-
-- The AM335x's ``LCD_DATA2`` pin, aka Octavo's ``G1`` pin, is the boot select pin.
-  On power the AM335x will check so see if the this input. If set high
-  (3.3v) the AM335x will try to boot off the eMMC, if set low the AM335x
-  will try to boot off the SD card.
-- The AM335x will now boot `U-Boot`_ image of the select storage device.
-- `U-Boot`_ will read the AM335x's EEPROM to figure out what specific AM335x
-  device it is. OreSat cards will have the Beagleboard's PocketBeagle value
-  wriiten to its EEPROM, so `U-Boot`_ will then load the PocketBeagle's device
-  tree.
-- `U-Boot`_ will then try to boot the Linux kernel and will pass of the device
-  tree to the Linux kernel. Every step below is has time based of when the
-  kernel starts.
-- The Linux kernel will apply any device tree overlays.
-- Systemd starts up.
-- DKMS loads any external kernel modules.
-- Systemd starts the card's OLAF app.
-- CAN bus is relase by the kernel. OLAF configures the CAN bus and starts sending
-  out CANopen heartbeats.
-- PRUs are available (if configured in device tree).
-
 .. OreSat repos
 .. _OLAF: https://github.com/oresat/oresat-olaf
 
@@ -134,5 +110,4 @@ Boot Process
 .. _TI: https://www.ti.com/processors/sitara-arm/am335x-cortex-a8/overview.html
 .. _Octavo A8: https://octavosystems.com/octavo_products/osd335x-sm/
 .. _BeagleBoard: https://beagleboard.org/
-.. _U-Boot Wikipedia: https://en.wikipedia.org/wiki/Das_U-Boot
-.. _U-Boot: https://en.wikipedia.org/wiki/Das_U-Boot
+.. _U-Boot: https://u-boot.readthedocs.io/en/latest/

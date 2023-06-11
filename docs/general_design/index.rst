@@ -7,3 +7,4 @@ General Design
     background
     hardware
     software
+    boot_process
