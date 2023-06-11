@@ -2,7 +2,7 @@ Octavo USB-eMMC Flasher
 =======================
 
 This software allows a host computer to flash to the Octavo's eMMC via USB. It
-is based on this guide: 
+is based on this guide:
 https://octavosystems.com/app_notes/programming-emmc-with-usb/
 
 However, Python is used instead of ``dhcpd`` and ``xinetd`` so it could be run as
@@ -29,7 +29,7 @@ Target Device Files
    initialization including DDR setup.
 #. ``u-boot-restore.img``: U-Boot bootloader requested by the SPL. Loads the Linux kernel, file
    system, and device tree into memory.
-#. ``uImage``: Linux kernel image with a U-Boot header describing the image. This kernel was built 
+#. ``uImage``: Linux kernel image with a U-Boot header describing the image. This kernel was built
    to support a RAM based filesystem and have the necessary USB gadget drivers to expose
    the eMMC device via USB as a mass storage device.
 #. ``initramfs``: Small filesystem built from Busybox that can live entirely within the DDR memory.

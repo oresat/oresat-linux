@@ -4,8 +4,9 @@ Hardware
 Octavo A8
 ---------
 
-All OreSat Linux cards use a `Octavo A8`_. It is commonly found in Beagleboard's
-`PocketBeagle`_.
+All OreSat Linux cards use a `Octavo A8`_, specficily the OSD3358-1G-BSM. 
+
+A very simular SOC can be commonly found in Beagleboard's `PocketBeagle`_.
 
 Key features of the Octavo A8:
 
@@ -13,11 +14,15 @@ Key features of the Octavo A8:
     - 2x 200Mhz PRU (Programable Real-time Unit)
     - A version with 1GB of RAM
     - 3D Graphics Accelerator
-    - Support for UART, CAN, I2C, & SPI 
+    - 6x UART buses
+    - 2x CAN buses
+    - 3x I2C buses
+    - 2x SPI buses
+    - 8 channel 12-bit ADC
+    - 114x GPIO pins
 
 See https://octavosystems.com/octavo_products/osd335x-sm/ for a full list of
 features of the Octavo A8.
-
 
 PRU (Programmable Real-time Unit)
 *********************************
@@ -33,6 +38,7 @@ OreSat project(s) using PRUs:
 
     - `oresat-prucam-ar013x`_
     - `oresat-prucam-pirt1280`_
+
 
 .. oresat repos
 .. _oresat-prucam-ar013x: https://github.com/oresat/oresat-prucam-ar013x
