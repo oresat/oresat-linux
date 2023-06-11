@@ -9,9 +9,9 @@ import psutil
 from ptftplib.tftpserver import TFTPServer
 from ptftplib import notify
 
-from . import IP_ADDR
 from .bootpserver import BootpPacket, BOOTPServer, NotBootpPacketError
 
+IP_ADDR = '162.168.6.1'
 LOGGER_FMT = '%(levelname)s(%(name)s): %(message)s'
 
 log = logging.getLogger("octavo-usb-boot")
@@ -22,6 +22,7 @@ log.setLevel(logging.INFO)
 
 
 def wait_interface(iface: str):
+
     # wait for usb0 appear, forever
     while True:
         if iface in psutil.net_if_stats():
@@ -32,6 +33,7 @@ def wait_interface(iface: str):
 
 
 def bootp_server(iface: str):
+
     while True:
         # wait for the interface to come up
         wait_interface(iface)

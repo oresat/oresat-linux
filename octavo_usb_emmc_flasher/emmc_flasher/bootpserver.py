@@ -22,7 +22,7 @@ import socket
 import struct
 import sys
 
-from . import IP_ADDR
+IP_ADDR = '162.168.6.2'
 
 log = logging.getLogger('bootpd')
 handler = logging.StreamHandler(stream=sys.stdout)
