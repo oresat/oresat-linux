@@ -2,13 +2,39 @@ Octavo USB-eMMC Flasher
 =======================
 
 This software allows a host computer to flash to the Octavo's eMMC via USB. It
-is based on the guide here: 
+is based on this guide: 
 https://octavosystems.com/app_notes/programming-emmc-with-usb/
 
 However, Python is used instead of ``dhcpd`` and ``xinetd`` so it could be run as
 a standalone script instead of needing to setup multiple services.
 
 .. note:: This seems to most reliable to use a Raspberry Pi for this.
+
+How it Works
+------------
+
+.. note:: This section is mostly copied from the Octavo Systems link above.
+.. this is copoed incase the info at the link above is lost
+
+#. A small, light-weight, initramfs (Initial RAM Filesystem) based Linux image is booted on the
+   “OSD335x Target Device” using `TFTP`_ over the USB interface.
+#. The minimal image booted on the target will provide the “Host Computer” access to the
+   attached eMMC memory as a mounted mass storage device, similar to a USB flash drive.
+#. The “Host Computer” will copy the Linux image to the eMMC memory.
+
+Target Device Files
+*******************
+
+#. ``u-boot-spl-restore.bin``: Second stage bootloader (SPL) requested by ROM code. Performs device
+   initialization including DDR setup.
+#. ``u-boot-restore.img``: U-Boot bootloader requested by the SPL. Loads the Linux kernel, file
+   system, and device tree into memory.
+#. ``uImage``: Linux kernel image with a U-Boot header describing the image. This kernel was built 
+   to support a RAM based filesystem and have the necessary USB gadget drivers to expose
+   the eMMC device via USB as a mass storage device.
+#. ``initramfs``: Small filesystem built from Busybox that can live entirely within the DDR memory.
+#. ``osd3358-bsm-refdesing.dtb``: Device Tree Binary (dtb) describing the hardware configuration
+   of the “Target Device”. This file is responsible for setting up the eMMC and the USB interfaces.
 
 Setup
 -----
@@ -138,5 +164,7 @@ Write the image onto the eMMC
 
    $ sudo dd status=progress if=oresat-dev-2023-03-03.img of=/dev/sda
 
-- Once ``dd`` is done, remove power, change the boot jumper to boot from eMMC, and power up. Board
-  should boot from eMMC
+- Once ``dd`` is done, remove power, change the boot jumper to boot from eMMC, and power up.
+  The card should boot from eMMC with the new image.
+
+.. _TFTP: https://en.wikipedia.org/wiki/Trivial_File_Transfer_Protocol

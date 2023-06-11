@@ -35,6 +35,9 @@ Writing EEPROM
 
 - Connect the PocketBeagle’s I2C-2 to the Octavo’s I2C-0 using a Debug Board.
 
+ .. warning:: Connection point to the Octavo's I2C-0 may change to be directly on card and not
+    debug board with future OreSat cards.
+
  .. image:: ../static/oresat_debug_board.jpg
 
 - Power on the Octavo.
