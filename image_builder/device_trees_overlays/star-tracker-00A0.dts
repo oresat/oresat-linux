@@ -1,0 +1,177 @@
+/* OreSat Star Tracker overlay */
+
+#include "am33xx.h"
+
+/dts-v1/;
+/plugin/;
+
+/ {
+  compatible = "ti,beaglebone", "ti,beaglebone-black", "ti,beaglebone-green";
+
+  // identification
+  part-number = "PRUCAM";
+  version = "00A0";
+  
+  fragment@0 {
+    target = <&ocp>;
+    __overlay__ {
+      P1_20_pinmux { status = "disabled"; };
+      P1_29_pinmux { status = "disabled"; };
+      P1_31_pinmux { status = "disabled"; };
+      P1_33_pinmux { status = "disabled"; };
+      P1_36_pinmux { status = "disabled"; };
+      P2_18_pinmux { status = "disabled"; };
+      P2_22_pinmux { status = "disabled"; };
+      P2_28_pinmux { status = "disabled"; };
+      P2_30_pinmux { status = "disabled"; };
+      P2_32_pinmux { status = "disabled"; };
+      P2_34_pinmux { status = "disabled"; };
+    };
+  };
+
+  fragment@1 {
+    target-path="/";
+    __overlay__ {
+      prudev {
+        compatible = "prucam,prucam";
+
+        ti,prus = <&pru0>, <&pru1>;
+        interrupt-parent = <&pruss_intc>;
+
+        /**
+         * Map PRU events to host interupts. The first number is the PRU 
+         * system event, the second is the PRU INTC channel, and the third is
+         * the PRU INTC host interrupt. Host interrupts 0 and 1 are mapped to
+         * R31 bit 30 and 31, respectively. Host interrupts 2-9 are sent to the
+         * AM335x interrupt controller. PRU system events 16-31 can be manually
+         * triggered by writing to R31 from a PRU (see TRM section 4.4.1.2.2)
+         * or by writing the SRSR0 register (done by the kernel driver). See
+         * AM335x TRM section 4.4.2 for more information about PRU interrupts.
+         *
+         * PRU1 to ARM Interrupt:
+         * Maps system event 18 to channel 2 to host 2, which is connected to
+         * AM335x hardware interrupt #20. Triggering system event 18 will
+         * trigger AM335X interrupt #20. This is used by PRU1 to notify the
+         * kernel that the current frame has been written to the shared buffer
+         * and can now be read.
+         *
+         * ARM to PRUs Interrupt :
+         * Maps system event 16 to channel 0 to host 0, which is connected to
+         * R31 bit 30 of each PRU. Triggering system event 16 will set bit 30
+         * of R31. This is used by the kernel driver to tell the PRUs to start
+         * capturing a frame.
+         *
+         * PRU0 to PRU1 Interrupt :
+         * Maps system event 17 to channel 1 to host 1, which is connected to
+         * R31 bit 31 of each PRU. Triggering system event 17 will set bit 31
+         * of R31. This is used by PRU0 to notify PRU1 that the current image
+         * chunk can be read from the register bank.
+         */
+        
+        interrupts = <18 2 2>, <16 0 0>, <17 1 1>;
+        interrupt-names = "pru1_to_arm", "arm_to_prus", "pru0_to_pru1";
+      };
+    };
+  };
+
+  // overlay to enable camera GPIO
+  fragment@2 {
+    target = <&ocp>;
+    __overlay__ {
+      cape-universal {
+        compatible = "gpio-of-helper";
+        status = "okay";
+        pinctrl-names = "default";
+        pinctrl-0 = <&camera_pins>; /* this must point to pinmux name below */
+
+        flash {
+          gpio-name = "flash"; 
+          gpio = <&gpio0 16 0>; /* mii1_txd3 */
+          input;
+        };
+        bus_oe {
+          gpio-name = "bus_oe";
+          gpio = <&gpio3 1 0>; /* mii1_crs */
+          output;
+        };
+        cam_oe {
+          gpio-name = "cam_oe";
+          gpio = <&gpio3 0 0>; /* mii1_col */
+          output;
+        };
+        clk_en {
+          gpio-name = "clk_en"; 
+          gpio = <&gpio3 10 0>; /* mii1_rx_clk */
+          output;
+        };
+        input_en {
+          gpio-name = "input_en";
+          gpio = <&gpio2 21 0>; /* mii1_rxd0 */
+          output;
+        };
+        reset {
+          gpio-name = "reset";
+          gpio = <&gpio2 20 0>; /* mii1_rxd1 */
+          output;
+        };
+        saddr {
+          gpio-name = "saddr";
+          gpio = <&gpio2 19 0>; /* mii1_rxd2 */
+          output;
+        };
+        standby {
+          gpio-name = "standby";
+          gpio = <&gpio2 18 0>; /* mii1_rxd3 */
+          output;
+        };
+        trigger {
+          gpio-name = "trigger";
+          gpio = <&gpio3 2 0>; /* mii1_rx_er */
+          output;
+        };
+        vreg_en {
+          gpio-name = "vreg_en";
+          gpio = <&gpio3 4 0>; /* mii1_rx_dv */
+          output;
+        };
+      };
+    };
+  };
+
+  // overlay to enable camera GPIO pinmux.
+  fragment@3 {
+    target = <&am33xx_pinmux>;
+    __overlay__ {
+
+      camera_pins: camera_pins { 
+        #gpio-cells = <2>;
+        pinctrl-single,pins = <
+        /* Pins for camera control */
+        AM33XX_IOPAD(AM335X_PIN_MII1_TXD3, PIN_OUTPUT | MUX_MODE7)   /* mii1_txd3 == flash */
+        AM33XX_IOPAD(AM335X_PIN_MII1_CRS, PIN_OUTPUT | MUX_MODE7)    /* mii1_crs == bus_oe */
+        AM33XX_IOPAD(AM335X_PIN_MII1_COL, PIN_OUTPUT | MUX_MODE7)    /* mii1_col == cam_oe */
+        AM33XX_IOPAD(AM335X_PIN_MII1_RX_CLK, PIN_OUTPUT | MUX_MODE7) /* mii1_rx_clk == clk_en */
+        AM33XX_IOPAD(AM335X_PIN_MII1_RXD0, PIN_OUTPUT | MUX_MODE7)   /* mii1_rxd0 == input_en */
+        AM33XX_IOPAD(AM335X_PIN_MII1_RXD1, PIN_OUTPUT | MUX_MODE7)   /* mii1_rxd1 == reset */
+        AM33XX_IOPAD(AM335X_PIN_MII1_RXD2, PIN_OUTPUT | MUX_MODE7)   /* mii1_rxd2 == saddr */
+        AM33XX_IOPAD(AM335X_PIN_MII1_RXD3, PIN_OUTPUT | MUX_MODE7)   /* mii1_rxd3 == standby */
+        AM33XX_IOPAD(AM335X_PIN_MII1_RX_ER, PIN_OUTPUT | MUX_MODE7)  /* mii1_rx_er == trigger */
+        AM33XX_IOPAD(AM335X_PIN_MII1_RX_DV, PIN_OUTPUT | MUX_MODE7)  /* mii1_rx_dv == vreg_en */
+
+        /* Pins for camera parallel bus. Currently only getting top 8 bits of pixel data */
+        AM33XX_IOPAD(AM335X_PIN_MCASP0_ACLKX, PIN_INPUT | MUX_MODE6)      /* mcasp0_aclkx == pru0_r31_0 == camera D4 */
+        AM33XX_IOPAD(AM335X_PIN_MCASP0_FSX, PIN_INPUT | MUX_MODE6)        /* mcasp0_fsx == pru0_r31_1 == camera D5 */
+        AM33XX_IOPAD(AM335X_PIN_MCASP0_AXR0, PIN_INPUT | MUX_MODE6)       /* mcasp0_axr0 == pru0_r31_2 == camera D6 */
+        AM33XX_IOPAD(AM335X_PIN_MCASP0_AHCLKR, PIN_INPUT | MUX_MODE6)     /* mcasp0_ahclkr == pru0_r31_3 == camera D7 */
+        AM33XX_IOPAD(AM335X_PIN_MCASP0_ACLKR, PIN_INPUT | MUX_MODE6)      /* mcasp0_aclkr == pru0_r31_4 == camera D8 */
+        AM33XX_IOPAD(AM335X_PIN_MCASP0_FSR, PIN_INPUT | MUX_MODE6)        /* mcasp0_fsr == pru0_r31_5 == camera D9 */
+        AM33XX_IOPAD(AM335X_PIN_MCASP0_AXR1, PIN_INPUT | MUX_MODE6)       /* mcasp0_axr1 == pru0_r31_6 == camera D10 */
+        AM33XX_IOPAD(AM335X_PIN_MCASP0_AHCLKX, PIN_INPUT | MUX_MODE6)     /* mcasp0_ahclkx == pru0_r31_7 == camera D11 */
+        AM33XX_IOPAD(AM335X_PIN_GPMC_AD14, PIN_INPUT | MUX_MODE6)         /* gpmc_ad14 == pru0_r31_14 == camera VSYNC */
+        AM33XX_IOPAD(AM335X_PIN_GPMC_AD15, PIN_INPUT | MUX_MODE6)         /* gpmc_ad15 == pru0_r31_15 == camera HSYNC */
+        AM33XX_IOPAD(AM335X_PIN_XDMA_EVENT_INTR1, PIN_INPUT | MUX_MODE5)  /* xdma_event_intr1 == pru0_r31_16 == camera pixel clock */
+        >; };
+    };
+  };
+
+};

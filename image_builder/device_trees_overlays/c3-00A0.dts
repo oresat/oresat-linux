@@ -1,3 +1,5 @@
+/* OreSat C3 overlay */
+
 #include "am33xx.h"
 
 /dts-v1/;
