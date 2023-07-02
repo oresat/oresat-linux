@@ -1,0 +1,283 @@
+/* 
+OreSat C3 V6 device tree overlay ontop of the PocketBeagle device tree
+
+UART0 is already correct
+SPI0 is already correct
+CAN1 is handle by PB-CAN1 overlay
+eMMC is handle by BB-eMMC1 overlay
+*/
+
+#include "am33xx.h"
+
+/dts-v1/;
+/plugin/;
+
+/ {
+  compatible = "ti,beaglebone", "ti,beaglebone-black", "ti,beaglebone-green";
+  part-number = "BEAGLELOGIC";
+  version = "00A0";
+
+  fragment@0 {
+    target-path="/";
+    __overlay__ {
+      chosen {
+          overlays {
+            oresat-c3-v6-00A0 = __TIMESTAMP__;
+	      };
+      };
+    };
+  };
+
+  fragment@1 {
+    target = <&ocp>;
+    __overlay__ {
+      /* I2C2 */
+      P1_26_pinmux { status = "disabled"; }; /* I2C2 SDA */
+      P1_28_pinmux { status = "disabled"; }; /* I2C2 SCL */
+      /* SPI1 */
+      P2_25_pinmux { status = "disabled"; }; /* SPI1 D0 */
+      P2_27_pinmux { status = "disabled"; }; /* SPI1 D1 */
+      P2_29_pinmux { status = "disabled"; }; /* SPI1 SCLK*/
+      P2_31_pinmux { status = "disabled"; }; /* SPI1 CS0 */
+      /* GPIO */
+      P1_20_pinmux { status = "disabled"; };
+      P1_36_pinmux { status = "disabled"; };
+      P1_33_pinmux { status = "disabled"; };
+      P2_32_pinmux { status = "disabled"; };
+      P2_30_pinmux { status = "disabled"; };
+      P1_31_pinmux { status = "disabled"; };
+      P2_28_pinmux { status = "disabled"; };
+      P1_04_pinmux { status = "disabled"; };
+    };
+  };
+
+  /* pin modes */
+  fragment@2 {
+    target = <&am33xx_pinmux>;
+    __overlay__ {
+      pb_spi1_pins: pinmux_pb_spi1_pins  { /* L-Band AX5043 Radio  */
+        pinctrl-single,pins = <
+          AM33XX_PADCONF(AM335X_PIN_XDMA_EVENT_INTR0, PIN_INPUT, MUX_MODE4) /* SPI1 CS0 */
+          AM33XX_PADCONF(AM335X_PIN_ECAP0_IN_PWM0_OUT, PIN_INPUT, MUX_MODE4) /* SPI1 SCLK */
+          AM33XX_PADCONF(AM335X_PIN_UART0_CTSN, PIN_INPUT, MUX_MODE4) /* SPI1 D0 */
+          AM33XX_PADCONF(AM335X_PIN_UART0_RTSN, PIN_INPUT, MUX_MODE4) /* SPI1 D1 */
+        >;
+      };
+      pb_i2c2_pins: pinmux_pb_i2c2_pins  { /* OPD, F-RAM, RTC */
+        pinctrl-single,pins = <
+          AM33XX_PADCONF(AM335X_PIN_UART1_CTSN, PIN_INPUT, MUX_MODE3) /* I2C2 SDA */
+          AM33XX_PADCONF(AM335X_PIN_UART1_RTSN, PIN_INPUT, MUX_MODE3) /* I2C2 SCL */
+        >;
+      };
+      c3_gpio_pins: pinmux_c3_gpio_pins  {
+        pinctrl-single,pins = <
+          /* SIP C */
+          AM33XX_PADCONF(AM335X_PIN_XDMA_EVENT_INTR1, PIN_INPUT, MUX_MODE7) /* GPIO 0_20 / 20 - Fire Antennas 1 */
+          AM33XX_PADCONF(AM335X_PIN_MCASP0_ACLKX, PIN_INPUT, MUX_MODE7) /* GPIO 3_14 / 110 - Fire Helical 2 */
+          AM33XX_PADCONF(AM335X_PIN_MCASP0_FSX, PIN_INPUT, MUX_MODE7) /* GPIO 3_15 / 111 - Test Helical */
+          AM33XX_PADCONF(AM335X_PIN_MCASP0_AXR0, PIN_INPUT, MUX_MODE7) /* GPIO 3_16 / 112 - Fire Helical 1 */
+          AM33XX_PADCONF(AM335X_PIN_MCASP0_AHCLKR, PIN_INPUT, MUX_MODE7) /* GPIO 3_17 / 113 - Test Antennas */
+          AM33XX_PADCONF(AM335X_PIN_MCASP0_ACLKR, PIN_INPUT, MUX_MODE7) /* GPIO 3_18 / 114 - Radio not Fault */
+          AM33XX_PADCONF(AM335X_PIN_MCASP0_FSR, PIN_INPUT, MUX_MODE7) /* GPIO 3_19 / 115 - OPD not Fault */
+          AM33XX_PADCONF(AM335X_PIN_MCASP0_AXR1, PIN_OUTPUT, MUX_MODE7) /* GPIO 3_20 / 116 - OP not Enable */
+          AM33XX_PADCONF(AM335X_PIN_MCASP0_AHCLKX, PIN_INPUT, MUX_MODE7) /* GPIO 3_21 / 117 - Fire Antennas 2 */
+          AM33XX_PADCONF(AM335X_PIN_GPMC_CLK, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7) 
+          AM33XX_PADCONF(AM335X_PIN_GPMC_A0, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7) 
+          AM33XX_PADCONF(AM335X_PIN_GPMC_A1, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7) 
+          AM33XX_PADCONF(AM335X_PIN_GPMC_A2, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7) 
+          AM33XX_PADCONF(AM335X_PIN_GPMC_A3, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7) 
+          AM33XX_PADCONF(AM335X_PIN_GPMC_A9, PIN_INPUT, MUX_MODE7) /* GPIO 3_25 / 121 - UHF TOT OK */
+          AM33XX_PADCONF(AM335X_PIN_GPMC_A10, PIN_INPUT, MUX_MODE7) /* GPIO 3_26 / 122 - UHF IRQ */
+          AM33XX_PADCONF(AM335X_PIN_GPMC_A11, PIN_OUTPUT, MUX_MODE7) /* GPIO 3_27 / 122 - UHF PA Enable */
+          AM33XX_PADCONF(AM335X_PIN_GPMC_BEN1, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_GPMC_WAIT0, PIN_OUTPUT, MUX_MODE7) /* GPIO 0_30 / 30 - UHF TOT Clear */
+          AM33XX_PADCONF(AM335X_PIN_GPMC_WPN, PIN_INPUT, MUX_MODE7) /* GPIO 0_31 / 31 - L-Band IRQ */
+          AM33XX_PADCONF(AM335X_PIN_GPMC_CSN0, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_GPMC_CSN3, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_GPMC_AD8, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_GPMC_AD9, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_GPMC_AD10, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_GPMC_AD11, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_GPMC_AD12, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_GPMC_AD13, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_GPMC_AD14, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_GPMC_AD15, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_GPMC_ADVN_ALE, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_GPMC_BEN0_CLE, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_GPMC_WEN, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_GPMC_OEN_REN, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          /* SIP D */
+          AM33XX_PADCONF(AM335X_PIN_MII1_TX_CLK, PIN_OUTPUT, MUX_MODE7) /* GPIO 3_9 / 105 - L-Band LO not SEN */
+          AM33XX_PADCONF(AM335X_PIN_MII1_TXD0, PIN_OUTPUT, MUX_MODE7) /* GPIO 0_28 / 28 - L-Band LO SCLK */
+          AM33XX_PADCONF(AM335X_PIN_MII1_TXD1, PIN_OUTPUT, MUX_MODE7) /* GPIO 0_21 / 21 - L-Band LO SDATA */
+          AM33XX_PADCONF(AM335X_PIN_MII1_TXD2, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_MII1_TXD3, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_MII1_TX_EN, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_MII1_CRS, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_MII1_COL, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_MII1_RX_CLK, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_MII1_RXD0, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_MII1_RXD1, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_MII1_RXD2, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_MII1_RXD3, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_MII1_RX_ER, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_MII1_RX_DV, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_RMII1_REF_CLK, PIN_OUTPUT, MUX_MODE7) /* GPIO 0_29 / 29 - L-Band LO not Locked */
+          AM33XX_PADCONF(AM335X_PIN_MDC, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_MDIO, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_LCD_PCLK, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_LCD_VSYNC, PIN_OUTPUT, MUX_MODE7) /* GPIO 2_22 / 86 - Radio Enable */
+          AM33XX_PADCONF(AM335X_PIN_LCD_HSYNC, PIN_INPUT | PIN_INPUT_PULLDOWN, MUX_MODE7)
+          AM33XX_PADCONF(AM335X_PIN_LCD_AC_BIAS_EN, PIN_OUTPUT, MUX_MODE7) /* GPIO 2_25 / 89 - Pet WDT */
+        >;
+      };
+    };
+  };
+
+  /* SPI1 configs */
+  fragment@3 {
+    target = <&spi1>;
+    status = "okay";
+    pinctrl-names = "default";
+    pinctrl-0 = <&pb_spi1_pins>;
+
+    __overlay__ {
+      spi-max-frequency = <16000000>;
+
+      #address-cells = <1>;
+      #size-cells = <0>;
+    };
+  };
+
+  /* I2C2 configs */
+  fragment@4 {
+    target = <&i2c2>;
+    __overlay__ {
+      status = "okay";
+
+      clock-frequency = <100000>;
+
+      #address-cells = <1>;
+      #size-cells = <0>;
+    };
+  };
+
+  /* GPIO state */
+  fragment@5 {
+    target = <&ocp>;
+    __overlay__ {
+      cape-universal {
+        compatible = "gpio-of-helper";
+        status = "okay";
+        pinctrl-names = "default";
+        pinctrl-0 = <&c3_gpio_pins>; /* this must point to pinmux name below */
+        fire_antenna_1 {
+          gpio-name = "fire_antenna_1";
+          gpio = <&gpio0 20 GPIO_ACTIVE_LOW>; /* AM335X_PIN_XDMA_EVENT_INTR1 */
+          input;
+          dir-changeable;
+        };
+        fire_helical_2 {
+          gpio-name = "fire_helical_2";
+          gpio = <&gpio3 14 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MCASP0_ACLKX */
+          input;
+          dir-changeable;
+        };
+        test_helical {
+          gpio-name = "test_helical";
+          gpio = <&gpio3 15 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MCASP0_FSX */
+          input;
+          dir-changeable;
+        };
+        fire_helical_1 {
+          gpio-name = "fire_helical_1";
+          gpio = <&gpio3 16 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MCASP0_AXR0 */
+          input;
+          dir-changeable;
+        };
+        test_antennas {
+          gpio-name = "test_antennas";
+          gpio = <&gpio3 17 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MCASP0_AHCLKR */
+          input;
+          dir-changeable;
+        };
+        radio_not_fault {
+          gpio-name = "radio_not_fault";
+          gpio = <&gpio3 18 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MCASP0_ACLKR */
+          input;
+        };
+        opd_not_fault {
+          gpio-name = "opd_not_fault";
+          gpio = <&gpio3 19 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MCASP0_FSR */
+          input;
+        };
+        opd_not_enable {
+          gpio-name = "opd_not_enable";
+          gpio = <&gpio3 20 GPIO_ACTIVE_HIGH>; /* AM335X_PIN_MCASP0_FSR */
+          output;
+        };
+        fire_antenna_2 {
+          gpio-name = "fire_antenna_2";
+          gpio = <&gpio3 21 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MCASP0_ACLKX */
+          input;
+          dir-changeable;
+        };
+        uhf_tot_ok {
+          gpio-name = "uhf_tot_ok";
+          gpio = <&gpio3 25 GPIO_ACTIVE_LOW>; /* AM335X_PIN_GPMC_A9 */
+          input;
+        };
+        uhf_irq {
+          gpio-name = "uhf_irq";
+          gpio = <&gpio3 26 GPIO_ACTIVE_LOW>; /* AM335X_PIN_GPMC_A10 */
+          input;
+        };
+        uhf_pa_enable {
+          gpio-name = "uhf_pa_enable";
+          gpio = <&gpio3 27 GPIO_ACTIVE_LOW>; /* AM335X_PIN_GPMC_A11 */
+          output;
+        };
+        uhf_tot_clear {
+          gpio-name = "uhf_tot_clear";
+          gpio = <&gpio3 30 GPIO_ACTIVE_LOW>; /* AM335X_PIN_GPMC_WAIT0 */
+          output;
+        };
+        lband_irq {
+          gpio-name = "lband_irq";
+          gpio = <&gpio3 31 GPIO_ACTIVE_LOW>; /* AM335X_PIN_GPMC_WPN */
+          input;
+        };
+        lband_lo_nsen {
+          gpio-name = "lband_lo_nsen";
+          gpio = <&gpio3 9 GPIO_ACTIVE_HIGH>; /* AM335X_PIN_MII1_TX_CLK */
+          output;
+        };
+        lband_lo_sclk {
+          gpio-name = "lband_lo_sclk";
+          gpio = <&gpio0 28 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_TXD0 */
+          output;
+        };
+        lband_lo_sdata {
+          gpio-name = "lband_lo_sdata";
+          gpio = <&gpio0 21 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_TXD1 */
+          output;
+        };
+        lband_lo_nlocked {
+          gpio-name = "lband_lo_nlocked";
+          gpio = <&gpio0 29 GPIO_ACTIVE_LOW>; /* AM335X_PIN_RMII1_REF_CLK */
+          input;
+        };
+        radio_enable {
+          gpio-name = "radio_enable";
+          gpio = <&gpio2 22 GPIO_ACTIVE_LOW>; /* AM335X_PIN_LCD_VSYNC */
+          output;
+        };
+        pet_wdt {
+          gpio-name = "pet_wdt";
+          gpio = <&gpio2 25 GPIO_ACTIVE_LOW>; /* AM335X_PIN_LCD_VSYNC */
+          output;
+        };
+      };
+    };
+  };
+};

@@ -10,6 +10,9 @@
 
 #include "omap.h"
 
+#define GPIO_ACTIVE_LOW 0
+#define GPIO_ACTIVE_HIGH 1
+
 /* am33xx specific mux bit defines */
 #undef PULL_ENA
 #undef INPUT_EN
