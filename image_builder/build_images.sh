@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 list="c3 cfc dev dxwifi gps star-tracker"
 
@@ -20,6 +20,11 @@ fi
 BOARD="oresat-"$1
 DATE=`date "+%F"`
 NAME="$BOARD-$DATE"
+if [ "$BOARD" == "oresat-dev" ]; then
+    SIZE="4gb"
+else
+    SIZE="2gb"
+fi
 
 if [ ! -d image-builder ]; then
     git clone https://github.com/beagleboard/image-builder
@@ -44,14 +49,14 @@ rm -rf deploy
 cd deploy/debian-*/
 
 # make .img file
-sudo ./setup_sdcard.sh --img-2gb $NAME.img --dtb beaglebone --enable-mainline-pru-rproc
+sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb beaglebone --enable-mainline-pru-rproc
 
 # compress
-zstd $NAME-2gb.img
+zstd $NAME-$SIZE.img
 
 cd ../../..
 
-mv image-builder/deploy/debian-*/$NAME-2gb.img.zst .
+mv image-builder/deploy/debian-*/$NAME-$SIZE.img.zst .
 
 # generate sha256
-sha256sum $NAME-2gb.img.zst > $NAME-2gb.img.zst.sha256
+sha256sum $NAME-$SIZE.img.zst > $NAME-$SIZE.img.zst.sha256
