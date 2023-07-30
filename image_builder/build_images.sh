@@ -20,11 +20,7 @@ fi
 BOARD="oresat-"$1
 DATE=`date "+%F"`
 NAME="$BOARD-$DATE"
-if [ "$BOARD" == "oresat-dev" ]; then
-    SIZE="4gb"
-else
-    SIZE="2gb"
-fi
+SIZE="2gb"
 
 if [ ! -d image-builder ]; then
     git clone https://github.com/beagleboard/image-builder
