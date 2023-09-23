@@ -45,12 +45,23 @@ eMMC is handle by BB-eMMC1 overlay
         pinctrl-names = "default";
         pinctrl-0 = <>;
 
-        fire_antenna_1 {
-          gpio-name = "fire_antenna_1";
-          gpio = <&gpio0 20 0>; /* AM335X_PIN_XDMA_EVENT_INTR1 */
-          input;
-          dir-changeable;
+        i2c_sys_disable {
+          gpio-name = "i2c_sys_disable";
+          gpio = <&gpio1 13 0>; /* AM335X_PIN_GPMC_A13 */
+          output;
         };
+
+        opd_not_fault {
+          gpio-name = "opd_not_fault";
+          gpio = <&gpio3 19 0>; /* AM335X_PIN_MCASP0_FSR */
+          output;
+        };
+        opd_not_enable {
+          gpio-name = "opd_not_fault";
+          gpio = <&gpio3 20 1>; /* AM335X_PIN_MCASP0_FSR */
+          output;
+        };
+
         fire_helical_2 {
           gpio-name = "fire_helical_2";
           gpio = <&gpio3 14 0>; /* AM335X_PIN_MCASP0_ACLKX */
@@ -75,46 +86,43 @@ eMMC is handle by BB-eMMC1 overlay
           input;
           dir-changeable;
         };
+        fire_antenna_2 {
+          gpio-name = "fire_antenna_2";
+          gpio = <&gpio3 21 0>; /* AM335X_PIN_MCASP0_AHCLKX */
+          input;
+          dir-changeable;
+        };
+        fire_antenna_1 {
+          gpio-name = "fire_antenna_1";
+          gpio = <&gpio0 20 0>; /* AM335X_PIN_XDMA_EVENT_INTR1 */
+          input;
+          dir-changeable;
+        };
+
         radio_not_fault {
           gpio-name = "radio_not_fault";
           gpio = <&gpio3 18 0>; /* AM335X_PIN_MCASP0_ACLKR */
           input;
-        };
-        opd_not_fault {
-          gpio-name = "opd_not_fault";
-          gpio = <&gpio3 19 0>; /* AM335X_PIN_MCASP0_FSR */
-          input;
-        };
-        opd_not_enable {
-          gpio-name = "opd_not_enable";
-          gpio = <&gpio3 20 0>; /* AM335X_PIN_MCASP0_AXR1 */
-          output;
-        };
-        fire_antenna_2 {
-          gpio-name = "fire_antenna_2";
-          gpio = <&gpio3 21 0>; /* AM335X_PIN_MCASP0_ACLKX */
-          input;
-          dir-changeable;
         };
         uhf_tot_ok {
           gpio-name = "uhf_tot_ok";
           gpio = <&gpio3 25 0>; /* AM335X_PIN_GPMC_A9 */
           input;
         };
-        uhf_irq {
-          gpio-name = "uhf_irq";
-          gpio = <&gpio3 26 0>; /* AM335X_PIN_GPMC_A10 */
-          input;
+        uhf_tot_clear {
+          gpio-name = "uhf_tot_clear";
+          gpio = <&gpio3 30 0>; /* AM335X_PIN_GPMC_A10 */
+          output;
         };
         uhf_pa_enable {
           gpio-name = "uhf_pa_enable";
           gpio = <&gpio3 27 0>; /* AM335X_PIN_GPMC_A11 */
           output;
         };
-        uhf_tot_clear {
-          gpio-name = "uhf_tot_clear";
-          gpio = <&gpio3 30 0>; /* AM335X_PIN_GPMC_WAIT0 */
-          output;
+        uhf_irq {
+          gpio-name = "uhf_irq";
+          gpio = <&gpio3 26 0>; /* AM335X_PIN_GPMC_WAIT0 */
+          input;
         };
         lband_irq {
           gpio-name = "lband_irq";
@@ -136,8 +144,8 @@ eMMC is handle by BB-eMMC1 overlay
           gpio = <&gpio0 21 0>; /* AM335X_PIN_MII1_TXD1 */
           output;
         };
-        lband_lo_nlocked {
-          gpio-name = "lband_lo_nlocked";
+        lband_lo_not_locked {
+          gpio-name = "lband_lo_not_locked";
           gpio = <&gpio0 29 0>; /* AM335X_PIN_RMII1_REF_CLK */
           input;
         };
@@ -146,10 +154,37 @@ eMMC is handle by BB-eMMC1 overlay
           gpio = <&gpio2 22 0>; /* AM335X_PIN_LCD_VSYNC */
           output;
         };
+
         pet_wdt {
           gpio-name = "pet_wdt";
           gpio = <&gpio2 25 0>; /* AM335X_PIN_LCD_AC_BIAS_EN */
           output;
+        };
+
+        hw_id_bit_0 {
+          gpio-name = "hw_id_bit_0";
+          gpio = <&gpio0 22 0>; /* AM335X_PIN_GPMC_A8 */
+          input;
+        };
+        hw_id_bit_1 {
+          gpio-name = "hw_id_bit_1";
+          gpio = <&gpio0 23 0>; /* AM335X_PIN_GPMC_A9 */
+          input;
+        };
+        hw_id_bit_2 {
+          gpio-name = "hw_id_bit_2";
+          gpio = <&gpio0 26 0>; /* AM335X_PIN_GPMC_A10 */
+          input;
+        };
+        hw_id_bit_3 {
+          gpio-name = "hw_id_bit_3";
+          gpio = <&gpio0 27 0>; /* AM335X_PIN_GPMC_A11 */
+          input;
+        };
+        hw_id_bit_4 {
+          gpio-name = "hw_id_bit_4";
+          gpio = <&gpio1 12 0>; /* AM335X_PIN_GPMC_A12 */
+          input;
         };
       };
     };
