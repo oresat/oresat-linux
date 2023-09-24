@@ -27,7 +27,7 @@ if [ ! -d image-builder ]; then
 fi
 
 # build dtbo
-make -C device_trees_overlays
+make -C device_tree_overlays
 
 # copy oresat config into correct dirs
 cp ./configs/*.conf ./image-builder/configs/

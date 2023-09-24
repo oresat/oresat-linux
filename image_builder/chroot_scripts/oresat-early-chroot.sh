@@ -18,4 +18,4 @@ extra_index_url = https://piwheels.org/simple
 __EOF__
 
 # add all oresat dtbo
-cp ../device_trees_overlays/*.dtbo $tempdir/lib/firmware/
+cp ../device_tree_overlays/*.dtbo $tempdir/lib/firmware/
