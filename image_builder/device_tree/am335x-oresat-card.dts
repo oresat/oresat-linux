@@ -116,7 +116,7 @@ pulldown.
     >;
   };
 
-#define AM33XX_IOPAD_UNUSED(pin) AM33XX_IOPAD(pin, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
+#define AM33XX_IOPAD_UNUSED(pin) AM33XX_IOPAD(pin, PIN_INPUT | MUX_MODE7)
 
   /*
   Set all these pins to gpio input with pulldown.
