@@ -1,5 +1,5 @@
-/**
-Minimual device tree for a OreSat card.
+/*
+Device tree for OreSat cards.
 
 Only configures pins for the eMMC, SD card, UART0, USB0, I2C0, ADCs, standard
 LED pins, and the power regulator.
@@ -118,10 +118,10 @@ pulldown.
 
 #define AM33XX_IOPAD_UNUSED(pin) AM33XX_IOPAD(pin, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
 
-  /**
-   * Set all these pins to gpio input with pulldown.
-   * Device tree overlay(s) can change them mode needed for the OreSat card.
-   */
+  /*
+  Set all these pins to gpio input with pulldown.
+  Device tree overlay(s) can change them mode needed for the OreSat card.
+  */
   gpio_pins: pinmux-gpio-pins {
     pinctrl-single,pins = <
       /* SIP C left */
@@ -238,10 +238,10 @@ pulldown.
   system-power-controller;
 };
 
-/**
- * This is needed for cards that use spi0.
- * It should stay disabled by default for cards that do not need spi0.
- */
+/*
+This is needed for cards that use spi0.
+It should stay disabled by default for cards that do not need spi0.
+*/
 &spi0 {
   #address-cells = <1>;
   #size-cells = <0>;
@@ -268,10 +268,10 @@ pulldown.
   };
 };
 
-/**
- * This is needed for cards that use spi1.
- * It should stay disabled by default for cards that do not need spi1.
- */
+/*
+This is needed for cards that use spi1.
+It should stay disabled by default for cards that do not need spi1.
+*/
 &spi1 {
   #address-cells = <1>;
   #size-cells = <0>;
