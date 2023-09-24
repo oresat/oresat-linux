@@ -1,84 +1,111 @@
 /* OreSat GPS overlay */
 
-#include "am33xx.h"
-
 /dts-v1/;
 /plugin/;
 
+#include "am33xx.h"
+
+&{/chosen} {
+  overlays {
+    ORESAT-GPS-00A0 = __TIMESTAMP__;
+  };
+};
+
 / {
-    compatible = "ti,beaglebone", "ti,beaglebone-black", "ti,beaglebone-green";
+  fragment@0 {
+    target = <&am33xx_pinmux>;
+    __overlay__ {
+      uart2_pins: uart2-pins {
+        pinctrl-single,pins = <
+          AM33XX_IOPAD(AM335X_PIN_MII1_RX_CLK, PIN_OUTPUT_PULLDOWN | MUX_MODE1) /* uart2_txd */
+          AM33XX_IOPAD(AM335X_PIN_MII1_TX_CLK, PIN_INPUT_PULLUP | MUX_MODE1) /* uart2_rxd */
+        >;
+      };
 
-    // identification
-    part-number = "BEAGLELOGIC";
-    version = "00A0";
+      gps_gpio_pins: gps-gpio-pins {
+        pinctrl-single,pins = <
+          AM33XX_IOPAD(AM335X_PIN_MII1_TXD3, PIN_INPUT | MUX_MODE7) /* gpio0_16 / MAX_LD */
+          AM33XX_IOPAD(AM335X_PIN_MII1_TX_EN, PIN_OUTPUT | MUX_MODE7) /* gpio3_3 / MAX_nSHDN */
+          AM33XX_IOPAD(AM335X_PIN_MII1_RX_ER, PIN_OUTPUT | MUX_MODE7) /* gpio3_2 / STQ_EN */
+          AM33XX_IOPAD(AM335X_PIN_MII1_RX_DV, PIN_OUTPUT | MUX_MODE7) /* gpio3_4 / MAX_EN */
+          /* PRU pins */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_ACLKX, PIN_INPUT | MUX_MODE6) /* pru0_r31_0 / MAX_I1 */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_FSX, PIN_INPUT | MUX_MODE6) /* pru0_r31_1 / MAX_I0 */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_AXR0, PIN_INPUT | MUX_MODE6) /*pru0_r31_2 / MAX_Q1 */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_AHCLKR, PIN_INPUT | MUX_MODE6) /* pru0_r31_3 / MAX_Q0 */
+          AM33XX_IOPAD(AM335X_PIN_XDMA_EVENT_INTR1, PIN_INPUT | MUX_MODE5) /* pru0_r31_16 / MAX_CLKOUT */
+        >;
+      };
 
-    fragment@0 {
-        target-path="/";
-        __overlay__ {
-            chosen {
-                overlays {
-                    gps-00A0 = __TIMESTAMP__;
-	        };
-            };
-        };
+      gps_spi1_pins: gps-spi1-pins {
+        pinctrl-single,pins = <
+          /* 3-write spi */
+          AM33XX_IOPAD(AM335X_PIN_MII1_COL, PIN_INPUT | MUX_MODE2) /* spi1_sclk */
+          AM33XX_IOPAD(AM335X_PIN_MII1_CRS, PIN_INPUT | MUX_MODE2) /* spi1_d0 */
+          AM33XX_IOPAD(AM335X_PIN_RMII1_REF_CLK, PIN_OUTPUT | MUX_MODE2) /* spi1_cs0 */
+        >;
+      };
     };
+  };
 
-    // overlay to enable gps GPIO
-    fragment@1 {
-        target = <&ocp>;
-        __overlay__ {
-            cape-universal {
-                compatible = "gpio-of-helper";
-                status = "okay";
-                pinctrl-names = "default";
-                pinctrl-0 = <&gps_pins>; /* this must point to pinmux name below */
-
-                trigger {
-                    gpio-name = "trigger";
-                    gpio = <&gpio3 2 0>; /* mii1_rx_er */
-                    input;
-                    dir-changeable;
-                };
-
-                lna {
-                    gpio-name = "lna";
-                    gpio = <&gpio3 4 0>; /* mii1_rx_dv */
-                    input;
-                    dir-changeable;
-                };
-            };
-        };
+  fragment@1 {
+    target = <&uart2>;
+    __overlay__ {
+      status = "okay";
+      pinctrl-names = "default";
+      pinctrl-0 = <&uart2_pins>;
     };
+  };
 
-    // overlay to enable gps GPIO pinmux.
-    fragment@2 {
-        target = <&am33xx_pinmux>;
-        __overlay__ {
-            gps_pins: gps_pins { pinctrl-single,pins = <
-                AM33XX_IOPAD(AM335X_PIN_MII1_RX_ER, PIN_OUTPUT | INPUT_EN | MUX_MODE7)  /* mii1_rx_er == trigger */
-                AM33XX_IOPAD(AM335X_PIN_MII1_RX_DV, PIN_OUTPUT | INPUT_EN | MUX_MODE7)  /* mii1_rx_er == lna */
-            >; };
-        };
+  fragment@2 {
+    target = <&spi1>;
+    __overlay__ {
+      #address-cells = <1>;
+      #size-cells = <0>;
+      status = "okay";
+      pinctrl-names = "default";
+      pinctrl-0 = <&gps_spi1_pins>;
+
+      channel@0 {
+        status = "okay";
+        reg = <0>;
+      };
     };
+  };
 
-	// overlay to enable UART2 pinmux on alternate pins
-    fragment@3 {
-        target = <&am33xx_pinmux>;
-        __overlay__ {
-            uart2_alt_pins: uart2_alt_pins { pinctrl-single,pins = <
-                AM33XX_IOPAD(AM335X_PIN_MII1_RX_CLK, PIN_OUTPUT_PULLDOWN | MUX_MODE1)   /* mii1_rx_clk == uart2_tx */
-                AM33XX_IOPAD(AM335X_PIN_MII1_TX_CLK, PIN_INPUT_PULLUP | MUX_MODE1)	/* mii1_tx_clk == uart2_trx */
-            >; };
+  fragment@3 {
+    target = <&ocp>;
+    __overlay__ {
+      cape-universal {
+        compatible = "gpio-of-helper";
+        status = "okay";
+        pinctrl-names = "default";
+        pinctrl-0 = <&gps_gpio_pins>;
+
+        MAX_LD {
+          gpio-name = "MAX_LD";
+          gpio = <&gpio0 16 0>; /* AM335X_PIN_MII1_RX_ER */
+          input;
         };
-    };
 
-	// overlay to apply alternate UART2 pins to uart2 module
-	fragment@4 {
-		target = <&uart2>;
-		__overlay__ {
-			status = "okay";
-			pinctrl-names = "default";
-			pinctrl-0 = <&uart2_alt_pins>;
-		};
-	};
+        MAX_nSHDN{
+          gpio-name = "MAX_nSHDN";
+          gpio = <&gpio3 2 0>; /* AM335X_PIN_MII1_RX_ER */
+          output;
+        };
+
+        MAX_EN {
+          gpio-name = "MAX_EN";
+          gpio = <&gpio3 4 0>; /* AM335X_PIN_MII1_RX_ER */
+          output;
+        };
+
+        STQ_EN {
+          gpio-name = "STQ_EN";
+          gpio = <&gpio3 3 0>; /* AM335X_PIN_MII1_RX_DV */
+          output;
+        };
+      };
+    };
+  };
 };

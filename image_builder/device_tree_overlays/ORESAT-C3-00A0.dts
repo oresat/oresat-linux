@@ -1,49 +1,152 @@
-/* 
-OreSat C3 V6 device tree overlay ontop of the PocketBeagle device tree
-
-UART0 is already correct
-SPI0 is already correct
-CAN1 is handle by PB-CAN1 overlay
-eMMC is handle by BB-eMMC1 overlay
-*/
-
-#include "am33xx.h"
+/* OreSat C3 overlay */
 
 /dts-v1/;
 /plugin/;
 
-/ {
-  compatible = "ti,beaglebone", "ti,beaglebone-black", "ti,beaglebone-green";
-  part-number = "ORESAT-C3";
-  version = "00A0";
+#include "am33xx.h"
 
+&{/chosen} {
+  overlays {
+    ORESAT-C3-00A0 = __TIMESTAMP__;
+  };
+};
+
+/ {
   fragment@0 {
-    target-path="/";
+    target = <&am33xx_pinmux>;
     __overlay__ {
-      chosen {
-        overlays {
-          ORESAT-C3-00A0 = __TIMESTAMP__;
-        };
+      c3_dcan0_pins: pinmux-c3-dcan0-pins {
+        pinctrl-single,pins = <
+          AM33XX_IOPAD(AM335X_PIN_MII1_TXD2, PIN_INPUT_PULLUP | MUX_MODE1) /* dcan0_rx */
+          AM33XX_IOPAD(AM335X_PIN_MII1_TXD3, PIN_OUTPUT_PULLUP | MUX_MODE1) /* dcan0_tx */
+        >;
+      };
+
+      c3_spi0_pins: pinmux-c3-spi0-pins {
+        pinctrl-single,pins = <
+          AM33XX_PADCONF(AM335X_PIN_SPI0_SCLK, PIN_INPUT_PULLUP, MUX_MODE0) /* spi0_sclk */
+          AM33XX_PADCONF(AM335X_PIN_SPI0_D0, PIN_INPUT_PULLUP, MUX_MODE0) /* spi0_d0 */
+          AM33XX_PADCONF(AM335X_PIN_SPI0_D1, PIN_OUTPUT_PULLUP, MUX_MODE0) /* spi0_d1 */
+          AM33XX_PADCONF(AM335X_PIN_SPI0_CS0, PIN_OUTPUT_PULLUP, MUX_MODE0) /* spi0_cs0 */
+        >;
+      };
+
+      c3_spi1_pins: pinmux-c3-spi1-pins {
+        pinctrl-single,pins = <
+          AM33XX_IOPAD(AM335X_PIN_XDMA_EVENT_INTR0, PIN_INPUT | MUX_MODE4) /* SPI1_CS0 */
+          AM33XX_IOPAD(AM335X_PIN_ECAP0_IN_PWM0_OUT, PIN_INPUT | MUX_MODE4) /* SPI1_SCLK */
+          AM33XX_IOPAD(AM335X_PIN_UART0_CTSN, PIN_INPUT | MUX_MODE4) /* SPI1_D0 */
+          AM33XX_IOPAD(AM335X_PIN_UART0_RTSN, PIN_INPUT | MUX_MODE4) /* SPI1_D1 */
+        >;
+      };
+
+      c3_i2c2_pins: pinmux-c3-i2c2-pins {
+        pinctrl-single,pins = <
+          AM33XX_IOPAD(AM335X_PIN_UART1_CTSN, PIN_INPUT | MUX_MODE3) /* i2c2_sda */
+          AM33XX_IOPAD(AM335X_PIN_UART1_RTSN, PIN_INPUT | MUX_MODE3) /* i2c2_scl */
+        >;
+      };
+
+      c3_gpio_pins: pinmux-c3-gpio-pins {
+        pinctrl-single,pins = <
+          /* i2c sys */
+          AM33XX_IOPAD(AM335X_PIN_GPMC_AD13, PIN_OUTPUT | MUX_MODE7) /* gpio1_13 / I2C_SYS_DISABLE */
+          /* opd */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_FSR, PIN_INPUT | MUX_MODE7) /* gpio3_19 / OPD_nFAULT */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_AXR1, PIN_OUTPUT | MUX_MODE7) /* gpio3_20 / OPD_nENABLE */
+          /* antennas - set these to input by default, let sw swap direction */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_ACLKX, PIN_INPUT | MUX_MODE7) /* gpio3_14 / FIRE_HELICAL_2 */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_FSX, PIN_INPUT | MUX_MODE7) /* gpio3_15 / TEST_HELICAL */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_AXR0, PIN_INPUT | MUX_MODE7) /* gpio3_16 / FIRE_HELICAL_1 */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_AHCLKR, PIN_INPUT | MUX_MODE7) /* gpio3_17 / TEST_ANTENNAS */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_AHCLKX, PIN_INPUT | MUX_MODE7) /* gpio3_21 / FIRE_ANTENNAS_2 */
+          AM33XX_IOPAD(AM335X_PIN_XDMA_EVENT_INTR1, PIN_INPUT | MUX_MODE7) /* gpio0_20 / FIRE_ANTENNAS_1 */
+          /* radios */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_ACLKR, PIN_INPUT | MUX_MODE7) /* gpio3_18 / RADIO_nFAULT */
+          AM33XX_IOPAD(AM335X_PIN_GPMC_A9, PIN_INPUT | MUX_MODE7) /* gpio3_25 / UHF_TOT_OK */
+          AM33XX_IOPAD(AM335X_PIN_GPMC_A10, PIN_OUTPUT | MUX_MODE7) /* gpio3_30 / UHF_TOT_CLEAR */
+          AM33XX_IOPAD(AM335X_PIN_GPMC_A11, PIN_OUTPUT | MUX_MODE7) /* gpio3_27 / UHF_PA_ENABLE */
+          AM33XX_IOPAD(AM335X_PIN_GPMC_WAIT0, PIN_INPUT | MUX_MODE7) /* gpio3_26 / UHF_IRQ */
+          AM33XX_IOPAD(AM335X_PIN_GPMC_WPN, PIN_INPUT | MUX_MODE7) /* gpio3_31 / LBAND_IRQ */
+          AM33XX_IOPAD(AM335X_PIN_MII1_TX_CLK, PIN_OUTPUT | MUX_MODE7) /* gpio3_9 / LBAND_LO_nSEN */
+          AM33XX_IOPAD(AM335X_PIN_MII1_TXD0, PIN_OUTPUT | MUX_MODE7) /* gpio0_28 / LBAND_LO_SCLK */
+          AM33XX_IOPAD(AM335X_PIN_MII1_TXD1, PIN_OUTPUT | MUX_MODE7) /* gpio0_21 / LBAND_LO_SDATA */
+          AM33XX_IOPAD(AM335X_PIN_RMII1_REF_CLK, PIN_INPUT | MUX_MODE7) /* gpio0_29 / LBAND_LO_nLOCKED */
+          AM33XX_IOPAD(AM335X_PIN_LCD_VSYNC, PIN_OUTPUT | MUX_MODE7) /* gpio2_22 / RADIO_ENABLE */
+          /* wdt */
+          AM33XX_IOPAD(AM335X_PIN_LCD_AC_BIAS_EN, PIN_OUTPUT | MUX_MODE7) /* gpio2_25 / PET_WDT */
+          /* hw id */
+          AM33XX_IOPAD(AM335X_PIN_GPMC_AD8, PIN_INPUT | MUX_MODE7) /* gpio0_22 / HW_ID_BIT_0 */
+          AM33XX_IOPAD(AM335X_PIN_GPMC_AD9, PIN_INPUT | MUX_MODE7) /* gpio0_23 / HW_ID_BIT_1 */
+          AM33XX_IOPAD(AM335X_PIN_GPMC_AD10, PIN_INPUT | MUX_MODE7) /* gpio0_26 / HW_ID_BIT_2 */
+          AM33XX_IOPAD(AM335X_PIN_GPMC_AD11, PIN_INPUT | MUX_MODE7) /* gpio0_27 / HW_ID_BIT_3 */
+          AM33XX_IOPAD(AM335X_PIN_GPMC_AD12, PIN_INPUT | MUX_MODE7) /* gpio1_12 / HW_ID_BIT_4 */
+        >;
       };
     };
   };
 
   fragment@1 {
-    target = <&ocp>;
+    target = <&dcan0>;
     __overlay__ {
-      cape-universal { status = "disabled"; }; 
+      status = "okay";
+      pinctrl-names = "default";
+      pinctrl-0 = <&c3_dcan0_pins>;
     };
   };
 
-  /* gpio state */
   fragment@2 {
+    target = <&i2c2>;
+    __overlay__ {
+      #address-cells = <1>;
+      #size-cells = <0>;
+      status = "okay";
+      pinctrl-names = "default";
+      pinctrl-0 = <&c3_i2c2_pins>;
+      clock-frequency = <100000>;
+    };
+  };
+
+  fragment@3 {
+    target = <&spi0>;
+    __overlay__ {
+      #address-cells = <1>;
+      #size-cells = <0>;
+      status = "okay";
+      pinctrl-names = "default";
+      pinctrl-0 = <&c3_spi0_pins>;
+
+      channel@0 {
+        status = "okay";
+        reg = <0>;
+      };
+    };
+  };
+
+  fragment@4 {
+    target = <&spi1>;
+    __overlay__ {
+      #address-cells = <1>;
+      #size-cells = <0>;
+      status = "okay";
+      pinctrl-names = "default";
+      pinctrl-0 = <&c3_spi1_pins>;
+
+      channel@1 {
+        status = "okay";
+        reg = <1>;
+      };
+    };
+  };
+
+  fragment@5 {
     target = <&ocp>;
     __overlay__ {
-      cape-universal@1 {
+      cape-universal {
         compatible = "gpio-of-helper";
         status = "okay";
         pinctrl-names = "default";
-        pinctrl-0 = <>;
+        pinctrl-0 = <&c3_gpio_pins>;
 
         i2c_sys_disable {
           gpio-name = "i2c_sys_disable";
@@ -56,6 +159,7 @@ eMMC is handle by BB-eMMC1 overlay
           gpio = <&gpio3 19 0>; /* AM335X_PIN_MCASP0_FSR */
           output;
         };
+
         opd_not_enable {
           gpio-name = "opd_not_fault";
           gpio = <&gpio3 20 1>; /* AM335X_PIN_MCASP0_FSR */
@@ -68,30 +172,35 @@ eMMC is handle by BB-eMMC1 overlay
           input;
           dir-changeable;
         };
+
         test_helical {
           gpio-name = "test_helical";
           gpio = <&gpio3 15 0>; /* AM335X_PIN_MCASP0_FSX */
           input;
           dir-changeable;
         };
+
         fire_helical_1 {
           gpio-name = "fire_helical_1";
           gpio = <&gpio3 16 0>; /* AM335X_PIN_MCASP0_AXR0 */
           input;
           dir-changeable;
         };
+
         test_antennas {
           gpio-name = "test_antennas";
           gpio = <&gpio3 17 0>; /* AM335X_PIN_MCASP0_AHCLKR */
           input;
           dir-changeable;
         };
+
         fire_antenna_2 {
           gpio-name = "fire_antenna_2";
           gpio = <&gpio3 21 0>; /* AM335X_PIN_MCASP0_AHCLKX */
           input;
           dir-changeable;
         };
+
         fire_antenna_1 {
           gpio-name = "fire_antenna_1";
           gpio = <&gpio0 20 0>; /* AM335X_PIN_XDMA_EVENT_INTR1 */
@@ -104,51 +213,61 @@ eMMC is handle by BB-eMMC1 overlay
           gpio = <&gpio3 18 0>; /* AM335X_PIN_MCASP0_ACLKR */
           input;
         };
+
         uhf_tot_ok {
           gpio-name = "uhf_tot_ok";
           gpio = <&gpio3 25 0>; /* AM335X_PIN_GPMC_A9 */
           input;
         };
+
         uhf_tot_clear {
           gpio-name = "uhf_tot_clear";
           gpio = <&gpio3 30 0>; /* AM335X_PIN_GPMC_A10 */
           output;
         };
+
         uhf_pa_enable {
           gpio-name = "uhf_pa_enable";
           gpio = <&gpio3 27 0>; /* AM335X_PIN_GPMC_A11 */
           output;
         };
+
         uhf_irq {
           gpio-name = "uhf_irq";
           gpio = <&gpio3 26 0>; /* AM335X_PIN_GPMC_WAIT0 */
           input;
         };
+
         lband_irq {
           gpio-name = "lband_irq";
           gpio = <&gpio3 31 0>; /* AM335X_PIN_GPMC_WPN */
           input;
         };
+
         lband_lo_not_sen {
           gpio-name = "lband_lo_not_sen";
           gpio = <&gpio3 9 0>; /* AM335X_PIN_MII1_TX_CLK */
           output;
         };
+
         lband_lo_sclk {
           gpio-name = "lband_lo_sclk";
           gpio = <&gpio0 28 0>; /* AM335X_PIN_MII1_TXD0 */
           output;
         };
+
         lband_lo_sdata {
           gpio-name = "lband_lo_sdata";
           gpio = <&gpio0 21 0>; /* AM335X_PIN_MII1_TXD1 */
           output;
         };
+
         lband_lo_not_locked {
           gpio-name = "lband_lo_not_locked";
           gpio = <&gpio0 29 0>; /* AM335X_PIN_RMII1_REF_CLK */
           input;
         };
+
         radio_enable {
           gpio-name = "radio_enable";
           gpio = <&gpio2 22 0>; /* AM335X_PIN_LCD_VSYNC */
@@ -163,186 +282,33 @@ eMMC is handle by BB-eMMC1 overlay
 
         hw_id_bit_0 {
           gpio-name = "hw_id_bit_0";
-          gpio = <&gpio0 22 0>; /* AM335X_PIN_GPMC_A8 */
+          gpio = <&gpio0 22 0>; /* AM335X_PIN_GPMC_AD8 */
           input;
         };
+
         hw_id_bit_1 {
           gpio-name = "hw_id_bit_1";
-          gpio = <&gpio0 23 0>; /* AM335X_PIN_GPMC_A9 */
+          gpio = <&gpio0 23 0>; /* AM335X_PIN_GPMC_AD9 */
           input;
         };
+
         hw_id_bit_2 {
           gpio-name = "hw_id_bit_2";
-          gpio = <&gpio0 26 0>; /* AM335X_PIN_GPMC_A10 */
+          gpio = <&gpio0 26 0>; /* AM335X_PIN_GPMC_AD10 */
           input;
         };
+
         hw_id_bit_3 {
           gpio-name = "hw_id_bit_3";
-          gpio = <&gpio0 27 0>; /* AM335X_PIN_GPMC_A11 */
+          gpio = <&gpio0 27 0>; /* AM335X_PIN_GPMC_AD11 */
           input;
         };
+
         hw_id_bit_4 {
           gpio-name = "hw_id_bit_4";
-          gpio = <&gpio1 12 0>; /* AM335X_PIN_GPMC_A12 */
+          gpio = <&gpio1 12 0>; /* AM335X_PIN_GPMC_AD12 */
           input;
         };
-      };
-    };
-  };
-
-  /* SPI1 configs */
-  fragment@3 {
-    target = <&spi1>;
-    status = "okay";
-    pinctrl-names = "default";
-    pinctrl-0 = <&pb_spi1_pins>;
-
-    __overlay__ {
-      spi-max-frequency = <24000000>;
-
-      #address-cells = <1>;
-      #size-cells = <0>;
-    };
-  };
-
-  /* I2C2 configs */
-  fragment@4 {
-    target = <&i2c2>;
-    __overlay__ {
-      status = "okay";
-
-      clock-frequency = <100000>;
-
-      #address-cells = <1>;
-      #size-cells = <0>;
-    };
-  };
-
-  /* CAN0 configs */
-  fragment@5 {
-    target = <&dcan0>;
-    __overlay__ {
-      status = "okay";
-      pinctrl-names = "default";
-      pinctrl-0 = <&pb_dcan0_pins>;
-    };
-  };
-
-  /* pin modes */
-  fragment@6 {
-    target = <&am33xx_pinmux>;
-    __overlay__ {
-      pb_dcan0_pins: pinmux_pb_dcan0_pins  { /* dcan0  */
-        pinctrl-single,pins = <
-          AM33XX_IOPAD(AM335X_PIN_MII1_TXD2, PIN_INPUT_PULLUP | MUX_MODE1) /* DCAN0_RX */
-          AM33XX_IOPAD(AM335X_PIN_MII1_TXD3, PIN_OUTPUT_PULLUP |  MUX_MODE1) /* DCAN0_TX */
-        >;
-      };
-      pb_spi1_pins: pinmux_pb_spi1_pins  { /* L-Band AX5043 Radio */
-        pinctrl-single,pins = <
-          AM33XX_IOPAD(AM335X_PIN_XDMA_EVENT_INTR0, PIN_INPUT | MUX_MODE4) /* SPI1_CS0 */
-          AM33XX_IOPAD(AM335X_PIN_ECAP0_IN_PWM0_OUT, PIN_INPUT | MUX_MODE4) /* SPI1_SCLK */
-          AM33XX_IOPAD(AM335X_PIN_UART0_CTSN, PIN_INPUT | MUX_MODE4) /* SPI1_D0 */
-          AM33XX_IOPAD(AM335X_PIN_UART0_RTSN, PIN_INPUT | MUX_MODE4) /* SPI1_D1 */
-        >;
-      };
-      pb_i2c2_pins: pinmux_pb_i2c2_pins  { /* OPD, F-RAM, RTC */
-        pinctrl-single,pins = <
-          AM33XX_IOPAD(AM335X_PIN_UART1_CTSN, PIN_INPUT | MUX_MODE3) /* I2C2_SDA */
-          AM33XX_IOPAD(AM335X_PIN_UART1_RTSN, PIN_INPUT | MUX_MODE3) /* I2C2_SCL */
-        >;
-      };
-      pb_i2c_sys_pins: pinmux_pb_i2c_sys_pins  {
-        #gpio-cells = <2>;
-        pinctrl-single,pins = <
-          AM33XX_IOPAD(AM335X_PIN_GPMC_AD13, PIN_OUTPUT | MUX_MODE7) /* gpio1_13 / I2C_SYS_DISABLE  */
-        >;
-      };
-      c3_opd_gpio_pins: pinmux_opd_gpio_pins  {
-        #gpio-cells = <2>;
-        pinctrl-single,pins = <
-          AM33XX_IOPAD(AM335X_PIN_MCASP0_FSR, PIN_INPUT | MUX_MODE7) /* gpio3_19 / OPD_nFAULT */
-          AM33XX_IOPAD(AM335X_PIN_MCASP0_AXR1, PIN_OUTPUT | MUX_MODE7) /* gpio3_20 / OPD_nENABLE */
-        >;
-      };
-      c3_antenna_gpio_pins: pinmux_antenna_gpio_pins  {
-        #gpio-cells = <2>;
-        pinctrl-single,pins = <
-          /* Set these to input by default, let sw swap direction */
-          AM33XX_IOPAD(AM335X_PIN_MCASP0_ACLKX, PIN_INPUT | MUX_MODE7) /* gpio3_14 / FIRE_HELICAL_2 */
-          AM33XX_IOPAD(AM335X_PIN_MCASP0_FSX, PIN_INPUT | MUX_MODE7) /* gpio3_15 / TEST_HELICAL */
-          AM33XX_IOPAD(AM335X_PIN_MCASP0_AXR0, PIN_INPUT | MUX_MODE7) /* gpio3_16 / FIRE_HELICAL_1 */
-          AM33XX_IOPAD(AM335X_PIN_MCASP0_AHCLKR, PIN_INPUT | MUX_MODE7) /* gpio3_17 / TEST_ANTENNAS */
-          AM33XX_IOPAD(AM335X_PIN_MCASP0_AHCLKX, PIN_INPUT | MUX_MODE7) /* gpio3_21 / FIRE_ANTENNAS_2 */
-          AM33XX_IOPAD(AM335X_PIN_XDMA_EVENT_INTR1, PIN_INPUT | MUX_MODE7) /* gpio0_20 / FIRE_ANTENNAS_1 */
-        >;
-      };
-      c3_radios_gpio_pins: pinmux_radio_gpio_pins  {
-        #gpio-cells = <2>;
-        pinctrl-single,pins = <
-          AM33XX_IOPAD(AM335X_PIN_MCASP0_ACLKR, PIN_INPUT | MUX_MODE7) /* gpio3_18 / RADIO_nFAULT */
-          AM33XX_IOPAD(AM335X_PIN_GPMC_A9, PIN_INPUT | MUX_MODE7) /* gpio3_25 / UHF_TOT_OK */
-          AM33XX_IOPAD(AM335X_PIN_GPMC_A10, PIN_OUTPUT | MUX_MODE7) /* gpio3_30 / UHF_TOT_CLEAR */
-          AM33XX_IOPAD(AM335X_PIN_GPMC_A11, PIN_OUTPUT | MUX_MODE7) /* gpio3_27 / UHF_PA_ENABLE */
-          AM33XX_IOPAD(AM335X_PIN_GPMC_WAIT0, PIN_INPUT | MUX_MODE7) /* gpio3_26 / UHF_IRQ */
-          AM33XX_IOPAD(AM335X_PIN_GPMC_WPN, PIN_INPUT | MUX_MODE7) /* gpio3_31 / LBAND_IRQ */
-          AM33XX_IOPAD(AM335X_PIN_MII1_TX_CLK, PIN_OUTPUT | MUX_MODE7) /* gpio3_9 / LBAND_LO_nSEN */
-          AM33XX_IOPAD(AM335X_PIN_MII1_TXD0, PIN_OUTPUT | MUX_MODE7) /* gpio0_28 / LBAND_LO_SCLK */
-          AM33XX_IOPAD(AM335X_PIN_MII1_TXD1, PIN_OUTPUT | MUX_MODE7) /* gpio0_21 / LBAND_LO_SDATA */
-          AM33XX_IOPAD(AM335X_PIN_RMII1_REF_CLK, PIN_INPUT | MUX_MODE7) /* gpio0_29 / LBAND_LO_nLOCKED */
-          AM33XX_IOPAD(AM335X_PIN_LCD_VSYNC, PIN_OUTPUT | MUX_MODE7) /* gpio2_22 / RADIO_ENABLE */
-        >;
-      };
-      c3_wdt_gpio_pins: pinmux_wdt_gpio_pins  {
-        #gpio-cells = <2>;
-        pinctrl-single,pins = <
-          AM33XX_IOPAD(AM335X_PIN_LCD_AC_BIAS_EN, PIN_OUTPUT | MUX_MODE7) /* gpio2_25 / PED_WDT */
-        >;
-      };
-      c3_hw_id_gpio_pins: pinmux_hw_id_gpio_pins  {
-        #gpio-cells = <2>;
-        pinctrl-single,pins = <
-          AM33XX_IOPAD(AM335X_PIN_GPMC_AD8, PIN_INPUT | MUX_MODE7) /* gpio0_22 / HW_ID_BIT_0 */
-          AM33XX_IOPAD(AM335X_PIN_GPMC_AD9, PIN_INPUT | MUX_MODE7) /* gpio0_23 / HW_ID_BIT_1 */
-          AM33XX_IOPAD(AM335X_PIN_GPMC_AD10, PIN_INPUT | MUX_MODE7) /* gpio0_26 / HW_ID_BIT_2 */
-          AM33XX_IOPAD(AM335X_PIN_GPMC_AD11, PIN_INPUT | MUX_MODE7) /* gpio0_27 / HW_ID_BIT_3 */
-          AM33XX_IOPAD(AM335X_PIN_GPMC_AD12, PIN_INPUT | MUX_MODE7) /* gpio1_12 / HW_ID_BIT_4 */
-        >;
-      };
-      c3_test_points_gpio_pins: pinmux_test_points_gpio_pins  {
-        #gpio-cells = <2>;
-        pinctrl-single,pins = <
-          /* SIP C */
-          AM33XX_IOPAD(AM335X_PIN_GPMC_CLK, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7) 
-          AM33XX_IOPAD(AM335X_PIN_GPMC_A0, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7) 
-          AM33XX_IOPAD(AM335X_PIN_GPMC_A1, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7) 
-          AM33XX_IOPAD(AM335X_PIN_GPMC_A2, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7) 
-          AM33XX_IOPAD(AM335X_PIN_GPMC_A3, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7) 
-          AM33XX_IOPAD(AM335X_PIN_GPMC_BEN1, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          AM33XX_IOPAD(AM335X_PIN_GPMC_CSN0, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          AM33XX_IOPAD(AM335X_PIN_GPMC_CSN3, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          AM33XX_IOPAD(AM335X_PIN_GPMC_AD14, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          AM33XX_IOPAD(AM335X_PIN_GPMC_AD15, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          AM33XX_IOPAD(AM335X_PIN_GPMC_ADVN_ALE, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          AM33XX_IOPAD(AM335X_PIN_GPMC_BEN0_CLE, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          AM33XX_IOPAD(AM335X_PIN_GPMC_WEN, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          AM33XX_IOPAD(AM335X_PIN_GPMC_OEN_REN, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          /* SIP D */
-          AM33XX_IOPAD(AM335X_PIN_MII1_TX_EN, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          AM33XX_IOPAD(AM335X_PIN_MII1_CRS, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          AM33XX_IOPAD(AM335X_PIN_MII1_COL, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          AM33XX_IOPAD(AM335X_PIN_MII1_RX_CLK, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          AM33XX_IOPAD(AM335X_PIN_MII1_RXD0, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          AM33XX_IOPAD(AM335X_PIN_MII1_RXD1, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          AM33XX_IOPAD(AM335X_PIN_MII1_RXD2, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          AM33XX_IOPAD(AM335X_PIN_MII1_RXD3, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          AM33XX_IOPAD(AM335X_PIN_MII1_RX_ER, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          AM33XX_IOPAD(AM335X_PIN_MII1_RX_DV, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          AM33XX_IOPAD(AM335X_PIN_MDC, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          AM33XX_IOPAD(AM335X_PIN_MDIO, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          AM33XX_IOPAD(AM335X_PIN_LCD_PCLK, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-          AM33XX_IOPAD(AM335X_PIN_LCD_HSYNC, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
-        >;
       };
     };
   };

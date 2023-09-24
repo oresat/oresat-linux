@@ -3,9 +3,10 @@ mono_crash.*
 nohup.out
 __pycache__
 image-builder/
+BeagleBoard-DeviceTrees/
 build/
 bb.org-overlays/
-*.dtbo
+*.dtb*
 *.dts.tmp
 oresat*.img
 *.img.zst

@@ -1,0 +1,316 @@
+/**
+Minimual device tree for a OreSat card.
+
+Only configures pins for the eMMC, SD card, UART0, USB0, I2C0, ADCs, standard
+LED pins, and the power regulator.
+
+All other pins are configured to their gpio mode and set to a input with a
+pulldown.
+*/
+
+/dts-v1/;
+
+#include "am33xx.dtsi"
+#include "am335x-osd335x-common.dtsi"
+
+/ {
+  model = "OreSat Card";
+  compatible = "ti,am33xx";
+
+  chosen {
+    stdout-path = &uart0;
+    base_dtb = "am335x-osd3358-min.dts";
+    base_dtb_timestamp = __TIMESTAMP__;
+  };
+
+  leds {
+    pinctrl-names = "default";
+    pinctrl-0 = <&user_leds_s0>;
+    compatible = "gpio-leds";
+
+    usr0 {
+      label = "beaglebone:green:usr0";
+      gpios = <&gpio1 21 GPIO_ACTIVE_HIGH>;
+      linux,default-trigger = "heartbeat";
+      default-state = "off";
+    };
+
+    usr1 {
+      label = "beaglebone:green:usr1";
+      gpios = <&gpio1 22 GPIO_ACTIVE_HIGH>;
+      linux,default-trigger = "mmc0";
+      default-state = "off";
+    };
+
+    usr2 {
+      label = "beaglebone:green:usr2";
+      gpios = <&gpio1 23 GPIO_ACTIVE_HIGH>;
+      linux,default-trigger = "cpu0";
+      default-state = "off";
+    };
+
+    usr3 {
+      label = "beaglebone:green:usr3";
+      gpios = <&gpio1 24 GPIO_ACTIVE_HIGH>;
+      linux,default-trigger = "mmc1";
+      default-state = "off";
+    };
+  };
+
+  vmmcsd_fixed: fixedregulator0 {
+    compatible = "regulator-fixed";
+    regulator-name = "vmmcsd_fixed";
+    regulator-min-microvolt = <3300000>;
+    regulator-max-microvolt = <3300000>;
+  };
+};
+
+&am33xx_pinmux {
+  user_leds_s0: user-leds-s0 {
+    pinctrl-single,pins = <
+      AM33XX_PADCONF(AM335X_PIN_GPMC_A5, PIN_OUTPUT_PULLDOWN, MUX_MODE7) /* gpio1_21 / usr0 */
+      AM33XX_PADCONF(AM335X_PIN_GPMC_A6, PIN_OUTPUT_PULLUP, MUX_MODE7) /* gpio1_22 / usr1 */
+      AM33XX_PADCONF(AM335X_PIN_GPMC_A7, PIN_OUTPUT_PULLDOWN, MUX_MODE7) /* gpio1_23 / usr2 */
+      AM33XX_PADCONF(AM335X_PIN_GPMC_A8, PIN_OUTPUT_PULLUP, MUX_MODE7) /* gpio1_24 / usr3 */
+    >;
+  };
+
+  uart0_pins: pinmux-uart0-pins {
+    pinctrl-single,pins = <
+      AM33XX_PADCONF(AM335X_PIN_UART0_RXD, PIN_INPUT_PULLUP, MUX_MODE0) /* uart0_rxd */
+      AM33XX_PADCONF(AM335X_PIN_UART0_TXD, PIN_OUTPUT_PULLDOWN, MUX_MODE0) /* uart0_txd */
+    >;
+  };
+
+  mmc1_pins: pinmux-mmc1-pins {
+    pinctrl-single,pins = <
+      AM33XX_PADCONF(AM335X_PIN_SPI0_CS1, PIN_INPUT, MUX_MODE7) /* gpio2 / mmc0_cd */
+      AM33XX_PADCONF(AM335X_PIN_MMC0_DAT0, PIN_INPUT_PULLUP, MUX_MODE0) /* mmc0_dat0 */
+      AM33XX_PADCONF(AM335X_PIN_MMC0_DAT1, PIN_INPUT_PULLUP, MUX_MODE0) /* mmc0_dat1 */
+      AM33XX_PADCONF(AM335X_PIN_MMC0_DAT2, PIN_INPUT_PULLUP, MUX_MODE0) /* mmc0_dat2 */
+      AM33XX_PADCONF(AM335X_PIN_MMC0_DAT3, PIN_INPUT_PULLUP, MUX_MODE0) /* mmc0_dat3 */
+      AM33XX_PADCONF(AM335X_PIN_MMC0_CMD, PIN_INPUT_PULLUP, MUX_MODE0) /* mmc0_cmd */
+      AM33XX_PADCONF(AM335X_PIN_MMC0_CLK, PIN_INPUT_PULLUP, MUX_MODE0) /* mmc0_clk */
+    >;
+  };
+
+  emmc_pins: pinmux-emmc-pins {
+    pinctrl-single,pins = <
+      AM33XX_PADCONF(AM335X_PIN_GPMC_CSN1, PIN_INPUT_PULLUP, MUX_MODE2) /* mmc1_clk */
+      AM33XX_PADCONF(AM335X_PIN_GPMC_CSN2, PIN_INPUT_PULLUP, MUX_MODE2) /* mmc1_cmd */
+      AM33XX_PADCONF(AM335X_PIN_GPMC_AD0, PIN_INPUT_PULLUP, MUX_MODE1) /* mmc1_dat0 */
+      AM33XX_PADCONF(AM335X_PIN_GPMC_AD1, PIN_INPUT_PULLUP, MUX_MODE1) /* mmc1_dat1 */
+      AM33XX_PADCONF(AM335X_PIN_GPMC_AD2, PIN_INPUT_PULLUP, MUX_MODE1) /* mmc1_dat2 */
+      AM33XX_PADCONF(AM335X_PIN_GPMC_AD3, PIN_INPUT_PULLUP, MUX_MODE1) /* mmc1_dat3 */
+      AM33XX_PADCONF(AM335X_PIN_GPMC_AD4, PIN_INPUT_PULLUP, MUX_MODE1) /* mmc1_dat4 */
+      AM33XX_PADCONF(AM335X_PIN_GPMC_AD5, PIN_INPUT_PULLUP, MUX_MODE1) /* mmc1_dat5 */
+      AM33XX_PADCONF(AM335X_PIN_GPMC_AD6, PIN_INPUT_PULLUP, MUX_MODE1) /* mmc1_dat6 */
+      AM33XX_PADCONF(AM335X_PIN_GPMC_AD7, PIN_INPUT_PULLUP, MUX_MODE1) /* mmc1_dat7 */
+    >;
+  };
+
+  dcan1_pins: pinmux-dcan1-pins {
+    pinctrl-single,pins = <
+      AM33XX_PADCONF(AM335X_PIN_UART1_TXD, PIN_INPUT_PULLUP, MUX_MODE2) /* dcan1_rx */
+      AM33XX_PADCONF(AM335X_PIN_UART1_RXD, PIN_OUTPUT_PULLDOWN, MUX_MODE2) /* dcan1_tx */
+    >;
+  };
+
+#define AM33XX_IOPAD_UNUSED(pin) AM33XX_IOPAD(pin, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7)
+
+  /**
+   * Set all these pins to gpio input with pulldown.
+   * Device tree overlay(s) can change them mode needed for the OreSat card.
+   */
+  gpio_pins: pinmux-gpio-pins {
+    pinctrl-single,pins = <
+      /* SIP C left */
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_UART0_CTSN) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_UART0_RTSN) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_UART1_CTSN) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_UART1_RTSN) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_SPI0_SCLK) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_SPI0_D0) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_SPI0_D1) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_SPI0_CS0) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MCASP0_ACLKX) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MCASP0_FSX) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MCASP0_AXR0) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MCASP0_AHCLKR) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MCASP0_ACLKR) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MCASP0_FSR) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MCASP0_AXR1) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MCASP0_AHCLKX) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_XDMA_EVENT_INTR0) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_XDMA_EVENT_INTR1) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_ECAP0_IN_PWM0_OUT) 
+      /* SIP C right */
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_CLK) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_A0) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_A1) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_A2) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_A3) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_A9) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_A10) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_A11) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_BEN1) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_WAIT0) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_WPN) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_CSN0) 
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_CSN3)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_AD8)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_AD9)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_AD10)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_AD11)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_AD12)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_AD13)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_AD14)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_AD15)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_ADVN_ALE)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_BEN0_CLE)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_WEN)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_GPMC_OEN_REN)
+      /* SIP D left */
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MII1_TX_CLK)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MII1_TXD0)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MII1_TXD1)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MII1_TXD2)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MII1_TXD3)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MII1_TX_EN)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MII1_CRS)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MII1_COL)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MII1_RX_CLK)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MII1_RXD0)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MII1_RXD1)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MII1_RXD2)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MII1_RXD3)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MII1_RX_ER)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MII1_RX_DV)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_RMII1_REF_CLK)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MDC)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_MDIO)
+      /* SIP D right */
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_LCD_PCLK)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_LCD_VSYNC)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_LCD_HSYNC)
+      AM33XX_IOPAD_UNUSED(AM335X_PIN_LCD_AC_BIAS_EN)
+    >;
+  };
+};
+
+&dcan1 {
+  status = "okay";
+  pinctrl-names = "default";
+  pinctrl-0 = <&dcan1_pins>;
+};
+
+&ldo3_reg {
+  regulator-min-microvolt = <1800000>;
+  regulator-max-microvolt = <1800000>;
+  regulator-always-on;
+};
+
+&i2c0 {
+  eeprom: eeprom@50 {
+    compatible = "atmel,24c256";
+    reg = <0x50>;
+  };
+};
+
+&mmc1 {
+  status = "okay";
+  vmmc-supply = <&vmmcsd_fixed>;
+  bus-width = <0x4>;
+  pinctrl-names = "default";
+  pinctrl-0 = <&mmc1_pins>;
+  cd-gpios = <&gpio0 6 GPIO_ACTIVE_LOW>;
+};
+
+&mmc2 {
+  vmmc-supply = <&vmmcsd_fixed>;
+  pinctrl-names = "default";
+  pinctrl-0 = <&emmc_pins>;
+  bus-width = <8>;
+  status = "okay";
+};
+
+&rtc {
+  system-power-controller;
+};
+
+/**
+ * This is needed for cards that use spi0.
+ * It should stay disabled by default for cards that do not need spi0.
+ */
+&spi0 {
+  #address-cells = <1>;
+  #size-cells = <0>;
+  status = "disabled";
+
+  channel@0 {
+    #address-cells = <1>;
+    #size-cells = <0>;
+    compatible = "rohm,dh2228fv";
+    symlink = "bone/spi/0.0";
+    reg = <0>;
+    spi-max-frequency = <24000000>;
+    status = "disabled";
+  };
+
+  channel@1 {
+    #address-cells = <1>;
+    #size-cells = <0>;
+    compatible = "rohm,dh2228fv";
+    symlink = "bone/spi/0.1";
+    reg = <1>;
+    spi-max-frequency = <24000000>;
+    status = "disabled";
+  };
+};
+
+/**
+ * This is needed for cards that use spi1.
+ * It should stay disabled by default for cards that do not need spi1.
+ */
+&spi1 {
+  #address-cells = <1>;
+  #size-cells = <0>;
+  status = "disabled";
+
+  channel@0 {
+    #address-cells = <1>;
+    #size-cells = <0>;
+    compatible = "rohm,dh2228fv";
+    symlink = "bone/spi/1.0";
+    reg = <0>;
+    spi-max-frequency = <24000000>;
+    status = "disabled";
+  };
+
+  channel@1 {
+    #address-cells = <1>;
+    #size-cells = <0>;
+    compatible = "rohm,dh2228fv";
+    symlink = "bone/spi/1.1";
+    reg = <1>;
+    spi-max-frequency = <24000000>;
+    status = "disabled";
+  };
+};
+
+&uart0 {
+  pinctrl-names = "default";
+  pinctrl-0 = <&uart0_pins>;
+  status = "okay";
+  symlink = "bone/uart/0";
+};
+
+&usb0 {
+  dr_mode = "peripheral";
+  interrupts-extended = <&intc 18 &tps 0>;
+  interrupt-names = "mc", "vbus";
+};
+
+&usb1 {
+  dr_mode = "host";
+};
