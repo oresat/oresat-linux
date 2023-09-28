@@ -13,6 +13,9 @@ Files
   is used to set custom things on OreSat images.
 - ``configs/*.conf``: All the image configs; defines what packages are install, system settings,
   etc.
+- ``device_tree/*.dts``: Holds the device tree for flight images. This device tree configures
+  some pins to there nessary mode and then configures all other pins to be gpio floating inputs.
+  **NOTE:** The ``oresat-dev`` image uses the original PocketBeagle device.
 - ``device_tree_overlays/*.dts``: These are the device tree overlays for specific images, all are 
   compiled and are copied to ``/lib/firmware/`` during by the early chroot script.
 - ``uEnv/*-uEnv.txt``: The specific ``uEnv.txt`` for the image, defines what device tree overlays

@@ -4,8 +4,7 @@ Device tree for OreSat cards.
 Only configures pins for the eMMC, SD card, UART0, USB0, I2C0, ADCs, standard
 LED pins, and the power regulator.
 
-All other pins are configured to their gpio mode and set to a input with a
-pulldown.
+All other pins are configured to their gpio mode and set to a input.
 */
 
 /dts-v1/;
@@ -119,7 +118,7 @@ pulldown.
 #define AM33XX_IOPAD_UNUSED(pin) AM33XX_IOPAD(pin, PIN_INPUT | MUX_MODE7)
 
   /*
-  Set all these pins to gpio input with pulldown.
+  Set all these pins to gpio input.
   Device tree overlay(s) can change them mode needed for the OreSat card.
   */
   gpio_pins: pinmux-gpio-pins {
