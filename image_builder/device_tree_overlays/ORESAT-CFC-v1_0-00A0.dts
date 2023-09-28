@@ -41,8 +41,8 @@
 
       cfc_gpio_pins: pinmux-cfc-gpio-pins {
         pinctrl-single,pins = <
-          AM33XX_IOPAD(AM335X_PIN_LCD_PCLK, PIN_OUTPUT | MUX_MODE7) /* gpio2_24 / tec_enable */
-          AM33XX_IOPAD(AM335X_PIN_LCD_VSYNC, PIN_OUTPUT | MUX_MODE7) /* gpio2_22 / sensor_enable */
+          AM33XX_IOPAD(AM335X_PIN_LCD_PCLK, PIN_OUTPUT | MUX_MODE7) /* gpio2_24 / TEC_ENABLE */
+          AM33XX_IOPAD(AM335X_PIN_LCD_VSYNC, PIN_OUTPUT | MUX_MODE7) /* gpio2_22 / SENSOR_ENABLE */
           /* camera PRU pins */
           AM33XX_IOPAD(AM335X_PIN_MCASP0_ACLKX, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_0 */
           AM33XX_IOPAD(AM335X_PIN_MCASP0_FSX, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_1 */
@@ -85,14 +85,14 @@
         pinctrl-names = "default";
         pinctrl-0 = <&cfc_gpio_pins>;
 
-        tec_enable {
-          gpio-name = "tec_enable";
+        TEC_ENABLE {
+          gpio-name = "TEC_ENABLE";
           gpio = <&gpio2 24 0>; /* AM335X_PIN_LCD_PCLK */
           output;
         };
 
-        sensor_enable {
-          gpio-name = "sensor_enable";
+        SENSOR_ENABLE {
+          gpio-name = "SENSOR_ENABLE";
           gpio = <&gpio2 22 0>; /* AM335X_PIN_LCD_VSYNC */
           output;
         };

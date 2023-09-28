@@ -32,8 +32,8 @@
         pinctrl-names = "default";
         pinctrl-0 = <&dxwifi_gpio_pins>;
 
-        pa_enable {
-          gpio-name = "pa_enable";
+        PA_ENABLE {
+          gpio-name = "PA_ENABLE";
           gpio = <&gpio3 9 0>; /* AM335X_PIN_MII1_TX_CLK */
           output;
         };

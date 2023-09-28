@@ -29,11 +29,11 @@
           AM33XX_IOPAD(AM335X_PIN_MII1_RX_ER, PIN_OUTPUT | MUX_MODE7) /* gpio3_2 / STQ_EN */
           AM33XX_IOPAD(AM335X_PIN_MII1_RX_DV, PIN_OUTPUT | MUX_MODE7) /* gpio3_4 / MAX_EN */
           /* PRU pins */
-          AM33XX_IOPAD(AM335X_PIN_MCASP0_ACLKX, PIN_INPUT | MUX_MODE6) /* pru0_r31_0 / MAX_I1 */
-          AM33XX_IOPAD(AM335X_PIN_MCASP0_FSX, PIN_INPUT | MUX_MODE6) /* pru0_r31_1 / MAX_I0 */
-          AM33XX_IOPAD(AM335X_PIN_MCASP0_AXR0, PIN_INPUT | MUX_MODE6) /*pru0_r31_2 / MAX_Q1 */
-          AM33XX_IOPAD(AM335X_PIN_MCASP0_AHCLKR, PIN_INPUT | MUX_MODE6) /* pru0_r31_3 / MAX_Q0 */
-          AM33XX_IOPAD(AM335X_PIN_XDMA_EVENT_INTR1, PIN_INPUT | MUX_MODE5) /* pru0_r31_16 / MAX_CLKOUT */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_ACLKX, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_0 / MAX_I1 */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_FSX, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_1 / MAX_I0 */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_AXR0, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_2 / MAX_Q1 */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_AHCLKR, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_3 / MAX_Q0 */
+          AM33XX_IOPAD(AM335X_PIN_XDMA_EVENT_INTR1, PIN_INPUT | MUX_MODE5) /* pr1_pru0_pru_r31_16 / MAX_CLKOUT */
         >;
       };
 
@@ -84,25 +84,25 @@
 
         MAX_LD {
           gpio-name = "MAX_LD";
-          gpio = <&gpio0 16 0>; /* AM335X_PIN_MII1_RX_ER */
+          gpio = <&gpio0 16 0>; /* AM335X_PIN_MII1_TXD3 */
           input;
         };
 
         MAX_nSHDN{
           gpio-name = "MAX_nSHDN";
+          gpio = <&gpio3 3 0>; /* AM335X_PIN_MII1_TX_EN */
+          output;
+        };
+
+        STQ_EN {
+          gpio-name = "STQ_EN";
           gpio = <&gpio3 2 0>; /* AM335X_PIN_MII1_RX_ER */
           output;
         };
 
         MAX_EN {
           gpio-name = "MAX_EN";
-          gpio = <&gpio3 4 0>; /* AM335X_PIN_MII1_RX_ER */
-          output;
-        };
-
-        STQ_EN {
-          gpio-name = "STQ_EN";
-          gpio = <&gpio3 3 0>; /* AM335X_PIN_MII1_RX_DV */
+          gpio = <&gpio3 4 0>; /* AM335X_PIN_MII1_RX_DV */
           output;
         };
       };

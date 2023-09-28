@@ -18,7 +18,7 @@
       prucam {
         compatible = "prucam,prucam";
 
-        ti,prus = <&pru0>, <&pru1>;
+        ti,prus = <&pr1_pru0_pru>, <&pru1>;
         interrupt-parent = <&pruss_intc>;
 
         /**
@@ -27,14 +27,14 @@
          * the PRU INTC host interrupt. Host interrupts 0 and 1 are mapped to
          * R31 bit 30 and 31, respectively. Host interrupts 2-9 are sent to the
          * AM335x interrupt controller. PRU system events 16-31 can be manually
-         * triggered by writing to R31 from a PRU (see TRM section 4.4.1.2.2)
+         * TRIGGERed by writing to R31 from a PRU (see TRM section 4.4.1.2.2)
          * or by writing the SRSR0 register (done by the kernel driver). See
          * AM335x TRM section 4.4.2 for more information about PRU interrupts.
          *
          * PRU1 to ARM Interrupt:
          * Maps system event 18 to channel 2 to host 2, which is connected to
          * AM335x hardware interrupt #20. Triggering system event 18 will
-         * trigger AM335X interrupt #20. This is used by PRU1 to notify the
+         * TRIGGER AM335X interrupt #20. This is used by PRU1 to notify the
          * kernel that the current frame has been written to the shared buffer
          * and can now be read.
          *
@@ -61,29 +61,29 @@
     __overlay__ {
       st_gpio_pins: st_gpio_pins { 
         pinctrl-single,pins = <
-          /* Pins for camera control */
-          AM33XX_IOPAD(AM335X_PIN_MII1_TXD3, PIN_OUTPUT | MUX_MODE7) /* mii1_txd3 / flash */
-          AM33XX_IOPAD(AM335X_PIN_MII1_CRS, PIN_OUTPUT | MUX_MODE7) /* mii1_crs / bus_oe */
-          AM33XX_IOPAD(AM335X_PIN_MII1_COL, PIN_OUTPUT | MUX_MODE7) /* mii1_col / cam_oe */
-          AM33XX_IOPAD(AM335X_PIN_MII1_RX_CLK, PIN_OUTPUT | MUX_MODE7) /* mii1_rx_clk / clk_en */
-          AM33XX_IOPAD(AM335X_PIN_MII1_RXD0, PIN_OUTPUT | MUX_MODE7) /* mii1_rxd0 / input_en */
-          AM33XX_IOPAD(AM335X_PIN_MII1_RXD1, PIN_OUTPUT | MUX_MODE7) /* mii1_rxd1 / reset */
-          AM33XX_IOPAD(AM335X_PIN_MII1_RXD2, PIN_OUTPUT | MUX_MODE7) /* mii1_rxd2 / saddr */
-          AM33XX_IOPAD(AM335X_PIN_MII1_RXD3, PIN_OUTPUT | MUX_MODE7) /* mii1_rxd3 / standby */
-          AM33XX_IOPAD(AM335X_PIN_MII1_RX_ER, PIN_OUTPUT | MUX_MODE7) /* mii1_rx_er / trigger */
-          AM33XX_IOPAD(AM335X_PIN_MII1_RX_DV, PIN_OUTPUT | MUX_MODE7) /* mii1_rx_dv / vreg_en */
-          /* Pins for camera parallel bus. Currently only getting top 8 bits of pixel data. */
-          AM33XX_IOPAD(AM335X_PIN_MCASP0_ACLKX, PIN_INPUT | MUX_MODE6) /* pru0_r31_0 / camera D4 */
-          AM33XX_IOPAD(AM335X_PIN_MCASP0_FSX, PIN_INPUT | MUX_MODE6) /* pru0_r31_1 / camera D5 */
-          AM33XX_IOPAD(AM335X_PIN_MCASP0_AXR0, PIN_INPUT | MUX_MODE6) /*pru0_r31_2 / camera D6 */
-          AM33XX_IOPAD(AM335X_PIN_MCASP0_AHCLKR, PIN_INPUT | MUX_MODE6) /* pru0_r31_3 / camera D7 */
-          AM33XX_IOPAD(AM335X_PIN_MCASP0_ACLKR, PIN_INPUT | MUX_MODE6) /* pru0_r31_4 / camera D8 */
-          AM33XX_IOPAD(AM335X_PIN_MCASP0_FSR, PIN_INPUT | MUX_MODE6) /* pru0_r31_5 / camera D9 */
-          AM33XX_IOPAD(AM335X_PIN_MCASP0_AXR1, PIN_INPUT | MUX_MODE6) /* pru0_r31_6 / camera D10 */
-          AM33XX_IOPAD(AM335X_PIN_MCASP0_AHCLKX, PIN_INPUT | MUX_MODE6) /* pru0_r31_7 / camera D11 */
-          AM33XX_IOPAD(AM335X_PIN_GPMC_AD14, PIN_INPUT | MUX_MODE6) /* pru0_r31_14 / camera VSYNC */
-          AM33XX_IOPAD(AM335X_PIN_GPMC_AD15, PIN_INPUT | MUX_MODE6) /* pru0_r31_15 / camera HSYNC */
-          AM33XX_IOPAD(AM335X_PIN_XDMA_EVENT_INTR1, PIN_INPUT | MUX_MODE5) /* pru0_r31_16 / camera pixel clock */
+          /* Pins for CAM_control. */
+          AM33XX_IOPAD(AM335X_PIN_MII1_TXD3, PIN_OUTPUT | MUX_MODE7) /* gpio0_16 / FLASH */
+          AM33XX_IOPAD(AM335X_PIN_MII1_CRS, PIN_OUTPUT | MUX_MODE7) /* gpio3_1 / BUS_OE */
+          AM33XX_IOPAD(AM335X_PIN_MII1_COL, PIN_OUTPUT | MUX_MODE7) /* gpio3_0 / CAM_OE */
+          AM33XX_IOPAD(AM335X_PIN_MII1_RX_CLK, PIN_OUTPUT | MUX_MODE7) /* gpio3_10 / CLK_EN */
+          AM33XX_IOPAD(AM335X_PIN_MII1_RXD0, PIN_OUTPUT | MUX_MODE7) /* gpio2_21 / INPUT_EN */
+          AM33XX_IOPAD(AM335X_PIN_MII1_RXD1, PIN_OUTPUT | MUX_MODE7) /* gpio2_20 / RESET */
+          AM33XX_IOPAD(AM335X_PIN_MII1_RXD2, PIN_OUTPUT | MUX_MODE7) /* gpio2_19 / SADDR */
+          AM33XX_IOPAD(AM335X_PIN_MII1_RXD3, PIN_OUTPUT | MUX_MODE7) /* gpio2_18 / STANDBY */
+          AM33XX_IOPAD(AM335X_PIN_MII1_RX_ER, PIN_OUTPUT | MUX_MODE7) /* gpio3_2 / TRIGGER */
+          AM33XX_IOPAD(AM335X_PIN_MII1_RX_DV, PIN_OUTPUT | MUX_MODE7) /* gpio3_4 / VREG_EN */
+          /* Pins for CAM_parallel bus. Currently only getting top 8 bits of pixel data. */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_ACLKX, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_0 / CAM_D4 */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_FSX, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_1 / CAM_D5 */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_AXR0, PIN_INPUT | MUX_MODE6) /*pr1_pru0_pru_r31_2 / CAM_D6 */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_AHCLKR, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_3 / CAM_D7 */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_ACLKR, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_4 / CAM_D8 */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_FSR, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_5 / CAM_D9 */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_AXR1, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_6 / CAM_D10 */
+          AM33XX_IOPAD(AM335X_PIN_MCASP0_AHCLKX, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_7 / CAM_D11 */
+          AM33XX_IOPAD(AM335X_PIN_GPMC_AD14, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_14 / CAM_VSYNC */
+          AM33XX_IOPAD(AM335X_PIN_GPMC_AD15, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_15 / CAM_HSYNC */
+          AM33XX_IOPAD(AM335X_PIN_XDMA_EVENT_INTR1, PIN_INPUT | MUX_MODE5) /* pr1_pru0_pru_r31_16 / CAM_PXL_CLK */
         >;
       };
     };
@@ -98,62 +98,62 @@
         pinctrl-names = "default";
         pinctrl-0 = <&st_gpio_pins>;
 
-        flash {
-          gpio-name = "flash"; 
+        FLASH {
+          gpio-name = "FLASH";
           gpio = <&gpio0 16 0>; /* AM335X_PIN_MII1_TXD3 */
           input;
         };
 
-        bus_oe {
-          gpio-name = "bus_oe";
+        BUS_OE {
+          gpio-name = "BUS_OE";
           gpio = <&gpio3 1 0>; /* AM335X_PIN_MII1_CRS */
           output;
         };
 
-        cam_oe {
-          gpio-name = "cam_oe";
+        CAM_OE {
+          gpio-name = "CAM_OE";
           gpio = <&gpio3 0 0>; /* AM335X_PIN_MII1_COL */
           output;
         };
 
-        clk_en {
-          gpio-name = "clk_en"; 
+        CLK_EN {
+          gpio-name = "CLK_EN";
           gpio = <&gpio3 10 0>; /* AM335X_PIN_MII1_RX_CLK */
           output;
         };
 
-        input_en {
-          gpio-name = "input_en";
+        INPUT_EN {
+          gpio-name = "INPUT_EN";
           gpio = <&gpio2 21 0>; /* AM335X_PIN_MII1_RXD0 */
           output;
         };
 
-        reset {
-          gpio-name = "reset";
+        RESET {
+          gpio-name = "RESET";
           gpio = <&gpio2 20 0>; /* AM335X_PIN_MII1_RXD1 */
           output;
         };
 
-        saddr {
-          gpio-name = "saddr";
+        SADDR {
+          gpio-name = "SADDR";
           gpio = <&gpio2 19 0>; /* AM335X_PIN_MII1_RXD2 */
           output;
         };
 
-        standby {
-          gpio-name = "standby";
+        STANDBY {
+          gpio-name = "STANDBY";
           gpio = <&gpio2 18 0>; /* AM335X_PIN_MII1_RXD3 */
           output;
         };
 
-        trigger {
-          gpio-name = "trigger";
+        TRIGGER {
+          gpio-name = "TRIGGER";
           gpio = <&gpio3 2 0>; /* AM335X_PIN_MII1_RX_ER */
           output;
         };
 
-        vreg_en {
-          gpio-name = "vreg_en";
+        VREG_EN {
+          gpio-name = "VREG_EN";
           gpio = <&gpio3 4 0>; /* AM335X_PIN_MII1_RX_DV */
           output;
         };
