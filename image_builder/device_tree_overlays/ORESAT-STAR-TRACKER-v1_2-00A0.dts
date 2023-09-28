@@ -122,7 +122,7 @@
           output;
         };
 
-        INPUT_EN {
+        CAM_INPUT_EN {  /* name cannot be INPUT_EN */
           gpio-name = "INPUT_EN";
           gpio = <&gpio2 21 0>; /* AM335X_PIN_MII1_RXD0 */
           output;
