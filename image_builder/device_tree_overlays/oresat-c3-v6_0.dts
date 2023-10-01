@@ -157,7 +157,7 @@
         OPD_nFAULT {
           gpio-name = "OPD_nFAULT";
           gpio = <&gpio3 19 0>; /* AM335X_PIN_MCASP0_FSR */
-          output;
+          input;
         };
 
         OPD_nENABLE {

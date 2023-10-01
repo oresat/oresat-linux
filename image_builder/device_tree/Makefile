@@ -1,11 +1,11 @@
-DTS = am335x-oresat-card.dts
-DTB = $(DTS:%.dts=%.dtb)
+SOURCES = $(wildcard *.dts)
+DTBS = $(SOURCES:%.dts=%.dtb)
 
 REPO = BeagleBoard-DeviceTrees
 
 .PHONY: all clean clone
 
-all: clone $(DTB)
+all: clone $(DTBS)
 
 clone:
 	@if [ ! -d $(REPO) ]; then \
@@ -18,8 +18,5 @@ clone:
 	@cp $(REPO)/src/arm/$@ .
 
 clean:
-	rm $(DTB)
+	rm $(DTBS)
 	make -C $(REPO) clean
-
-install:
-	cp $(DTB) /boot/dtbs/*/am335x-pocketbeagle.dts
