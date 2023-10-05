@@ -15,14 +15,14 @@
   fragment@0 {
     target = <&am33xx_pinmux>;
     __overlay__ {
-      uart2_pins: uart2-pins {
+      gps_uart2_pins: pinmux-uart2-pins {
         pinctrl-single,pins = <
           AM33XX_IOPAD(AM335X_PIN_MII1_RX_CLK, PIN_OUTPUT_PULLDOWN | MUX_MODE1) /* uart2_txd */
           AM33XX_IOPAD(AM335X_PIN_MII1_TX_CLK, PIN_INPUT_PULLUP | MUX_MODE1) /* uart2_rxd */
         >;
       };
 
-      gps_gpio_pins: gps-gpio-pins {
+      gps_gpio_pins: pinmux-gps-gpio-pins {
         pinctrl-single,pins = <
           AM33XX_IOPAD(AM335X_PIN_MII1_TXD3, PIN_INPUT | MUX_MODE7) /* gpio0_16 / MAX_LD */
           AM33XX_IOPAD(AM335X_PIN_MII1_TX_EN, PIN_OUTPUT | MUX_MODE7) /* gpio3_3 / MAX_nSHDN */
@@ -37,9 +37,9 @@
         >;
       };
 
-      gps_spi1_pins: gps-spi1-pins {
+      gps_spi1_pins: pinmux-gps-spi1-pins {
         pinctrl-single,pins = <
-          /* 3-write spi */
+          /* 3-wire spi */
           AM33XX_IOPAD(AM335X_PIN_MII1_COL, PIN_INPUT | MUX_MODE2) /* spi1_sclk */
           AM33XX_IOPAD(AM335X_PIN_MII1_CRS, PIN_INPUT | MUX_MODE2) /* spi1_d0 */
           AM33XX_IOPAD(AM335X_PIN_RMII1_REF_CLK, PIN_OUTPUT | MUX_MODE2) /* spi1_cs0 */
@@ -53,7 +53,7 @@
     __overlay__ {
       status = "okay";
       pinctrl-names = "default";
-      pinctrl-0 = <&uart2_pins>;
+      pinctrl-0 = <&gps_uart2_pins>;
     };
   };
 

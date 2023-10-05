@@ -9,7 +9,7 @@ all: clone $(DTBS)
 
 clone:
 	@if [ ! -d $(REPO) ]; then \
-			git clone https://github.com/beagleboard/$(REPO); \
+		git clone https://github.com/beagleboard/$(REPO); \
 	fi
 
 %.dtb: %.dts

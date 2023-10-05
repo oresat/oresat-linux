@@ -18,7 +18,7 @@
       prucam {
         compatible = "prucam,prucam";
 
-        ti,prus = <&pr1_pru0_pru>, <&pru1>;
+        ti,prus = <&pru0>, <&pru1>;
         interrupt-parent = <&pruss_intc>;
 
         /**
@@ -59,7 +59,7 @@
   fragment@1 {
     target = <&am33xx_pinmux>;
     __overlay__ {
-      st_gpio_pins: st_gpio_pins { 
+      st_gpio_pins: pinmux-st-gpio-pins {
         pinctrl-single,pins = <
           /* Pins for CAM_control. */
           AM33XX_IOPAD(AM335X_PIN_MII1_TXD3, PIN_OUTPUT | MUX_MODE7) /* gpio0_16 / FLASH */
