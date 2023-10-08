@@ -40,7 +40,7 @@ How it Works
 - U-Boot image is added to partition.
 - A ``.img`` file is made from the partition.
 - The ``.img`` file is compressed with zst.
-- A SHA-256 is generated for the ``.img.zst`.`
+- A SHA-256 is generated for the ``.img.zst``.
 
 Requirements
 ------------

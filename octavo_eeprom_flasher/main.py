@@ -1,5 +1,5 @@
 """
-This is MicroPython!!
+This is MicroPython!
 
 This script writes the board ID to the EEPROM in the OSD3358 and reads it back afterwards.
 """
@@ -14,15 +14,13 @@ BOARD_ID = b"\xaaU3\xeeA335PBGL00A21740GPB43424"  # BeagleBoard Pocketbeagle id
 led = Pin(25, Pin.OUT)
 i2c = I2C(0, scl=Pin(17), sda=Pin(16), freq=400_000)
 
-
-timer = Timer(freq=1000, callback=(lambda t: led.toggle()))
-timer.start()
+timer = Timer(mode=Timer.PERIODIC, freq=1, callback=(lambda t: led.toggle()))
 
 while True:
     sleep(0.1)
 
     try:
-        i2c.writeto_mem(I2C_ADDR, EEPROM_ADDR, BOARD_ID, addrsize=16)
+        i2c.writeto(I2C_ADDR, EEPROM_ADDR + BOARD_ID)
     except Exception:
         print("ERROR: failed to write board id to EEPROM")
         continue
@@ -34,12 +32,15 @@ while True:
     # the read.
     while True:
         try:
-            i2c.writeto(I2C_ADDR, EEPROM_ADDR, stop=True)
+            i2c.writeto(I2C_ADDR, EEPROM_ADDR, False)
+            i2c.readfrom(I2C_ADDR, len(BOARD_ID))
         except Exception:
-            break
+            continue
+        break
 
     try:
-        board_id_readback = i2c.readfrom_mem(I2C_ADDR, EEPROM_ADDR, len(BOARD_ID), addrsize=16)
+        i2c.writeto(I2C_ADDR, EEPROM_ADDR, False)
+        board_id_readback = i2c.readfrom(I2C_ADDR, len(BOARD_ID))
     except Exception:
         print("ERROR: failed to read board id back from EEPROM")
         continue
@@ -47,5 +48,6 @@ while True:
     if BOARD_ID != board_id_readback:
         print(f"ERROR: invalid readback; wrote {BOARD_ID.hex()} read {board_id_readback.hex()}")
     else:
-        timer.stop()
+        timer.deinit()
+        led.off()
         break

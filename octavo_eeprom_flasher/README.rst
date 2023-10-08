@@ -12,42 +12,73 @@ Id's can be found in the README of https://github.com/beagleboard/image-builder.
 Requriements
 ------------
 
-A `PocketBeagle`_ or any device with an I2C bus.
+A laptop and `Raspi Pico`_.
 
-Setup
------
+Setup Raspi Pico
+----------------
 
-Clone the oresat-linux repo on the PocketBeagle.
+Download the uf2 file to a laptop from: https://micropython.org/download/RPI_PICO/
+
+While holding th Raspi Pico boot button, connect the Raspi Pico to the laptop.
+
+The Raspi Pico will come up a as storage device, copy the .uf2 file into the
+storage device directory.
+
+Disconnect and reconnect (without holding the boot button) the Raspi Pico.
+
+Clone the oresat-linux repo on a laptop
 
 .. code-block::
 
    $ git clone https://github.com/oresat/oresat-linux
    $ cd oresat-linux/octavo_eeprom_flasher
 
-Install dependencies
+Install dependencies on laptop
 
 .. code-block::
 
-   $ sudo pip3 install -r requirements.txt
+   $ pip install -r requirements.txt
 
-Writing EEPROM
---------------
+Flash main.py on Raspi Pico. Change the ``/dev/ttyACM0`` as needed.
 
-- Connect the PocketBeagle’s I2C-2 to the Octavo’s I2C-0 using a Debug Board.
+.. code-block::
 
- .. warning:: Connection point to the Octavo's I2C-0 may change to be directly on card and not
-    debug board with future OreSat cards.
+   $ ampy --port /dev/ttyACM0 put main.py
 
- .. image:: ../static/oresat_debug_board.jpg
+Disconnect the Raspi Pico.
 
-- Power on the Octavo.
-- Run the Python script on the PocketBeagle (change the bus argument as needed).
+Writing to the EEPROM
+---------------------
 
- .. code-block::
+Connect the Raspi Pico’s I2C and ground pins to the Octavo’s I2C-0, ground, and write protection pins
+using a Debug Board.
 
-   $ sudo ./eeprom_flasher.py --bus 2
+.. table::
+   :widths: auto
 
- .. note:: The ``eeprom_flasher.py`` script has help message, just run the
-    script with either the ``-h`` or ``--help`` flag to see it.
+   ============= =========
+   Debug Pin     Raspi Pin
+   ============= =========
+   Debug 1 (SCL) 22 (SCL)
+   Debug 2 (SDA) 21 (SDA)
+   Debug 2 (WP)  23 (GND)
+   GND           3 (GND)
+   ============= =========
 
-.. _PocketBeagle: https://beagleboard.org/pocket
+.. warning:: Connection point to the Octavo's I2C-0 may change to be directly on card and not
+ debug board with future OreSat cards.
+
+.. image:: ../static/oresat_debug_board.jpg
+
+Power on the Octavo.
+
+Connect the Raspi Pico to laptop (give it power).
+
+The Raspi Pico will blink every second until it is done writing the value to the EEPROM.
+The LED will stay off once done.
+
+.. note:: The Raspi Pico script may finish before it toggles the led.
+
+If you need to debug connect to the Raspi Pico serial bus and see the error message.
+
+.. _Raspi Pico: https://www.raspberrypi.com/documentation/microcontrollers/raspberry-pi-pico.html
