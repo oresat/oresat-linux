@@ -7,7 +7,7 @@
 
 &{/chosen} {
   overlays {
-    ORESAT-DXWIFI-00A0 = __TIMESTAMP__;
+    oresat-dxwifi-v1_0 = __TIMESTAMP__;
   };
 };
 

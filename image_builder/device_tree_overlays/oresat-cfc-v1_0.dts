@@ -7,7 +7,7 @@
 
 &{/chosen} {
   overlays {
-    ORESAT-CFC-00A0 = __TIMESTAMP__;
+    oresat-cfc-v1_0 = __TIMESTAMP__;
   };
 };
 

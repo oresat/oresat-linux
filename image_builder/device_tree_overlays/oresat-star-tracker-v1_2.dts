@@ -7,7 +7,7 @@
 
 &{/chosen} {
   overlays {
-    ORESAT-STAR-TRACKER-00A0 = __TIMESTAMP__;
+    oresat-star-tracker-v1_2 = __TIMESTAMP__;
   };
 };
 
@@ -59,6 +59,13 @@
   fragment@1 {
     target = <&am33xx_pinmux>;
     __overlay__ {
+      st_i2c2_pins: pinmux-st-i2c2-pins {
+        pinctrl-single,pins = <
+          AM33XX_IOPAD(AM335X_PIN_UART1_CTSN, PIN_INPUT | MUX_MODE3) /* i2c2_sda */
+          AM33XX_IOPAD(AM335X_PIN_UART1_RTSN, PIN_INPUT | MUX_MODE3) /* i2c2_scl */
+        >;
+      };
+
       st_gpio_pins: pinmux-st-gpio-pins {
         pinctrl-single,pins = <
           /* Pins for CAM_control. */
@@ -90,6 +97,18 @@
   };
 
   fragment@2 {
+    target = <&i2c2>;
+    __overlay__ {
+      #address-cells = <1>;
+      #size-cells = <0>;
+      status = "okay";
+      pinctrl-names = "default";
+      pinctrl-0 = <&st_i2c2_pins>;
+      clock-frequency = <400000>;
+    };
+  };
+
+  fragment@3 {
     target = <&ocp>;
     __overlay__ {
       cape-universal {

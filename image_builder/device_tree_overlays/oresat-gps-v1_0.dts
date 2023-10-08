@@ -7,7 +7,7 @@
 
 &{/chosen} {
   overlays {
-    ORESAT-GPS-00A0 = __TIMESTAMP__;
+    oresat-gps-v1_0 = __TIMESTAMP__;
   };
 };
 
@@ -19,6 +19,15 @@
         pinctrl-single,pins = <
           AM33XX_IOPAD(AM335X_PIN_MII1_RX_CLK, PIN_OUTPUT_PULLDOWN | MUX_MODE1) /* uart2_txd */
           AM33XX_IOPAD(AM335X_PIN_MII1_TX_CLK, PIN_INPUT_PULLUP | MUX_MODE1) /* uart2_rxd */
+        >;
+      };
+
+      gps_spi1_pins: pinmux-gps-spi1-pins {
+        pinctrl-single,pins = <
+          /* 3-wire spi */
+          AM33XX_IOPAD(AM335X_PIN_MII1_COL, PIN_INPUT_PULLUP | MUX_MODE2) /* spi1_sclk */
+          AM33XX_IOPAD(AM335X_PIN_MII1_CRS, PIN_INPUT_PULLUP | MUX_MODE2) /* spi1_d0 */
+          AM33XX_IOPAD(AM335X_PIN_RMII1_REF_CLK, PIN_OUTPUT_PULLUP | MUX_MODE2) /* spi1_cs0 */
         >;
       };
 
@@ -34,15 +43,6 @@
           AM33XX_IOPAD(AM335X_PIN_MCASP0_AXR0, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_2 / MAX_Q1 */
           AM33XX_IOPAD(AM335X_PIN_MCASP0_AHCLKR, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_3 / MAX_Q0 */
           AM33XX_IOPAD(AM335X_PIN_XDMA_EVENT_INTR1, PIN_INPUT | MUX_MODE5) /* pr1_pru0_pru_r31_16 / MAX_CLKOUT */
-        >;
-      };
-
-      gps_spi1_pins: pinmux-gps-spi1-pins {
-        pinctrl-single,pins = <
-          /* 3-wire spi */
-          AM33XX_IOPAD(AM335X_PIN_MII1_COL, PIN_INPUT | MUX_MODE2) /* spi1_sclk */
-          AM33XX_IOPAD(AM335X_PIN_MII1_CRS, PIN_INPUT | MUX_MODE2) /* spi1_d0 */
-          AM33XX_IOPAD(AM335X_PIN_RMII1_REF_CLK, PIN_OUTPUT | MUX_MODE2) /* spi1_cs0 */
         >;
       };
     };
