@@ -75,7 +75,7 @@ Power on the Octavo.
 Connect the Raspi Pico to laptop (give it power).
 
 The Raspi Pico will blink every second until it is done writing the value to the EEPROM.
-The LED will stay off once done.
+The LED will stay on once done.
 
 .. note:: The Raspi Pico script may finish before it toggles the led.
 

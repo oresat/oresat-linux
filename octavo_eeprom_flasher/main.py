@@ -12,6 +12,7 @@ EEPROM_ADDR = b"\x00\x00"
 BOARD_ID = b"\xaaU3\xeeA335PBGL00A21740GPB43424"  # BeagleBoard Pocketbeagle id
 
 led = Pin(25, Pin.OUT)
+led.off()
 i2c = I2C(0, scl=Pin(17), sda=Pin(16), freq=400_000)
 
 timer = Timer(mode=Timer.PERIODIC, freq=1, callback=(lambda t: led.toggle()))
@@ -49,5 +50,5 @@ while True:
         print(f"ERROR: invalid readback; wrote {BOARD_ID.hex()} read {board_id_readback.hex()}")
     else:
         timer.deinit()
-        led.off()
+        led.on()
         break
