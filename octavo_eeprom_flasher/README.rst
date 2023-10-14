@@ -56,14 +56,14 @@ using a Debug Board.
 .. table::
    :widths: auto
 
-   ============= =========
-   Debug Pin     Raspi Pin
-   ============= =========
-   Debug 1 (SCL) 22 (SCL)
-   Debug 2 (SDA) 21 (SDA)
-   Debug 2 (WP)  23 (GND)
-   GND           3 (GND)
-   ============= =========
+   =================== =========
+   Debug Pin           Raspi Pin
+   =================== =========
+   Debug 1 (SCL)       22 (SCL)
+   Debug 2 (SDA)       21 (SDA)
+   Debug 2 (EEPROM WP) 23 (GND)
+   GND                 3 (GND)
+   =================== =========
 
 .. warning:: Connection point to the Octavo's I2C-0 may change to be directly on card and not
  debug board with future OreSat cards.
@@ -74,11 +74,12 @@ Power on the Octavo.
 
 Connect the Raspi Pico to laptop (give it power).
 
-The Raspi Pico will blink every second until it is done writing the value to the EEPROM.
-The LED will stay on once done.
+Use the Raspi Pico LED to determine the status of the EEPROM flashing:
 
-.. note:: The Raspi Pico script may finish before it toggles the led.
-
-If you need to debug connect to the Raspi Pico serial bus and see the error message.
+- If the LED is always off, the Raspi Pico binary is not flashed and/or the ``main.py`` is not
+  running. Try reflashing the MicroPython binary and the ``main.py`` script onto the Raspi Pico.
+- If the LED is blinking every second, the firmware is trying to flash the EEPROM and is failing,
+  check the wiring.
+- If the LED is always on, the EEPROM has been sucessfully flashed.
 
 .. _Raspi Pico: https://www.raspberrypi.com/documentation/microcontrollers/raspberry-pi-pico.html
