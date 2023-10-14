@@ -310,6 +310,30 @@ It should stay disabled by default for cards that do not need spi1.
   interrupt-names = "mc", "vbus";
 };
 
+&usb1_phy {
+  status = "disabled";
+};
+
 &usb1 {
-  dr_mode = "host";
+  status = "disabled";
+};
+
+/* LCD controller */
+&lcdc {
+  status = "disabled";
+};
+
+/* enhanced PWM */
+&epwmss0 {
+  status = "disabled";
+};
+
+/* Multichannel Audio Serial Port */
+&mcasp1 {
+  status = "disabled";
+};
+
+/* PRU subsystem - change in the overlay for cards that need the PRUs */
+&pruss {
+  status = "disabled";
 };

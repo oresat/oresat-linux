@@ -40,4 +40,19 @@
       };
     };
   };
+
+  fragment@2 {
+    target = <&usb1_phy>;
+    __overlay__ {
+      status = "okay";
+    };
+  };
+
+  fragment@3 {
+    target = <&usb1>;
+    __overlay__ {
+      status = "okay";
+      dr_mode = "host";
+    };
+  };
 };

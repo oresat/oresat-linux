@@ -13,6 +13,13 @@
 
 / {
   fragment@0 {
+    target = <&pruss>;
+    __overlay__ {
+      status = "okay";
+    };
+  };
+
+  fragment@1 {
     target-path="/";
     __overlay__ {
       prudev {
@@ -27,7 +34,7 @@
     };
   };
 
-  fragment@1 {
+  fragment@2 {
     target = <&am33xx_pinmux>;
     __overlay__ {
       cfc_spi1_pins: pinmux-cfc-spi1-pins {
@@ -60,7 +67,7 @@
     };
   };
 
-  fragment@2 {
+  fragment@3 {
     target = <&spi1>;
     __overlay__ {
       #address-cells = <1>;
@@ -76,7 +83,7 @@
     };
   };
 
-  fragment@3 {
+  fragment@4 {
     target = <&ocp>;
     __overlay__ {
       cape-universal {
