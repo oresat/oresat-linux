@@ -61,7 +61,7 @@ using a Debug Board.
    =================== =========
    Debug 1 (SCL)       22 (SCL)
    Debug 2 (SDA)       21 (SDA)
-   Debug 2 (EEPROM WP) 23 (GND)
+   Debug 3 (EEPROM WP) 23 (GND)
    GND                 3 (GND)
    =================== =========
 
