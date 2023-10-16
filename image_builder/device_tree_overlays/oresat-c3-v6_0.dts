@@ -164,7 +164,7 @@
 
         OPD_nENABLE {
           gpio-name = "OPD_nENABLE";
-          gpio = <&gpio3 20 1>; /* AM335X_PIN_MCASP0_FSR */
+          gpio = <&gpio3 20 0>; /* AM335X_PIN_MCASP0_FSR */
           output;
         };
 
