@@ -63,11 +63,13 @@
           AM33XX_IOPAD(AM335X_PIN_XDMA_EVENT_INTR1, PIN_INPUT | MUX_MODE7) /* gpio0_20 / FIRE_ANTENNAS_1 */
           /* radios */
           AM33XX_IOPAD(AM335X_PIN_MCASP0_ACLKR, PIN_INPUT | MUX_MODE7) /* gpio3_18 / RADIO_nFAULT */
-          AM33XX_IOPAD(AM335X_PIN_GPMC_A9, PIN_INPUT | MUX_MODE7) /* gpio3_25 / UHF_TOT_OK */
-          AM33XX_IOPAD(AM335X_PIN_GPMC_A10, PIN_OUTPUT | MUX_MODE7) /* gpio3_30 / UHF_TOT_CLEAR */
-          AM33XX_IOPAD(AM335X_PIN_GPMC_A11, PIN_OUTPUT | MUX_MODE7) /* gpio3_27 / UHF_PA_ENABLE */
-          AM33XX_IOPAD(AM335X_PIN_GPMC_WAIT0, PIN_INPUT | MUX_MODE7) /* gpio3_26 / UHF_IRQ */
-          AM33XX_IOPAD(AM335X_PIN_GPMC_WPN, PIN_INPUT | MUX_MODE7) /* gpio3_31 / LBAND_IRQ */
+          AM33XX_IOPAD(AM335X_PIN_GPMC_A0, PIN_OUTPUT | MUX_MODE7) /* gpio1_16 / UHF_ENABLE */
+          AM33XX_IOPAD(AM335X_PIN_GPMC_A3, PIN_OUTPUT | MUX_MODE7) /* gpio1_19 / LBAND_ENABLE */
+          AM33XX_IOPAD(AM335X_PIN_GPMC_A9, PIN_INPUT | MUX_MODE7) /* gpio1_25 / UHF_TOT_OK */
+          AM33XX_IOPAD(AM335X_PIN_GPMC_A10, PIN_OUTPUT | MUX_MODE7) /* gpio1_26 / UHF_TOT_CLEAR */
+          AM33XX_IOPAD(AM335X_PIN_GPMC_A11, PIN_OUTPUT | MUX_MODE7) /* gpio1_27 / UHF_PA_ENABLE */
+          AM33XX_IOPAD(AM335X_PIN_GPMC_WAIT0, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7) /* gpio0_30 / UHF_IRQ */
+          AM33XX_IOPAD(AM335X_PIN_GPMC_WPN, PIN_INPUT | PIN_INPUT_PULLDOWN | MUX_MODE7) /* gpio0_31 / LBAND_IRQ */
           AM33XX_IOPAD(AM335X_PIN_MII1_TX_CLK, PIN_OUTPUT | MUX_MODE7) /* gpio3_9 / LBAND_LO_nSEN */
           AM33XX_IOPAD(AM335X_PIN_MII1_TXD0, PIN_OUTPUT | MUX_MODE7) /* gpio0_28 / LBAND_LO_SCLK */
           AM33XX_IOPAD(AM335X_PIN_MII1_TXD1, PIN_OUTPUT | MUX_MODE7) /* gpio0_21 / LBAND_LO_SDATA */
@@ -214,33 +216,45 @@
           input;
         };
 
+        UHF_ENABLE {
+          gpio-name = "UHF_ENABLE";
+          gpio = <&gpio1 16 0>; /* AM335X_PIN_GPMC_A0 */
+          output;
+        };
+
+        LBAND_ENABLE {
+          gpio-name = "LBAND_ENABLE";
+          gpio = <&gpio1 19 0>; /* AM335X_PIN_GPMC_A3 */
+          output;
+        };
+
         UHF_TOT_OK {
           gpio-name = "UHF_TOT_OK";
-          gpio = <&gpio3 25 0>; /* AM335X_PIN_GPMC_A9 */
+          gpio = <&gpio1 25 0>; /* AM335X_PIN_GPMC_A9 */
           input;
         };
 
         UHF_TOT_CLEAR {
           gpio-name = "UHF_TOT_CLEAR";
-          gpio = <&gpio3 30 0>; /* AM335X_PIN_GPMC_A10 */
+          gpio = <&gpio1 26 0>; /* AM335X_PIN_GPMC_A10 */
           output;
         };
 
         UHF_PA_ENABLE {
           gpio-name = "UHF_PA_ENABLE";
-          gpio = <&gpio3 27 0>; /* AM335X_PIN_GPMC_A11 */
+          gpio = <&gpio1 27 0>; /* AM335X_PIN_GPMC_A11 */
           output;
         };
 
         UHF_IRQ {
           gpio-name = "UHF_IRQ";
-          gpio = <&gpio3 26 0>; /* AM335X_PIN_GPMC_WAIT0 */
+          gpio = <&gpio0 30 0>; /* AM335X_PIN_GPMC_WAIT0 */
           input;
         };
 
         LBAND_IRQ {
           gpio-name = "LBAND_IRQ";
-          gpio = <&gpio3 31 0>; /* AM335X_PIN_GPMC_WPN */
+          gpio = <&gpio0 31 0>; /* AM335X_PIN_GPMC_WPN */
           input;
         };
 
