@@ -166,6 +166,7 @@
           gpio-name = "OPD_nENABLE";
           gpio = <&gpio3 20 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MCASP0_AXR1 */
           output;
+          init-high;
         };
 
         FIRE_HELICAL_2 {

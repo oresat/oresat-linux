@@ -85,6 +85,7 @@
           gpio-name = "OPD_nENABLE";
           gpio = <&gpio0 20 1>; /* AM335X_PIN_XDMA_EVENT_INTR1 */
           output;
+          init-high;
         };
 
         UHF_IRQ {
