@@ -126,61 +126,61 @@
 
         FLASH {
           gpio-name = "FLASH";
-          gpio = <&gpio0 16 0>; /* AM335X_PIN_MII1_TXD3 */
+          gpio = <&gpio0 16 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_TXD3 */
           input;
         };
 
         BUS_OE {
           gpio-name = "BUS_OE";
-          gpio = <&gpio3 1 0>; /* AM335X_PIN_MII1_CRS */
+          gpio = <&gpio3 1 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_CRS */
           output;
         };
 
         CAM_OE {
           gpio-name = "CAM_OE";
-          gpio = <&gpio3 0 0>; /* AM335X_PIN_MII1_COL */
+          gpio = <&gpio3 0 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_COL */
           output;
         };
 
         CLK_EN {
           gpio-name = "CLK_EN";
-          gpio = <&gpio3 10 0>; /* AM335X_PIN_MII1_RX_CLK */
+          gpio = <&gpio3 10 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_RX_CLK */
           output;
         };
 
         CAM_INPUT_EN {  /* name cannot be INPUT_EN */
           gpio-name = "INPUT_EN";
-          gpio = <&gpio2 21 0>; /* AM335X_PIN_MII1_RXD0 */
+          gpio = <&gpio2 21 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_RXD0 */
           output;
         };
 
         RESET {
           gpio-name = "RESET";
-          gpio = <&gpio2 20 0>; /* AM335X_PIN_MII1_RXD1 */
+          gpio = <&gpio2 20 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_RXD1 */
           output;
         };
 
         SADDR {
           gpio-name = "SADDR";
-          gpio = <&gpio2 19 0>; /* AM335X_PIN_MII1_RXD2 */
+          gpio = <&gpio2 19 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_RXD2 */
           output;
         };
 
         STANDBY {
           gpio-name = "STANDBY";
-          gpio = <&gpio2 18 0>; /* AM335X_PIN_MII1_RXD3 */
+          gpio = <&gpio2 18 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_RXD3 */
           output;
         };
 
         TRIGGER {
           gpio-name = "TRIGGER";
-          gpio = <&gpio3 2 0>; /* AM335X_PIN_MII1_RX_ER */
+          gpio = <&gpio3 2 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_RX_ER */
           output;
         };
 
         VREG_EN {
           gpio-name = "VREG_EN";
-          gpio = <&gpio3 4 0>; /* AM335X_PIN_MII1_RX_DV */
+          gpio = <&gpio3 4 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_RX_DV */
           output;
         };
       };

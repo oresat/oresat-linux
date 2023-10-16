@@ -94,13 +94,13 @@
 
         TEC_ENABLE {
           gpio-name = "TEC_ENABLE";
-          gpio = <&gpio2 24 0>; /* AM335X_PIN_LCD_PCLK */
+          gpio = <&gpio2 24 GPIO_ACTIVE_LOW>; /* AM335X_PIN_LCD_PCLK */
           output;
         };
 
         SENSOR_ENABLE {
           gpio-name = "SENSOR_ENABLE";
-          gpio = <&gpio2 22 0>; /* AM335X_PIN_LCD_VSYNC */
+          gpio = <&gpio2 22 GPIO_ACTIVE_LOW>; /* AM335X_PIN_LCD_VSYNC */
           output;
         };
       };

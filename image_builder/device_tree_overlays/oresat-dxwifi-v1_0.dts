@@ -34,7 +34,7 @@
 
         PA_ENABLE {
           gpio-name = "PA_ENABLE";
-          gpio = <&gpio3 9 0>; /* AM335X_PIN_MII1_TX_CLK */
+          gpio = <&gpio3 9 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_TX_CLK */
           output;
         };
       };

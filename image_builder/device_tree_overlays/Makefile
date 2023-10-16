@@ -5,10 +5,10 @@ DTBOS = $(SOURCES:%.dts=%.dtbo)
 
 .PHONY: all clean install
 
+# use cpp (c preprocessor) to replace #defines with actual values in .tmp files
+# then complile .tmp files into .dtbo
 %.dtbo: %.dts
-	# use cpp (c preprocessor) to replace #defines with actual values in .tmp files
 	cpp $(CPP_FLAGS) $< $<.tmp
-	# complile .tmp files into .dtbo
 	dtc -O dtb -o $@ -b 0 -@ $(DTC_FLAGS) $<.tmp
 
 all: $(DTBOS)

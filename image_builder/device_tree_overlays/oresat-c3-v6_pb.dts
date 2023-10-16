@@ -89,19 +89,19 @@
 
         UHF_IRQ {
           gpio-name = "UHF_IRQ";
-          gpio = <&gpio1 25 0>; /* AM335X_PIN_GPMC_A9 */
+          gpio = <&gpio1 25 GPIO_ACTIVE_LOW>; /* AM335X_PIN_GPMC_A9 */
           input;
         };
 
         UHF_PA_ENABLE {
           gpio-name = "UHF_PA_ENABLE";
-          gpio = <&gpio1 27 0>; /* AM335X_PIN_GPMC_A11 */
+          gpio = <&gpio1 27 GPIO_ACTIVE_LOW>; /* AM335X_PIN_GPMC_A11 */
           output;
         };
 
         UHF_LNA_ENABLE {
           gpio-name = "UHF_LNA_ENABLE";
-          gpio = <&gpio1 26 0>; /* AM335X_PIN_GPMC_A10 */
+          gpio = <&gpio1 26 GPIO_ACTIVE_LOW>; /* AM335X_PIN_GPMC_A10 */
           output;
         };
       };
