@@ -20,6 +20,13 @@
   };
 
   fragment@1 {
+    target = <&pruss_tm>;
+    __overlay__ {
+      status = "okay";
+    };
+  };
+
+  fragment@2 {
     target-path="/";
     __overlay__ {
       prucam {
@@ -63,7 +70,7 @@
     };
   };
 
-  fragment@2 {
+  fragment@3 {
     target = <&am33xx_pinmux>;
     __overlay__ {
       st_i2c2_pins: pinmux-st-i2c2-pins {
@@ -103,7 +110,7 @@
     };
   };
 
-  fragment@3 {
+  fragment@4 {
     target = <&i2c2>;
     __overlay__ {
       #address-cells = <1>;
@@ -115,7 +122,7 @@
     };
   };
 
-  fragment@4 {
+  fragment@5 {
     target = <&ocp>;
     __overlay__ {
       cape-universal {
