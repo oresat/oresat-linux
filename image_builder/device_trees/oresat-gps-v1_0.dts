@@ -46,25 +46,25 @@
 
     MAX_LD {
       gpio-name = "MAX_LD";
-      gpio = <&gpio0 16 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_TXD3 */
+      gpio = <&gpio0 16 GPIO_ACTIVE_HIGH>; /* AM335X_PIN_MII1_TXD3 */
       input;
     };
 
     MAX_nSHDN{
       gpio-name = "MAX_nSHDN";
-      gpio = <&gpio3 3 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_TX_EN */
+      gpio = <&gpio3 3 GPIO_ACTIVE_HIGH>; /* AM335X_PIN_MII1_TX_EN */
       output;
     };
 
     STQ_EN {
       gpio-name = "STQ_EN";
-      gpio = <&gpio3 2 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_RX_ER */
+      gpio = <&gpio3 2 GPIO_ACTIVE_HIGH>; /* AM335X_PIN_MII1_RX_ER */
       output;
     };
 
     MAX_EN {
       gpio-name = "MAX_EN";
-      gpio = <&gpio3 4 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_RX_DV */
+      gpio = <&gpio3 4 GPIO_ACTIVE_HIGH>; /* AM335X_PIN_MII1_RX_DV */
       output;
     };
   };
