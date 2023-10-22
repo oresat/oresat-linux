@@ -3,11 +3,7 @@ Device tree for OreSat cards.
 
 Only configures pins for the eMMC, SD card, UART0, USB0, I2C0, ADCs, standard
 LED pins, and the power regulator.
-
-All other pins are configured to their gpio mode and set to a input.
 */
-
-/dts-v1/;
 
 #include "am33xx.dtsi"
 #include "am335x-osd335x-common.dtsi"
@@ -197,10 +193,48 @@ All other pins are configured to their gpio mode and set to a input.
   };
 };
 
+
+/* management data input/output */
+&davinci_mdio {
+  status = "disabled";
+};
+
 &dcan1 {
   status = "okay";
   pinctrl-names = "default";
   pinctrl-0 = <&dcan1_pins>;
+};
+
+/* common platform ethernet switch */
+&cpsw_emac0 {
+  status = "disabled";
+};
+
+&cpsw_emac1 {
+  status = "disabled";
+};
+
+/* enhanced PWM subsystem */
+&epwmss0 {
+  status = "disabled";
+};
+
+&epwmss1 {
+  status = "disabled";
+};
+
+&epwmss2 {
+  status = "disabled";
+};
+
+/* 3d graphics accelerator */
+&gpu {
+  status = "disabled";
+};
+
+/* LCD controller */
+&lcdc {
+  status = "disabled";
 };
 
 &ldo3_reg {
@@ -216,6 +250,29 @@ All other pins are configured to their gpio mode and set to a input.
   };
 };
 
+&i2c1 {
+  status = "disabled";
+};
+
+&i2c2 {
+  status = "disabled";
+};
+
+/* medium access controller */
+&mac {
+  status = "disabled";
+};
+
+/* multichannel audio serial port */
+&mcasp0 {
+  status = "disabled";
+};
+
+&mcasp1 {
+  status = "disabled";
+};
+
+/* SD card */
 &mmc1 {
   status = "okay";
   vmmc-supply = <&vmmcsd_fixed>;
@@ -225,6 +282,7 @@ All other pins are configured to their gpio mode and set to a input.
   cd-gpios = <&gpio0 6 GPIO_ACTIVE_LOW>;
 };
 
+/* eMMC */
 &mmc2 {
   vmmc-supply = <&vmmcsd_fixed>;
   pinctrl-names = "default";
@@ -233,14 +291,23 @@ All other pins are configured to their gpio mode and set to a input.
   status = "okay";
 };
 
+&mmc3 {
+  status = "disabled";
+};
+
+/* PRU subsystem - change in the overlay for cards that need the PRUs */
+&pruss {
+  status = "disabled";
+};
+
+&pruss_tm {
+  status = "disabled";
+};
+
 &rtc {
   system-power-controller;
 };
 
-/*
-This is needed for cards that use spi0.
-It should stay disabled by default for cards that do not need spi0.
-*/
 &spi0 {
   #address-cells = <1>;
   #size-cells = <0>;
@@ -267,10 +334,6 @@ It should stay disabled by default for cards that do not need spi0.
   };
 };
 
-/*
-This is needed for cards that use spi1.
-It should stay disabled by default for cards that do not need spi1.
-*/
 &spi1 {
   #address-cells = <1>;
   #size-cells = <0>;
@@ -304,72 +367,36 @@ It should stay disabled by default for cards that do not need spi1.
   symlink = "bone/uart/0";
 };
 
+&uart1 {
+  status = "disabled";
+};
+
+&uart2 {
+  status = "disabled";
+};
+
+&uart3 {
+  status = "disabled";
+};
+
+&uart4 {
+  status = "disabled";
+};
+
+&uart5 {
+  status = "disabled";
+};
+
 &usb0 {
   dr_mode = "peripheral";
   interrupts-extended = <&intc 18 &tps 0>;
   interrupt-names = "mc", "vbus";
 };
 
-&usb1_phy {
-  status = "disabled";
-};
-
 &usb1 {
   status = "disabled";
 };
 
-/* LCD controller */
-&lcdc {
-  status = "disabled";
-};
-
-/* enhanced PWM subsystem */
-&epwmss0 {
-  status = "disabled";
-};
-
-&epwmss1 {
-  status = "disabled";
-};
-
-&epwmss2 {
-  status = "disabled";
-};
-
-/* multichannel audio serial port */
-&mcasp1 {
-  status = "disabled";
-};
-
-/* PRU subsystem - change in the overlay for cards that need the PRUs */
-&pruss {
-  status = "disabled";
-};
-
-&pruss_tm {
-  status = "disabled";
-};
-
-/* common platform ethernet switch */
-&cpsw_emac0 {
-  status = "disabled";
-};
-
-&cpsw_emac1 {
-  status = "disabled";
-};
-
-/* medium access controller */
-&mac {
-  status = "disabled";
-};
-
-/* management data input/output */
-&davinci_mdio {
-  status = "disabled";
-};
-
-/* 3d graphics accelerator */
-&gpu {
+&usb1_phy {
   status = "disabled";
 };

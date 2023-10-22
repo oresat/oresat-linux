@@ -1,0 +1,90 @@
+/* OreSat C3 v6 pb device tree */
+
+/dts-v1/;
+
+#include "oresat-base.dtsi"
+
+&am33xx_pinmux {
+  c3_i2c2_pins: pinmux-c3-i2c2-pins {
+    pinctrl-single,pins = <
+      AM33XX_IOPAD(AM335X_PIN_UART1_CTSN, PIN_INPUT | MUX_MODE3) /* i2c2_sda */
+      AM33XX_IOPAD(AM335X_PIN_UART1_RTSN, PIN_INPUT | MUX_MODE3) /* i2c2_scl */
+    >;
+  };
+
+  c3_spi0_pins: pinmux-c3-spi0-pins {
+    pinctrl-single,pins = <
+      AM33XX_PADCONF(AM335X_PIN_SPI0_SCLK, PIN_INPUT_PULLUP, MUX_MODE0) /* spi0_sclk */
+      AM33XX_PADCONF(AM335X_PIN_SPI0_D0, PIN_INPUT_PULLUP, MUX_MODE0) /* spi0_d0 */
+      AM33XX_PADCONF(AM335X_PIN_SPI0_D1, PIN_OUTPUT_PULLUP, MUX_MODE0) /* spi0_d1 */
+      AM33XX_PADCONF(AM335X_PIN_SPI0_CS0, PIN_OUTPUT_PULLUP, MUX_MODE0) /* spi0_cs0 */
+    >;
+  };
+
+  c3_gpio_pins: pinmux-c3-gpio-pins {
+    pinctrl-single,pins = <
+      /* opd */
+      AM33XX_IOPAD(AM335X_PIN_XDMA_EVENT_INTR1, PIN_OUTPUT | MUX_MODE7) /* gpio0_20 / OPD_nENABLE */
+      /* radios */
+      AM33XX_IOPAD(AM335X_PIN_GPMC_A9, PIN_INPUT | MUX_MODE7) /* gpio1_25 / UHF_IRQ */
+      AM33XX_IOPAD(AM335X_PIN_GPMC_A11, PIN_OUTPUT | MUX_MODE7) /* gpio1_27 / UHF_PA_ENABLE */
+      AM33XX_IOPAD(AM335X_PIN_GPMC_A10, PIN_OUTPUT | MUX_MODE7) /* gpio1_26 / UHF_LNA_ENABLE */
+    >;
+  };
+};
+
+&i2c2 {
+  #address-cells = <1>;
+  #size-cells = <0>;
+  status = "okay";
+  pinctrl-names = "default";
+  pinctrl-0 = <&c3_i2c2_pins>;
+  clock-frequency = <100000>;
+};
+
+&ocp {
+  cape-universal {
+    compatible = "gpio-of-helper";
+    status = "okay";
+    pinctrl-names = "default";
+    pinctrl-0 = <&c3_gpio_pins>;
+
+    OPD_nENABLE {
+      gpio-name = "OPD_nENABLE";
+      gpio = <&gpio0 20 GPIO_ACTIVE_LOW>; /* AM335X_PIN_XDMA_EVENT_INTR1 */
+      output;
+      init-high;
+    };
+
+    UHF_IRQ {
+      gpio-name = "UHF_IRQ";
+      gpio = <&gpio1 25 GPIO_ACTIVE_LOW>; /* AM335X_PIN_GPMC_A9 */
+      input;
+    };
+
+    UHF_PA_ENABLE {
+      gpio-name = "UHF_PA_ENABLE";
+      gpio = <&gpio1 27 GPIO_ACTIVE_LOW>; /* AM335X_PIN_GPMC_A11 */
+      output;
+    };
+
+    UHF_LNA_ENABLE {
+      gpio-name = "UHF_LNA_ENABLE";
+      gpio = <&gpio1 26 GPIO_ACTIVE_LOW>; /* AM335X_PIN_GPMC_A10 */
+      output;
+    };
+  };
+};
+
+&spi0 {
+  #address-cells = <1>;
+  #size-cells = <0>;
+  status = "okay";
+  pinctrl-names = "default";
+  pinctrl-0 = <&c3_spi0_pins>;
+
+  channel@0 {
+    status = "okay";
+    reg = <0>;
+  };
+};

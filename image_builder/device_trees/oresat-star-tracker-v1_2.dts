@@ -1,0 +1,140 @@
+/* OreSat Star Tracker v1.2 device tree */
+
+/dts-v1/;
+
+#include "oresat-base.dtsi"
+
+/ {
+  prucam {
+    compatible = "prucam,prucam";
+
+    ti,prus = <&pru0>, <&pru1>;
+    interrupt-parent = <&pruss_intc>;
+
+    interrupts = <18 2 2>, <16 0 0>, <17 1 1>;
+    interrupt-names = "pru1_to_arm", "arm_to_prus", "pru0_to_pru1";
+  };
+};
+
+&am33xx_pinmux {
+  st_i2c2_pins: pinmux-st-i2c2-pins {
+    pinctrl-single,pins = <
+      AM33XX_IOPAD(AM335X_PIN_UART1_CTSN, PIN_INPUT | MUX_MODE3) /* i2c2_sda */
+      AM33XX_IOPAD(AM335X_PIN_UART1_RTSN, PIN_INPUT | MUX_MODE3) /* i2c2_scl */
+    >;
+  };
+
+  st_gpio_pins: pinmux-st-gpio-pins {
+    pinctrl-single,pins = <
+      /* Pins for CAM_control. */
+      AM33XX_IOPAD(AM335X_PIN_MII1_TXD3, PIN_INPUT | MUX_MODE7) /* gpio0_16 / FLASH */
+      AM33XX_IOPAD(AM335X_PIN_MII1_CRS, PIN_OUTPUT | MUX_MODE7) /* gpio3_1 / BUS_OE */
+      AM33XX_IOPAD(AM335X_PIN_MII1_COL, PIN_OUTPUT | MUX_MODE7) /* gpio3_0 / CAM_OE */
+      AM33XX_IOPAD(AM335X_PIN_MII1_RX_CLK, PIN_OUTPUT | MUX_MODE7) /* gpio3_10 / CLK_EN */
+      AM33XX_IOPAD(AM335X_PIN_MII1_RXD0, PIN_OUTPUT | MUX_MODE7) /* gpio2_21 / INPUT_EN */
+      AM33XX_IOPAD(AM335X_PIN_MII1_RXD1, PIN_OUTPUT | MUX_MODE7) /* gpio2_20 / RESET */
+      AM33XX_IOPAD(AM335X_PIN_MII1_RXD2, PIN_OUTPUT | MUX_MODE7) /* gpio2_19 / SADDR */
+      AM33XX_IOPAD(AM335X_PIN_MII1_RXD3, PIN_OUTPUT | MUX_MODE7) /* gpio2_18 / STANDBY */
+      AM33XX_IOPAD(AM335X_PIN_MII1_RX_ER, PIN_OUTPUT | MUX_MODE7) /* gpio3_2 / TRIGGER */
+      AM33XX_IOPAD(AM335X_PIN_MII1_RX_DV, PIN_OUTPUT | MUX_MODE7) /* gpio3_4 / VREG_EN */
+      /* Pins for CAM_parallel bus. Currently only getting top 8 bits of pixel data. */
+      AM33XX_IOPAD(AM335X_PIN_MCASP0_ACLKX, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_0 / CAM_D4 */
+      AM33XX_IOPAD(AM335X_PIN_MCASP0_FSX, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_1 / CAM_D5 */
+      AM33XX_IOPAD(AM335X_PIN_MCASP0_AXR0, PIN_INPUT | MUX_MODE6) /*pr1_pru0_pru_r31_2 / CAM_D6 */
+      AM33XX_IOPAD(AM335X_PIN_MCASP0_AHCLKR, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_3 / CAM_D7 */
+      AM33XX_IOPAD(AM335X_PIN_MCASP0_ACLKR, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_4 / CAM_D8 */
+      AM33XX_IOPAD(AM335X_PIN_MCASP0_FSR, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_5 / CAM_D9 */
+      AM33XX_IOPAD(AM335X_PIN_MCASP0_AXR1, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_6 / CAM_D10 */
+      AM33XX_IOPAD(AM335X_PIN_MCASP0_AHCLKX, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_7 / CAM_D11 */
+      AM33XX_IOPAD(AM335X_PIN_GPMC_AD14, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_14 / CAM_VSYNC */
+      AM33XX_IOPAD(AM335X_PIN_GPMC_AD15, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_15 / CAM_HSYNC */
+      AM33XX_IOPAD(AM335X_PIN_XDMA_EVENT_INTR1, PIN_INPUT | MUX_MODE5) /* pr1_pru0_pru_r31_16 / CAM_PXL_CLK */
+    >;
+  };
+};
+
+&i2c2 {
+  #address-cells = <1>;
+  #size-cells = <0>;
+  status = "okay";
+  pinctrl-names = "default";
+  pinctrl-0 = <&st_i2c2_pins>;
+  clock-frequency = <100000>;
+};
+
+&ocp {
+  cape-universal {
+    compatible = "gpio-of-helper";
+    status = "okay";
+    pinctrl-names = "default";
+    pinctrl-0 = <&st_gpio_pins>;
+
+    FLASH {
+      gpio-name = "FLASH";
+      gpio = <&gpio0 16 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_TXD3 */
+      input;
+    };
+
+    BUS_OE {
+      gpio-name = "BUS_OE";
+      gpio = <&gpio3 1 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_CRS */
+      output;
+    };
+
+    CAM_OE {
+      gpio-name = "CAM_OE";
+      gpio = <&gpio3 0 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_COL */
+      output;
+    };
+
+    CLK_EN {
+      gpio-name = "CLK_EN";
+      gpio = <&gpio3 10 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_RX_CLK */
+      output;
+    };
+
+    CAM_INPUT_EN {  /* name cannot be INPUT_EN */
+      gpio-name = "INPUT_EN";
+      gpio = <&gpio2 21 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_RXD0 */
+      output;
+    };
+
+    RESET {
+      gpio-name = "RESET";
+      gpio = <&gpio2 20 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_RXD1 */
+      output;
+    };
+
+    SADDR {
+      gpio-name = "SADDR";
+      gpio = <&gpio2 19 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_RXD2 */
+      output;
+    };
+
+    STANDBY {
+      gpio-name = "STANDBY";
+      gpio = <&gpio2 18 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_RXD3 */
+      output;
+    };
+
+    TRIGGER {
+      gpio-name = "TRIGGER";
+      gpio = <&gpio3 2 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_RX_ER */
+      output;
+    };
+
+    VREG_EN {
+      gpio-name = "VREG_EN";
+      gpio = <&gpio3 4 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_RX_DV */
+      output;
+    };
+  };
+};
+
+&pruss {
+  status = "okay";
+};
+
+&pruss_tm {
+  status = "okay";
+};

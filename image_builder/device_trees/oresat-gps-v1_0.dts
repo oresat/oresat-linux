@@ -1,0 +1,88 @@
+/* OreSat GPS v1.0 device tree */
+
+/dts-v1/;
+
+#include "oresat-base.dtsi"
+
+&am33xx_pinmux {
+  gps_uart2_pins: pinmux-uart2-pins {
+    pinctrl-single,pins = <
+      AM33XX_IOPAD(AM335X_PIN_MII1_RX_CLK, PIN_OUTPUT_PULLDOWN | MUX_MODE1) /* uart2_txd */
+      AM33XX_IOPAD(AM335X_PIN_MII1_TX_CLK, PIN_INPUT_PULLUP | MUX_MODE1) /* uart2_rxd */
+    >;
+  };
+
+  gps_spi1_pins: pinmux-gps-spi1-pins {
+    pinctrl-single,pins = <
+      /* 3-wire spi */
+      AM33XX_IOPAD(AM335X_PIN_MII1_COL, PIN_INPUT_PULLUP | MUX_MODE2) /* spi1_sclk */
+      AM33XX_IOPAD(AM335X_PIN_MII1_CRS, PIN_INPUT_PULLUP | MUX_MODE2) /* spi1_d0 */
+      AM33XX_IOPAD(AM335X_PIN_RMII1_REF_CLK, PIN_OUTPUT_PULLUP | MUX_MODE2) /* spi1_cs0 */
+    >;
+  };
+
+  gps_gpio_pins: pinmux-gps-gpio-pins {
+    pinctrl-single,pins = <
+      AM33XX_IOPAD(AM335X_PIN_MII1_TXD3, PIN_INPUT | MUX_MODE7) /* gpio0_16 / MAX_LD */
+      AM33XX_IOPAD(AM335X_PIN_MII1_TX_EN, PIN_OUTPUT | MUX_MODE7) /* gpio3_3 / MAX_nSHDN */
+      AM33XX_IOPAD(AM335X_PIN_MII1_RX_ER, PIN_OUTPUT | MUX_MODE7) /* gpio3_2 / STQ_EN */
+      AM33XX_IOPAD(AM335X_PIN_MII1_RX_DV, PIN_OUTPUT | MUX_MODE7) /* gpio3_4 / MAX_EN */
+      /* PRU pins */
+      AM33XX_IOPAD(AM335X_PIN_MCASP0_ACLKX, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_0 / MAX_I1 */
+      AM33XX_IOPAD(AM335X_PIN_MCASP0_FSX, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_1 / MAX_I0 */
+      AM33XX_IOPAD(AM335X_PIN_MCASP0_AXR0, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_2 / MAX_Q1 */
+      AM33XX_IOPAD(AM335X_PIN_MCASP0_AHCLKR, PIN_INPUT | MUX_MODE6) /* pr1_pru0_pru_r31_3 / MAX_Q0 */
+      AM33XX_IOPAD(AM335X_PIN_XDMA_EVENT_INTR1, PIN_INPUT | MUX_MODE5) /* pr1_pru0_pru_r31_16 / MAX_CLKOUT */
+    >;
+  };
+};
+
+&ocp {
+  cape-universal {
+    compatible = "gpio-of-helper";
+    status = "okay";
+    pinctrl-names = "default";
+    pinctrl-0 = <&gps_gpio_pins>;
+
+    MAX_LD {
+      gpio-name = "MAX_LD";
+      gpio = <&gpio0 16 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_TXD3 */
+      input;
+    };
+
+    MAX_nSHDN{
+      gpio-name = "MAX_nSHDN";
+      gpio = <&gpio3 3 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_TX_EN */
+      output;
+    };
+
+    STQ_EN {
+      gpio-name = "STQ_EN";
+      gpio = <&gpio3 2 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_RX_ER */
+      output;
+    };
+
+    MAX_EN {
+      gpio-name = "MAX_EN";
+      gpio = <&gpio3 4 GPIO_ACTIVE_LOW>; /* AM335X_PIN_MII1_RX_DV */
+      output;
+    };
+  };
+};
+
+&spi1 {
+  status = "okay";
+  pinctrl-names = "default";
+  pinctrl-0 = <&gps_spi1_pins>;
+
+  channel@0 {
+    reg = <0>;
+    status = "okay";
+  };
+};
+
+&uart2 {
+  status = "okay";
+  pinctrl-names = "default";
+  pinctrl-0 = <&gps_uart2_pins>;
+};
