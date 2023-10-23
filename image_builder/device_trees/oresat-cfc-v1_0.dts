@@ -2,7 +2,7 @@
 
 /dts-v1/;
 
-#include "am335x-oresat-card.dtsi"
+#include "oresat-base.dtsi"
 
 / {
   prudev {
