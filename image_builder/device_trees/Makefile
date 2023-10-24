@@ -19,5 +19,5 @@ clone:
 	@cp $(REPO)/src/arm/$@ .
 
 clean:
-	rm $(DTBS)
+	rm -f *.dtb
 	make -C $(REPO) clean

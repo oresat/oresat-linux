@@ -193,9 +193,16 @@ LED pins, and the power regulator.
   };
 };
 
-
-/* management data input/output */
+/* DaVinci (TI video processor) management data input/output */
 &davinci_mdio {
+  status = "disabled";
+};
+
+&davinci_mdio_sw {
+  status = "disabled";
+};
+
+&dcan0 {
   status = "disabled";
 };
 
@@ -211,6 +218,19 @@ LED pins, and the power regulator.
 };
 
 &cpsw_emac1 {
+  status = "disabled";
+};
+
+/* enhanced high resolution PWM */
+&ehrpwm0 {
+  status = "disabled";
+};
+
+&ehrpwm1 {
+  status = "disabled";
+};
+
+&ehrpwm2 {
   status = "disabled";
 };
 
@@ -237,6 +257,7 @@ LED pins, and the power regulator.
   status = "disabled";
 };
 
+/* low-dropout regulator */
 &ldo3_reg {
   regulator-min-microvolt = <1800000>;
   regulator-max-microvolt = <1800000>;
@@ -260,6 +281,10 @@ LED pins, and the power regulator.
 
 /* medium access controller */
 &mac {
+  status = "disabled";
+};
+
+&mac_sw {
   status = "disabled";
 };
 
@@ -295,7 +320,7 @@ LED pins, and the power regulator.
   status = "disabled";
 };
 
-/* PRU subsystem - change in the overlay for cards that need the PRUs */
+/* PRU subsystem */
 &pruss {
   status = "disabled";
 };
@@ -388,9 +413,14 @@ LED pins, and the power regulator.
 };
 
 &usb0 {
+  status = "okay";
   dr_mode = "peripheral";
   interrupts-extended = <&intc 18 &tps 0>;
   interrupt-names = "mc", "vbus";
+};
+
+&usb0_phy {
+  status = "okay";
 };
 
 &usb1 {
