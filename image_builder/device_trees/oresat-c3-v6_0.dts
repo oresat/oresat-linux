@@ -242,6 +242,7 @@
       gpio-name = "PET_WDT";
       gpio = <&gpio2 25 GPIO_ACTIVE_HIGH>; /* AM335X_PIN_LCD_AC_BIAS_EN */
       output;
+      init-high;
     };
 
     HW_ID_BIT_0 {
