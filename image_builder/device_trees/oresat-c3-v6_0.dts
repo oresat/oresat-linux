@@ -128,8 +128,7 @@
     TEST_HELICAL {
       gpio-name = "TEST_HELICAL";
       gpio = <&gpio3 15 GPIO_ACTIVE_HIGH>; /* AM335X_PIN_MCASP0_FSX */
-      input;
-      dir-changeable;
+      output;
     };
 
     FIRE_HELICAL_1 {
@@ -142,8 +141,7 @@
     TEST_ANTENNAS {
       gpio-name = "TEST_ANTENNAS";
       gpio = <&gpio3 17 GPIO_ACTIVE_HIGH>; /* AM335X_PIN_MCASP0_AHCLKR */
-      input;
-      dir-changeable;
+      output;
     };
 
     FIRE_ANTENNAS_2 {
