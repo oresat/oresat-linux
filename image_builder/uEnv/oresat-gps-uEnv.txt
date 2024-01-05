@@ -1,2 +1,0 @@
-# OreSat GPS uEnv.txt
-uboot_overlay_addr0=/lib/firmware/oresat-gps-v1_0.dtbo

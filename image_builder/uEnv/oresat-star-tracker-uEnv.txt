@@ -1,2 +1,0 @@
-# OreSat Star Tracker uEnv.txt
-uboot_overlay_addr0=/lib/firmware/oresat-star-tracker-v1_2.dtbo

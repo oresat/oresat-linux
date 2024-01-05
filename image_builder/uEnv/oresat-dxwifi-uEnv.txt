@@ -1,2 +1,0 @@
-# OreSat DxWiFi uEnv.txt
-uboot_overlay_addr0=/lib/firmware/oresat-dxwifi-v1_0.dtbo

@@ -1,6 +1,7 @@
 #!/bin/sh -e
 
 HOSTNAME=`cat /etc/hostname`
+tempdir=`grep -i tempdir= .project | cut -d "=" -f 2 | sed 's/\"//g'`
 
 ##############################################################################
 echo "disable root login"
@@ -18,7 +19,7 @@ Description=OreSat Linux App
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/$HOSTNAME -b can1 -l
+ExecStart=/usr/local/bin/$HOSTNAME -b can0 -l
 Restart=on-failure
 User=root
 Group=root
@@ -59,10 +60,7 @@ http {
 }
 __EOF__
 
-# only enable on flight images
-if [ $HOSTNAME != "oresat-dev" ]; then
 systemctl enable nginx.service
-fi
 
 ##############################################################################
 echo "enable SPIDEV kernel module at boot"
@@ -103,7 +101,7 @@ systemctl enable systemd-networkd.service
 systemctl enable systemd-resolved.service
 
 ##############################################################################
-echo "remove internet packages required during build on flight images"
+echo "remove internet packages required during build"
 
 if [ $HOSTNAME != "oresat-dev" ]; then
 apt -y purge git git-man curl wget rsync

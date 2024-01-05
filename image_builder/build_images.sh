@@ -26,8 +26,8 @@ if [ ! -d image-builder ]; then
     git clone https://github.com/beagleboard/image-builder
 fi
 
-# build dtbo
-make -C device_tree_overlays
+# build device trees
+make -C device_trees
 
 # copy oresat config into correct dirs
 cp ./configs/*.conf ./image-builder/configs/

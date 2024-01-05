@@ -1,2 +1,0 @@
-# OreSat C3 uEnv.txt
-uboot_overlay_addr0=/lib/firmware/oresat-c3-v6_0.dtbo

@@ -17,5 +17,5 @@ cat > "${tempdir}/etc/pip.conf" <<-__EOF__
 extra_index_url = https://piwheels.org/simple
 __EOF__
 
-# add all oresat dtbo
-cp ../device_tree_overlays/*.dtbo $tempdir/lib/firmware/
+# add all oresat dtb
+cp ../device_trees/*.dtb $tempdir/lib/firmware/
