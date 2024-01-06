@@ -6,7 +6,7 @@
 
 / {
   prudev {
-    compatible = "prucam,prucam";
+    compatible = "psas,prucam-pirt1280";
 
     ti,prus = <&pru0>, <&pru1>;
     interrupt-parent = <&pruss_intc>;

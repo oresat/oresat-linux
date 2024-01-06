@@ -11,7 +11,6 @@ echo "PermitRootLogin prohibit-password" >> /etc/ssh/sshd_config
 ##############################################################################
 echo "add OreSat OLAF app daemon"
 
-if [ $HOSTNAME != "oresat-dev" ]; then
 # add config
 cat > "/etc/systemd/system/"$HOSTNAME"d.service" <<-__EOF__
 [Unit]
@@ -33,6 +32,7 @@ __EOF__
 
 # enable daemon
 systemctl daemon-reload
+if [ $HOSTNAME != "oresat-dev" ]; then
 systemctl enable $HOSTNAME"d.service"
 fi
 
@@ -101,8 +101,12 @@ systemctl enable systemd-networkd.service
 systemctl enable systemd-resolved.service
 
 ##############################################################################
-echo "remove internet packages required during build"
+# Flight images only
 
 if [ $HOSTNAME != "oresat-dev" ]; then
+echo "remove internet packages required during build"
 apt -y purge git git-man curl wget rsync
+
+echo "disable timesyncd"
+systemctl disable systemd-timesyncd.service
 fi
