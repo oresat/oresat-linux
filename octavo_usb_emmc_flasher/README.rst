@@ -14,9 +14,9 @@ How it Works
 ------------
 
 .. note:: This section is mostly copied from the Octavo Systems link above.
-.. this is copoed incase the info at the link above is lost
+.. This is copied in case the info at the link above is lost
 
-#. A small, light-weight, initramfs (Initial RAM Filesystem) based Linux image is booted on the
+#. A small, light-weight, initramfs (Initial RAM file system) based Linux image is booted on the
    “OSD335x Target Device” using `TFTP`_ over the USB interface.
 #. The minimal image booted on the target will provide the “Host Computer” access to the
    attached eMMC memory as a mounted mass storage device, similar to a USB flash drive.

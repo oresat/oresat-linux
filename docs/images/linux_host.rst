@@ -88,7 +88,7 @@ Connecting to OreSat Linux from Linux host
 - Install ``nmap`` for your system
 
 - Run nmap to figure out the card's IP address. **Replace** ``10.42.1.1/24`` in
-  the follow command to be addres **with** the IPv4 address space found in the
+  the follow command to be address **with** the IPv4 address space found in the
   previous step.
 
   .. code-block:: text

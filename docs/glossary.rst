@@ -15,7 +15,7 @@
         PSAS's open source CubeSat. See https://www.oresat.org/
 
     PSAS
-        Portland State Aerosapce Society. A student aerospace group at Portland
+        Portland State Aerospace Society. A student aerospace group at Portland
         State University. See https://www.pdxaerospace.org/
 
     DKMS

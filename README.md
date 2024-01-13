@@ -2,10 +2,10 @@
 
 [![Documentation Status](https://readthedocs.org/projects/oresat-linux/badge/?version=latest)](https://oresat-linux.readthedocs.io/en/latest/?badge=latest)
 
-This repo has all the OreSat Linux system level documenation and utilities for
+This repo has all the OreSat Linux system level documentation and utilities for
 OreSat Linux cards.
 
-## Utilites
+## Utilities
 
 - **Image Builder:** Used to build OreSat Linux images.
 - **Octavo USB eMMC Flasher:** Used to flash a OreSat Linux card's eMMC over USB.
@@ -15,7 +15,7 @@ OreSat Linux cards.
 
 Images are hosted at [https://images.oresat.org/](https://images.oresat.org/)
 
-## System Level Documenation
+## System Level Documentation
 
 See [OreSat Linux ReadTheDocs](https://oresat-linux.readthedocs.io/en/latest/)
 

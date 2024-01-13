@@ -8,7 +8,7 @@ Octavo A8 Boot Process
 - The AM335x will then boot U-Boot image of the select storage device.
 - U-Boot will read the AM335x's EEPROM to figure out what specific AM335x
   device it is. OreSat cards will have the Beagleboard's PocketBeagle value
-  wriiten to its EEPROM, so U-Boot will then load the PocketBeagle's device
+  written to its EEPROM, so U-Boot will then load the PocketBeagle's device
   tree.
 - U-Boot will then try to boot the Linux kernel and will pass of the device
   tree to the Linux kernel.
@@ -16,6 +16,6 @@ Octavo A8 Boot Process
 - Systemd starts up.
 - If DKMS is installed, DKMS loads any external kernel modules.
 - Systemd starts the card's OLAF app.
-- CAN bus is relase by the kernel. OLAF configures the CAN bus and starts sending
+- CAN bus is release by the kernel. OLAF configures the CAN bus and starts sending
   out CANopen heartbeats.
 - PRUs are available (if configured in device tree).

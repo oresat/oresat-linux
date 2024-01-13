@@ -3,12 +3,12 @@ Connecting to OreSat Linux from MacOS host
 
 - Connect the OreSat Linux card to host using a USB cable
 
-- Goto ``System Perference => Network`` and wait for the two connections to come
+- Go to ``System Preference => Network`` and wait for the two connections to come
   up
 - Remove the ``BeagleBone`` connection (the first connection), we will only care
   about the ``BeagleBone 2`` connection
 
-- Goto ``System Perference => Sharing``, click on ``Internet Sharing`` (the word,
+- Go to ``System Preference => Sharing``, click on ``Internet Sharing`` (the word,
   not the checkbox), check the checkbox next to ``BeagleBone``, and then check
   the checkbox for ``Internet Sharing``
 
@@ -53,7 +53,7 @@ Connecting to OreSat Linux from MacOS host
   In the example ``ifconfig`` above, the address for the bridge would be
   ``192.168.2.1``.
 
-- Go back to ``System Perference => Network`` and edit ``BeagleBone 2`` and
+- Go back to ``System Preference => Network`` and edit ``BeagleBone 2`` and
   change it to ``Using DHCP with manual address`` and set the address to the
   address found from ifconfig. 
 
@@ -72,7 +72,7 @@ Connecting to OreSat Linux from MacOS host
   - **or** download and install from https://nmap.org/download.html/#macosx
 
 - Run nmap to figure out the card's IP address. **Replace** ``192.168.2.1/24`` in
-  the follow command to be addres **with** the IPv4 address space found by
+  the follow command to be address **with** the IPv4 address space found by
   ifconfig.
 
   .. code-block:: text
@@ -103,4 +103,3 @@ Connecting to OreSat Linux from MacOS host
     PING www.google.com (172.217.14.228) 56(84) bytes of data.
     64 bytes from sea30s02-in-f4.1e100.net (172.217.14.228): icmp_seq=1 ttl=117 time=41.6 ms
     64 bytes from sea30s02-in-f4.1e100.net (172.217.14.228): icmp_seq=2 ttl=117 time=29.1 ms
-

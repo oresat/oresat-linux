@@ -1,10 +1,10 @@
 Welcome to OreSat Linux's documentation!
 ========================================
 
-Documenation for the embedded Linux cards on OreSat.
+Documentation for the embedded Linux cards on OreSat.
 
 The goal of this documentation is to provide a overview of the OreSat Linux
-enviroment on OreSat Linux cards, a high level overview of each OreSat Linux
+environment on OreSat Linux cards, a high level overview of each OreSat Linux
 card, and provide any helpful resources/guides for development on OreSat Linux
 cards.
 

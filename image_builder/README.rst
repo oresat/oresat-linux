@@ -9,12 +9,11 @@ Files
 - ``chroot_scripts/early-oresat-chroot.sh``: The early chroot script, used to do anything before
   the image config ares parsed in chroot environment.
 - ``chroot_scripts/oresat-chroot.sh``: The main chroot script that runs after most packages are
-  installed in chroot environment. 
-  is used to set custom things on OreSat images.
+  installed in chroot environment.
 - ``configs/*.conf``: All the image configs; defines what packages are install, system settings,
   etc.
 - ``device_tree/*.dts``: Holds the device tree for flight images. This device tree configures
-  some pins to there nessary mode and then configures all other pins to be gpio floating inputs.
+  some pins to there necessary mode and then configures all other pins to be GPIO floating inputs.
   **NOTE:** The ``oresat-dev`` image uses the original PocketBeagle device.
 - ``device_tree_overlays/*.dts``: These are the device tree overlays for specific images, all are 
   compiled and are copied to ``/lib/firmware/`` during by the early chroot script.
@@ -25,15 +24,15 @@ How it Works
 ------------
 
 .. note:: Most of the build process is handled by BeagleBoard's image-builder, with some custom
-   OreSat scripts excuted at specific moments.
+   OreSat scripts executed at specific moments.
 
 - All device tree overlays are compiled.
 - A temp directory is made, the directory is mounted with chroot.
-- OreSat's early chroot script is excuted (all device tree overlay binaries are copied over).
-- A bunch of BeagleBone's scripts are excuted to build the image; including installing all Debian
+- OreSat's early chroot script is executed (all device tree overlay binaries are copied over).
+- A bunch of BeagleBoard's scripts are executed to build the image; including installing all Debian
   and Python packages. Basically most things defined in the image ``.conf`` file happen during
   this step.
-- OreSat's custom chroot script is excuted.
+- OreSat's custom chroot script is executed.
 - Chroot environment is exited.
 - A partition is made on the system.
 - All files from the temp directory are copied over to the new partition.
@@ -45,7 +44,7 @@ How it Works
 Requirements
 ------------
 
-- Image must be built on a armv7 device running Debian or a Debian-based distro.
+- Image must be built on a ARMv7 device running Debian or a Debian-based distro.
 - An internet connection (it has to call ``apt`` a lot).
 
 Set up

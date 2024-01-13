@@ -18,7 +18,7 @@ Include the PRU compiler.
 
  $ sudo apt install ti-pru-cgt-installer
 
-- Or get it directy from TI at https://www.ti.com/tool/download/PRU-CGT-2-1.
+- Or get it directly from TI at https://www.ti.com/tool/download/PRU-CGT-2-1.
   The ARM-A8 Installer for PRU CGT one.
 
 .. other links

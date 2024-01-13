@@ -9,7 +9,7 @@ This script will write the board id of a PocketBeagle to the EEPROM.
 
 Id's can be found in the README of https://github.com/beagleboard/image-builder.
 
-Requriements
+Requirements
 ------------
 
 A laptop and `Raspi Pico`_.
@@ -19,9 +19,9 @@ Setup Raspi Pico
 
 Download the uf2 file to a laptop from: https://micropython.org/download/RPI_PICO/
 
-While holding th Raspi Pico boot button, connect the Raspi Pico to the laptop.
+While holding the Raspi Pico boot button, connect the Raspi Pico to the laptop.
 
-The Raspi Pico will come up a as storage device, copy the .uf2 file into the
+The Raspi Pico will come up a as storage device, copy the ``.uf2`` file into the
 storage device directory.
 
 Disconnect and reconnect (without holding the boot button) the Raspi Pico.
@@ -39,7 +39,7 @@ Install dependencies on laptop
 
    $ pip install -r requirements.txt
 
-Flash main.py on Raspi Pico. Change the ``/dev/ttyACM0`` as needed.
+Flash ``main.py`` on Raspi Pico. Change the ``/dev/ttyACM0`` as needed.
 
 .. code-block::
 
@@ -80,6 +80,6 @@ Use the Raspi Pico LED to determine the status of the EEPROM flashing:
   running. Try reflashing the MicroPython binary and the ``main.py`` script onto the Raspi Pico.
 - If the LED is blinking every second, the firmware is trying to flash the EEPROM and is failing,
   check the wiring.
-- If the LED is always on, the EEPROM has been sucessfully flashed.
+- If the LED is always on, the EEPROM has been successfully flashed.
 
 .. _Raspi Pico: https://www.raspberrypi.com/documentation/microcontrollers/raspberry-pi-pico.html

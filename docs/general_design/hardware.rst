@@ -4,9 +4,9 @@ Hardware
 Octavo A8
 ---------
 
-All OreSat Linux cards use a `Octavo A8`_, specficily the OSD3358-1G-BSM. 
+All OreSat Linux cards use a `Octavo A8`_, specifically the OSD3358-1G-BSM. 
 
-A very simular SOC can be commonly found in Beagleboard's `PocketBeagle`_.
+A very similar SOC can be commonly found in Beagleboard's `PocketBeagle`_.
 
 Key features of the Octavo A8:
 

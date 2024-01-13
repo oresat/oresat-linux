@@ -9,12 +9,12 @@ Common software that is on or used by all OreSat Linux Cards.
 - `oresat-linux`_ Image builder, the source for this documentation, and
   general utilities.
 - `oresat-olaf`_ The OreSat Linux App Framework. Framework for all OreSat
-  Linux applications. Built ontop of Python's CANopen library.
+  Linux applications. Built on top of Python's CANopen library.
 
 C3 Card
 ---------
 
-Command, Control, Commication card. The main flight card.
+Command, Control, Commination card. The main flight card.
 
 - `oresat-c3`_ Hardware design for the C3 card.
 - `oresat-c3-software`_ The main C3 OLAF-based application.

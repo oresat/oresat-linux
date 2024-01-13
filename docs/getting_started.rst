@@ -23,7 +23,7 @@ Task board
 
 - We try use GitHub Issue and GitHub Projects for all tasks that needed to be
   done (bug fixes, new features, etc). See https://github.com/orgs/oresat/projects/6/views/1
-- Not all things that need to be worked on are addes to GitHub Issues.
+- Not all things that need to be worked on are added to GitHub Issues.
 - Anyone is free to work on any GitHub Issue that is not assigned to anyone
   else, but you must assign yourself to the GitHub Issue if you are working on
   it.
@@ -31,10 +31,10 @@ Task board
 Recommendations when joining OreSat
 -----------------------------------
 
-- Your problably will feel overwhelmed with how complicated OreSat is. The
-  best thing todo is focus on one subsystem, get familier with subsystem,
+- Your probably will feel overwhelmed with how complicated OreSat is. The
+  best thing to do is focus on one subsystem, get familiar with subsystem,
   and expand you're knowledge of OreSat a whole at your own rate, as you
   want to.
 - Ask lots of questions.
-- If something specificly insterest you, bother the people working on and
+- If something specifically interest you, bother the people working on and
   see how you can help.

@@ -19,7 +19,7 @@ Device Tree
 -----------
 
 Device trees are used to describe the hardware, so hardware info does need to
-be hardcoded into the Linux kernel; this include configuing pin modes. For
+be hard-coded into the Linux kernel; this include configuring pin modes. For
 more info about device tree and Linux, see
 https://www.kernel.org/doc/html/latest/devicetree/usage-model.html
 Device tree overlays are used by the Linux kernel to overlay changes to the
@@ -49,7 +49,7 @@ BeagleBoard's scripts, services, and configurations.
 
 Only `dpkg`_  will be used for all non-Python package with the ``python3``,
 ``python3-all``, ``python3-setuptools``, and ``python3-pip`` packages as the
-execptions. All other Python packages will be installed with `pip`_.
+exceptions. All other Python packages will be installed with `pip`_.
 
 All networking on OreSat cards is handled by systemd-networkd.
 
@@ -61,8 +61,8 @@ packaging kernel module easier. Also, it's nice to no worry about updating
 kernel modules if the kernel needs to be updated.
 
 All kernel module will be put in a Debian package, so it can easily be
-updated with the the updater build into `OLAF`_ and used to build to flight
-OreSat linux images.
+updated with the updater build into `OLAF`_ and used to build to flight
+OreSat Linux images.
 
 OLAF app
 --------
@@ -71,9 +71,9 @@ OLAF app
    `OLAF Read the Docs`_ .
 
 OreSat Linux App Framework (aka OLAF) is a Pythonic application framework for all
-OreSat Linux cards. It is built ontop on `python-canopen`_. It is designed to
+OreSat Linux cards. It is built on top on `python-canopen`_. It is designed to
 handle all the common OreSat CANopen Node functionality including support for ECSS
-CANBus Extended Protocol, file transfer over CAN, and updating the Linux card thru
+CAN Bus Extended Protocol, file transfer over CAN, and updating the Linux card thru
 Python packages, Debian packages, and bash scripts.
 
 Each oresat card will have its own OLAF-based app that will be daemonized that will
@@ -84,7 +84,7 @@ Non-OLAF apps
 -------------
 
 Non-OLAF apps can be used, but if possible it should be avoided, it's hard enough to
-mantain all the OreSat software projects.
+maintain all the OreSat software projects.
 
 Any non-OLAF app should have interfaces (like sockets), that OLAF app can connect to
 get health / status info as well as control the non-OLAF app.
