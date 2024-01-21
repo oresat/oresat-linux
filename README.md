@@ -1,9 +1,6 @@
 # OreSat Linux
 
-[![Documentation Status](https://readthedocs.org/projects/oresat-linux/badge/?version=latest)](https://oresat-linux.readthedocs.io/en/latest/?badge=latest)
-
-This repo has all the OreSat Linux system level documentation and utilities for
-OreSat Linux cards.
+OreSat Linux image builder and utilities.
 
 ## Utilities
 
@@ -14,36 +11,3 @@ OreSat Linux cards.
 ## OreSat Linux Images
 
 Images are hosted at [https://images.oresat.org/](https://images.oresat.org/)
-
-## System Level Documentation
-
-See [OreSat Linux ReadTheDocs](https://oresat-linux.readthedocs.io/en/latest/)
-
-### Manual Build
-
-Clone the git repository
-
-```bash
-$ git clone https://github.com/oresat/oresat-linux
-````
-
-Install dependencies
-
-**NOTE**: May need to replace `pip` with `pip3` on your system (it varies on
-OS and distro).
-
-```bash
-$ pip install -r docs/requirements.txt
-```
-
-Build the docs
-
-```bash
-$ make html -C docs
-```
-
-Open `docs/build/html/index.html` in a browser.
-
-## Other OreSat Linux Repos
-
-See [docs/repos.rst](docs/repos.rst) for a list of other OreSat Linux repos.
