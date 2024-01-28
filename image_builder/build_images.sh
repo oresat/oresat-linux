@@ -36,13 +36,13 @@ if [ $BOARD == "oresat-dev" ]; then
     dtb=""
     version=""
 elif [ -z "$version" ]; then
-    dtss=(`ls device_trees/$BOARD-v*.dts`)
+    dtss=(`ls ../device_trees/$BOARD-v*.dts`)
     dts=${dtss[-1]}
-    dtb=device_trees/`basename -- "$dts" .dts`.dtb
+    dtb=../device_trees/`basename -- "$dts" .dts`.dtb
     version=`echo $dtb | awk -F "-" '{print $NF}' | cut -d . -f 1 | sed 's/_/./g'`
 else
     dtb=$BOARD-`echo $version | sed 's/./_/'`.dtb
-    if [ ! -f device_trees/$dtb]; then
+    if [ ! -f ../device_trees/$dtb]; then
         echo "Invalid version argument"
         echo ""
         help_message
@@ -55,7 +55,7 @@ if [ ! -d image-builder ]; then
 fi
 
 # build all device trees
-make -C device_trees
+make -C ../device_trees
 
 # copy oresat config into correct dirs
 cp ./configs/*.conf ./image-builder/configs/
