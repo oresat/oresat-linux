@@ -1,13 +1,25 @@
-*.o
-mono_crash.*
-nohup.out
-__pycache__
-image-builder/
+# Repos
 BeagleBoard-DeviceTrees/
-build/
-bb.org-overlays/
+image-builder/
+u-boot/
+
+# Python
+__pycache__/
+
+# MicroPython
+*.uf2
+
+# Device trees
 *.dtb*
 *.dts.tmp
+
+# Linux images
 oresat*.img
 *.img.zst
 *.sha256
+
+# Vim
+*.swp
+
+# MacOS
+.DS_Store
