@@ -1,0 +1,37 @@
+/* OreSat DxWiFi v1.3 device tree */
+
+/dts-v1/;
+
+#include "oresat-base.dtsi"
+
+&am33xx_pinmux {
+  dxwifi_gpio_pins: pinmux-dxwifi-gpio-pins {
+    pinctrl-single,pins = <
+      AM33XX_IOPAD(AM335X_PIN_MII1_TX_CLK, PIN_OUTPUT | MUX_MODE7) /* gpio3_9 / PA_ENABLE */
+    >;
+  };
+};
+
+&ocp {
+  cape-universal {
+    compatible = "gpio-of-helper";
+    status = "okay";
+    pinctrl-names = "default";
+    pinctrl-0 = <&dxwifi_gpio_pins>;
+
+    PA_ENABLE {
+      gpio-name = "PA_ENABLE";
+      gpio = <&gpio3 9 GPIO_ACTIVE_HIGH>; /* AM335X_PIN_MII1_TX_CLK */
+      output;
+    };
+  };
+};
+
+&usb1_phy {
+  status = "okay";
+};
+
+&usb1 {
+  status = "okay";
+  dr_mode = "host";
+};
