@@ -5,6 +5,7 @@
 #include "oresat-base.dtsi"
 
 &am33xx_pinmux {
+  /* skytraq */
   gps_uart2_pins: pinmux-uart2-pins {
     pinctrl-single,pins = <
       AM33XX_IOPAD(AM335X_PIN_MII1_RX_CLK, PIN_OUTPUT_PULLDOWN | MUX_MODE1) /* uart2_txd */
@@ -12,6 +13,7 @@
     >;
   };
 
+  /* max2771 */
   gps_spi1_pins: pinmux-gps-spi1-pins {
     pinctrl-single,pins = <
       /* 3-wire spi */
