@@ -1,36 +1,29 @@
 # U-Boot
 
-## Setup 
+## Setup
 
-Install dependencies
+Install the GCC cross compiler for ARM Cortex-R/M processors
 
-```bash
-sudo pacman -S arm-none-eabi-gcc
-```
-
-Clone U-Boot
-
-```bash
-$ git clone https://github.com/beagleboard/u-boot
-```
+- Arch Linux
+  ```bash
+  sudo pacman -S arm-none-eabi-gcc
+  ```
+- Debian Linux
+  ```bash
+  sudo apt install gcc-arm-none-eabi
+  ```
 
 ## Build
 
-Make the config
+This will generate the `u-boot.img` and `MLO`.
 
 ```bash
-$ make ARCH=arm CROSS_COMPILE=arm-none-eabi- am335x_evm_defconfig
-```
-
-Compile
-
-```bash
-$ make ARCH=arm CROSS_COMPILE=arm-none-eabi-
+$ make
 ```
 
 ## Flash
 
-Flash img and MLO
+Flash `u-boot.img` and `MLO`. Change `/dev/sda` as needed.
 
 ```bash
 $ sudo dd if=u-boot-dtb.img of=/dev/sda count=4 seek=1 bs=384k
