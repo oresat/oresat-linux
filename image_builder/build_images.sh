@@ -19,12 +19,19 @@ DATE=`date "+%F"`
 NAME="$BOARD-$DATE"
 SIZE="2gb"
 
+if [ $BOARD == "oresat-dev" ]; then
+    SIZE="4gb"
+fi
+
 if [ ! -d image-builder ]; then
     git clone https://github.com/beagleboard/image-builder
 fi
 
 # build all device trees
 make -C ../device_trees
+
+# build u-boot
+make -C ../uboot
 
 # copy oresat config into correct dirs
 cp ./configs/*.conf ./image-builder/configs/
@@ -42,7 +49,7 @@ rm -rf deploy
 cd deploy/debian-*/
 
 # make .img file
-sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb beaglebone --enable-mainline-pru-rproc
+sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb bonebeagle --enable-fat-partition
 
 # compress
 zstd $NAME-$SIZE.img

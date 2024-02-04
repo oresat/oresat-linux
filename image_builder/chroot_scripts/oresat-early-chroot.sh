@@ -3,7 +3,7 @@
 tempdir=`grep -i tempdir= .project | cut -d "=" -f 2 | sed 's/\"//g'`
 
 # to remove install installing recommended and suggestes packages
-# note image-builder removes this file during cleanup 
+# note image-builder removes this file during cleanup
 cat > "${tempdir}/etc/apt/apt.conf" <<-__EOF__
 APT::Install-Suggests "0";
 APT::Install-Recommends "0";
@@ -18,4 +18,4 @@ extra_index_url = https://piwheels.org/simple
 __EOF__
 
 # add all oresat dtb
-cp ../device_trees/*.dtb $tempdir/lib/firmware/
+cp ../device_trees/*.dtb $tempdir/boot/
