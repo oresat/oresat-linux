@@ -10,7 +10,7 @@ Id's can be found in the README of https://github.com/beagleboard/image-builder.
 
 ## Requirements
 
-A laptop and [Raspi Pico].
+A laptop with Python and [Raspi Pico].
 
 ## Setup Raspi Pico
 
@@ -64,6 +64,12 @@ on card and not debug board with future OreSat cards.
 Power on the Octavo.
 
 Connect the Raspi Pico to laptop (give it power).
+
+Run the `eeprom_write.py` script (use `-h`/`--help` see args).
+
+Example: Flash info for c3 v6.0 card #1::
+
+    ./eeprom_write.py /dev/ttyACM0 c3 1 6 0 0 0
 
 Use the Raspi Pico LED to determine the status of the EEPROM flashing:
 
