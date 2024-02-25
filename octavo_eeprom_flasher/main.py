@@ -8,6 +8,7 @@ import json
 import select
 import sys
 from machine import I2C, Pin, Timer
+from time import sleep
 
 I2C_ADDR = 0x50
 EEPROM_ADDR = b"\x00\x00"
@@ -15,12 +16,14 @@ HEADER = b"\xAA\x55\x33\xEE"
 
 BOARD_NAMES = {
     "pocketbeagle": "A335PBGL",
+    "beagleboneblack": "A335BNLT",
     "c3": "A335OSC3",
     "star-tracker": "A335OSST",
     "gps": "A335OGPS",
     "dxwifi": "A335ODWF",
     "cfc": "A335OCFC",
 }
+BOARD_NAMES_REV = {name: key for key, name in BOARD_NAMES.items()}
 
 led = Pin(25, Pin.OUT)
 led.off()
@@ -39,18 +42,26 @@ def eeprom_read() -> dict:
     except Exception:
         return {"error": "failed to read data from EEPROM"}
 
-    data = raw.decode()
-    name = BOARD_NAMES.values().index(data[4:12])
+    data = raw[4:].decode()
     values = {
-        "direction": "read",
-        "name": list(BOARD_NAMES.keys())[name],
-        "major": data[12:14],
-        "minor": data[14:16],
-        "week": data[16:18],
-        "year": data[18:20],
-        "id": data[24:28],
+        "name": BOARD_NAMES_REV.get(data[:8], "unknown"),
+        "version": int(data[8:12], 16),
+        "week": int(data[12:14]),
+        "year": int(data[14:16]),
+        "id": int(data[20:24]),
     }
     return values
+
+
+def eeprom_print(_timer):
+    try:
+        message = json.dumps(eeprom_read())
+    except Exception as e:
+        message = json.dumps({"error": str(e)})
+    print(message)
+
+
+timer = Timer(mode=Timer.PERIODIC, freq=1, callback=eeprom_print)
 
 
 def eeprom_write(data: dict) -> dict:
@@ -58,10 +69,7 @@ def eeprom_write(data: dict) -> dict:
 
     name = BOARD_NAMES[data.get("name", "pocketbeagle")]
 
-    major = f'{data.get("version_major", 0)}:02'
-    minor = f'{data.get("version_minor", 0)}:02'
-    version = f"{major}{minor}"
-
+    version = f'{data.get("version", 0):04X}'
     week = f'{data.get("week", 0):02}'
     year = f'{data.get("year", 0):02}'
     uid = f'{data.get("id", 0):04}'
@@ -98,25 +106,26 @@ def eeprom_write(data: dict) -> dict:
     else:
         timer.deinit()
         led.on()
-        data["direction"] = "read"
 
     return data
 
 
+i = 0
 while True:
-    results = poll.poll(1)
-    if results:
-        raw = sys.stdin.readline().strip()
-        try:
-            data = json.loads(raw.decode())
-            direction = data.get("direction", "read")
-            if direction == "read":
-                ret_data = eeprom_read()
-            else:
-                ret_data = eeprom_write(data)
-            ret = json.dumps(ret_data)
-        except Exception as e:
-            ret = json.dumps({"error": str(e)})
-        print(ret)
-    else:
+    sleep(1)
+    results = poll.poll()
+
+    req = ""
+    while poll.poll(0):
+        req += sys.stdin.read(1)
+
+    if req == "":
         continue
+
+    try:
+        req_data = json.loads(req)
+        res_data = eeprom_write(req_data)
+        res = json.dumps(res_data)
+    except Exception as e:
+        res = json.dumps({"error": str(e)})
+    print(res)

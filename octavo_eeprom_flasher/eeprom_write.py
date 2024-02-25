@@ -35,7 +35,6 @@ year = now.year if args.year == 0 else args.year
 year %= 100
 
 data = {
-    "direction": "write",
     "name": args.name,
     "id": args.id,
     "major": args.major,
@@ -43,11 +42,8 @@ data = {
     "year": year,
     "week": week,
 }
-print(data)
 
 raw = json.dumps(data)
-print(raw)
-exit()
 
 ser = serial.Serial(
     port=args.port,
@@ -59,7 +55,7 @@ ser = serial.Serial(
 )
 
 try:
-    ser.write(raw)
+    ser.write(raw.encode())
     message = ser.readline()
     print(message.decode())
 except Exception as e:
