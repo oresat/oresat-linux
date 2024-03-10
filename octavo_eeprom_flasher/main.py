@@ -27,7 +27,7 @@ BOARD_NAMES_REV = {name: key for key, name in BOARD_NAMES.items()}
 
 led = Pin(25, Pin.OUT)
 led.off()
-timer = Timer(mode=Timer.PERIODIC, freq=1, callback=lambda t: led.toggle())
+led_timer = Timer(mode=Timer.PERIODIC, freq=1, callback=lambda t: led.toggle())
 
 i2c = I2C(0, scl=Pin(17), sda=Pin(16), freq=400_000)
 
@@ -53,7 +53,7 @@ def eeprom_read() -> dict:
     return values
 
 
-def eeprom_print(_timer):
+def eeprom_print(_timer: Timer):
     try:
         message = json.dumps(eeprom_read())
     except Exception as e:
@@ -61,7 +61,7 @@ def eeprom_print(_timer):
     print(message)
 
 
-timer = Timer(mode=Timer.PERIODIC, freq=1, callback=eeprom_print)
+read_timer = Timer(mode=Timer.PERIODIC, freq=1, callback=eeprom_print)
 
 
 def eeprom_write(data: dict) -> dict:
@@ -104,7 +104,7 @@ def eeprom_write(data: dict) -> dict:
     if value != value_readback:
         data = {"error": f"invalid readback; wrote {value.hex()} read {value_readback.hex()}"}
     else:
-        timer.deinit()
+        led_timer.deinit()
         led.on()
 
     return data
