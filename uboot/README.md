@@ -6,11 +6,11 @@ Install the GCC cross compiler for ARM Cortex-R/M processors
 
 - Arch Linux
   ```bash
-  sudo pacman -S arm-none-eabi-gcc openssl
+  sudo pacman -S arm-none-eabi-gcc openssl bc
   ```
 - Debian Linux
   ```bash
-  sudo apt install gcc-arm-none-eabi libssl-dev
+  sudo apt install gcc-arm-none-eabi libssl-dev bc
   ```
 
 ## Build

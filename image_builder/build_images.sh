@@ -47,7 +47,7 @@ rm -rf deploy
 ./RootStock-NG.sh -c $BOARD
 
 # override u-boot with custom build
-cp ../uboot/MLO ../uboot/*.img deploy/debian-*/bb-u-boot-evm
+cp ../../uboot/MLO ../../uboot/*.img deploy/debian-*/u-boot/bb-u-boot-am335x-evm
 
 cd deploy/debian-*/
 

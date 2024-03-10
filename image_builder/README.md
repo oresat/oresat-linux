@@ -43,7 +43,7 @@ OreSat scripts executed at specific moments.
 Install dependencies
 
 ```bash
-$ sudo apt install git zstd device-tree-compiler make cpp m4 gcc dosfstools kpartx wget parted tree
+$ sudo apt install git zstd device-tree-compiler make cpp m4 gcc dosfstools kpartx wget parted tree bc
 ```
 
 Clone the oresat-linux repo
