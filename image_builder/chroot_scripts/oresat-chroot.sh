@@ -114,6 +114,12 @@ echo "rebuild pyyaml"
 python3 -m pip install --force-reinstall --no-cache-dir --no-binary pyyaml pyyaml
 
 ##############################################################################
+echo "add oresat device trees to /boot"
+
+mv /tmp/*.dtb /boot/dtbs/*/
+chmod 755 /boot/dtbs/*/oresat*
+
+##############################################################################
 # Flight images only
 
 if [ $HOSTNAME != "oresat-dev" ]; then

@@ -46,6 +46,9 @@ rm -rf deploy
 # build partitions
 ./RootStock-NG.sh -c $BOARD
 
+# override u-boot with custom build
+cp ../uboot/MLO ../uboot/*.img deploy/debian-*/bb-u-boot-evm
+
 cd deploy/debian-*/
 
 # make .img file

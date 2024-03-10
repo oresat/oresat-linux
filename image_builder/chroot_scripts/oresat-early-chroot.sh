@@ -16,3 +16,6 @@ cat > "${tempdir}/etc/pip.conf" <<-__EOF__
 [global]
 extra_index_url = https://piwheels.org/simple
 __EOF__
+
+# add all oresat device trees to /tmp
+cp ../device_trees/*.dtb $tempdir/tmp
