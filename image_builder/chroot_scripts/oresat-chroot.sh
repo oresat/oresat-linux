@@ -8,21 +8,21 @@ echo "disable root login"
 echo "PermitRootLogin prohibit-password" >> /etc/ssh/sshd_config
 
 ##############################################################################
-echo "enable g_ether (ethernet over usb) for USB0"
+echo "enable g_ether (ethernet over usb)"
 
 MAC_ADDR_BASE="60:64:05:f9:0d"
 if [ $HOSTNAME == "oresat-c3" ]; then
-$MAC_ADDR="$MAC_ADDR_BASE:10"
+MAC_ADDR="$MAC_ADDR_BASE:10"
 elif [ $HOSTNAME == "oresat-cfc" ]; then
-$MAC_ADDR="$MAC_ADDR_BASE:20"
+MAC_ADDR="$MAC_ADDR_BASE:20"
 elif [ $HOSTNAME == "oresat-dxwifi" ]; then
-$MAC_ADDR="$MAC_ADDR_BASE:30"
+MAC_ADDR="$MAC_ADDR_BASE:30"
 elif [ $HOSTNAME == "oresat-gps" ]; then
-$MAC_ADDR="$MAC_ADDR_BASE:40"
+MAC_ADDR="$MAC_ADDR_BASE:40"
 elif [ $HOSTNAME == "oresat-star-tracker" ]; then
-$MAC_ADDR="$MAC_ADDR_BASE:50"
+MAC_ADDR="$MAC_ADDR_BASE:50"
 else
-$MAC_ADDR="$MAC_ADDR_BASE:ff"
+MAC_ADDR="$MAC_ADDR_BASE:f0"
 fi
 
 echo "g_ether" > /etc/modules-load.d/g_ether.conf
@@ -52,7 +52,7 @@ __EOF__
 
 # enable daemon
 systemctl daemon-reload
-if [ $HOSTNAME != "oresat-dev" && $HOSTNAME != "oresat-flight" ]; then
+if [ $HOSTNAME != "oresat-dev" ] && [ $HOSTNAME != "oresat-flight" ]; then
 systemctl enable $HOSTNAME"d.service"
 fi
 

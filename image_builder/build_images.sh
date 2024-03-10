@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-list="c3 cfc dev dxwifi gps star-tracker"
+list="c3 cfc dev dxwifi gps star-tracker flight"
 
 if [[ ! $list =~ (^|[[:space:]])$1($|[[:space:]]) ]]; then
     echo "Invalid board argument"
@@ -49,7 +49,7 @@ rm -rf deploy
 cd deploy/debian-*/
 
 # make .img file
-sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb bonebeagle --enable-fat-partition
+sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb beaglebone --enable-fat-partition
 
 # compress
 zstd $NAME-$SIZE.img
