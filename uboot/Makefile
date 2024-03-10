@@ -10,16 +10,18 @@ else
 	FLAGS= ARCH=arm CROSS_COMPILE=arm-none-eabi-
 endif
 
-all: config
+all: patch
+	make -C $(REPO) $(FLAGS) $(CONFIG);
 	make -C $(REPO) $(FLAGS)
 	@cp $(REPO)/MLO .
 	@cp $(REPO)/*.img .
 
-config: clone
+patch: clone
 	@cp $(wildcard am335x_*_defconfig) $(REPO)/configs/
-	@if [ ! -f "$(REPO)/.config" ]; then \
-		make -C $(REPO) $(FLAGS) $(CONFIG); \
-	fi
+	@cp u-boot.patch $(REPO)
+	@cd u-boot
+	@git apply u-boot.patch
+	@cd ..
 
 clone:
 	@if [ ! -d $(REPO) ]; then \
