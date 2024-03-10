@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-list="c3 cfc dev dxwifi gps star-tracker flight"
+list="c3 cfc dev dxwifi generic gps star-tracker"
 
 if [[ ! $list =~ (^|[[:space:]])$1($|[[:space:]]) ]]; then
     echo "Invalid board argument"

@@ -10,9 +10,6 @@ Uses BeagleBoard's https://github.com/beagleboard/image-builder
   installed in chroot environment.
 - `configs/*.conf`: All the image configs; defines what packages are install, system settings,
   etc.
-- `device_tree/*.dts`: Holds the device tree for flight images. This device tree configures
-  some pins to there necessary mode and then configures all other pins to be GPIO floating inputs.
-  **NOTE:** The `oresat-dev` image uses the original PocketBeagle device.
 - `uEnv/*-uEnv.txt`: The specific `uEnv.txt` for the image, defines what device tree overlays
   are loaded on boot.
 
@@ -36,14 +33,12 @@ OreSat scripts executed at specific moments.
 - The `.img` file is compressed with zst.
 - A SHA-256 is generated for the `.img.zst`.
 
-Requirements
-------------
+## Requirements
 
 - Image must be built on a ARMv7 device running Debian or a Debian-based distro.
 - An internet connection (it has to call `apt` a lot).
 
-Set up
-------
+## Set up
 
 Install dependencies
 
@@ -57,8 +52,7 @@ Clone the oresat-linux repo
 $ git clone https://github.com/oresat/oresat-linux
 ```
 
-Build Image
------------
+## Build Image
 
 **NOTE:** On a PocketBeagle or a BeagleBone Black this will take ~40 minutes.
 On a Raspberry Pi 3/4B it takes ~20 minutes.
@@ -68,10 +62,12 @@ $ cd oresat-linux/image_builder/
 $ ./build_images.sh <board>
 ```
 
-where <board> can be
-    - **c3** - The image for OreSat's C3 board.
-    - **cfc** - The image for OreSat's CFC (Cirrus Flux Camera) board.
-    - **dev** - A general image for development.
-    - **dxwifi** - The image for the OreSat DxWiFi board.
-    - **gps** - The image the OreSat's GPS board.
-    - **star-tracker** - The image for the OreSat's Star Tracker board.
+Where `<board>` can be:
+
+- `c3`: The flight image for OreSat's C3 board.
+- `cfc`: The flight image for OreSat's CFC (Cirrus Flux Camera) board.
+- `dev`: A general image for development.
+- `dxwifi`: The flight image for the OreSat DxWiFi board.
+- `generic`: A generic minimal flight-like image for any OreSat board.
+- `gps`: The flight image the OreSat's GPS board.
+- `star-tracker`: The flight image for the OreSat's Star Tracker board.

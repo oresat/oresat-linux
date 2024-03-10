@@ -52,7 +52,7 @@ __EOF__
 
 # enable daemon
 systemctl daemon-reload
-if [ $HOSTNAME != "oresat-dev" ] && [ $HOSTNAME != "oresat-flight" ]; then
+if [ $HOSTNAME != "oresat-dev" ] && [ $HOSTNAME != "oresat-generic" ]; then
 systemctl enable $HOSTNAME"d.service"
 fi
 
