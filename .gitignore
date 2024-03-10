@@ -23,3 +23,7 @@ oresat*.img
 
 # MacOS
 .DS_Store
+
+# u-boot
+MLO
+u-boot*.img

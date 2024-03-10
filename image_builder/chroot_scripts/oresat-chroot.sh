@@ -9,6 +9,27 @@ echo "disable root login"
 echo "PermitRootLogin prohibit-password" >> /etc/ssh/sshd_config
 
 ##############################################################################
+echo "enable g_ether (ethernet over usb) for USB0"
+
+MAC_ADDR_BASE="60:64:05:f9:0d"
+if [ $HOSTNAME == "oresat-c3" ]; then
+$MAC_ADDR="$MAC_ADDR_BASE:10"
+elif [ $HOSTNAME == "oresat-cfc" ]; then
+$MAC_ADDR="$MAC_ADDR_BASE:20"
+elif [ $HOSTNAME == "oresat-dxwifi" ]; then
+$MAC_ADDR="$MAC_ADDR_BASE:30"
+elif [ $HOSTNAME == "oresat-gps" ]; then
+$MAC_ADDR="$MAC_ADDR_BASE:40"
+elif [ $HOSTNAME == "oresat-star-tracker" ]; then
+$MAC_ADDR="$MAC_ADDR_BASE:50"
+else
+$MAC_ADDR="$MAC_ADDR_BASE:ff"
+fi
+
+echo "g_ether" > /etc/modules-load.d/g_ether.conf
+echo "options g_ether host_addr=$HOST_ADDR" > /etc/modprobe.d/g_ether.conf
+
+##############################################################################
 echo "add OreSat OLAF app daemon"
 
 # add config
@@ -32,7 +53,7 @@ __EOF__
 
 # enable daemon
 systemctl daemon-reload
-if [ $HOSTNAME != "oresat-dev" ]; then
+if [ $HOSTNAME != "oresat-dev" && $HOSTNAME != "oresat-flight" ]; then
 systemctl enable $HOSTNAME"d.service"
 fi
 
@@ -70,23 +91,11 @@ spidev
 __EOF__
 
 ##############################################################################
-echo "replace BeagleBoard's systemd-networkd config"
+echo "add systemd-networkd config"
 
-# disable networking script
-cat > "/etc/default/bb-boot" <<-__EOF__
-USB_CONFIGURATION=disable
-#USB_NETWORK_DISABLED=yes
-__EOF__
-
-# remove BeagleBoard's configs
-rm /etc/systemd/network/*
-
-# usb0 is for Window hosts
-# usb1 is for *nix hosts
-# eth0 is for the BeagleBone Black's ethernet port
 cat > "/etc/systemd/network/20-wired.network" <<-__EOF__
 [Match]
-Name=usb0 usb1 eth0
+Name=usb0
 
 [Link]
 RequiredForOnline=no
