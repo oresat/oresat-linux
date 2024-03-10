@@ -102,7 +102,7 @@ __EOF__
 
 cat > "/etc/systemd/network/20-wired.network" <<-__EOF__
 [Match]
-Name=usb0
+Name=usb0 eth0
 
 [Link]
 RequiredForOnline=no
