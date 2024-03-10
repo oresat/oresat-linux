@@ -8,6 +8,7 @@ Uses BeagleBoard's https://github.com/beagleboard/image-builder
   the image config ares parsed in chroot environment.
 - `chroot_scripts/oresat-chroot.sh`: The main chroot script that runs after most packages are
   installed in chroot environment.
+- `scripts/`: Helpful scripts that will be placed in `/opt/scripts/` in built images.
 - `configs/*.conf`: All the image configs; defines what packages are install, system settings,
   etc.
 - `uEnv/*-uEnv.txt`: The specific `uEnv.txt` for the image, defines what device tree overlays

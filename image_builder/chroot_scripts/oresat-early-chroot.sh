@@ -19,3 +19,6 @@ __EOF__
 
 # add all oresat device trees to /tmp
 cp ../../device_trees/*.dtb $tempdir/tmp
+
+# add custom scripts
+cp -r ../scripts $tempdir/opt
