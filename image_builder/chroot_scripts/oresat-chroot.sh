@@ -1,7 +1,6 @@
 #!/bin/sh -e
 
 HOSTNAME=`cat /etc/hostname`
-tempdir=`grep -i tempdir= .project | cut -d "=" -f 2 | sed 's/\"//g'`
 
 ##############################################################################
 echo "disable root login"
@@ -108,6 +107,11 @@ __EOF__
 # make sure these are enabled
 systemctl enable systemd-networkd.service
 systemctl enable systemd-resolved.service
+
+##############################################################################
+echo "rebuild pyyaml"
+
+python3 -m pip install --force-reinstall --no-cache-dir --no-binary pyyaml pyyaml
 
 ##############################################################################
 # Flight images only
