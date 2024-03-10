@@ -90,7 +90,15 @@ spidev
 __EOF__
 
 ##############################################################################
-echo "add systemd-networkd config"
+echo "add systemd-networkd configs"
+
+cat > "/etc/systemd/network/10-usb0.link" <<-__EOF__
+[Match]
+OriginalName=usb0
+
+[Link]
+MACAddress=$MAC_ADDR
+__EOF__
 
 cat > "/etc/systemd/network/20-wired.network" <<-__EOF__
 [Match]
