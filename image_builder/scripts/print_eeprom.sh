@@ -1,6 +1,6 @@
 #/bin/bash -e
 
-raw=`cat /sys/bus/i2c/devices/*/eeprom | cut -c 5-28`
+raw=`sudo cat /sys/bus/i2c/devices/*/eeprom | cut -c 5-28`
 echo "Raw: $raw"
 
 is_oresat_card=1
