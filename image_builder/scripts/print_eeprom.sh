@@ -18,8 +18,8 @@ elif [ $board_id = "A335OSST" ]; then
 elif [ $board_id = "A335PBGL" ]; then
   name="PocketBeagle"
   is_oresat_card=0
-elif [ $board_id = "A335BONE" ]; then
-  name="BeagleBone"
+elif [ $board_id = "A335BNLT" ]; then
+  name="BeagleBone Black"
   is_oresat_card=0
 else
   name="Unknown"
