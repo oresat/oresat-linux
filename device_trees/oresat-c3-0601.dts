@@ -242,7 +242,7 @@
     USB_OVER_UART {
       gpio-name = "USB_OVER_UART";
       gpio = <&gpio1 14 GPIO_ACTIVE_HIGH>; /* AM335X_PIN_GPMC_AD14 */
-      input;
+      output;
     };
   };
 };
