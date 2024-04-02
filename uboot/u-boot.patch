@@ -1,42 +1,39 @@
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 34f987c2b7..b295a4477b 100644
+index 34f987c2b7..7eaaba8879 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
 @@ -978,6 +978,16 @@ int board_fit_config_name_match(const char *name)
  			return 0;
  		}
  	}
-+	else if (oresat_name_compare(name, "oresat-c3-"))
++	else if (board_is_oresat_c3() && oresat_name_compare(name, "oresat-c3-"))
 +		return 0;
-+	else if (oresat_name_compare(name, "oresat-gps-"))
++	else if (board_is_oresat_gps() && oresat_name_compare(name, "oresat-gps-"))
 +		return 0;
-+	else if (oresat_name_compare(name, "oresat-star-tracker-"))
++	else if (board_is_oresat_st() && oresat_name_compare(name, "oresat-star-tracker-"))
 +		return 0;
-+	else if (oresat_name_compare(name, "oresat-dxwifi-"))
++	else if (board_is_oresat_dxwifi() && oresat_name_compare(name, "oresat-dxwifi-"))
 +		return 0;
-+	else if (oresat_name_compare(name, "oresat-cfc-"))
++	else if (board_is_oresat_cfc() && oresat_name_compare(name, "oresat-cfc-"))
 +		return 0;
  	return -1;
  }
  #endif
 diff --git a/board/ti/am335x/board.h b/board/ti/am335x/board.h
-index 1284c160d8..b531dcb7aa 100644
+index 1284c160d8..1d1015c64e 100644
 --- a/board/ti/am335x/board.h
 +++ b/board/ti/am335x/board.h
-@@ -80,6 +80,38 @@ static inline int board_is_icev2(void)
+@@ -80,6 +80,35 @@ static inline int board_is_icev2(void)
  	return board_ti_is("A335_ICE") && !strncmp("2", board_ti_get_rev(), 1);
  }
  
 +static inline int oresat_name_compare(const char *name, const char *name2) {
-+		char *rev = board_ti_get_rev();
-+		ssize_t name2_len = strlen(name2);
-+		char buffer[name2_len  + 4];
-+		strncpy(buffer, name2, name2_len);
-+		strncpy(&buffer[name2_len], rev, 2);
-+		strncpy(&buffer[name2_len], &rev[2], 2);
-+		if (!strcmp(name, buffer))
-+			return 0;
-+		return -1;
++	char *rev = board_ti_get_rev();
++	ssize_t name2_len = strlen(name2);
++	char buffer[name2_len  + 4];
++	strncpy(buffer, name2, name2_len);
++	strncpy(&buffer[name2_len], rev, 4);
++	return !strncmp(name, buffer, name2_len + 4);
 +}
 +
 +static inline int board_is_oresat_c3(const char *name) {
