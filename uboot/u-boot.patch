@@ -1,8 +1,24 @@
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index 34f987c2b7..7eaaba8879 100644
+index 34f987c2b7..b47018335e 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -978,6 +978,16 @@ int board_fit_config_name_match(const char *name)
+@@ -949,6 +949,15 @@ U_BOOT_DRVINFO(am335x_eth) = {
+ #endif
+ 
+ #ifdef CONFIG_SPL_LOAD_FIT
++int oresat_name_compare(const char *name, const char *name2) {
++	char *rev = board_ti_get_rev();
++	ssize_t name2_len = strlen(name2);
++	char buffer[name2_len  + 4];
++	strncpy(buffer, name2, name2_len);
++	strncpy(&buffer[name2_len], rev, 4);
++	return !strncmp(name, buffer, name2_len + 4);
++}
++
+ int board_fit_config_name_match(const char *name)
+ {
+ 	if (board_is_gp_evm() && !strcmp(name, "am335x-evm"))
+@@ -978,6 +987,16 @@ int board_fit_config_name_match(const char *name)
  			return 0;
  		}
  	}
@@ -20,39 +36,30 @@ index 34f987c2b7..7eaaba8879 100644
  }
  #endif
 diff --git a/board/ti/am335x/board.h b/board/ti/am335x/board.h
-index 1284c160d8..1d1015c64e 100644
+index 1284c160d8..ee18e2bd94 100644
 --- a/board/ti/am335x/board.h
 +++ b/board/ti/am335x/board.h
-@@ -80,6 +80,35 @@ static inline int board_is_icev2(void)
+@@ -80,6 +80,26 @@ static inline int board_is_icev2(void)
  	return board_ti_is("A335_ICE") && !strncmp("2", board_ti_get_rev(), 1);
  }
  
-+static inline int oresat_name_compare(const char *name, const char *name2) {
-+	char *rev = board_ti_get_rev();
-+	ssize_t name2_len = strlen(name2);
-+	char buffer[name2_len  + 4];
-+	strncpy(buffer, name2, name2_len);
-+	strncpy(&buffer[name2_len], rev, 4);
-+	return !strncmp(name, buffer, name2_len + 4);
-+}
-+
-+static inline int board_is_oresat_c3(const char *name) {
++static inline int board_is_oresat_c3(void) {
 +	return board_ti_is("A335OSC3");
 +}
 +
-+static inline int board_is_oresat_gps(const char *name) {
++static inline int board_is_oresat_gps(void) {
 +	return board_ti_is("A335OGPS");
 +}
 +
-+static inline int board_is_oresat_st(const char *name) {
++static inline int board_is_oresat_st(void) {
 +	return board_ti_is("A335OSST");
 +}
 +
-+static inline int board_is_oresat_dxwifi(const char *name) {
++static inline int board_is_oresat_dxwifi(void) {
 +	return board_ti_is("A335ODWF");
 +}
 +
-+static inline int board_is_oresat_cfc(const char *name) {
++static inline int board_is_oresat_cfc(void) {
 +	return board_ti_is("A335OCFC");
 +}
 +
