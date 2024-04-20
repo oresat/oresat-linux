@@ -33,12 +33,12 @@ now = datetime.now()
 week = now.isocalendar()[1] if args.week == 0 else args.week
 year = now.year if args.year == 0 else args.year
 year %= 100
+version = f"{args.major:02X}{args.minor:02X}"
 
 data = {
     "name": args.name,
     "id": args.id,
-    "major": args.major,
-    "minor": args.minor,
+    "version": version,
     "year": year,
     "week": week,
 }

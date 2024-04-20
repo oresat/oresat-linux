@@ -1,7 +1,8 @@
 """
 This is MicroPython!
 
-This script writes the board ID to the EEPROM in the OSD3358 and reads it back afterwards.
+This script periodically reads and prints the board ID from the EERPROM in the OSD3358
+and can be used to write a new board ID to the EEPROM as well.
 """
 
 import json
@@ -44,8 +45,10 @@ def eeprom_read() -> dict:
 
     data = raw[4:].decode()
     values = {
+        "data": data,
+        "board": data[:8],
         "name": BOARD_NAMES_REV.get(data[:8], "unknown"),
-        "version": int(data[8:12], 16),
+        "version": data[8:12],
         "week": int(data[12:14]),
         "year": int(data[14:16]),
         "id": int(data[20:24]),
@@ -69,7 +72,7 @@ def eeprom_write(data: dict) -> dict:
 
     name = BOARD_NAMES[data.get("name", "pocketbeagle")]
 
-    version = f'{data.get("version", 0):04X}'
+    version = data.get("version", "0000")
     week = f'{data.get("week", 0):02}'
     year = f'{data.get("year", 0):02}'
     uid = f'{data.get("id", 0):04}'
