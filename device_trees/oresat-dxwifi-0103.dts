@@ -8,6 +8,7 @@
   dxwifi_gpio_pins: pinmux-dxwifi-gpio-pins {
     pinctrl-single,pins = <
       AM33XX_IOPAD(AM335X_PIN_MII1_TX_CLK, PIN_OUTPUT | MUX_MODE7) /* gpio3_9 / PA_ENABLE */
+      AM33XX_IOPAD(AM335X_PIN_GPMC_A10, PIN_OUTPUT | MUX_MODE7) /* gpio1_26 / GRSTz */
     >;
   };
 };
@@ -23,6 +24,13 @@
       gpio-name = "PA_ENABLE";
       gpio = <&gpio3 9 GPIO_ACTIVE_HIGH>; /* AM335X_PIN_MII1_TX_CLK */
       output;
+    };
+
+    GRSTz {
+      gpio-name = "GRSTz";
+      gpio = <&gpio1 26 GPIO_ACTIVE_HIGH>; /* AM335X_PIN_GPMC_A10 */
+      output;
+      init-high;
     };
   };
 };
