@@ -124,11 +124,19 @@ python3 -m pip install --force-reinstall --no-cache-dir --no-binary pyyaml pyyam
 ##############################################################################
 echo "add oresat device trees to /boot"
 
-mv /tmp/*.dtb /boot/dtbs/*/
-chmod 755 /boot/dtbs/*/oresat*
+dtb_dir=`ls /boot/dtbs`
+mv /tmp/*.dtb $dtb_dir
+chmod 755 $dtb_dir/oresat*
 
 ##############################################################################
 # Flight images only
+
+if [ $HOSTNAME != "oresat-dev" ] && [ $HOSTNAME != "oresat-generic" ]; then
+echo "replace pocketbeagle device tree with latest custom device tree for board"
+mv $dtb_dir/am335x-pocketbeagle.dtb am335x-pocketbeagle-bak.dtb
+dt=`ls /boot/dtbs/*/$HOSTNAME* | tail -n1`
+ln -s $HOSTNAME $dt $dtb_dir/am335x-pocketbeagle.dtb
+fi
 
 if [ $HOSTNAME != "oresat-dev" ]; then
 echo "remove internet packages required during build"
