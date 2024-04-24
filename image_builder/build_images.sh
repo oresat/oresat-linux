@@ -30,9 +30,6 @@ fi
 # build all device trees
 make -C ../device_trees
 
-# build u-boot
-make -C ../uboot
-
 # copy oresat config into correct dirs
 cp ./configs/*.conf ./image-builder/configs/
 cp ./chroot_scripts/*.sh ./image-builder/target/chroot/
@@ -45,9 +42,6 @@ rm -rf deploy
 
 # build partitions
 ./RootStock-NG.sh -c $BOARD
-
-# override u-boot with custom build
-cp ../../uboot/MLO ../../uboot/*.img deploy/debian-*/u-boot/bb-u-boot-am335x-evm
 
 cd deploy/debian-*/
 
