@@ -52,7 +52,7 @@ cp ../../uboot/MLO ../../uboot/*.img deploy/debian-*/u-boot/bb-u-boot-am335x-evm
 cd deploy/debian-*/
 
 # make .img file
-sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb beaglebone --enable-fat-partition
+sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb beaglebone
 
 # compress
 zstd $NAME-$SIZE.img
