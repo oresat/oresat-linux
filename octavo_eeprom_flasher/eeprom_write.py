@@ -8,6 +8,7 @@ from datetime import datetime
 import serial  # type: ignore
 
 BOARD_NAMES = [
+    "pocketbeagle",
     "c3",
     "star-tracker",
     "gps",
@@ -39,8 +40,7 @@ data = {
     "id": args.id,
     "major": args.major,
     "minor": args.minor,
-    "year": year,
-    "week": week,
+    "version": f'{args.major:02X}{args.minor:02X}'
 }
 
 raw = json.dumps(data)
