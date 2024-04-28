@@ -30,6 +30,12 @@ fi
 # build all device trees
 make -C ../device_trees
 
+if [ $BOARD != "oresat-dev" ] && [ $BOARD != "oresat-generic" ]; then
+DTB=`ls ../device_trees/$BOARD-*.dtb | tail -n1`
+SETUP_SDCARD_EXTRA_ARGS="--enable-uboot-disable-pru"
+# --force-device-tree $DTB"
+fi
+
 # copy oresat config into correct dirs
 cp ./configs/*.conf ./image-builder/configs/
 cp ./chroot_scripts/*.sh ./image-builder/target/chroot/
@@ -46,7 +52,7 @@ rm -rf deploy
 cd deploy/debian-*/
 
 # make .img file
-sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb beaglebone
+sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb beaglebone $SETUP_SDCARD_EXTRA_ARGS
 
 # compress
 zstd $NAME-$SIZE.img
