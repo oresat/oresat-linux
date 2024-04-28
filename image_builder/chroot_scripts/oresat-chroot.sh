@@ -39,7 +39,7 @@ Description=OreSat Linux App
 [Service]
 Type=simple
 ExecStart=/usr/local/bin/$HOSTNAME -b can0 -l
-Restart=on-failure
+Restart=always
 User=root
 Group=root
 CPUQuota=100%
