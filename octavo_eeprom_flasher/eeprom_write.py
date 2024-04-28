@@ -40,7 +40,9 @@ data = {
     "id": args.id,
     "major": args.major,
     "minor": args.minor,
-    "version": f'{args.major:02X}{args.minor:02X}'
+    "version": f'{args.major:02X}{args.minor:02X}',
+    "week": week,
+    "year": year,
 }
 
 raw = json.dumps(data)
