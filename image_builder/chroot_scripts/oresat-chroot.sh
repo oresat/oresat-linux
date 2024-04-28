@@ -138,3 +138,14 @@ apt -y purge git git-man curl wget rsync
 echo "disable timesyncd"
 systemctl disable systemd-timesyncd.service
 fi
+
+echo "install deb packages"
+if [ "$HOSTNAME" = "oresat-c3" ]; then
+    dpkg -i /tmp/ax5043_* /tmp/oresat-c3-watchdog_*
+elif [ "$HOSTNAME" = "oresat-cfc" ]; then
+    dpkg -i /tmp/prucam-*
+elif [ "$HOSTNAME" = "oresat-star-tracker" ]; then
+    dpkg -i /tmp/prucam-*
+elif [ "$HOSTNAME" = "oresat-dxwifi" ]; then
+    dpkg -i /tmp/oresat-dxwifi-*
+fi

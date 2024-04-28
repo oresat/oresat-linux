@@ -27,3 +27,7 @@ oresat*.img
 # u-boot
 MLO
 u-boot*.img
+
+# packages
+*.deb
+*.whl
