@@ -149,3 +149,4 @@ elif [ "$HOSTNAME" = "oresat-star-tracker" ]; then
 elif [ "$HOSTNAME" = "oresat-dxwifi" ]; then
     dpkg -i /tmp/oresat-dxwifi-*
 fi
+rm -f /tmp/*.deb
