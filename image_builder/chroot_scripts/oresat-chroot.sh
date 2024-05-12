@@ -128,6 +128,22 @@ dtb_dir=`ls -d /boot/dtbs/*`
 mv /tmp/*.dtb $dtb_dir
 chmod 755 $dtb_dir/oresat*
 
+if [ $BOARD != "oresat-dev" ] && [ $BOARD != "oresat-generic" ]; then
+DT=`$HOSTNAME-*.dtb | tail -1`
+cp -a /boot/dtbs/`uname -r`/am335x-pocketbeagle.dtb /boot/dtbs/`uname -r`/am335x-pocketbeagle.dtb-orig
+cp -a /boot/dtbs/`uanme -r`/$DT /boot/dtbs/`uname -r`/am335x-pocketbeagle.dtb
+fi
+
+##############################################################################
+# Card unique changes
+
+if [ $BOARD != "oresat-star-tracker" ]; then
+LOST_WHL="lost-0.0.0-py3-none-any.whl"
+wget https://packages.oresat.org/python/$LOST_WHL
+pip3 install $LOST_WHL
+rm -f $LOST_WHL
+fi
+
 ##############################################################################
 # Flight images only
 
@@ -138,15 +154,3 @@ apt -y purge git git-man curl wget rsync
 echo "disable timesyncd"
 systemctl disable systemd-timesyncd.service
 fi
-
-echo "install deb packages"
-if [ "$HOSTNAME" = "oresat-c3" ]; then
-    dpkg -i /tmp/ax5043_* /tmp/oresat-c3-watchdog_*
-elif [ "$HOSTNAME" = "oresat-cfc" ]; then
-    dpkg -i /tmp/prucam-*
-elif [ "$HOSTNAME" = "oresat-star-tracker" ]; then
-    dpkg -i /tmp/prucam-*
-elif [ "$HOSTNAME" = "oresat-dxwifi" ]; then
-    dpkg -i /tmp/oresat-dxwifi-*
-fi
-rm -f /tmp/*.deb
