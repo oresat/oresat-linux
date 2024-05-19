@@ -57,6 +57,26 @@ systemctl enable $HOSTNAME"d.service"
 fi
 
 ##############################################################################
+echo "add growparts oneshot daemon"
+
+cat > "/etc/systemd/system/grow-partition.service" <<-__EOF__
+[Unit]
+Description=Grow active root partition
+
+[Service]
+Type=oneshot
+ExecStart=/opt/scripts/grow_partition.sh && systemctl disable grow-partition
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
+__EOF__
+
+systemctl daemon-reload
+systemctl enable grow-partition.service
+
+##############################################################################
 echo "setup and configure nginx for OreSat OLAF app"
 
 cat > "/etc/nginx/nginx.conf" <<-__EOF__
