@@ -149,17 +149,19 @@ dtb_dir=`ls -d /boot/dtbs/*`
 mv /tmp/*.dtb $dtb_dir
 chmod 755 $dtb_dir/oresat*
 
-if [ $BOARD != "oresat-dev" ] && [ $BOARD != "oresat-generic" ]; then
-echo "replacing pocketbeagle dt with custom card dt"
-DT=`$HOSTNAME-*.dtb | tail -1`
-cp -a /boot/dtbs/`uname -r`/am335x-pocketbeagle.dtb /boot/dtbs/`uname -r`/am335x-pocketbeagle.dtb-orig
-cp -a /boot/dtbs/`uname -r`/$DT /boot/dtbs/`uname -r`/am335x-pocketbeagle.dtb
+if [ $HOSTNAME != "oresat-dev" ] && [ $HOSTNAME != "oresat-generic" ]; then
+echo "replacing pocketbeagle dt with latest custom card dt"
+DT_PATH=`ls -d /boot/dtbs/*`
+DT=`ls $DT_PATH/$HOSTNAME-*.dtb | tail -1`
+cp $DT_PATH/am335x-pocketbeagle.dtb $DT_PATH/am335x-pocketbeagle.dtb-orig
+rm $DT_PATH/am335x-pocketbeagle.dtb
+cp $DT_PATH/$DT $DT_PATH/am335x-pocketbeagle.dtb
 fi
 
 ##############################################################################
 # Card unique changes
 
-if [ $BOARD != "oresat-star-tracker" ]; then
+if [ $HOSTNAME = "oresat-star-tracker" ]; then
 LOST_WHL="lost-0.0.0-py3-none-any.whl"
 wget https://packages.oresat.org/python/$LOST_WHL
 pip3 install $LOST_WHL
