@@ -150,9 +150,10 @@ mv /tmp/*.dtb $dtb_dir
 chmod 755 $dtb_dir/oresat*
 
 if [ $BOARD != "oresat-dev" ] && [ $BOARD != "oresat-generic" ]; then
+echo "replacing pocketbeagle dt with custom card dt"
 DT=`$HOSTNAME-*.dtb | tail -1`
 cp -a /boot/dtbs/`uname -r`/am335x-pocketbeagle.dtb /boot/dtbs/`uname -r`/am335x-pocketbeagle.dtb-orig
-cp -a /boot/dtbs/`uanme -r`/$DT /boot/dtbs/`uname -r`/am335x-pocketbeagle.dtb
+cp -a /boot/dtbs/`uname -r`/$DT /boot/dtbs/`uname -r`/am335x-pocketbeagle.dtb
 fi
 
 ##############################################################################
