@@ -65,7 +65,8 @@ Description=Grow active root partition
 
 [Service]
 Type=oneshot
-ExecStart=/opt/scripts/grow_partition.sh && systemctl disable grow-partition
+ExecStart=bash /opt/scripts/grow_partition.sh
+ExecStart=systemctl disable grow-partition
 User=root
 Group=root
 
