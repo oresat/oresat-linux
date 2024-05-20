@@ -153,9 +153,8 @@ if [ $HOSTNAME != "oresat-dev" ] && [ $HOSTNAME != "oresat-generic" ]; then
 echo "replacing pocketbeagle dt with latest custom card dt"
 DT_PATH=`ls -d /boot/dtbs/*`
 DT=`ls $DT_PATH/$HOSTNAME-*.dtb | tail -1`
-cp $DT_PATH/am335x-pocketbeagle.dtb $DT_PATH/am335x-pocketbeagle.dtb-orig
-rm $DT_PATH/am335x-pocketbeagle.dtb
-cp $DT_PATH/$DT $DT_PATH/am335x-pocketbeagle.dtb
+mv $DT_PATH/am335x-pocketbeagle.dtb $DT_PATH/am335x-pocketbeagle.dtb-orig
+ln -s $DT $DT_PATH/am335x-pocketbeagle.dtb
 fi
 
 ##############################################################################
