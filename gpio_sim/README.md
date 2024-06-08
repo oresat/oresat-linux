@@ -4,6 +4,7 @@ For working with Simulated GPIOs
 ## Setup
 
 ### Build and install the linux Kernel from source
+Adds the GPIO-SIM kernel module and its dependencies
 - Debian
 ```bash
 ./kernel_build_debian.sh
@@ -14,16 +15,13 @@ For working with Simulated GPIOs
 ```
 ## USE
 
-### Add simulated GPIO chips and lanes
+### Add simulated GPIO chips and lanes to configfs
 - Parses from the device-tree
 - Must be run on each boot, consider adding to ~/.bashrc
 ```bash
-./setup_sims.sh
+sudo ./setup_sims.sh
 ```
 ### remove simulated GPIO chips
 ```bash
-./clean_sims.sh
+sudo ./clean_sims.sh
 ```
-
-
-
