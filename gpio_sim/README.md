@@ -1,5 +1,5 @@
 # GPIO-SIM
-For working with the GPIO-SIM Linux Kernel
+For working with Simulated GPIOs
 
 ## Setup
 
