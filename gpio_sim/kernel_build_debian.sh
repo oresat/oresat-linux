@@ -4,15 +4,6 @@
 # Build and install GPIO-SIM kernel module
 # Main reference https://www.debian.org/doc/manuals/debian-kernel-handbook/ch-common-tasks.html
 
-# Install prerequisites
-sudo apt-get update
-sudo apt-get -y install dpkg-dev
-sudo apt-get -y install build-essential fakeroot
-sudo apt-get -y build-dep linux
-
-# Get linux source
-sudo apt-get -y install linux-source
-
 # Get the directory of the sourced script
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 

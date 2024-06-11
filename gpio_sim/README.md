@@ -7,6 +7,16 @@ For working with Simulated GPIOs
 Adds the GPIO-SIM kernel module and its dependencies
 - Debian
 ```bash
+# Install prerequisites
+sudo apt-get update
+sudo apt-get -y install dpkg-dev
+sudo apt-get -y install build-essential fakeroot
+sudo apt-get -y build-dep linux
+
+# Get linux source
+sudo apt-get -y install linux-source
+
+# Build and install kernel
 ./kernel_build_debian.sh
 ```
 ### Add udev rules giving user permissions for GPIO
