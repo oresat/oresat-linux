@@ -56,8 +56,10 @@ and write protection pins using a Debug Board.
 | Debug 3 (EEPROM WP) | 23 (GND)  |
 | GND                 | 3 (GND)   |
 
-**Warning:** Connection point to the Octavo's I2C-0 may change to be directly
-on card and not debug board with future OreSat cards.
+**WARNING**: For the GPS v1.0 and the Star Tracker v1.2 (and older versions of
+those cards) used the debug card to break out I2C-0 pins as shown below. **For
+every other card or newer version of those cards**, see the KiCad/Eagle
+schematic to find the pins.
 
 ![oresat_debug_board.jpg](static/oresat_debug_board.jpg)
 
@@ -67,9 +69,9 @@ Connect the Raspi Pico to laptop (give it power).
 
 Run the `eeprom_write.py` script (use `-h`/`--help` see args).
 
-Example: Flash info for c3 v6.0 card #1::
+Example: Flash info for a v6.0 card #1::
 
-    ./eeprom_write.py /dev/ttyACM0 c3 1 6 0 0 0
+    ./eeprom_write.py /dev/ttyACM0 1 6 0 0 0
 
 Use the Raspi Pico LED to determine the status of the EEPROM flashing:
 

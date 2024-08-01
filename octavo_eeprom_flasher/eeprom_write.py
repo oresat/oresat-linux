@@ -18,7 +18,7 @@ BOARD_NAMES = [
 
 paser = ArgumentParser()
 paser.add_argument("port", help="usb port path")
-paser.add_argument("name", choices=BOARD_NAMES, help="the card name")
+# paser.add_argument("name", choices=BOARD_NAMES, help="the card name")
 paser.add_argument("id", type=int, help="the card id")
 paser.add_argument("major", type=int, help="the card revision major")
 paser.add_argument("minor", type=int, help="the card revision minor")
@@ -36,7 +36,7 @@ year = now.year if args.year == 0 else args.year
 year %= 100
 
 data = {
-    "name": args.name,
+    "name": "pocketbeagle",  # args.name,
     "id": args.id,
     "major": args.major,
     "minor": args.minor,
