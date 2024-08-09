@@ -30,4 +30,4 @@ clone:
 
 clean:
 	rm -rf MLO *.img
-	make clean -C $(REPO)
+#	make clean -C $(REPO)
