@@ -1,5 +1,5 @@
 REPO= u-boot
-DEVICE_TREE= ../device_tree
+DEVICE_TREE= ../device_trees
 CONFIG= am335x_oresat_defconfig
 
 .PHONY: all clean
@@ -20,11 +20,12 @@ all: patch
 
 patch: clone
 	@cp $(wildcard am335x_*_defconfig) $(REPO)/configs/
-	@cp u-boot.patch $(REPO)
-	@cd u-boot
-	@patch u-boot.patch
-#	@git apply u-boot.patch
-	@cd ..
+#	@cp u-boot.patch $(REPO)
+#	@cp u-boot.patch ..
+#	@cd ..
+#	@patch -p1 < u-boot.patch
+	@patch -p1 < u-boot.patch
+#	@git apply ../u-boot.patch
 
 clone:
 	@if [ ! -d $(REPO) ]; then \

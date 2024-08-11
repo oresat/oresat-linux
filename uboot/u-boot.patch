@@ -1,7 +1,7 @@
-diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
+diff --git a/u-boot/board/ti/am335x/board.c b/u-boot/board/ti/am335x/board.c
 index 34f987c2b7..b47018335e 100644
---- a/board/ti/am335x/board.c
-+++ b/board/ti/am335x/board.c
+--- a/u-boot/board/ti/am335x/board.c
++++ b/u-boot/board/ti/am335x/board.c
 @@ -949,6 +949,15 @@ U_BOOT_DRVINFO(am335x_eth) = {
  #endif
  
@@ -35,10 +35,10 @@ index 34f987c2b7..b47018335e 100644
  	return -1;
  }
  #endif
-diff --git a/board/ti/am335x/board.h b/board/ti/am335x/board.h
+diff --git a/u-boot/board/ti/am335x/board.h b/u-boot/board/ti/am335x/board.h
 index 1284c160d8..ee18e2bd94 100644
---- a/board/ti/am335x/board.h
-+++ b/board/ti/am335x/board.h
+--- a/u-boot/board/ti/am335x/board.h
++++ b/u-boot/board/ti/am335x/board.h
 @@ -80,6 +80,26 @@ static inline int board_is_icev2(void)
  	return board_ti_is("A335_ICE") && !strncmp("2", board_ti_get_rev(), 1);
  }
