@@ -30,16 +30,24 @@ fi
 # build all device trees
 make -C ../device_trees
 
+SETUP_SDCARD_EXTRA_ARGS=" \
+  --enable-extlinux \
+  --enable-extlinux-fdtdir \
+  --enable-extlinux-append"
+
 if [ $BOARD != "oresat-dev" ] && [ $BOARD != "oresat-generic" ]; then
-DTB=`ls ../device_trees/$BOARD-*.dtb | tail -n1`
-SETUP_SDCARD_EXTRA_ARGS="--enable-uboot-disable-pru"
-# --force-device-tree $DTB"
+  SETUP_SDCARD_EXTRA_ARGS="--enable-uboot-disable-pru ${SETUP_SDCARD_EXTRA_ARGS}"
 fi
+
+echo "setup_sdcard.sh options: $SETUP_SDCARD_EXTRA_ARGS"
 
 # copy oresat config into correct dirs
 cp ./configs/*.conf ./image-builder/configs/
 cp ./chroot_scripts/*.sh ./image-builder/target/chroot/
-cp ./uEnv/*.txt ./image-builder/target/boot/
+# uEnv is depricated and replaced by extlinux
+# TODO: add updated u-boot to image builder
+#       then this can go away
+cp ./uEnv/*.txt ./image-builder/target/boot/ #disappearing 
 
 cd image-builder
 
@@ -50,6 +58,7 @@ rm -rf deploy
 ./RootStock-NG.sh -c $BOARD
 
 cd deploy/debian-*/
+cp ../../../setup_sdcard.sh .
 
 # make .img file
 sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb beaglebone $SETUP_SDCARD_EXTRA_ARGS

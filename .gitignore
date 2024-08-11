@@ -1,7 +1,15 @@
+./u-boot/write_uboot.sh
+write_uboot.sh
+u-boot/
+
 # Repos
 BeagleBoard-DeviceTrees/
 image-builder/
-u-boot/
+#u-boot/
+
+#temp directories
+image_builder/tempfiles/
+uboot/images/
 
 # Python
 __pycache__/
