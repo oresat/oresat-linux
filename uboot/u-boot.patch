@@ -66,3 +66,24 @@ index 1284c160d8..ee18e2bd94 100644
  /*
   * We have three pin mux functions that must exist.  We must be able to enable
   * uart0, for initial output and i2c0 to read the main EEPROM.  We then have a
+diff --git a/u-boot/include/configs/am335x_evm.h b/u-boot/include/configs/am335x_evm.h
+index 67f4656253..61acbde465 100644
+--- a/u-boot/include/configs/am335x_evm.h
++++ b/u-boot/include/configs/am335x_evm.h
+@@ -138,6 +138,16 @@
+ 			"setenv fdtfile am335x-evm.dtb; fi; " \
+ 		"if test $board_name = A335X_SK; then " \
+ 			"setenv fdtfile am335x-evmsk.dtb; fi; " \
++		"if test $board_name = A335OSC3; then " \
++			"setenv fdtfile oresat-c3-${board_rev}.dtb; fi; " \
++		"if test $board_name = A335OGPS; then " \
++			"setenv fdtfile oresat-gps-${board_rev}.dtb; fi; " \
++		"if test $board_name = A335OSST; then " \
++			"setenv fdtfile oresat-star-tracker-${board_rev}.dtb; fi; " \
++		"if test $board_name = A335ODWF; then " \
++			"setenv fdtfile oresat-dxwifi-${board_rev}.dtb; fi; " \
++		"if test $board_name = A335OCFC; then " \
++			"setenv fdtfile oresat-cfc-${board_rev}.dtb; fi; " \
+ 		"if test $board_name = A335_ICE; then " \
+ 			"setenv fdtfile am335x-icev2.dtb; " \
+ 			"if test $ice_mii = mii; then " \
