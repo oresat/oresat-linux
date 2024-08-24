@@ -1,5 +1,5 @@
 REPO= u-boot
-DEVICE_TREE= ../device_trees
+DEVICE_TREES= ../device_trees
 CONFIG= am335x_oresat_defconfig
 
 .PHONY: all clean
@@ -12,8 +12,8 @@ else
 endif
 
 all: patch
-	make -C $(DEVICE_TREE)
-	@cp $(wildcard $(DEVICE_TREE)/*.dtb) u-boot/arch/arm/dts/
+	make -C $(DEVICE_TREES)
+	@cp $(DEVICE_TREES)/*.dtb u-boot/arch/arm/dts/
 	make -C $(REPO) $(FLAGS) $(CONFIG)
 	make -C $(REPO) $(FLAGS)
 	@cp $(REPO)/MLO .
