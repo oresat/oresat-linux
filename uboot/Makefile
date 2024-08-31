@@ -30,7 +30,8 @@ patch: clone
 
 clone:
 	@if [ ! -d $(REPO) ]; then \
-		git clone https://github.com/beagleboard/$(REPO); \
+		#git clone https://github.com/beagleboard/$(REPO); \
+		git clone git@github.com:chroco/u-boot.git; \
 	fi
 
 clean:
