@@ -1,8 +1,8 @@
 REPO= u-boot
 DEVICE_TREES= ../device_trees
+#CONFIG= am335x_evm_defconfig
 CONFIG= am335x_oresat_defconfig
 PATCH_FILE= u-boot.patch
-
 
 .PHONY: all clean
 
@@ -14,7 +14,7 @@ else
 endif
 
 all: patch
-	make -C $(DEVICE_TREES)
+#	make -C $(DEVICE_TREES)
 #	@cp $(DEVICE_TREES)/*.dtb u-boot/arch/arm/dts/
 	make -C $(REPO) $(FLAGS) $(CONFIG)
 	make -C $(REPO) $(FLAGS)
@@ -22,7 +22,7 @@ all: patch
 	@cp $(REPO)/*.img .
 
 patch: clone
-	@cp $(wildcard am335x_*_defconfig) $(REPO)/configs/
+#	@cp $(wildcard am335x_*_defconfig) $(REPO)/configs/
 #	if ! patch -N -f -p1 --dry-run -s <$(PATCH_FILE); then \
 #		patch -p1 <$(PATCH_FILE); \
 #	fi
