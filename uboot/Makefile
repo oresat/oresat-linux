@@ -16,6 +16,7 @@ endif
 all: patch
 #	make -C $(DEVICE_TREES)
 #	@cp $(DEVICE_TREES)/*.dtb u-boot/arch/arm/dts/
+	make -C $(REPO) $(FLAGS) mrproper
 	make -C $(REPO) $(FLAGS) $(CONFIG)
 	make -C $(REPO) $(FLAGS)
 	@cp $(REPO)/MLO .
