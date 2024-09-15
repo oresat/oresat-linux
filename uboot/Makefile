@@ -13,16 +13,21 @@ else
 	FLAGS= ARCH=arm CROSS_COMPILE=arm-none-eabi-
 endif
 
-all: patch
-#	make -C $(DEVICE_TREES)
-#	@cp $(DEVICE_TREES)/*.dtb u-boot/arch/arm/dts/
-	make -C $(REPO) $(FLAGS) mrproper
-	make -C $(REPO) $(FLAGS) $(CONFIG)
+all: pre
 	make -C $(REPO) $(FLAGS)
 	@cp $(REPO)/MLO .
 	@cp $(REPO)/*.img .
 
-patch: clone
+debug: pre
+	make CONFIG_TOOLS_DEBUG=1 -C $(REPO) $(FLAGS) 
+	@cp $(REPO)/MLO .
+	@cp $(REPO)/*.img .
+
+pre: 
+	make -C $(REPO) $(FLAGS) mrproper
+	make -C $(REPO) $(FLAGS) $(CONFIG)
+
+#patch: clone
 #	@cp $(wildcard am335x_*_defconfig) $(REPO)/configs/
 #	if ! patch -N -f -p1 --dry-run -s <$(PATCH_FILE); then \
 #		patch -p1 <$(PATCH_FILE); \
@@ -33,6 +38,8 @@ clone:
 	@if [ ! -d $(REPO) ]; then \
 		#git clone https://github.com/beagleboard/$(REPO); \
 		git clone git@github.com:chroco/u-boot.git; \
+		#git clone -b v2020.04 git@github.com:chroco/u-boot.git; \
+		#git clone -b v2020.04 https://github.com/beagleboard/$(REPO); \
 	fi
 
 clean:
