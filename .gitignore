@@ -3,6 +3,10 @@ BeagleBoard-DeviceTrees/
 image-builder/
 u-boot/
 
+#temp directories
+image_builder/tempfiles/
+uboot/images/
+
 # Python
 __pycache__/
 
