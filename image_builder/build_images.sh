@@ -43,7 +43,7 @@ fi
 # copy oresat config into correct dirs
 cp ./configs/*.conf ./image-builder/configs/
 cp ./chroot_scripts/*.sh ./image-builder/target/chroot/
-cp ./uEnv/*.txt ./image-builder/target/boot/
+#cp ./uEnv/*.txt ./image-builder/target/boot/
 
 cd image-builder
 

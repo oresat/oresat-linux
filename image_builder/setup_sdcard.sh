@@ -1136,16 +1136,16 @@ populate_rootfs () {
 			echo "label Linux ${select_kernel}" > ${wfile}
 			echo "    kernel /boot/vmlinuz-${select_kernel}" >> ${wfile}
 
-			if [ ! "x${extlinux_append}" = "x" ] ; then
-				echo "    append ${extlinux_append}" >> ${wfile}
-			fi
-
 			if [ "x${extlinux_fdtdir}" = "xenable" ] ; then
 				if [ ! "x${extlinux_fdtdir_dir}" = "x" ] ; then
 					echo "    fdtdir ${extlinux_fdtdir_dir}/" >> ${wfile}
 				else
 					echo "    fdtdir /boot/dtbs/${select_kernel}/" >> ${wfile}
 				fi
+			fi
+
+			if [ ! "x${extlinux_append}" = "x" ] ; then
+				echo "    append ${extlinux_append}" >> ${wfile}
 			fi
 
 			if [ ! "x${extlinux_devicetree}" = "x" ] ; then

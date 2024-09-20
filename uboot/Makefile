@@ -23,7 +23,7 @@ debug: pre
 	@cp $(REPO)/MLO .
 	@cp $(REPO)/*.img .
 
-pre: 
+pre: clone 
 	make -C $(REPO) $(FLAGS) mrproper
 	make -C $(REPO) $(FLAGS) $(CONFIG)
 
@@ -37,9 +37,7 @@ pre:
 clone:
 	@if [ ! -d $(REPO) ]; then \
 		#git clone https://github.com/beagleboard/$(REPO); \
-		git clone git@github.com:chroco/u-boot.git; \
-		#git clone -b v2020.04 git@github.com:chroco/u-boot.git; \
-		#git clone -b v2020.04 https://github.com/beagleboard/$(REPO); \
+		git clone -b board/oresat/test git@github.com:chroco/u-boot.git; \
 	fi
 
 clean:
