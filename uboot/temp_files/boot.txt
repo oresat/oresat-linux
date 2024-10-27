@@ -31,7 +31,21 @@ i2c mw 0x50 0x09.2 53
 i2c mw 0x50 0x0a.2 43
 i2c mw 0x50 0x0b.2 33
 
+OSBB
+i2c mw 0x50 0x08.2 4f
+i2c mw 0x50 0x09.2 53
+i2c mw 0x50 0x0a.2 42
+i2c mw 0x50 0x0b.2 42
+
+BDEV
+i2c mw 0x50 0x0c.2 42
+i2c mw 0x50 0x0d.2 44
+i2c mw 0x50 0x0e.2 45
+i2c mw 0x50 0x0f.2 56
+
+
 label Linux 5.10.168-ti-r66
     kernel /boot/vmlinuz-5.10.168-ti-r66
     fdtdir /boot/dtbs/5.10.168-ti-r66/
+    fdtoverlays /lib/firmware/BB-CAN1-00A0.dtbo /lib/firmware/BB-BONE-eMMC1-01-00A0.dtbo
     append console=ttyS0,115200n8 root=/dev/mmcblk0p1 rw rootfstype=ext4 quiet rootwait coherent_pool=1M
