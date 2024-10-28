@@ -30,21 +30,38 @@ fi
 # build all device trees
 make -C ../device_trees
 
-#if [ $BOARD != "oresat-dev" ] && [ $BOARD != "oresat-generic" ]; then
-if [ $BOARD != "oresat-generic" ]; then
-DTB=`ls ../device_trees/$BOARD-*.dtb | tail -n1`
+#  if [ $BOARD != "oresat-dev" ] && [ $BOARD != "oresat-generic" ]; then
+# DTB=`ls ../device_trees/$BOARD-*.dtb | tail -n1`
+# SETUP_SDCARD_EXTRA_ARGS=" \
+#   --enable-uboot-disable-pru \
+#   --enable-extlinux \
+#   --enable-extlinux-fdtdir \
+#   --enable-extlinux-append"
+# #  --force-device-tree $DTB"
+# else
+# SETUP_SDCARD_EXTRA_ARGS=" \
+#   --enable-extlinux \
+#   --enable-extlinux-fdtdir \
+#   --enable-extlinux-append"
+#
+# fi
+
 SETUP_SDCARD_EXTRA_ARGS=" \
-  --enable-uboot-disable-pru \
   --enable-extlinux \
   --enable-extlinux-fdtdir \
   --enable-extlinux-append"
-#  --force-device-tree $DTB"
+
+if [ $BOARD != "oresat-dev" ] && [ $BOARD != "oresat-generic" ]; then
+#DTB=`ls ../device_trees/$BOARD-*.dtb | tail -n1`
+SETUP_SDCARD_EXTRA_ARGS="--enable-uboot-disable-pru ${SETUP_SDCARD_EXTRA_ARGS}"
 fi
+
+echo $SETUP_SDCARD_EXTRA_ARGS
 
 # copy oresat config into correct dirs
 cp ./configs/*.conf ./image-builder/configs/
 cp ./chroot_scripts/*.sh ./image-builder/target/chroot/
-cp ./uEnv/*.txt ./image-builder/target/boot/
+cp ./uEnv/*.txt ./image-builder/target/boot/ #disappearing
 
 cd image-builder
 
