@@ -23,23 +23,29 @@ if [ $BOARD == "oresat-dev" ]; then
     SIZE="4gb"
 fi
 
-if [ ! -d image-builder ]; then
-    git clone https://github.com/beagleboard/image-builder
-fi
+ORESAT_BOOTLOADER_DIR="oresat_bootloader"
+
+# Initialize submodules, patch image_builder,and build uboot
+make
 
 # build all device trees
 make -C ../device_trees
 
+SETUP_SDCARD_EXTRA_ARGS=" \
+    --enable-extlinux \
+    --spl $ORESAT_BOOTLOADER_DIR/MLO \
+    --bootloader $ORESAT_BOOTLOADER_DIR/u-boot-dtb.img \
+"
+
 if [ $BOARD != "oresat-dev" ] && [ $BOARD != "oresat-generic" ]; then
-DTB=`ls ../device_trees/$BOARD-*.dtb | tail -n1`
-SETUP_SDCARD_EXTRA_ARGS="--enable-uboot-disable-pru"
-# --force-device-tree $DTB"
+    SETUP_SDCARD_EXTRA_ARGS="--enable-uboot-disable-pru ${SETUP_SDCARD_EXTRA_ARGS}"
 fi
+
+echo "setup_sdcard.sh options: $SETUP_SDCARD_EXTRA_ARGS"
 
 # copy oresat config into correct dirs
 cp ./configs/*.conf ./image-builder/configs/
 cp ./chroot_scripts/*.sh ./image-builder/target/chroot/
-cp ./uEnv/*.txt ./image-builder/target/boot/
 
 cd image-builder
 
@@ -50,6 +56,7 @@ rm -rf deploy
 ./RootStock-NG.sh -c $BOARD
 
 cd deploy/debian-*/
+cp -r ../../../$ORESAT_BOOTLOADER_DIR .
 
 # make .img file
 sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb beaglebone $SETUP_SDCARD_EXTRA_ARGS
@@ -59,7 +66,11 @@ zstd $NAME-$SIZE.img
 
 cd ../../..
 
-mv image-builder/deploy/debian-*/$NAME-$SIZE.img.zst .
+IMAGES="images"
+
+mkdir -p $IMAGES
+
+mv image-builder/deploy/debian-*/$NAME-$SIZE.img.zst $IMAGES
 
 # generate sha256
-sha256sum $NAME-$SIZE.img.zst > $NAME-$SIZE.img.zst.sha256
+sha256sum $IMAGES/$NAME-$SIZE.img.zst > $IMAGES/$NAME-$SIZE.img.zst.sha256

@@ -11,14 +11,13 @@ Uses BeagleBoard's https://github.com/beagleboard/image-builder
 - `scripts/`: Helpful scripts that will be placed in `/opt/scripts/` in built images.
 - `configs/*.conf`: All the image configs; defines what packages are install, system settings,
   etc.
-- `uEnv/*-uEnv.txt`: The specific `uEnv.txt` for the image, defines what device tree overlays
-  are loaded on boot.
 
 ## How it Works
 
 **NOTE:** Most of the build process is handled by BeagleBoard's image-builder, with some custom
 OreSat scripts executed at specific moments.
 
+- U-Boot bootloader is compiled.
 - All device tree overlays are compiled.
 - A temp directory is made, the directory is mounted with chroot.
 - OreSat's early chroot script is executed (all device tree overlay binaries are copied over).
@@ -36,8 +35,9 @@ OreSat scripts executed at specific moments.
 
 ## Requirements
 
-- Image must be built on a ARMv7 device running Debian or a Debian-based distro.
+- Image must be built on a device running Debian or a Debian-based distro.
 - An internet connection (it has to call `apt` a lot).
+- U-boot requires cross compilation if outside of ARMv7 environment (i.e. arm-none-eabi-gcc). 
 
 ## Set up
 
@@ -54,9 +54,6 @@ $ git clone https://github.com/oresat/oresat-linux
 ```
 
 ## Build Image
-
-**NOTE:** On a PocketBeagle or a BeagleBone Black this will take ~40 minutes.
-On a Raspberry Pi 3/4B it takes ~20 minutes.
 
 ```bash
 $ cd oresat-linux/image_builder/

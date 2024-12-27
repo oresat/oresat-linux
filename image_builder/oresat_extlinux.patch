@@ -1,0 +1,16 @@
+diff --git a/image_builder/tools/setup_sdcard.sh b/tools/setup_sdcard.sh
+index 886620a2..ce19860a 100755
+--- a/image_builder/tools/setup_sdcard.sh
++++ b/image_builder/tools/setup_sdcard.sh
+@@ -2103,6 +2103,11 @@ while [ ! -z "$1" ] ; do
+ 	--enable-extlinux-flasher)
+ 		extlinux_flasher="enable"
+ 		;;
++	--enable-extlinux)
++		extlinux="enable"
++		extlinux_fdtdir="enable"
++		extlinux_append="console=ttyS0,115200n8 root=/dev/mmcblk0p1 rw rootfstype=ext4 quiet rootwait coherent_pool=1M"
++		;;
+ 	--offline)
+ 		echo "[--offline] is obsolete, and has been removed..."
+ 		exit 2

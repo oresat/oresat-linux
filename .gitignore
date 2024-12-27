@@ -1,7 +1,5 @@
 # Repos
 BeagleBoard-DeviceTrees/
-image-builder/
-u-boot/
 
 # Python
 __pycache__/
