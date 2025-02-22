@@ -25,14 +25,7 @@ fi
 
 ORESAT_BOOTLOADER_DIR="oresat_bootloader"
 
-# Initialize submodules, patch image_builder,and build uboot
-make
-
-# build all device trees
-make -C ../device_trees
-
 SETUP_SDCARD_EXTRA_ARGS=" \
-    --enable-extlinux \
     --spl $ORESAT_BOOTLOADER_DIR/MLO \
     --bootloader $ORESAT_BOOTLOADER_DIR/u-boot-dtb.img \
 "
@@ -45,6 +38,7 @@ echo "setup_sdcard.sh options: $SETUP_SDCARD_EXTRA_ARGS"
 
 # copy oresat config into correct dirs
 cp ./configs/*.conf ./image-builder/configs/
+cp ./oresat.conf ./image-builder/tools/hwpack
 cp ./chroot_scripts/*.sh ./image-builder/target/chroot/
 
 cd image-builder
@@ -59,7 +53,7 @@ cd deploy/debian-*/
 cp -r ../../../$ORESAT_BOOTLOADER_DIR .
 
 # make .img file
-sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb beaglebone $SETUP_SDCARD_EXTRA_ARGS
+sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb oresat $SETUP_SDCARD_EXTRA_ARGS
 
 # compress
 zstd $NAME-$SIZE.img
