@@ -23,11 +23,15 @@ if [ $BOARD == "oresat-dev" ]; then
     SIZE="4gb"
 fi
 
-ORESAT_BOOTLOADER_DIR="oresat_bootloader"
+BOOTLOADER_DIR="u-boot"
+SPL="MLO"
+BOOTLOADER="u-boot-dtb.img"
+DTB="extlinux"
+IMAGE_DIR="images"
 
 SETUP_SDCARD_EXTRA_ARGS=" \
-    --spl $ORESAT_BOOTLOADER_DIR/MLO \
-    --bootloader $ORESAT_BOOTLOADER_DIR/u-boot-dtb.img \
+    --spl $BOOTLOADER_DIR/$SPL \
+    --bootloader $BOOTLOADER_DIR/$BOOTLOADER \
 "
 
 if [ $BOARD != "oresat-dev" ] && [ $BOARD != "oresat-generic" ]; then
@@ -37,8 +41,8 @@ fi
 echo "setup_sdcard.sh options: $SETUP_SDCARD_EXTRA_ARGS"
 
 # copy oresat config into correct dirs
-cp ./configs/*.conf ./image-builder/configs/
-cp ./oresat.conf ./image-builder/tools/hwpack
+cp ./configs/oresat-*.conf ./image-builder/configs/
+cp ./configs/$DTB.conf ./image-builder/tools/hwpack
 cp ./chroot_scripts/*.sh ./image-builder/target/chroot/
 
 cd image-builder
@@ -50,21 +54,19 @@ rm -rf deploy
 ./RootStock-NG.sh -c $BOARD
 
 cd deploy/debian-*/
-cp -r ../../../$ORESAT_BOOTLOADER_DIR .
+cp ../../../$BOOTLOADER_DIR/{$SPL,$BOOTLOADER} ./u-boot
 
 # make .img file
-sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb oresat $SETUP_SDCARD_EXTRA_ARGS
+sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb $DTB $SETUP_SDCARD_EXTRA_ARGS
 
 # compress
 zstd $NAME-$SIZE.img
 
 cd ../../..
 
-IMAGES="images"
+mkdir -p $IMAGE_DIR
 
-mkdir -p $IMAGES
-
-mv image-builder/deploy/debian-*/$NAME-$SIZE.img.zst $IMAGES
+mv image-builder/deploy/debian-*/$NAME-$SIZE.img.zst $IMAGE_DIR
 
 # generate sha256
-sha256sum $IMAGES/$NAME-$SIZE.img.zst > $IMAGES/$NAME-$SIZE.img.zst.sha256
+sha256sum $IMAGE_DIR/$NAME-$SIZE.img.zst > $IMAGE_DIR/$NAME-$SIZE.img.zst.sha256

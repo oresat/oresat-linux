@@ -1,3 +1,6 @@
+# Kconfig .old
+*.old
+
 # Repos
 BeagleBoard-DeviceTrees/
 

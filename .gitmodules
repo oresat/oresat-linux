@@ -3,4 +3,4 @@
 	url = https://github.com/oresat/u-boot
 [submodule "image_builder/image-builder"]
 	path = image_builder/image-builder
-	url = https://github.com/beagleboard/image-builder.git
+	url = https://github.com/RobertCNelson/omap-image-builder.git
