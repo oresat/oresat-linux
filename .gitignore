@@ -21,6 +21,8 @@ oresat*.img
 
 # Vim
 *.swp
+*.swo
+*.swd
 
 # MacOS
 .DS_Store
