@@ -48,13 +48,17 @@ cp ./chroot_scripts/*.sh ./image-builder/target/chroot/
 cd image-builder
 
 # clear any previous builds
-rm -rf deploy
+#rm -rf deploy
 
 # build partitions
-./RootStock-NG.sh -c $BOARD
+if [ ! -d "$BOARD" ]; then
+  ./RootStock-NG.sh -c $BOARD
+  mkdir $BOARD
+  mv deploy $BOARD
+fi
 
-cd deploy/debian-*/
-cp ../../../$BOOTLOADER_DIR/{$SPL,$BOOTLOADER} ./u-boot
+cd $BOARD/deploy/debian-*/
+cp ../../../../$BOOTLOADER_DIR/{$SPL,$BOOTLOADER} ./u-boot
 
 # make .img file
 sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb $DTB $SETUP_SDCARD_EXTRA_ARGS
@@ -62,11 +66,11 @@ sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb $DTB $SETUP_SDCARD_EXTRA_ARGS
 # compress
 zstd $NAME-$SIZE.img
 
-cd ../../..
+cd ../../../..
 
 mkdir -p $IMAGE_DIR
 
-mv image-builder/deploy/debian-*/$NAME-$SIZE.img.zst $IMAGE_DIR
+mv image-builder/$BOARD/deploy/debian-*/$NAME-$SIZE.img.zst $IMAGE_DIR
 
 # generate sha256
 sha256sum $IMAGE_DIR/$NAME-$SIZE.img.zst > $IMAGE_DIR/$NAME-$SIZE.img.zst.sha256
