@@ -41,7 +41,7 @@ fi
 echo "setup_sdcard.sh options: $SETUP_SDCARD_EXTRA_ARGS"
 
 # copy oresat config into correct dirs
-cp ./configs/oresat-*.conf ./image-builder/configs/
+cp ./configs/$BOARD.conf ./image-builder/configs/
 cp ./configs/$DTB.conf ./image-builder/tools/hwpack
 cp ./chroot_scripts/*.sh ./image-builder/target/chroot/
 
