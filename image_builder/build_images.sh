@@ -62,6 +62,7 @@ cp ../../../../$BOOTLOADER_DIR/{$SPL,$BOOTLOADER} ./u-boot
 
 # make .img file
 cp ../../../../configs/$DTB.conf ./hwpack
+cp ../../../../image-builder/tools/setup_sdcard.sh .
 sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb $DTB $SETUP_SDCARD_EXTRA_ARGS > log.txt
 
 # compress
