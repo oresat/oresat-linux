@@ -17,7 +17,8 @@ fi
 BOARD="oresat-"$1
 DATE=`date "+%F"`
 NAME="$BOARD-$DATE"
-SIZE="2gb"
+SIZE="4gb"
+#SIZE="2gb"
 
 if [ $BOARD == "oresat-dev" ]; then
     SIZE="4gb"
@@ -40,9 +41,8 @@ fi
 
 echo "setup_sdcard.sh options: $SETUP_SDCARD_EXTRA_ARGS"
 
-# copy oresat config into correct dirs
+# copy oresat config into correct dirs for RootStock-NG.sh
 cp ./configs/$BOARD.conf ./image-builder/configs/
-cp ./configs/$DTB.conf ./image-builder/tools/hwpack
 cp ./chroot_scripts/*.sh ./image-builder/target/chroot/
 
 cd image-builder
@@ -61,7 +61,8 @@ cd $BOARD/deploy/debian-*/
 cp ../../../../$BOOTLOADER_DIR/{$SPL,$BOOTLOADER} ./u-boot
 
 # make .img file
-sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb $DTB $SETUP_SDCARD_EXTRA_ARGS
+cp ../../../../configs/$DTB.conf ./hwpack
+sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb $DTB $SETUP_SDCARD_EXTRA_ARGS > log.txt
 
 # compress
 zstd $NAME-$SIZE.img
