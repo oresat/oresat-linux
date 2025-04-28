@@ -18,11 +18,10 @@ BOARD="oresat-"$1
 DATE=`date "+%F"`
 NAME="$BOARD-$DATE"
 SIZE="4gb"
-#SIZE="2gb"
 
-if [ $BOARD == "oresat-dev" ]; then
-    SIZE="4gb"
-fi
+#if [ $BOARD == "oresat-dev" ]; then
+#    SIZE="4gb"
+#fi
 
 BOOTLOADER_DIR="u-boot"
 SPL="MLO"
@@ -71,6 +70,27 @@ zstd $NAME-$SIZE.img
 cd ../../../..
 
 mkdir -p $IMAGE_DIR
+
+mv image-builder/$BOARD/deploy/debian-*/$NAME-$SIZE.img.zst $IMAGE_DIR
+
+# generate sha256
+sha256sum $IMAGE_DIR/$NAME-$SIZE.img.zst > $IMAGE_DIR/$NAME-$SIZE.img.zst.sha256
+
+######
+
+SIZE="2gb"
+DTB="oresat-nobootloader"
+
+cd image-builder/$BOARD/deploy/debian-*/
+
+# make .img file
+cp ../../../../configs/$DTB.conf ./hwpack
+sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb $DTB > log2.txt
+
+# compress
+zstd $NAME-$SIZE.img
+
+cd ../../../..
 
 mv image-builder/$BOARD/deploy/debian-*/$NAME-$SIZE.img.zst $IMAGE_DIR
 
