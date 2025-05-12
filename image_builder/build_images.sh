@@ -1,5 +1,65 @@
 #!/bin/bash -e
 
+IMAGE_BUILDER_ROOT=$(pwd)
+#IMAGE_BUILDER_ROOT=../../../..
+
+build_board_deployment () {
+    cd image-builder
+    ./RootStock-NG.sh -c $BOARD
+    mkdir $BOARD
+    mv deploy $BOARD
+    cd ..
+}
+
+compress_image () {
+    # compress
+    zstd $NAME-$SIZE.img
+
+    cd $IMAGE_BUILDER_ROOT
+
+    mv image-builder/$BOARD/deploy/debian-*/$NAME-$SIZE.img.zst $IMAGE_DIR
+
+    # generate sha256
+    sha256sum $IMAGE_DIR/$NAME-$SIZE.img.zst > $IMAGE_DIR/$NAME-$SIZE.img.zst.sha256
+}
+
+create_main_image () {
+    local SIZE="4gb"
+    if [ $BOARD == "oresat-dev" ]; then
+        local DTB="oresat-dev-bootloader"
+    else
+        local DTB="oresat-bootloader"
+    fi
+
+    cd image-builder/$BOARD/deploy/debian-*/
+    
+    echo "$(pwd)"
+    echo "$(ls -l)"
+    
+    cp $IMAGE_BUILDER_ROOT/$BOOTLOADER_DIR/{$SPL,$BOOTLOADER} ./u-boot
+
+    # make .img file
+    cp $IMAGE_BUILDER_ROOT/configs/$DTB.conf ./hwpack
+    cp $IMAGE_BUILDER_ROOT/image-builder/tools/setup_sdcard.sh .
+    sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb $DTB $SETUP_SDCARD_EXTRA_ARGS > log.txt
+
+    compress_image
+}
+
+create_update_image () {
+    local SIZE="2gb"
+    local DTB="oresat-nobootloader"
+
+    cd image-builder/$BOARD/deploy/debian-*/
+
+    # make .img file
+    cp $IMAGE_BUILDER_ROOT/configs/$DTB.conf ./hwpack
+    cp $IMAGE_BUILDER_ROOT/image-builder/tools/setup_sdcard.sh .
+    sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb $DTB > log2.txt
+
+    compress_image
+}
+
 list="c3 cfc dev dxwifi generic gps star-tracker"
 
 if [[ ! $list =~ (^|[[:space:]])$1($|[[:space:]]) ]]; then
@@ -17,16 +77,9 @@ fi
 BOARD="oresat-"$1
 DATE=`date "+%F"`
 NAME="$BOARD-$DATE"
-SIZE="4gb"
-
-#if [ $BOARD == "oresat-dev" ]; then
-#    SIZE="4gb"
-#fi
-
 BOOTLOADER_DIR="u-boot"
 SPL="MLO"
 BOOTLOADER="u-boot-dtb.img"
-DTB="oresat-bootloader"
 IMAGE_DIR="images"
 
 SETUP_SDCARD_EXTRA_ARGS=" \
@@ -40,59 +93,24 @@ fi
 
 echo "setup_sdcard.sh options: $SETUP_SDCARD_EXTRA_ARGS"
 
+mkdir -p $IMAGE_DIR
+
 # copy oresat config into correct dirs for RootStock-NG.sh
 cp ./configs/$BOARD.conf ./image-builder/configs/
 cp ./chroot_scripts/*.sh ./image-builder/target/chroot/
-
-cd image-builder
 
 # clear any previous builds
 #rm -rf deploy
 
 # build partitions
-if [ ! -d "$BOARD" ]; then
-  ./RootStock-NG.sh -c $BOARD
-  mkdir $BOARD
-  mv deploy $BOARD
+if [ ! -d "image-builder/$BOARD" ]; then
+    build_board_deployment
 fi
 
-cd $BOARD/deploy/debian-*/
-cp ../../../../$BOOTLOADER_DIR/{$SPL,$BOOTLOADER} ./u-boot
+echo "$(pwd)"
+create_main_image
 
-# make .img file
-cp ../../../../configs/$DTB.conf ./hwpack
-cp ../../../../image-builder/tools/setup_sdcard.sh .
-sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb $DTB $SETUP_SDCARD_EXTRA_ARGS > log.txt
+if [ $BOARD != "oresat-dev" ]; then
+    create_update_image
+fi
 
-# compress
-zstd $NAME-$SIZE.img
-
-cd ../../../..
-
-mkdir -p $IMAGE_DIR
-
-mv image-builder/$BOARD/deploy/debian-*/$NAME-$SIZE.img.zst $IMAGE_DIR
-
-# generate sha256
-sha256sum $IMAGE_DIR/$NAME-$SIZE.img.zst > $IMAGE_DIR/$NAME-$SIZE.img.zst.sha256
-
-######
-
-SIZE="2gb"
-DTB="oresat-nobootloader"
-
-cd image-builder/$BOARD/deploy/debian-*/
-
-# make .img file
-cp ../../../../configs/$DTB.conf ./hwpack
-sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb $DTB > log2.txt
-
-# compress
-zstd $NAME-$SIZE.img
-
-cd ../../../..
-
-mv image-builder/$BOARD/deploy/debian-*/$NAME-$SIZE.img.zst $IMAGE_DIR
-
-# generate sha256
-sha256sum $IMAGE_DIR/$NAME-$SIZE.img.zst > $IMAGE_DIR/$NAME-$SIZE.img.zst.sha256
