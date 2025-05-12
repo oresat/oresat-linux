@@ -1,14 +1,14 @@
 #!/bin/bash -e
 
 IMAGE_BUILDER_ROOT=$(pwd)
-#IMAGE_BUILDER_ROOT=../../../..
 
 build_board_deployment () {
     cd image-builder
     ./RootStock-NG.sh -c $BOARD
     mkdir $BOARD
     mv deploy $BOARD
-    cd ..
+    cd $IMAGE_BUILDER_ROOT
+    #cd ..
 }
 
 compress_image () {
@@ -24,7 +24,6 @@ compress_image () {
 }
 
 create_main_image () {
-    local SIZE="4gb"
     if [ $BOARD == "oresat-dev" ]; then
         local DTB="oresat-dev-bootloader"
     else
@@ -33,31 +32,37 @@ create_main_image () {
 
     cd image-builder/$BOARD/deploy/debian-*/
     
-    echo "$(pwd)"
-    echo "$(ls -l)"
-    
     cp $IMAGE_BUILDER_ROOT/$BOOTLOADER_DIR/{$SPL,$BOOTLOADER} ./u-boot
 
     # make .img file
     cp $IMAGE_BUILDER_ROOT/configs/$DTB.conf ./hwpack
-    cp $IMAGE_BUILDER_ROOT/image-builder/tools/setup_sdcard.sh .
     sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb $DTB $SETUP_SDCARD_EXTRA_ARGS > log.txt
 
     compress_image
 }
 
 create_update_image () {
-    local SIZE="2gb"
+    SIZE="2gb"
     local DTB="oresat-nobootloader"
 
     cd image-builder/$BOARD/deploy/debian-*/
 
     # make .img file
     cp $IMAGE_BUILDER_ROOT/configs/$DTB.conf ./hwpack
-    cp $IMAGE_BUILDER_ROOT/image-builder/tools/setup_sdcard.sh .
     sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb $DTB > log2.txt
 
     compress_image
+}
+
+create_cpio_image () {
+    CONTAINER_VER="1.0"
+    PRODUCT_NAME="oresat-raw-update"
+    FILES="./configs/sw-description ./images/$NAME-$SIZE.img.zst"
+
+    #openssl dgst -sha256 -sign swupdate-priv.pem sw-description > sw-description.sig
+
+    for i in $FILES; do
+        echo $i;done | cpio -ov -H crc > ./images/${PRODUCT_NAME}_${CONTAINER_VER}.swu
 }
 
 list="c3 cfc dev dxwifi generic gps star-tracker"
@@ -81,6 +86,7 @@ BOOTLOADER_DIR="u-boot"
 SPL="MLO"
 BOOTLOADER="u-boot-dtb.img"
 IMAGE_DIR="images"
+SIZE="4gb"
 
 SETUP_SDCARD_EXTRA_ARGS=" \
     --spl $BOOTLOADER_DIR/$SPL \
@@ -98,6 +104,7 @@ mkdir -p $IMAGE_DIR
 # copy oresat config into correct dirs for RootStock-NG.sh
 cp ./configs/$BOARD.conf ./image-builder/configs/
 cp ./chroot_scripts/*.sh ./image-builder/target/chroot/
+cp ./image-builder/tools/setup_sdcard.sh image-builder/$BOARD/deploy/debian-*/
 
 # clear any previous builds
 #rm -rf deploy
@@ -112,5 +119,6 @@ create_main_image
 
 if [ $BOARD != "oresat-dev" ]; then
     create_update_image
+    create_cpio_image
 fi
 
