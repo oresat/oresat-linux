@@ -4,3 +4,6 @@
 [submodule "image_builder/image-builder"]
 	path = image_builder/image-builder
 	url = https://github.com/RobertCNelson/omap-image-builder.git
+[submodule "image_builder/swupdate"]
+	path = image_builder/swupdate
+	url = https://github.com/sbabic/swupdate.git

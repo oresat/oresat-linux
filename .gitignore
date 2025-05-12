@@ -1,3 +1,10 @@
+# images
+images/
+
+# swupdate
+*.swu
+sw-description
+
 # Kconfig .old
 *.old
 
@@ -20,6 +27,8 @@ oresat*.img
 *.sha256
 
 # Vim
+*.swd
+*.swo
 *.swp
 
 # MacOS
