@@ -1,5 +1,5 @@
 CONFIG ?= am335x_oresat.config
-boards = c3 cfc dev dxwifi generic gps star-tracker
+boards = bookworm-c3 c3 cfc dev bookworm-dev dxwifi generic gps star-tracker
 
 ARCH= $(shell uname -m)
 ifeq ($(ARCH), armv7l)

@@ -140,7 +140,7 @@ systemctl enable systemd-resolved.service
 ##############################################################################
 echo "rebuild pyyaml"
 
-python3 -m pip install --force-reinstall --no-cache-dir --no-binary pyyaml pyyaml
+python3 -m pip install --break-system-packages --force-reinstall --no-cache-dir --no-binary pyyaml pyyaml
 
 ##############################################################################
 echo "add oresat device trees to /boot"
@@ -177,3 +177,13 @@ apt -y purge git git-man curl wget rsync
 echo "disable timesyncd"
 systemctl disable systemd-timesyncd.service
 fi
+
+##############################################################################
+# install backports
+
+#echo "deb http://deb.debian.org/debian bookworm-backports main contrib non-free non-free-firmware" >> /etc/apt/sources.list
+#apt update
+#apt install -t bookworm-backports libubootenv0.1
+
+
+

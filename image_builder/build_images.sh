@@ -3,6 +3,7 @@
 IMAGE_BUILDER_ROOT=$(pwd)
 
 build_board_deployment () {
+    echo "Building board deployment!"
     cd image-builder
     ./RootStock-NG.sh -c $BOARD
     mkdir $BOARD
@@ -20,15 +21,23 @@ compress_image () {
     mv image-builder/$BOARD/deploy/debian-*/$NAME-$SIZE.img.zst $IMAGE_DIR
 
     # generate sha256
-    sha256sum $IMAGE_DIR/$NAME-$SIZE.img.zst > $IMAGE_DIR/$NAME-$SIZE.img.zst.sha256
+
+    cd $IMAGE_DIR
+    sha256sum $NAME-$SIZE.img.zst > $NAME-$SIZE.img.zst.sha256
+    cd ..
+
+    #sha256sum $IMAGE_DIR/$NAME-$SIZE.img.zst > $IMAGE_DIR/$NAME-$SIZE.img.zst.sha256
+    #sha256sum $IMAGE_DIR/$NAME-$SIZE.img.gz > $IMAGE_DIR/$NAME-$SIZE.img.gz.sha256
 }
 
 create_main_image () {
-    if [ $BOARD == "oresat-dev" ]; then
+    if [ $BOARD == "oresat-bookworm-dev" ] || [ $BOARD == "oresat-dev" ]; then
         local DTB="oresat-dev-bootloader"
     else
         local DTB="oresat-bootloader"
     fi
+    
+    echo "Creating image $BOARD"
 
     cd image-builder/$BOARD/deploy/debian-*/
     
@@ -56,16 +65,18 @@ create_update_image () {
 
 create_cpio_image () {
     CONTAINER_VER="1.0"
-    PRODUCT_NAME="oresat-raw-update"
+    PRODUCT_NAME="raw-update-$NAME"
     FILES="./configs/sw-description ./images/$NAME-$SIZE.img.zst"
 
-    #openssl dgst -sha256 -sign swupdate-priv.pem sw-description > sw-description.sig
+    openssl dgst -sha256 -sign swupdate-priv.pem sw-description > sw-description.sig
 
     for i in $FILES; do
         echo $i;done | cpio -ov -H crc > ./images/${PRODUCT_NAME}_${CONTAINER_VER}.swu
+
+
 }
 
-list="c3 cfc dev dxwifi generic gps star-tracker"
+list="bookworm-c3 c3 cfc dev bookworm-dev dxwifi generic gps star-tracker"
 
 if [[ ! $list =~ (^|[[:space:]])$1($|[[:space:]]) ]]; then
     echo "Invalid board argument"
@@ -93,7 +104,7 @@ SETUP_SDCARD_EXTRA_ARGS=" \
     --bootloader $BOOTLOADER_DIR/$BOOTLOADER \
 "
 
-if [ $BOARD != "oresat-dev" ] && [ $BOARD != "oresat-generic" ]; then
+if [ $BOARD != "oresat-dev" ] && [ $BOARD != "oresat-bookworm-dev" ] && [ $BOARD != "oresat-generic" ]; then
     SETUP_SDCARD_EXTRA_ARGS="--enable-uboot-disable-pru ${SETUP_SDCARD_EXTRA_ARGS}"
 fi
 
@@ -104,7 +115,6 @@ mkdir -p $IMAGE_DIR
 # copy oresat config into correct dirs for RootStock-NG.sh
 cp ./configs/$BOARD.conf ./image-builder/configs/
 cp ./chroot_scripts/*.sh ./image-builder/target/chroot/
-cp ./image-builder/tools/setup_sdcard.sh image-builder/$BOARD/deploy/debian-*/
 
 # clear any previous builds
 #rm -rf deploy
@@ -114,11 +124,13 @@ if [ ! -d "image-builder/$BOARD" ]; then
     build_board_deployment
 fi
 
+cp ./image-builder/tools/setup_sdcard.sh image-builder/$BOARD/deploy/debian-*/
+
 echo "$(pwd)"
 create_main_image
 
-if [ $BOARD != "oresat-dev" ]; then
+if [ $BOARD != "oresat-dev" ] && [ $BOARD != "oresat-bookworm-dev" ]; then
     create_update_image
-    create_cpio_image
+    #create_cpio_image
 fi
 
