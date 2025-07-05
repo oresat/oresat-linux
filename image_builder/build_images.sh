@@ -72,8 +72,6 @@ create_cpio_image () {
 
     for i in $FILES; do
         echo $i;done | cpio -ov -H crc > ./images/${PRODUCT_NAME}_${CONTAINER_VER}.swu
-
-
 }
 
 list="bookworm-c3 c3 cfc dev bookworm-dev dxwifi generic gps star-tracker"
