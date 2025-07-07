@@ -140,6 +140,7 @@ systemctl enable systemd-resolved.service
 ##############################################################################
 echo "rebuild pyyaml"
 
+#python3 -m pip install --break-system-packages --force-reinstall --no-cache-dir pyyaml pyyaml
 python3 -m pip install --break-system-packages --force-reinstall --no-cache-dir --no-binary pyyaml pyyaml
 
 ##############################################################################
@@ -184,6 +185,8 @@ fi
 #echo "deb http://deb.debian.org/debian bookworm-backports main contrib non-free non-free-firmware" >> /etc/apt/sources.list
 #apt update
 #apt install -t bookworm-backports libubootenv0.1
+
+echo "beaglebone revC" > /etc/hwrevision
 
 
 
