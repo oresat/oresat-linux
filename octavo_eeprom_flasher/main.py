@@ -31,18 +31,18 @@ led_timer = Timer(mode=Timer.PERIODIC, freq=1, callback=lambda t: led.toggle())
 
 i2c = I2C(0, scl=Pin(17), sda=Pin(16), freq=400_000)
 
-poll = select.poll()
-poll.register(sys.stdin, select.POLLIN)
-
-
 def eeprom_read() -> dict:
     try:
         i2c.writeto(I2C_ADDR, EEPROM_ADDR, False)
         raw = i2c.readfrom(I2C_ADDR, 28)
-    except Exception:
-        return {"error": "failed to read data from EEPROM"}
+    except Exception as e:
+        return {"error": f"failed to read data from EEPROM: {e!r}"}
 
-    data = raw[4:].decode()
+    try:
+        data = raw[4:].decode()
+    except UnicodeError:
+        return {'error:' f"Invalid eeprom data: 0x{raw.hex()}"}
+
     values = {
         "name": BOARD_NAMES_REV.get(data[:8], "unknown"),
         "version": data[8:12],
@@ -57,7 +57,7 @@ def eeprom_print(_timer: Timer):
     try:
         message = json.dumps(eeprom_read())
     except Exception as e:
-        message = json.dumps({"error": str(e)})
+        message = json.dumps({"error": f"eeprom_print() -> {e!r}"})
     print(message)
 
 
@@ -79,8 +79,8 @@ def eeprom_write(data: dict) -> dict:
 
     try:
         i2c.writeto(I2C_ADDR, EEPROM_ADDR + value)
-    except Exception:
-        return {"error": "failed to write board id to EEPROM"}
+    except Exception as e:
+        return {"error": f"failed to write board id to EEPROM: {e!r}"}
 
     # After receiving the write bytes, the EEPROM takes some time to write it to memory. The chip
     # with NAK during this time, so the datasheet suggests polling the chip via i2c until it acks a
@@ -98,8 +98,8 @@ def eeprom_write(data: dict) -> dict:
     try:
         i2c.writeto(I2C_ADDR, EEPROM_ADDR, False)
         value_readback = i2c.readfrom(I2C_ADDR, len(value))
-    except Exception:
-        return {"error": "failed to read board id back from EEPROM"}
+    except Exception as e:
+        return {"error": f"failed to read board id back from EEPROM: {e!r}"}
 
     if value != value_readback:
         data = {"error": f"invalid readback; wrote {value.hex()} read {value_readback.hex()}"}
@@ -110,10 +110,10 @@ def eeprom_write(data: dict) -> dict:
     return data
 
 
-i = 0
+poll = select.poll()
+poll.register(sys.stdin, select.POLLIN)
 while True:
-    sleep(1)
-    results = poll.poll()
+    poll.poll()
 
     req = ""
     while poll.poll(0):
@@ -127,5 +127,5 @@ while True:
         res_data = eeprom_write(req_data)
         res = json.dumps(res_data)
     except Exception as e:
-        res = json.dumps({"error": str(e)})
+        res = json.dumps({"error": repr(e)})
     print(res)
