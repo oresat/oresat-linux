@@ -260,11 +260,6 @@ LED pins, and the power regulator. All other pins are set to GPIO inputs.
   status = "disabled";
 };
 
-/* 3d graphics accelerator */
-&gpu {
-  status = "disabled";
-};
-
 /* LCD controller */
 &lcdc {
   status = "disabled";

@@ -2,21 +2,20 @@ SOURCES = $(wildcard *.dts)
 DTBS = $(SOURCES:%.dts=%.dtb)
 
 REPO = BeagleBoard-DeviceTrees
+SRC_PATH = src/arm/ti/omap
 
 .PHONY: all clean clone
 
 all: clone $(DTBS)
 
+# copy all dtsi files into the source directory
 clone:
-	@if [ ! -d $(REPO) ]; then \
-		git clone https://github.com/beagleboard/$(REPO); \
-	fi
-	@cp $(wildcard *.dtsi) $(REPO)/src/arm/
+	@cp $(wildcard *.dtsi) $(REPO)/$(SRC_PATH)
 
 %.dtb: %.dts
-	@cp $< $(REPO)/src/arm/
-	make -C $(REPO) src/arm/$@
-	@cp $(REPO)/src/arm/$@ .
+	@cp $< $(REPO)/$(SRC_PATH)/
+	make -C $(REPO) $(SRC_PATH)/$@
+	@cp $(REPO)/$(SRC_PATH)/$@ .
 
 clean:
 	rm -f *.dtb
