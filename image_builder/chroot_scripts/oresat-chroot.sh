@@ -1,18 +1,17 @@
 #!/bin/bash -e
+# this script is run in the target context
 
-OIB_DIR="$(
-  cd "$(dirname "$0")"
-  pwd -P
-)"
-DIR="$PWD"
-
+rfs_hostname=""
+qemu_command=""
 # source project configuration passed
 # into target by image-builder/scripts/chroot.sh
 if [ -f /etc/rcn-ee.conf ]; then
+  # shellcheck disable=SC1091
   . /etc/rcn-ee.conf
 fi
 
 if [ -f /etc/oib.project ]; then
+  # shellcheck disable=SC1091
   . /etc/oib.project
 fi
 
@@ -42,19 +41,31 @@ echo "PermitRootLogin prohibit-password" >>/etc/ssh/sshd_config
 echo " Log: (chroot) enable g_ether (ethernet over usb)"
 
 mac_addr_base="60:64:05:f9:0d"
-if [ "${rfs_hostname}" == "oresat-c3" ]; then
+case "${rfs_hostname}" in
+"oresat-c3")
   mac_addr="${mac_addr_base}:10"
-elif [ "${rfs_hostname}" == "oresat-cfc" ]; then
+  ;;
+
+"oresat-cfc")
   mac_addr="${mac_addr_base}:20"
-elif [ "${rfs_hostname}" == "oresat-dxwifi" ]; then
+  ;;
+
+"oresat-dxwifi")
   mac_addr="${mac_addr_base}:30"
-elif [ "${rfs_hostname}" == "oresat-gps" ]; then
+  ;;
+
+"oresat-gps")
   mac_addr="${mac_addr_base}:40"
-elif [ "${rfs_hostname}" == "oresat-star-tracker" ]; then
+  ;;
+
+"oresat-star-tracker")
   mac_addr="${mac_addr_base}:50"
-else
+  ;;
+
+*)
   mac_addr="${mac_addr_base}:f0"
-fi
+  ;;
+esac
 
 echo "g_ether" >/etc/modules-load.d/g_ether.conf
 echo "options g_ether host_addr=${mac_addr}" >/etc/modprobe.d/g_ether.conf
@@ -63,7 +74,7 @@ echo "options g_ether host_addr=${mac_addr}" >/etc/modprobe.d/g_ether.conf
 echo "Log: (chroot) add OreSat OLAF app daemon"
 
 # add config
-cat >"/etc/systemd/system/"${rfs_hostname}"d.service" <<-__EOF__
+cat <<__EOF__ >"/etc/systemd/system/${rfs_hostname}d.service"
 [Unit]
 Description=OreSat Linux App
 
@@ -90,7 +101,7 @@ fi
 ##############################################################################
 echo "Log: (chroot) add growparts oneshot daemon"
 
-cat >"/etc/systemd/system/grow-partition.service" <<-__EOF__
+cat <<__EOF__ >"/etc/systemd/system/grow-partition.service"
 [Unit]
 Description=Grow active root partition
 
@@ -111,7 +122,7 @@ systemctl enable grow-partition.service
 ##############################################################################
 echo "Log: (chroot) setup and configure nginx for OreSat OLAF app"
 
-cat >"/etc/nginx/nginx.conf" <<-__EOF__
+cat <<__EOF__ >"/etc/nginx/nginx.conf"
 events {
   worker_connections 768;
 }
@@ -137,14 +148,14 @@ systemctl enable nginx.service
 ##############################################################################
 echo "Log: (chroot) enable SPIDEV kernel module at boot"
 
-cat >"/etc/modules-load.d/spidev.conf" <<-__EOF__
+cat <<__EOF__ >"/etc/modules-load.d/spidev.conf"
 spidev
 __EOF__
 
 ##############################################################################
 echo "Log: (chroot) add systemd-networkd configs"
 
-cat >"/etc/systemd/network/10-usb0.link" <<-__EOF__
+cat <<__EOF__ >"/etc/systemd/network/10-usb0.link"
 [Match]
 OriginalName=usb0
 
@@ -153,7 +164,7 @@ RequiredForOnline=no
 MACAddress=${mac_addr}
 __EOF__
 
-cat >"/etc/systemd/network/10-usb0.network" <<-__EOF__
+cat <<__EOF__ >"/etc/systemd/network/10-usb0.network"
 [Match]
 Name=usb0
 
@@ -162,7 +173,7 @@ DHCP=yes
 MulticastDNS=yes
 __EOF__
 
-cat >"/etc/systemd/network/10-eth0.link" <<-__EOF__
+cat <<__EOF__ >"/etc/systemd/network/10-eth0.link"
 [Match]
 Name=eth0
 
@@ -170,7 +181,7 @@ Name=eth0
 RequiredForOnline=no 
 __EOF__
 
-cat >"/etc/systemd/network/10-eth0.network" <<-__EOF__
+cat <<__EOF__ >"/etc/systemd/network/10-eth0.network"
 [Match]
 Name=eth0
 
@@ -199,10 +210,11 @@ if [ "${rfs_hostname}" != "oresat-dev" ] && [ "${rfs_hostname}" != "oresat-gener
   echo "Log: (chroot) replacing pocketbeagle dt with latest custom card dt"
 
   dt_path=$(ls -d /boot/dtbs/*)
-  dt=$(ls "${dt_path}/${rfs_hostname}-*.dtb" | tail -1)
+  dtbs=("${dt_path}/${rfs_hostname}"-*.dtb)
+  dt="${dtbs[-1]}"
 
   # back up original pocketbeagle dtb
-  mv "${dt_path}"/am335x-pocketbeagle.dtb ${dt_path}/am335x-pocketbeagle.dtb-orig
+  mv "${dt_path}"/am335x-pocketbeagle.dtb "${dt_path}"/am335x-pocketbeagle.dtb-orig
   ln -s "${dt}" "${dt_path}"/am335x-pocketbeagle.dtb
 fi
 

@@ -5,10 +5,15 @@ if [ "$(id -u)" != "0" ]; then
   exit 1
 fi
 
-DIR="$PWD"
-target_dir="${DIR}/fs"
-root_fs="${DIR}/fs/fs-rootfs"
-boot_fs="${DIR}/fs/fs-bootfs"
+target_dir="fs"
+root_fs="fs/fs-rootfs"
+boot_fs="fs/fs-bootfs"
+
+# these are supplied by the project config file
+rfs_username=""
+rfs_password=""
+rfs_hostname=""
+config_path="./image-builder.project"
 
 # load build configuration
 # exit if not present
@@ -17,18 +22,19 @@ if [ ! -f image-builder.project ]; then
   exit 1
 fi
 
-. "${DIR}image-builder.project"
+# shellcheck source=./image-builder.project
+. "${config_path}"
 
 mkdir -p "${target_dir}"
 
-if [ ! -f "${DIR}/MLO" ]; then
+if [ ! -f "MLO" ]; then
   echo "ERROR: (post-build) MLO missing"
   exit 1
 fi
 
 cp -v MLO "${target_dir}"
 
-if [ ! -f "${DIR}/u-boot-dtb.img" ]; then
+if [ ! -f "u-boot-dtb.img" ]; then
   echo "ERROR: (post-build) u-boot-dtb.img missing"
   exit 1
 fi
@@ -44,7 +50,7 @@ kernel_select() {
   echo "debug: kernel_select: picking the first available kernel..."
   unset check
   check=$(ls "${dir_check}" | grep vmlinuz- | head -n 1)
-  if [ "x${check}" != "x" ]; then
+  if [ "${check}" != "" ]; then
     kernel_version=$(ls "${dir_check}" | grep vmlinuz- | head -n 1 | awk -F'vmlinuz-' '{print $2}')
     echo "debug: kernel_select: found: [${kernel_version}]"
   else
@@ -90,7 +96,7 @@ LABEL linux
   APPEND console=ttyS0,115200 root=/dev/mmcblk0p2 rw rootwait
 __EOF__
 
-if [ ! -f ${DIR}/genimage.cfg ]; then
+if [ ! -f ./genimage.cfg ]; then
   echo "ERROR: (post-build) genimage configuration missing"
   exit 1
 fi
