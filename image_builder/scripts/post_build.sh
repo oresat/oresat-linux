@@ -22,7 +22,7 @@ if [ ! -f image-builder.project ]; then
   exit 1
 fi
 
-# shellcheck source=./image-builder.project
+# shellcheck disable=SC1090
 . "${config_path}"
 
 mkdir -p "${target_dir}"
@@ -43,7 +43,7 @@ cp -v u-boot-dtb.img "${target_dir}"
 
 echo "Log: (post-build) building root fs"
 mkdir -p "${root_fs}"
-tar xf armhf-rootfs-debian-bullseye.tar -C "${root_fs}"
+tar xf armhf-rootfs-debian-*.tar -C "${root_fs}"
 
 dir_check="${root_fs}/boot"
 kernel_select() {
@@ -77,6 +77,7 @@ __EOF__
 cp -v "${root_fs}/boot/vmlinuz-${kernel_version}" "${boot_fs}"
 cp -v "${root_fs}/boot/initrd.img-${kernel_version}" "${boot_fs}"
 
+# TODO: update this portion to match board name
 echo "Log: (post-build) copying fdt"
 mkdir -p "${boot_fs}/dtbs/${kernel_version}"
 cp -v "${root_fs}/boot/dtbs/${kernel_version}/am335x-boneblack.dtb" "${boot_fs}/dtbs/${kernel_version}/"
