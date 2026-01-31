@@ -192,17 +192,20 @@ __EOF__
 
 # make sure these are enabled
 systemctl enable systemd-networkd.service
-systemctl enable systemd-resolved.service
+# systemctl enable systemd-resolved.service
 
 ##############################################################################
-echo "Log: (chroot) rebuild pyyaml"
+#echo "Log: (chroot) rebuild pyyaml"
 
-python3 -m pip install --force-reinstall --no-cache-dir --no-binary pyyaml pyyaml
+#python3 -m pip install --force-reinstall --no-cache-dir --no-binary pyyaml pyyaml
 
 ##############################################################################
 echo "Log: (chroot) add oresat device trees to /boot"
 
-dtb_dir=$(ls -d /boot/dtbs/*)
+dtb_dirs=(/boot/dtbs/*)
+
+# get first available dtb dir
+dtb_dir="${dtb_dirs[0]}"
 mv /tmp/*.dtb "${dtb_dir}"
 chmod 755 "${dtb_dir}"/oresat*
 
