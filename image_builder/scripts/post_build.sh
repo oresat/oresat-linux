@@ -8,6 +8,8 @@ fi
 target_dir="fs"
 root_fs="fs/fs-rootfs"
 boot_fs="fs/fs-bootfs"
+dtbs_path=""
+fdt=""
 
 # these are supplied by the project config file
 rfs_username=""
@@ -77,24 +79,30 @@ __EOF__
 cp -v "${root_fs}/boot/vmlinuz-${kernel_version}" "${boot_fs}"
 cp -v "${root_fs}/boot/initrd.img-${kernel_version}" "${boot_fs}"
 
-# TODO: update this portion to match board name
 echo "Log: (post-build) copying fdt"
 mkdir -p "${boot_fs}/dtbs/${kernel_version}"
-cp -v "${root_fs}/boot/dtbs/${kernel_version}/am335x-boneblack.dtb" "${boot_fs}/dtbs/${kernel_version}/"
+
+shopt -s nullglob
+if [ "${rfs_hostname}" != "oresat-dev" ]; then
+  dtbs_path=("${root_fs}/boot/dtbs/${kernel_version}/${rfs_hostname}"-*.dtb)
+  fdt="${dtbs_path[0]##*/}"
+else
+  fdt="am335x-boneblack.dtb"
+fi
 
 echo "Log: (post-build) configuring extlinux"
-mkdir -p "${boot_fs}/extlinux"
+cp -v "${root_fs}/boot/dtbs/${kernel_version}/${fdt}" "${boot_fs}/dtbs/${kernel_version}"
 
-#HereDoc to write extlinux configuration
+mkdir -p "${boot_fs}/extlinux"
 cat <<__EOF__ >"${boot_fs}/extlinux/extlinux.conf"
 TIMEOUT 1
 DEFAULT linux
 
 LABEL linux
-  KERNEL /vmlinuz-${kernel_version}
-  INITRD /initrd.img-${kernel_version}
-  FDT /dtbs/${kernel_version}/am335x-boneblack.dtb
-  APPEND console=ttyS0,115200 root=/dev/mmcblk0p2 rw rootwait
+KERNEL /vmlinuz-${kernel_version}
+INITRD /initrd.img-${kernel_version}
+FDT /dtbs/${kernel_version}/${fdt}
+APPEND console=ttyS0,115200 root=/dev/mmcblk0p2 rw rootwait
 __EOF__
 
 if [ ! -f ./genimage.cfg ]; then

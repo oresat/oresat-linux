@@ -169,7 +169,8 @@ cat <<__EOF__ >"/etc/systemd/network/10-usb0.network"
 Name=usb0
 
 [Network]
-DHCP=yes
+Address=192.168.7.20/24
+Gateway=192.168.7.1
 MulticastDNS=yes
 __EOF__
 
@@ -209,27 +210,15 @@ dtb_dir="${dtb_dirs[0]}"
 mv /tmp/*.dtb "${dtb_dir}"
 chmod 755 "${dtb_dir}"/oresat*
 
-if [ "${rfs_hostname}" != "oresat-dev" ] && [ "${rfs_hostname}" != "oresat-generic" ]; then
-  echo "Log: (chroot) replacing pocketbeagle dt with latest custom card dt"
-
-  dt_path=$(ls -d /boot/dtbs/*)
-  dtbs=("${dt_path}/${rfs_hostname}"-*.dtb)
-  dt="${dtbs[-1]}"
-
-  # back up original pocketbeagle dtb
-  mv "${dt_path}"/am335x-pocketbeagle.dtb "${dt_path}"/am335x-pocketbeagle.dtb-orig
-  ln -s "${dt}" "${dt_path}"/am335x-pocketbeagle.dtb
-fi
-
 ##############################################################################
 # Card unique changes
 
-if [ "${rfs_hostname}" = "oresat-star-tracker" ]; then
-  lost_whl="lost-0.0.0-py3-none-any.whl"
-  wget https://packages.oresat.org/python/"${lost_whl}"
-  pip3 install "${lost_whl}"
-  rm -f "${lost_whl}"
-fi
+#if [ "${rfs_hostname}" = "oresat-star-tracker" ]; then
+#  lost_whl="lost-0.0.0-py3-none-any.whl"
+#  wget https://packages.oresat.org/python/"${lost_whl}"
+#  pip3 install "${lost_whl}"
+#  rm -f "${lost_whl}"
+#fi
 
 ##############################################################################
 # Flight images only
