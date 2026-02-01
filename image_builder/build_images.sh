@@ -52,13 +52,17 @@ cp -v "${DIR}/${bootloader_dir}/${spl}" .
 cp -v "${DIR}/${bootloader_dir}/${bootloader}" .
 
 # make .img file
-sudo /bin/bash -e post_build.sh
+/bin/bash -e post_build.sh
 
 # compress
 mv images/sdcard.img "${name}-${size}.img"
 zstd "${name}-${size}.img"
 
 mkdir -p "${DIR}/${image_dir}"
+
+# give ownership to non-root users
+chgrp --recursive users "${DIR}/${image_dir}"
+chmod --recursive g+w "${DIR}/${image_dir}"
 
 mv "${name}-${size}.img.zst" "${DIR}/${image_dir}"
 cd "${DIR}/${image_dir}"

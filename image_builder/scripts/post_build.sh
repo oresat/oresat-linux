@@ -8,6 +8,7 @@ fi
 target_dir="fs"
 root_fs="fs/fs-rootfs"
 boot_fs="fs/fs-bootfs"
+fdt=""
 
 # these are supplied by the project config file
 rfs_username=""
@@ -24,6 +25,9 @@ fi
 
 # shellcheck disable=SC1090
 . "${config_path}"
+
+# enable nullglob
+shopt -s nullglob
 
 mkdir -p "${target_dir}"
 
@@ -48,10 +52,9 @@ tar xf armhf-rootfs-debian-*.tar -C "${root_fs}"
 dir_check="${root_fs}/boot"
 kernel_select() {
   echo "debug: kernel_select: picking the first available kernel..."
-  unset check
-  check=$(ls "${dir_check}" | grep vmlinuz- | head -n 1)
-  if [ "${check}" != "" ]; then
-    kernel_version=$(ls "${dir_check}" | grep vmlinuz- | head -n 1 | awk -F'vmlinuz-' '{print $2}')
+  check=("${dir_check}"/vimlinuz*)
+  if [ "${check[0]}" != "" ]; then
+    kernel_version="${check[0]#vmlinuz-}"
     echo "debug: kernel_select: found: [${kernel_version}]"
   else
     echo "ERROR: no installed kernel"
@@ -77,24 +80,31 @@ __EOF__
 cp -v "${root_fs}/boot/vmlinuz-${kernel_version}" "${boot_fs}"
 cp -v "${root_fs}/boot/initrd.img-${kernel_version}" "${boot_fs}"
 
-# TODO: update this portion to match board name
 echo "Log: (post-build) copying fdt"
 mkdir -p "${boot_fs}/dtbs/${kernel_version}"
-cp -v "${root_fs}/boot/dtbs/${kernel_version}/am335x-boneblack.dtb" "${boot_fs}/dtbs/${kernel_version}/"
+
+if [ "${rfs_hostname}" != "oresat-dev" ]; then
+  dtbs=("${root_fs}/boot/dtbs/${kernel_version}/${rfs_hostname}"-*.dtb)
+
+  # select the latest dtb, strip directory and suffix
+  fdt=$(basename "${dtbs[-1]}")
+else
+  fdt="am335x-pocketbeagle.dtb"
+fi
 
 echo "Log: (post-build) configuring extlinux"
-mkdir -p "${boot_fs}/extlinux"
+cp -v "${root_fs}/boot/dtbs/${kernel_version}/${fdt}" "${boot_fs}/dtbs/${kernel_version}"
 
-#HereDoc to write extlinux configuration
+mkdir -p "${boot_fs}/extlinux"
 cat <<__EOF__ >"${boot_fs}/extlinux/extlinux.conf"
 TIMEOUT 1
 DEFAULT linux
 
 LABEL linux
-  KERNEL /vmlinuz-${kernel_version}
-  INITRD /initrd.img-${kernel_version}
-  FDT /dtbs/${kernel_version}/am335x-boneblack.dtb
-  APPEND console=ttyS0,115200 root=/dev/mmcblk0p2 rw rootwait
+KERNEL /vmlinuz-${kernel_version}
+INITRD /initrd.img-${kernel_version}
+FDT /dtbs/${kernel_version}/${fdt}
+APPEND console=ttyS0,115200 root=/dev/mmcblk0p2 rw rootwait
 __EOF__
 
 if [ ! -f ./genimage.cfg ]; then
