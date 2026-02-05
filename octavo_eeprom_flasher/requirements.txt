@@ -1,2 +1,0 @@
-adafruit-ampy
-pyserial
