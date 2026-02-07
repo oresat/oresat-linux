@@ -2,13 +2,17 @@
 """Writes the board ID to the EEPROM in the OSD3358 or reads it back."""
 
 import re
-from argparse import ArgumentParser, Namespace
+from argparse import ArgumentParser, Namespace, RawDescriptionHelpFormatter
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from struct import calcsize, unpack
+from textwrap import dedent
 from typing import ClassVar
 
-from periphery import I2C, I2CError
+try:
+    from periphery import I2C, I2CError
+except ImportError:
+    raise SystemExit("Error: I2C Dependency not found, consider apt install python3-periphery")
 
 # FIXME: Move to oresat-configs
 BOARD_NAMES = {
@@ -149,8 +153,8 @@ class Eeprom:
         # the current address and when the chip ACKs the command, we can
         # proceed.
 
-        # While trying to deterimine which exception this would cause I've not
-        # acutally encountered this condition though. If we hit this in
+        # While trying to determine which exception this would cause I've not
+        # actually encountered this condition though. If we hit this in
         # practice fill out the appropriate section below and uncomment the loop
         # while True:
         # try:
@@ -231,31 +235,32 @@ def do_write(args: Namespace) -> None:
 
 if __name__ == '__main__':
     parser = ArgumentParser(
-        description='''
-            Utility for interacting with the EEPROM on OreSat Octavo cards using a usb-i2c adapto.
-            See the associated README for how to attach to the card. Note that picking the wrong I2C
-            device may damage your own host machine. i2cdetect -l may help in identifying the
-            correct /dev/i2c-x.
-        '''
+        formatter_class=RawDescriptionHelpFormatter,
+        description=dedent('''
+            Utility for interacting with the EEPROM on OreSat Octavo cards using a usb-i2c adaptor.
+            See the associated README for how to attach to the card.
+
+            Use `i2cdetect -l` from the i2c-tools package to find the /dev/i2c-x for your adaptor.
+            **Note**: Picking the wrong I2C device may damage your own host machine. 
+
+             See `eeprom.py read --help` or `eeprom.py write --help` for more.
+        ''')
     )
     subparsers = parser.add_subparsers(
         required=True,
-        help='''
-            read or write the OreSat EEPROM ID to an Octavo card. See read --help or write
-            --help for more
-        ''',
+        help='read or write the OreSat EEPROM ID to an Octavo card.',
     )
-    reader = subparsers.add_parser('read', help='i2c')
-    reader.add_argument("i2c", help="I2C bus path, typically /dev/i2c-x")
+    reader = subparsers.add_parser('read', help='I2C-PATH')
+    reader.add_argument("I2C-PATH", help="I2C bus path, typically /dev/i2c-x")
     reader.set_defaults(func=do_read)
 
-    writer = subparsers.add_parser('write', help='i2c card revision number [-d DATE]')
-    writer.add_argument("i2c", help="I2C bus path, typically /dev/i2c-x")
+    writer = subparsers.add_parser('write', help='I2C-PATH CARD REVISION NUMBER [-d DATE]')
+    writer.add_argument("I2C-PATH", help="I2C bus path, typically /dev/i2c-x")
     # FIXME: get board names + aliases from oresat-configs
-    writer.add_argument("card", help=f"Card type, one of: {' '.join(BOARD_NAMES)}")
-    writer.add_argument("revision", help="Card revision in x.y format")
+    writer.add_argument("CARD", help=f"Card type, one of: {' '.join(BOARD_NAMES)}")
+    writer.add_argument("REVISION", help="Card revision in x.y format")
     writer.add_argument(
-        "number", type=int, help="This card's board number, typically written on the PCB"
+        "NUMBER", type=int, help="This card's board number, typically written on the PCB"
     )
     writer.add_argument(
         '-d',

@@ -1,60 +1,52 @@
 # Octavo EEPROM Flasher
 
-This script will write a id value to the Octavo's EEPROM. When the Octavo is
-booting, U-Boot will read the value from EEPROM in to figure out what device
+This script will write an ID value to the Octavo's EEPROM. When the Octavo is
+booting, U-Boot will read the EEPROM value to figure out what device
 tree to load, before booting up Linux.
 
-This script will write the board id of a PocketBeagle to the EEPROM.
-
-Id's can be found in the README of https://github.com/beagleboard/image-builder.
+The IDs are based on those of the PocketBeagle which can be
+[found here](https://github.com/beagleboard/image-builder). The older OreSat0.5
+images will need the ID set to either PocketBeagle or BeagleBone for its U-Boot
+to recognize it but the newer OreSat1 images will recognize the appropriate
+OreSat card ID.
 
 ## Requirements
 
-A laptop with Python and [Raspi Pico].
+A laptop with Python and a USB-I2C adapter such as this
+[MCP2221 breakout](https://www.adafruit.com/product/4471). Check the Programmer
+drawer in the Rocket Room for the bag labeled "Octavo EEPROM Programmer", that
+has a kit with all the necessary equipment.
 
-## Setup Raspi Pico
+## Setup
 
-Download the uf2 file to a laptop from: https://micropython.org/download/RPI_PICO/
-
-While holding the Raspi Pico boot button, connect the Raspi Pico to the laptop.
-
-The Raspi Pico will come up a as storage device, copy the `.uf2` file into the
-storage device directory.
-
-Disconnect and reconnect (without holding the boot button) the Raspi Pico.
-
-Clone the oresat-linux repo on a laptop
+Clone the oresat-linux repo:
 
 ```bash
 $ git clone https://github.com/oresat/oresat-linux
 $ cd oresat-linux/octavo_eeprom_flasher
 ```
 
-Install dependencies on laptop
+Install dependencies:
 
 ```bash
-$ pip install -r requirements.txt
+$ pip install .
 ```
-
-Flash `main.py` on Raspi Pico. Change the `/dev/ttyACM0` as needed.
+Alternatively due to permissions either you'll need to run this script as root
+or create a udev rule that grants your user permission to access the I2C
+peripheral. If you run this as root you'll want the package `python3-periphery`
+instead:
 
 ```bash
-$ ampy --port /dev/ttyACM0 put main.py
+$ sudo apt install python3-periphery
 ```
-
-Disconnect the Raspi Pico.
 
 ## Writing to the EEPROM
 
-Connect the Raspi Pico’s I2C and ground pins to the Octavo’s I2C-0, ground,
-and write protection pins using a Debug Board.
+Connect the adaptor I2C and ground pins to the Octavo’s I2C-0
+and the breakout board ground, and short the write protect pins if
+intending to write an ID. See your board's KiCad schematic for more.
 
-| Debug Pin           | Raspi Pin |
-|---------------------|-----------|
-| Debug 1 (SCL)       | 22 (SCL)  |
-| Debug 2 (SDA)       | 21 (SDA)  |
-| Debug 3 (EEPROM WP) | 23 (GND)  |
-| GND                 | 3 (GND)   |
+![oresat_eeprom_i2c.jpg](static/oresat_eeprom_i2c.jpg)
 
 **WARNING**: For the GPS v1.0 and the Star Tracker v1.2 (and older versions of
 those cards) used the debug card to break out I2C-0 pins as shown below. **For
@@ -65,21 +57,21 @@ schematic to find the pins.
 
 Power on the Octavo.
 
-Connect the Raspi Pico to laptop (give it power).
+Find which `/dev/i2c-n` device your adapter is. The `i2cdetect -l` utility from
+the `i2c-tools` package will be helpful. If there are no `/dev/i2c-n` devices
+you may have to load the `i2-hid` kernel module: `sudo modprobe i2c-hid`.
 
-Run the `eeprom_write.py` script (use `-h`/`--help` see args).
+**WARNING**: Picking the wrong `/dev/i2c-n` may damage your host computer. Make
+sure you are using the correct one.
 
-Example: Flash info for a v6.0 card #1::
+Run the `eeprom.py` script (use `-h`/`--help` see args).
 
-    ./eeprom_write.py /dev/ttyACM0 1 6 0 0 0
+Example: Flash info for a v6.0 C3 card #1:
 
-Use the Raspi Pico LED to determine the status of the EEPROM flashing:
+    ./eeprom.py write /dev/i2c-n c3 6.0 1
 
-- If the LED is always off, the Raspi Pico binary is not flashed and/or the
-  `main.py` is not running. Try reflashing the MicroPython binary and the
-  `main.py` script onto the Raspi Pico.
-- If the LED is blinking every second, the firmware is trying to flash the
-  EEPROM and is failing, check the wiring.
-- If the LED is always on, the EEPROM has been successfully flashed.
+Example: Read the EEPROM ID:
 
-[Raspi Pico]: https://www.raspberrypi.com/documentation/microcontrollers/raspberry-pi-pico.html
+    ./eeprom.py read /dev/i2c-n
+
+`read` can be helpful for testing if you've connected the hardware correctly.
