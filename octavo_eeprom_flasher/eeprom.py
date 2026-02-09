@@ -2,7 +2,7 @@
 """Writes the board ID to the EEPROM in the OSD3358 or reads it back."""
 
 import re
-from argparse import ArgumentParser, Namespace, RawDescriptionHelpFormatter
+from argparse import ArgumentParser, Namespace, RawTextHelpFormatter
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from struct import calcsize, unpack
@@ -129,7 +129,16 @@ class Eeprom:
         The bytes in the location the OreSat ID would be,
         '''
         body = I2C.Message(bytes(calcsize(Identifier.idformat)), read=True)
-        self.i2c.transfer(self.EEPROM_ADDR, [I2C.Message(self.MEMORY_ADDR), body])
+        try:
+            self.i2c.transfer(self.EEPROM_ADDR, [I2C.Message(self.MEMORY_ADDR), body])
+        except I2CError as e:
+            match e:
+                case I2CError(errno=5):
+                    raise SystemExit(f'A bus error occured, is it connected correctly?: {e}')
+                case I2CError(errno=6):
+                    raise SystemExit(f'The EEPROM did not respond to its address: {e}')
+                case _:
+                    raise
         return bytes(body.data)
 
     def write(self, raw: bytes) -> None:
@@ -145,7 +154,16 @@ class Eeprom:
         """
         if len(raw) > 32:
             raise ValueError(f"Too many bytes to write: {len(raw)} greater than max 32")
-        self.i2c.transfer(self.EEPROM_ADDR, [I2C.Message(self.MEMORY_ADDR + raw)])
+        try:
+            self.i2c.transfer(self.EEPROM_ADDR, [I2C.Message(self.MEMORY_ADDR + raw)])
+        except I2CError as e:
+            match e:
+                case I2CError(errno=5):
+                    raise SystemExit(f'A bus error occured, is it connected correctly?: {e}')
+                case I2CError(errno=6):
+                    raise SystemExit(f'The EEPROM did not respond to its address: {e}')
+                case _:
+                    raise
         # After receiving the write bytes, the EEPROM takes some time to write
         # it to memory. The chip responds with NAK during this time so the
         # datasheet suggests polling the chip via i2c until it acks a command,
@@ -153,15 +171,14 @@ class Eeprom:
         # the current address and when the chip ACKs the command, we can
         # proceed.
 
-        # While trying to determine which exception this would cause I've not
-        # actually encountered this condition though. If we hit this in
-        # practice fill out the appropriate section below and uncomment the loop
-        # while True:
-        # try:
-        self.i2c.transfer(self.EEPROM_ADDR, [I2C.Message(self.MEMORY_ADDR)])
-        # except ???:
-        #    continue
-        # break
+        while True:
+            try:
+                self.i2c.transfer(self.EEPROM_ADDR, [I2C.Message(self.MEMORY_ADDR)])
+            except I2CError as e:
+                if e.errno == 6:  # 6 is no such device or address - a NAK
+                    continue
+                raise
+            break
 
 
 def do_read(args: Namespace) -> None:
@@ -222,7 +239,7 @@ def do_write(args: Namespace) -> None:
     try:
         i2c = I2C(args.I2C_PATH)
     except I2CError as e:
-        raise SystemExit(f"While opening I2C device '{args.I2C_PATH}': {e}") from None
+        raise SystemExit(f"While opening I2C device '{args.I2C_PATH}': {e}")
 
     eeprom = Eeprom(i2c)
     eeprom.write(data)
@@ -235,26 +252,37 @@ def do_write(args: Namespace) -> None:
 
 if __name__ == '__main__':
     parser = ArgumentParser(
-        formatter_class=RawDescriptionHelpFormatter,
-        description=dedent('''
+        formatter_class=RawTextHelpFormatter,
+        description=dedent('''\
             Utility for interacting with the EEPROM on OreSat Octavo cards using a usb-i2c adaptor.
             See the associated README for how to attach to the card.
 
-            Use `i2cdetect -l` from the i2c-tools package to find the /dev/i2c-x for your adaptor.
-            **Note**: Picking the wrong I2C device may damage your own host machine. 
+            See `eeprom.py read --help` or `eeprom.py write --help` for more.
 
-             See `eeprom.py read --help` or `eeprom.py write --help` for more.
-        ''')
+            Use `i2cdetect -l` from the i2c-tools package to find the /dev/i2c-x for your adaptor.
+            **Note**: Picking the wrong I2C device may damage your own host machine.
+        '''),
     )
     subparsers = parser.add_subparsers(
         required=True,
         help='read or write the OreSat EEPROM ID to an Octavo card.',
     )
-    reader = subparsers.add_parser('read', help='I2C_PATH')
+    reader = subparsers.add_parser(
+        'read', help='I2C_PATH    I2C bus path, typically /dev/i2c-x\n\n'
+    )
     reader.add_argument("I2C_PATH", help="I2C bus path, typically /dev/i2c-x")
     reader.set_defaults(func=do_read)
 
-    writer = subparsers.add_parser('write', help='I2C_PATH CARD REVISION NUMBER [-d DATE]')
+    writer = subparsers.add_parser(
+        'write',
+        help=dedent(f'''\
+            I2C_PATH    I2C bus path, typically /dev/i2c-x
+            CARD        Card type, one of: {' '.join(BOARD_NAMES)}
+            REVISION    Card revision in x.y format
+            NUMBER      This card's board number, typically written on the PCB
+            [-d DATE]   Year and week the card was made in YY-WW format. Defaults to current date
+        '''),
+    )
     writer.add_argument("I2C_PATH", help="I2C bus path, typically /dev/i2c-x")
     # FIXME: get board names + aliases from oresat-configs
     writer.add_argument("CARD", help=f"Card type, one of: {' '.join(BOARD_NAMES)}")

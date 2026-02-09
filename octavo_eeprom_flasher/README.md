@@ -28,16 +28,18 @@ $ cd oresat-linux/octavo_eeprom_flasher
 
 Install dependencies:
 
-```bash
-$ pip install .
-```
-Alternatively due to permissions either you'll need to run this script as root
+Due to permissions either you'll need to run this script as root
 or create a udev rule that grants your user permission to access the I2C
-peripheral. If you run this as root you'll want the package `python3-periphery`
-instead:
+peripheral. If you run this as root you'll need the following packagae:
 
 ```bash
 $ sudo apt install python3-periphery
+```
+
+Otherwise install locally (or for development):
+
+```bash
+$ pip install .
 ```
 
 ## Writing to the EEPROM
@@ -59,7 +61,7 @@ Power on the Octavo.
 
 Find which `/dev/i2c-n` device your adapter is. The `i2cdetect -l` utility from
 the `i2c-tools` package will be helpful. If there are no `/dev/i2c-n` devices
-you may have to load the `i2-hid` kernel module: `sudo modprobe i2c-hid`.
+you may have to load the `i2c-dev` kernel module: `sudo modprobe i2c-dev`.
 
 **WARNING**: Picking the wrong `/dev/i2c-n` may damage your host computer. Make
 sure you are using the correct one.
