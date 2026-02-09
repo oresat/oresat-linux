@@ -173,9 +173,9 @@ def do_read(args: Namespace) -> None:
         An argparse namespace containing i2c - the path to the i2c device that the EEPROM is on
     '''
     try:
-        i2c = I2C(args.i2c)
+        i2c = I2C(args.I2C_PATH)
     except I2CError as e:
-        raise SystemExit(f"While opening I2C device '{args.i2c}': {e}") from None
+        raise SystemExit(f"While opening I2C device '{args.I2C_PATH}': {e}") from None
     raw = Eeprom(i2c).read()
     print(raw)
     print(Identifier.decode(raw))
@@ -196,14 +196,14 @@ def do_write(args: Namespace) -> None:
         - number - the board number
         - date - optional, in YY-WW format
     '''
-    if args.card not in BOARD_NAMES:
-        raise SystemExit(f"Error: card '{args.card}' not one of: {' '.join(BOARD_NAMES)}")
+    if args.CARD not in BOARD_NAMES:
+        raise SystemExit(f"Error: card '{args.CARD}' not one of: {' '.join(BOARD_NAMES)}")
 
-    if revmatch := re.match(r"^(\d+)\.(\d+)$", args.revision):
+    if revmatch := re.match(r"^(\d+)\.(\d+)$", args.REVISION):
         major = int(revmatch.group(1))
         minor = int(revmatch.group(2))
     else:
-        raise SystemExit(f"Error: Revision '{args.revision}' not in x.y format")
+        raise SystemExit(f"Error: Revision '{args.REVISION}' not in x.y format")
     if not 0 <= major <= 0xFF:
         raise SystemExit(f'Error: Revision major number ({major}) must be between 0 and 255')
     if not 0 <= minor <= 0xFF:
@@ -218,11 +218,11 @@ def do_write(args: Namespace) -> None:
     else:
         raise SystemExit(f"Error: Date '{args.date}' not in YY-WW format")
 
-    data = Identifier(args.card, major, minor, args.number, year, week).encode()
+    data = Identifier(args.CARD, major, minor, args.NUMBER, year, week).encode()
     try:
-        i2c = I2C(args.i2c)
+        i2c = I2C(args.I2C_PATH)
     except I2CError as e:
-        raise SystemExit(f"While opening I2C device '{args.i2c}': {e}") from None
+        raise SystemExit(f"While opening I2C device '{args.I2C_PATH}': {e}") from None
 
     eeprom = Eeprom(i2c)
     eeprom.write(data)
@@ -250,12 +250,12 @@ if __name__ == '__main__':
         required=True,
         help='read or write the OreSat EEPROM ID to an Octavo card.',
     )
-    reader = subparsers.add_parser('read', help='I2C-PATH')
-    reader.add_argument("I2C-PATH", help="I2C bus path, typically /dev/i2c-x")
+    reader = subparsers.add_parser('read', help='I2C_PATH')
+    reader.add_argument("I2C_PATH", help="I2C bus path, typically /dev/i2c-x")
     reader.set_defaults(func=do_read)
 
-    writer = subparsers.add_parser('write', help='I2C-PATH CARD REVISION NUMBER [-d DATE]')
-    writer.add_argument("I2C-PATH", help="I2C bus path, typically /dev/i2c-x")
+    writer = subparsers.add_parser('write', help='I2C_PATH CARD REVISION NUMBER [-d DATE]')
+    writer.add_argument("I2C_PATH", help="I2C bus path, typically /dev/i2c-x")
     # FIXME: get board names + aliases from oresat-configs
     writer.add_argument("CARD", help=f"Card type, one of: {' '.join(BOARD_NAMES)}")
     writer.add_argument("REVISION", help="Card revision in x.y format")
