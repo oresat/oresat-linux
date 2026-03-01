@@ -87,7 +87,7 @@ if [ "${rfs_hostname}" != "oresat-dev" ]; then
   dtbs_path=("${root_fs}/boot/dtbs/${kernel_version}/${rfs_hostname}"-*.dtb)
   fdt="${dtbs_path[0]##*/}"
 else
-  fdt="am335x-boneblack.dtb"
+  fdt="am335x-bone.dtb"
 fi
 
 echo "Log: (post-build) configuring extlinux"
