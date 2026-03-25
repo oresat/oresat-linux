@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "oresat-octavo-eeprom-flasher"
+version = "0.2"
+dependencies = [
+    "python-periphery >= 2.4.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "mypy >= 1.19.1",
+    "ruff >= 0.15.0",
+]
+
+[tool.setuptools]
+# We don't want to build a real package from the script
+packages=[]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.format]
+quote-style = "preserve"
+
+[tool.ruff.lint]
+select = [ "ALL" ]
+ignore = [
+    "Q000",
+    "Q001",
+    "Q002",
+    "D203",  # one-blank-line-before-class
+    "D213",  # multi-line-summary-second-line
+    "D300",
+    "D413",
+    "COM812",
+    "FIX",
+    "TD",
+    "TRY003",
+    "EM102",
+    "T201",
+    "ERA001",
+    "PLR2004",
+    "EM101",
+    "B904",
+]
