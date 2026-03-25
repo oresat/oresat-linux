@@ -216,9 +216,9 @@ def do_write(args: Namespace) -> None:
     if args.CARD not in BOARD_NAMES:
         raise SystemExit(f"Error: card '{args.CARD}' not one of: {' '.join(BOARD_NAMES)}")
 
-    if revmatch := re.match(r"^(\d+)\.(\d+)$", args.REVISION):
-        major = int(revmatch.group(1))
-        minor = int(revmatch.group(2))
+    if revmatch := re.match(r"^(?P<major>\d+)\.(?P<minor>\d+)$", args.REVISION):
+        major = int(revmatch['major'])
+        minor = int(revmatch['minor'])
     else:
         raise SystemExit(f"Error: Revision '{args.REVISION}' not in x.y format")
     if not 0 <= major <= 0xFF:
@@ -229,9 +229,9 @@ def do_write(args: Namespace) -> None:
     if not args.date:
         year, week, _ = datetime.now(UTC).isocalendar()
         year %= 100
-    elif datematch := re.match(r"^(\d\d)-(\d\d)$", args.date):
-        year = int(datematch.group(1))
-        week = int(datematch.group(2))
+    elif datematch := re.match(r"^(?P<year>\d\d)-(?P<week>\d\d)$", args.date):
+        year = int(datematch['year'])
+        week = int(datematch['week'])
     else:
         raise SystemExit(f"Error: Date '{args.date}' not in YY-WW format")
 
