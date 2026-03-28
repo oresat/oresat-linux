@@ -13,7 +13,7 @@ APT::Install-Recommends "0";
 __EOF__
 
 # add oresat debian repo
-echo "deb [trusted=yes] https://packages.oresat.org/debian/ ./" >>"${tempdir}/etc/apt/sources.list"
+echo "deb [trusted=yes] https://debian.oresat.org/debian/ ./" >>"${tempdir}/etc/apt/sources.list"
 
 # add this to use piwheels.org as an extra source
 # piwheels.org has pre-built "manylinux" armhf packages
