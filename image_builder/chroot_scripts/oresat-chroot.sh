@@ -1,44 +1,86 @@
-#!/bin/sh -e
+#!/bin/bash -e
+# this script is run in the target context
 
-HOSTNAME=`cat /etc/hostname`
-
-##############################################################################
-echo "disable root login"
-
-echo "PermitRootLogin prohibit-password" >> /etc/ssh/sshd_config
-
-##############################################################################
-echo "enable g_ether (ethernet over usb)"
-
-MAC_ADDR_BASE="60:64:05:f9:0d"
-if [ $HOSTNAME == "oresat-c3" ]; then
-MAC_ADDR="$MAC_ADDR_BASE:10"
-elif [ $HOSTNAME == "oresat-cfc" ]; then
-MAC_ADDR="$MAC_ADDR_BASE:20"
-elif [ $HOSTNAME == "oresat-dxwifi" ]; then
-MAC_ADDR="$MAC_ADDR_BASE:30"
-elif [ $HOSTNAME == "oresat-gps" ]; then
-MAC_ADDR="$MAC_ADDR_BASE:40"
-elif [ $HOSTNAME == "oresat-star-tracker" ]; then
-MAC_ADDR="$MAC_ADDR_BASE:50"
-else
-MAC_ADDR="$MAC_ADDR_BASE:f0"
+rfs_hostname=""
+qemu_command=""
+# source project configuration passed
+# into target by image-builder/scripts/chroot.sh
+if [ -f /etc/rcn-ee.conf ]; then
+  # shellcheck disable=SC1091
+  . /etc/rcn-ee.conf
 fi
 
-echo "g_ether" > /etc/modules-load.d/g_ether.conf
-echo "options g_ether host_addr=$HOST_ADDR" > /etc/modprobe.d/g_ether.conf
+if [ -f /etc/oib.project ]; then
+  # shellcheck disable=SC1091
+  . /etc/oib.project
+fi
+
+is_this_qemu() {
+  unset warn_qemu_will_fail
+  if [ -f /usr/bin/qemu-arm-static ]; then
+    warn_qemu_will_fail=1
+  fi
+}
+
+qemu_warning() {
+  if [ "${warn_qemu_will_fail}" ]; then
+    echo "Log: (chroot) Warning, qemu can fail here... (run on real armv7l hardware for production images)"
+    echo "Log: (chroot): [${qemu_command}]"
+  fi
+}
 
 ##############################################################################
-echo "add OreSat OLAF app daemon"
+is_this_qemu
+qemu_warning
+
+echo "Log: (chroot) disable root login"
+
+echo "PermitRootLogin prohibit-password" >>/etc/ssh/sshd_config
+
+##############################################################################
+echo " Log: (chroot) enable g_ether (ethernet over usb)"
+
+mac_addr_base="60:64:05:f9:0d"
+case "${rfs_hostname}" in
+"oresat-c3")
+  mac_addr="${mac_addr_base}:10"
+  ;;
+
+"oresat-cfc")
+  mac_addr="${mac_addr_base}:20"
+  ;;
+
+"oresat-dxwifi")
+  mac_addr="${mac_addr_base}:30"
+  ;;
+
+"oresat-gps")
+  mac_addr="${mac_addr_base}:40"
+  ;;
+
+"oresat-star-tracker")
+  mac_addr="${mac_addr_base}:50"
+  ;;
+
+*)
+  mac_addr="${mac_addr_base}:f0"
+  ;;
+esac
+
+echo "g_ether" >/etc/modules-load.d/g_ether.conf
+echo "options g_ether host_addr=${mac_addr}" >/etc/modprobe.d/g_ether.conf
+
+##############################################################################
+echo "Log: (chroot) add OreSat OLAF app daemon"
 
 # add config
-cat > "/etc/systemd/system/"$HOSTNAME"d.service" <<-__EOF__
+cat <<__EOF__ >"/etc/systemd/system/${rfs_hostname}d.service"
 [Unit]
 Description=OreSat Linux App
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/$HOSTNAME -b can0 -l
+ExecStart=/usr/local/bin/${rfs_hostname} -b can0 -l
 Restart=always
 User=root
 Group=root
@@ -52,14 +94,14 @@ __EOF__
 
 # enable daemon
 systemctl daemon-reload
-if [ $HOSTNAME != "oresat-dev" ] && [ $HOSTNAME != "oresat-generic" ]; then
-systemctl enable $HOSTNAME"d.service"
+if [ "${rfs_hostname}" != "oresat-dev" ] && [ "${rfs_hostname}" != "oresat-generic" ]; then
+  systemctl enable "${rfs_hostname}d.service"
 fi
 
 ##############################################################################
-echo "add growparts oneshot daemon"
+echo "Log: (chroot) add growparts oneshot daemon"
 
-cat > "/etc/systemd/system/grow-partition.service" <<-__EOF__
+cat <<__EOF__ >"/etc/systemd/system/grow-partition.service"
 [Unit]
 Description=Grow active root partition
 
@@ -78,9 +120,9 @@ systemctl daemon-reload
 systemctl enable grow-partition.service
 
 ##############################################################################
-echo "setup and configure nginx for OreSat OLAF app"
+echo "Log: (chroot) setup and configure nginx for OreSat OLAF app"
 
-cat > "/etc/nginx/nginx.conf" <<-__EOF__
+cat <<__EOF__ >"/etc/nginx/nginx.conf"
 events {
   worker_connections 768;
 }
@@ -104,29 +146,44 @@ __EOF__
 systemctl enable nginx.service
 
 ##############################################################################
-echo "enable SPIDEV kernel module at boot"
+echo "Log: (chroot) enable SPIDEV kernel module at boot"
 
-cat > "/etc/modules-load.d/spidev.conf" <<-__EOF__
+cat <<__EOF__ >"/etc/modules-load.d/spidev.conf"
 spidev
 __EOF__
 
 ##############################################################################
-echo "add systemd-networkd configs"
+echo "Log: (chroot) add systemd-networkd configs"
 
-cat > "/etc/systemd/network/10-usb0.link" <<-__EOF__
+cat <<__EOF__ >"/etc/systemd/network/10-usb0.link"
 [Match]
 OriginalName=usb0
 
 [Link]
-MACAddress=$MAC_ADDR
+RequiredForOnline=no
+MACAddress=${mac_addr}
 __EOF__
 
-cat > "/etc/systemd/network/20-wired.network" <<-__EOF__
+cat <<__EOF__ >"/etc/systemd/network/10-usb0.network"
 [Match]
-Name=usb0 eth0
+Name=usb0
+
+[Network]
+DHCP=yes
+MulticastDNS=yes
+__EOF__
+
+cat <<__EOF__ >"/etc/systemd/network/10-eth0.link"
+[Match]
+Name=eth0
 
 [Link]
-RequiredForOnline=no
+RequiredForOnline=no 
+__EOF__
+
+cat <<__EOF__ >"/etc/systemd/network/10-eth0.network"
+[Match]
+Name=eth0
 
 [Network]
 DHCP=yes
@@ -135,45 +192,30 @@ __EOF__
 
 # make sure these are enabled
 systemctl enable systemd-networkd.service
-systemctl enable systemd-resolved.service
+# systemctl enable systemd-resolved.service
 
 ##############################################################################
-echo "rebuild pyyaml"
+#echo "Log: (chroot) rebuild pyyaml"
 
-python3 -m pip install --force-reinstall --no-cache-dir --no-binary pyyaml pyyaml
-
-##############################################################################
-echo "add oresat device trees to /boot"
-
-dtb_dir=`ls -d /boot/dtbs/*`
-mv /tmp/*.dtb $dtb_dir
-chmod 755 $dtb_dir/oresat*
-
-if [ $HOSTNAME != "oresat-dev" ] && [ $HOSTNAME != "oresat-generic" ]; then
-echo "replacing pocketbeagle dt with latest custom card dt"
-DT_PATH=`ls -d /boot/dtbs/*`
-DT=`ls $DT_PATH/$HOSTNAME-*.dtb | tail -1`
-mv $DT_PATH/am335x-pocketbeagle.dtb $DT_PATH/am335x-pocketbeagle.dtb-orig
-ln -s $DT $DT_PATH/am335x-pocketbeagle.dtb
-fi
+python3 -m pip install --break-system-packages \
+  --force-reinstall --no-cache-dir --no-binary pyyaml pyyaml
 
 ##############################################################################
-# Card unique changes
+echo "Log: (chroot) add oresat device trees to /boot"
+dtb_dirs=(/boot/dtbs/*)
 
-if [ $HOSTNAME = "oresat-star-tracker" ]; then
-LOST_WHL="lost-0.0.0-py3-none-any.whl"
-wget https://packages.oresat.org/python/$LOST_WHL
-pip3 install $LOST_WHL
-rm -f $LOST_WHL
-fi
+# get first available dtb dir
+dtb_dir="${dtb_dirs[0]}"
+mv /tmp/*.dtb "${dtb_dir}"
+chmod 755 "${dtb_dir}"/oresat*
 
 ##############################################################################
 # Flight images only
 
-if [ $HOSTNAME != "oresat-dev" ]; then
-echo "remove internet packages required during build"
-apt -y purge git git-man curl wget rsync
+if [ "${rfs_hostname}" != "oresat-dev" ]; then
+  echo "remove internet packages required during build"
+  apt -y purge git git-man curl wget rsync
 
-echo "disable timesyncd"
-systemctl disable systemd-timesyncd.service
+  echo "disable timesyncd"
+  systemctl disable systemd-timesyncd.service
 fi
