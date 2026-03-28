@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/sh -e
 
 # NOTE:
 # The early chroot script is, counterintuitively, really a pre-chroot hook.
