@@ -17,7 +17,6 @@ __EOF__
 
 # add oresat debian repo
 echo "deb [trusted=yes] https://debian.oresat.org/debian/ ./" >>"${tempdir}/etc/apt/sources.list"
-apt update
 
 # add this to use piwheels.org as an extra source
 # piwheels.org has pre-built "manylinux" armhf packages
