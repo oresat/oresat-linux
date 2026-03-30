@@ -1,9 +1,6 @@
 # Kconfig .old
 *.old
 
-# Repos
-BeagleBoard-DeviceTrees/
-
 # Python
 __pycache__/
 
