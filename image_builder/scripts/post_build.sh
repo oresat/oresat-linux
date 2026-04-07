@@ -36,14 +36,14 @@ if [ ! -f "MLO" ]; then
   exit 1
 fi
 
-cp -v MLO "${target_dir}"
+mv -v MLO "${target_dir}"
 
 if [ ! -f "u-boot-dtb.img" ]; then
   echo "ERROR: (post-build) u-boot-dtb.img missing"
   exit 1
 fi
 
-cp -v u-boot-dtb.img "${target_dir}"
+mv -v u-boot-dtb.img "${target_dir}"
 
 echo "Log: (post-build) building root fs"
 mkdir -p "${root_fs}"

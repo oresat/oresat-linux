@@ -25,8 +25,10 @@ u-boot/README image-builder/readme.md:
 	$(error $(dir $@) not initialized. Hint: git submodule update --init)
 
 clean:
+	make clean -C ../device_trees
+	make mrproper -C u-boot
 	rm -f image-builder/configs/oresat*
 	rm -f image-builder/target/chroot/oresat*
 	rm -f image-builder/tools/hwpack/oresat-bootloader.conf
-	make mrproper -C u-boot
-	make clean -C ../device_trees
+	rm -rf image-builder/deploy
+	rm -rf images
