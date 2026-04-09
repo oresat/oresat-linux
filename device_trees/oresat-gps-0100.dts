@@ -38,7 +38,7 @@
       AM33XX_IOPAD(AM335X_PIN_MII1_TX_EN, PIN_OUTPUT_PULLDOWN | MUX_MODE7) /* gpio3_3 / MAX_nSHDN */
 
       /* GPS_EN toggles power for the gps section of the card */
-      AM33XX_IOPAD(AM335X_PIN_MII1_RX_DV, PIN_OUTPUT_PULLDOWN | MUX_MODE7) /* gpio3_4 / GPS_EN */
+      AM33XX_IOPAD(AM335X_PIN_MII1_RX_DV, PIN_OUTPUT_PULLDOWN | MUX_MODE7) /* gpio3_4 / MAX_EN */
     >;
   };
 
@@ -65,7 +65,7 @@
 &gpio3 {
   pinctrl-names = "default";
   pinctrl-0 = <&gps_gpio3_pins>;
-  gpio-line-names = "", "", "STQ_EN", "MAX_nSHDN", "GPS_EN";
+  gpio-line-names = "", "", "STQ_EN", "MAX_nSHDN", "MAX_EN";
 };
 
 
