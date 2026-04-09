@@ -3,47 +3,39 @@
 list="c3 cfc dev dxwifi generic gps star-tracker"
 
 if [[ ! $list =~ (^|[[:space:]])$1($|[[:space:]]) ]]; then
-    echo "Invalid board argument"
-    echo ""
-    echo "./build_images.sh <BOARD>"
-    echo ""
-    echo "where <BOARD> can be:"
-    for i in $list; do
-        echo "  $i"
-    done
-    exit 1
+  echo "Invalid board argument"
+  echo ""
+  echo "./build_images.sh <BOARD>"
+  echo ""
+  echo "where <BOARD> can be:"
+  for i in $list; do
+    echo "  $i"
+  done
+  exit 1
 fi
 
-BOARD="oresat-"$1
-DATE=`date "+%F"`
-NAME="$BOARD-$DATE"
-SIZE="2gb"
+DIR="$PWD"
 
-if [ $BOARD == "oresat-dev" ]; then
-    SIZE="4gb"
+board="oresat-"$1
+date=$(date "+%F")
+name="${board}-${date}"
+size="2gb"
+
+if [ "${board}" == "oresat-dev" ]; then
+  size="4gb"
 fi
 
-BOOTLOADER_DIR="u-boot"
-SPL="MLO"
-BOOTLOADER="u-boot-dtb.img"
-DTB="oresat-bootloader"
-IMAGE_DIR="images"
-
-SETUP_SDCARD_EXTRA_ARGS=" \
-    --spl $BOOTLOADER_DIR/$SPL \
-    --bootloader $BOOTLOADER_DIR/$BOOTLOADER \
-"
-
-if [ $BOARD != "oresat-dev" ] && [ $BOARD != "oresat-generic" ]; then
-    SETUP_SDCARD_EXTRA_ARGS="--enable-uboot-disable-pru ${SETUP_SDCARD_EXTRA_ARGS}"
-fi
-
-echo "setup_sdcard.sh options: $SETUP_SDCARD_EXTRA_ARGS"
+bootloader_dir="u-boot"
+spl="MLO"
+bootloader="u-boot-dtb.img"
+dtb="oresat-bootloader"
+image_dir="images"
 
 # copy oresat config into correct dirs
-cp ./configs/$BOARD.conf ./image-builder/configs/
-cp ./configs/$DTB.conf ./image-builder/tools/hwpack
-cp ./chroot_scripts/*.sh ./image-builder/target/chroot/
+cp -v configs/"${board}".conf image-builder/configs
+cp -v configs/"${dtb}".conf image-builder/tools/hwpack
+cp -v chroot_scripts/oresat-chroot.sh image-builder/target/chroot
+cp -v chroot_scripts/oresat-early-chroot.sh image-builder/target/chroot
 
 cd image-builder
 
@@ -51,22 +43,29 @@ cd image-builder
 rm -rf deploy
 
 # build partitions
-./RootStock-NG.sh -c $BOARD
+/bin/bash -e RootStock-NG.sh -c "${board}"
 
 cd deploy/debian-*/
-cp ../../../$BOOTLOADER_DIR/{$SPL,$BOOTLOADER} ./u-boot
+cp -v "${DIR}/scripts/post_build.sh" .
+cp -v "${DIR}/configs/genimage.cfg" .
+cp -v "${DIR}/${bootloader_dir}/${spl}" .
+cp -v "${DIR}/${bootloader_dir}/${bootloader}" .
 
 # make .img file
-sudo ./setup_sdcard.sh --img-$SIZE $NAME.img --dtb $DTB $SETUP_SDCARD_EXTRA_ARGS
+/bin/bash -e post_build.sh
 
 # compress
-zstd $NAME-$SIZE.img
+mv images/sdcard.img "${name}-${size}.img"
+zstd "${name}-${size}.img"
 
-cd ../../..
+mkdir -p "${DIR}/${image_dir}"
 
-mkdir -p $IMAGE_DIR
+# give ownership to non-root users
+chgrp --recursive users "${DIR}/${image_dir}"
+chmod --recursive g+w "${DIR}/${image_dir}"
 
-mv image-builder/deploy/debian-*/$NAME-$SIZE.img.zst $IMAGE_DIR
+mv "${name}-${size}.img.zst" "${DIR}/${image_dir}"
+cd "${DIR}/${image_dir}"
 
 # generate sha256
-sha256sum $IMAGE_DIR/$NAME-$SIZE.img.zst > $IMAGE_DIR/$NAME-$SIZE.img.zst.sha256
+sha256sum "${name}-${size}.img.zst" >"${name}-${size}.img.zst.sha256"
