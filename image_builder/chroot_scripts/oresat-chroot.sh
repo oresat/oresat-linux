@@ -190,6 +190,14 @@ DHCP=yes
 MulticastDNS=yes
 __EOF__
 
+cat <<__EOF__ >"/ect/systemd/network/10-can.network"
+[Match]
+Name=can*
+
+[CAN]
+BitRate=1M
+__EOF__
+
 # make sure these are enabled
 systemctl enable systemd-networkd.service
 # systemctl enable systemd-resolved.service
