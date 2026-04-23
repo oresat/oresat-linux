@@ -52,9 +52,10 @@ tar xf armhf-rootfs-debian-*.tar -C "${root_fs}"
 dir_check="${root_fs}/boot"
 kernel_select() {
   echo "debug: kernel_select: picking the first available kernel..."
-  check=("${dir_check}"/vimlinuz*)
+  check=("${dir_check}"/vmlinuz*)
   if [ "${check[0]}" != "" ]; then
-    kernel_version="${check[0]#vmlinuz-}"
+    kernel_version=$(basename "${check[0]}")
+    kernel_version="${kernel_version#vmlinuz-}"
     echo "debug: kernel_select: found: [${kernel_version}]"
   else
     echo "ERROR: no installed kernel"
