@@ -190,7 +190,7 @@ DHCP=yes
 MulticastDNS=yes
 __EOF__
 
-cat <<__EOF__ >"/ect/systemd/network/10-can.network"
+cat <<__EOF__ >"/etc/systemd/network/10-can.network"
 [Match]
 Name=can*
 
