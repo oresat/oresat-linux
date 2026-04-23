@@ -1,7 +1,8 @@
 CONFIG ?= am335x_oresat.config
 boards = c3 cfc dev dxwifi generic gps star-tracker
+NPROC := $(shell nproc --all)
 
-ARCH= $(shell uname -m)
+ARCH = $(shell uname -m)
 ifeq ($(ARCH), armv7l)
 	FLAGS =
 else
@@ -19,7 +20,7 @@ device_trees:
 	make -C ../device_trees
 
 u-boot/MLO u-boot/u-boot-dtb.img &: $(CONFIG) | u-boot/README
-	KCONFIG_CONFIG=../$(CONFIG) $(FLAGS) make -C u-boot
+	KCONFIG_CONFIG=../$(CONFIG) $(FLAGS) make -j$(NPROC) -C u-boot
 
 u-boot/README image-builder/readme.md:
 	$(error $(dir $@) not initialized. Hint: git submodule update --init)
