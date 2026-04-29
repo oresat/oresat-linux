@@ -67,8 +67,18 @@ case "${rfs_hostname}" in
   ;;
 esac
 
+# TODO:
+# replace g_ether with libcomposite, since it's deprecated
+
+# NOTE:
+# set Hardware (MAC) address for USB gadget ethernet (RNDIS)
+# host address applies to the USB host
+# device address applies to the card
+# For more details see https://elixir.bootlin.com/linux/v6.12.34/source/drivers/usb/gadget/legacy/ether.c#L360-L363
 echo "g_ether" >/etc/modules-load.d/g_ether.conf
-echo "options g_ether host_addr=${mac_addr}" >/etc/modprobe.d/g_ether.conf
+cat <<__EOF__ >"/etc/modprobe.d/g_ether.conf"
+options g_ether host_addr="${mac_addr_base}:00" dev_addr="${mac_addr}"
+__EOF__
 
 ##############################################################################
 echo "Log: (chroot) add OreSat OLAF app daemon"
@@ -158,10 +168,6 @@ echo "Log: (chroot) add systemd-networkd configs"
 cat <<__EOF__ >"/etc/systemd/network/10-usb0.link"
 [Match]
 OriginalName=usb0
-
-[Link]
-RequiredForOnline=no
-MACAddress=${mac_addr}
 __EOF__
 
 cat <<__EOF__ >"/etc/systemd/network/10-usb0.network"
@@ -171,14 +177,12 @@ Name=usb0
 [Network]
 DHCP=yes
 MulticastDNS=yes
+RequiredForOnline=no
 __EOF__
 
 cat <<__EOF__ >"/etc/systemd/network/10-eth0.link"
 [Match]
-Name=eth0
-
-[Link]
-RequiredForOnline=no 
+OriginalName=eth0
 __EOF__
 
 cat <<__EOF__ >"/etc/systemd/network/10-eth0.network"
@@ -188,6 +192,7 @@ Name=eth0
 [Network]
 DHCP=yes
 MulticastDNS=yes
+RequiredForOnline=no
 __EOF__
 
 cat <<__EOF__ >"/etc/systemd/network/10-can.network"
