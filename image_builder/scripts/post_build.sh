@@ -8,6 +8,7 @@ fi
 target_dir="fs"
 root_fs="fs/fs-rootfs"
 boot_fs="fs/fs-bootfs"
+var_fs="fs/fs-varfs"
 fdt=""
 
 # these are supplied by the project config file
@@ -36,18 +37,21 @@ if [ ! -f "MLO" ]; then
   exit 1
 fi
 
-mv -v MLO "${target_dir}"
+cp -v MLO "${target_dir}"
 
 if [ ! -f "u-boot-dtb.img" ]; then
   echo "ERROR: (post-build) u-boot-dtb.img missing"
   exit 1
 fi
 
-mv -v u-boot-dtb.img "${target_dir}"
+cp -v u-boot-dtb.img "${target_dir}"
 
 echo "Log: (post-build) building root fs"
 mkdir -p "${root_fs}"
 tar xf armhf-rootfs-debian-*.tar -C "${root_fs}"
+
+###################################################################################################
+# set up rootfs
 
 dir_check="${root_fs}/boot"
 kernel_select() {
@@ -71,6 +75,16 @@ echo "Log: (post-build) building boot fs"
 echo "uname_r=${kernel_version}" >>"${root_fs}/boot/uEnv.txt"
 echo "cmdline=fsck.repair=yes earlycon net.ifnames=0" >>"${root_fs}/boot/uEnv.txt"
 
+###################################################################################################
+# set up varfs
+
+mkdir -p "${var_fs}"
+
+# populates varfs with the contents of /var
+cp -av "${root_fs}/var/." "${var_fs}/"
+
+###################################################################################################
+# set up bootfs
 mkdir -p "${boot_fs}"
 cat <<__EOF__ >"${boot_fs}/sysconf.txt"
 user_name="${rfs_username}"
