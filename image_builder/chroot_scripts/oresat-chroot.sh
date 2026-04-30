@@ -163,6 +163,14 @@ spidev
 __EOF__
 
 ##############################################################################
+# TODO:
+# Write heredoc for journald.conf
+
+##############################################################################
+# TODO:
+# Write heredoc for fstab
+
+##############################################################################
 echo "Log: (chroot) add systemd-networkd configs"
 
 cat <<__EOF__ >"/etc/systemd/network/10-usb0.link"
@@ -191,7 +199,6 @@ Name=eth0
 
 [Network]
 DHCP=yes
-MulticastDNS=yes
 RequiredForOnline=no
 __EOF__
 
@@ -221,3 +228,6 @@ dtb_dirs=(/boot/dtbs/*)
 dtb_dir="${dtb_dirs[0]}"
 mv /tmp/*.dtb "${dtb_dir}"
 chmod 755 "${dtb_dir}"/oresat*
+
+##############################################################################
+systemctl set-default multi-user.target
