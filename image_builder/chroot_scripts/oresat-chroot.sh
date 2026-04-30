@@ -80,7 +80,7 @@ cat <<__EOF__ >"/etc/modprobe.d/g_ether.conf"
 options g_ether host_addr="${mac_addr_base}:00" dev_addr="${mac_addr}"
 __EOF__
 
-cat <<__EOF__ >"/etc/modprobe.d/headless_optimizations.conf"
+cat <<__EOF__ >"/etc/modprobe.d/optimizations.conf"
 # Disable EFI persistent storage (not needed with U-Boot direct boot)
 blacklist efi_pstore
 
@@ -88,6 +88,9 @@ blacklist efi_pstore
 blacklist drm
 blacklist drm_kms_helper
 __EOF__
+
+sudo systemctl mask modprobe@efi_pstore.service
+sudo systemctl mask modprobe@drm.service
 
 ##############################################################################
 echo "Log: (chroot) add OreSat OLAF app daemon"
