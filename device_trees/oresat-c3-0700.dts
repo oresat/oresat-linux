@@ -246,7 +246,295 @@
   status = "okay";
   pinctrl-names = "default";
   pinctrl-0 = <&c3_i2c2_pins>;
-  clock-frequency = <100000>;
+  clock-frequency = <400000>;
+
+  proto_card: gpio@10 {
+    compatible = "maxim,max7310";
+    reg = <0x10>;
+    gpio-controller;
+    #gpio-cells = <2>;
+    gpio-line-names =
+      /* 0  */ "M33",
+      /* 1  */ "",
+      /* 2  */ "FAULT",
+      /* 3  */ "[ON/OFF]",
+      /* 4  */ "CB-RESET",
+      /* 5  */ "nISPMODE",
+      /* 6  */ "",
+      /* 7  */ "UART_EN";
+  };
+
+  diode_test_card: gpio@11 {
+    compatible = "maxim,max7310";
+    reg = <0x11>;
+    gpio-controller;
+    #gpio-cells = <2>;
+    gpio-line-names =
+      /* 0  */ "M0",
+      /* 1  */ "",
+      /* 2  */ "FAULT",
+      /* 3  */ "[ON/OFF]",
+      /* 4  */ "CB-RESET",
+      /* 5  */ "BOOT0",
+      /* 6  */ "",
+      /* 7  */ "UART_EN";
+  };
+
+  plus_z_end_card: gpio@14 {
+    compatible = "maxim,max7310";
+    reg = <0x14>;
+    gpio-controller;
+    #gpio-cells = <2>;
+    gpio-line-names =
+      /* 0  */ "READ_HELICAL",
+      /* 1  */ "FIRE_HELICAL_1",
+      /* 2  */ "FIRE_HELICAL_2",
+      /* 3  */ "TEST_HELICAL",
+      /* 4  */ "PX_UART_EN",
+      /* 5  */ "PY_UART_EN",
+      /* 6  */ "MX_UART_EN",
+      /* 7  */ "MY_UART_EN";
+  };
+  
+  minus_z_end_card: gpio@15 {
+    compatible = "maxim,max7310";
+    reg = <0x15>;
+    gpio-controller;
+    #gpio-cells = <2>;
+    gpio-line-names =
+      /* 0  */ "READ_ANTENNAS",
+      /* 1  */ "FIRE_ANTENNAS_1",
+      /* 2  */ "FIRE_ANTENNAS_2",
+      /* 3  */ "TEST_ANTENNAS",
+      /* 4  */ "PX_UART_EN",
+      /* 5  */ "PY_UART_EN",
+      /* 6  */ "MX_UART_EN",
+      /* 7  */ "MY_UART_EN";
+  };
+
+  minus_z_mid_card: gpio@16 {
+    compatible = "maxim,max7310";
+    reg = <0x16>;
+    gpio-controller;
+    #gpio-cells = <2>;
+    gpio-line-names =
+      /* 0  */ "READ_ANTENNAS",
+      /* 1  */ "FIRE_ANTENNAS_1",
+      /* 2  */ "FIRE_ANTENNAS_2",
+      /* 3  */ "TEST_ANTENNAS",
+      /* 4  */ "PX_UART_EN",
+      /* 5  */ "PY_UART_EN",
+      /* 6  */ "MX_UART_EN",
+      /* 7  */ "MY_UART_EN";
+  };
+
+  battery_1: gpio@18 {
+    compatible = "maxim,max7310";
+    reg = <0x18>;
+    gpio-controller;
+    #gpio-cells = <2>;
+    gpio-line-names =
+      /* 0  */ "",
+      /* 1  */ "",
+      /* 2  */ "FAULT",
+      /* 3  */ "[ON/OFF]",
+      /* 4  */ "CB-RESET",
+      /* 5  */ "nISPMODE",
+      /* 6  */ "",
+      /* 7  */ "UART_EN";
+  };
+
+  gps: gpio@19 {
+    compatible = "maxim,max7310";
+    reg = <0x19>;
+    gpio-controller;
+    #gpio-cells = <2>;
+    gpio-line-names =
+      /* 0  */ "SYSBOOT2",
+      /* 1  */ "",
+      /* 2  */ "FAULT",
+      /* 3  */ "[ON/OFF]",
+      /* 4  */ "CB-RESET",
+      /* 5  */ "",
+      /* 6  */ "",
+      /* 7  */ "UART_EN";
+  };
+
+  adcs_mag: gpio@1a {
+    compatible = "maxim,max7310";
+    reg = <0x1a>;
+    gpio-controller;
+    #gpio-cells = <2>;
+    gpio-line-names =
+      /* 0  */ "",
+      /* 1  */ "",
+      /* 2  */ "FAULT",
+      /* 3  */ "[ON/OFF]",
+      /* 4  */ "CB-RESET",
+      /* 5  */ "nISPMODE",
+      /* 6  */ "",
+      /* 7  */ "UART_EN";
+  };
+
+  dx_wifi: gpio@1b {
+    compatible = "maxim,max7310";
+    reg = <0x1b>;
+    gpio-controller;
+    #gpio-cells = <2>;
+    gpio-line-names =
+      /* 0  */ "SYSBOOT2",
+      /* 1  */ "",
+      /* 2  */ "FAULT",
+      /* 3  */ "[ON/OFF]",
+      /* 4  */ "CB-RESET",
+      /* 5  */ "",
+      /* 6  */ "",
+      /* 7  */ "UART_EN";
+  };
+
+  star_tracker_1: gpio@1c {
+    compatible = "maxim,max7310";
+    reg = <0x1c>;
+    gpio-controller;
+    #gpio-cells = <2>;
+    gpio-line-names =
+      /* 0  */ "",
+      /* 1  */ "",
+      /* 2  */ "FAULT",
+      /* 3  */ "[ON/OFF]",
+      /* 4  */ "CB-RESET",
+      /* 5  */ "",
+      /* 6  */ "",
+      /* 7  */ "UART_EN";
+  };
+
+  cfc_processor: gpio@1d {
+    compatible = "maxim,max7310";
+    reg = <0x1d>;
+    gpio-controller;
+    #gpio-cells = <2>;
+    gpio-line-names =
+      /* 0  */ "",
+      /* 1  */ "",
+      /* 2  */ "FAULT",
+      /* 3  */ "[ON/OFF]",
+      /* 4  */ "CB-RESET",
+      /* 5  */ "SYSBOOT",
+      /* 6  */ "",
+      /* 7  */ "UART_EN";
+  };
+
+  cfc_sensor: gpio@1e {
+    compatible = "maxim,max7310";
+    reg = <0x1e>;
+    gpio-controller;
+    #gpio-cells = <2>;
+    gpio-line-names =
+      /* 0  */ "",
+      /* 1  */ "",
+      /* 2  */ "FAULT",
+      /* 3  */ "[ON/OFF]",
+      /* 4  */ "CB-RESET",
+      /* 5  */ "",
+      /* 6  */ "",
+      /* 7  */ "UART_EN";
+  };
+
+  battery_2: gpio@1f {
+    compatible = "maxim,max7310";
+    reg = <0x1f>;
+    gpio-controller;
+    #gpio-cells = <2>;
+    gpio-line-names =
+      /* 0  */ "",
+      /* 1  */ "",
+      /* 2  */ "FAULT",
+      /* 3  */ "[ON/OFF]",
+      /* 4  */ "CB-RESET",
+      /* 5  */ "nISPMODE",
+      /* 6  */ "",
+      /* 7  */ "UART_EN";
+  };
+
+  reaction_wheel_1: gpio@20 {
+    compatible = "maxim,max7310";
+    reg = <0x20>;
+    gpio-controller;
+    #gpio-cells = <2>;
+    gpio-line-names =
+      /* 0  */ "",
+      /* 1  */ "",
+      /* 2  */ "FAULT",
+      /* 3  */ "[ON/OFF]",
+      /* 4  */ "CB-RESET",
+      /* 5  */ "BOOT0",
+      /* 6  */ "",
+      /* 7  */ "UART_EN";
+  };
+
+  reaction_wheel_2: gpio@21 {
+    compatible = "maxim,max7310";
+    reg = <0x21>;
+    gpio-controller;
+    #gpio-cells = <2>;
+    gpio-line-names =
+      /* 0  */ "",
+      /* 1  */ "",
+      /* 2  */ "FAULT",
+      /* 3  */ "[ON/OFF]",
+      /* 4  */ "CB-RESET",
+      /* 5  */ "BOOT0",
+      /* 6  */ "",
+      /* 7  */ "UART_EN";
+  };
+
+  reaction_wheel_3: gpio@22 {
+    compatible = "maxim,max7310";
+    reg = <0x22>;
+    gpio-controller;
+    #gpio-cells = <2>;
+    gpio-line-names =
+      /* 0  */ "",
+      /* 1  */ "",
+      /* 2  */ "FAULT",
+      /* 3  */ "[ON/OFF]",
+      /* 4  */ "CB-RESET",
+      /* 5  */ "BOOT0",
+      /* 6  */ "",
+      /* 7  */ "UART_EN";
+  };
+
+  reaction_wheel_4: gpio@23 {
+    compatible = "maxim,max7310";
+    reg = <0x23>;
+    gpio-controller;
+    #gpio-cells = <2>;
+    gpio-line-names =
+      /* 0  */ "",
+      /* 1  */ "",
+      /* 2  */ "FAULT",
+      /* 3  */ "[ON/OFF]",
+      /* 4  */ "CB-RESET",
+      /* 5  */ "BOOT0",
+      /* 6  */ "",
+      /* 7  */ "UART_EN";
+  };
+
+  star_tracker_2: gpio@24 {
+    compatible = "maxim,max7310";
+    reg = <0x24>;
+    gpio-controller;
+    #gpio-cells = <2>;
+    gpio-line-names =
+      /* 0  */ "",
+      /* 1  */ "",
+      /* 2  */ "FAULT",
+      /* 3  */ "[ON/OFF]",
+      /* 4  */ "CB-RESET",
+      /* 5  */ "",
+      /* 6  */ "",
+      /* 7  */ "UART_EN";
+  };
 };
 
 &spi0 {
