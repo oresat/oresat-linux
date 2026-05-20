@@ -75,8 +75,13 @@ schematic to find the pins.
 
 ![oresat_debug_board.jpg](static/oresat_debug_board.jpg)
 
-Power on the Octavo (7.2V)
+### Power on the card
+The card should have been power tested before attempting to program, this should not
+be the first time the card has been powered up.
 
+Attach the breakout to a power supply set for 7.2V and 1A. Power on the Octavo.
+
+### Programming
 Find which `/dev/i2c-n` device your adapter is. The `i2cdetect -l` utility from
 the `i2c-tools` package will be helpful. If there are no `/dev/i2c-n` devices
 you may have to load the `i2c-dev` kernel module: `sudo modprobe i2c-dev`.
