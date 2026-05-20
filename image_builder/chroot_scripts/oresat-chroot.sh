@@ -43,32 +43,39 @@ echo " Log: (chroot) enable g_ether (ethernet over usb)"
 mac_addr_base="60:64:05:f9:0d"
 case "${rfs_hostname}" in
 "oresat-c3")
-  mac_addr="${mac_addr_base}:10"
+  dev_mac_addr="${mac_addr_base}:10"
+  host_mac_addr="${mac_addr_base}:01"
   ;;
 
 "oresat-cfc")
-  mac_addr="${mac_addr_base}:20"
+  dev_mac_addr="${mac_addr_base}:20"
+  host_mac_addr="${mac_addr_base}:02"
   ;;
 
 "oresat-dxwifi")
-  mac_addr="${mac_addr_base}:30"
+  dev_mac_addr="${mac_addr_base}:30"
+  host_mac_addr="${mac_addr_base}:03"
   ;;
 
 "oresat-gps")
-  mac_addr="${mac_addr_base}:40"
+  dev_mac_addr="${mac_addr_base}:40"
+  host_mac_addr="${mac_addr_base}:04"
   ;;
 
 "oresat-star-tracker")
-  mac_addr="${mac_addr_base}:50"
+  dev_mac_addr="${mac_addr_base}:50"
+  host_mac_addr="${mac_addr_base}:05"
   ;;
 
 *)
-  mac_addr="${mac_addr_base}:f0"
+  dev_mac_addr="${mac_addr_base}:f0"
+  host_mac_addr="${mac_addr_base}:0f"
   ;;
 esac
 
-echo "g_ether" >/etc/modules-load.d/g_ether.conf
-echo "options g_ether host_addr=${mac_addr}" >/etc/modprobe.d/g_ether.conf
+cat <<__EOF__ >"/etc/modprobe.d/g_ether.conf"
+options g_ether host_addr="${host_mac_addr}" dev_addr="${dev_mac_addr}"
+__EOF__
 
 ##############################################################################
 echo "Log: (chroot) add OreSat OLAF app daemon"
@@ -161,7 +168,6 @@ OriginalName=usb0
 
 [Link]
 RequiredForOnline=no
-MACAddress=${mac_addr}
 __EOF__
 
 cat <<__EOF__ >"/etc/systemd/network/10-usb0.network"
@@ -200,7 +206,6 @@ __EOF__
 
 # make sure these are enabled
 systemctl enable systemd-networkd.service
-# systemctl enable systemd-resolved.service
 
 ##############################################################################
 #echo "Log: (chroot) rebuild pyyaml"
