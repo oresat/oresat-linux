@@ -224,6 +224,9 @@ cat <<__EOF__ >"/etc/systemd/network/10-can.network"
 [Match]
 Name=can*
 
+[Link]
+RequiredForOnline=carrier
+
 [CAN]
 BitRate=1M
 __EOF__
