@@ -18,6 +18,13 @@ LED pins, and the power regulator. All other pins are set to GPIO inputs.
     base_dtb_timestamp = __TIMESTAMP__;
   };
 
+  aliases {
+    gpio0 = &gpio0;
+    gpio1 = &gpio1;
+    gpio2 = &gpio2;
+    gpio3 = &gpio3;
+  };
+
   leds {
     pinctrl-names = "default";
     pinctrl-0 = <&user_leds_s0>;
