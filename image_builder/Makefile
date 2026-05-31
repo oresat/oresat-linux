@@ -6,7 +6,7 @@ ARCH = $(shell uname -m)
 ifeq ($(ARCH), armv7l)
 	FLAGS =
 else
-	FLAGS = ARCH=arm CROSS_COMPILE=arm-none-eabi-
+	FLAGS = ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-
 endif
 
 .PHONY: all clean $(boards) device_trees
