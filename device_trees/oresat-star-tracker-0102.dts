@@ -99,8 +99,6 @@
 };
 
 &gpio2 {
-  pinctrl-names = "default";
-  pinctrl-0 = <&c3_gpio2_pins>;
   gpio-line-names =
     /* 0  */ "",
     /* 1  */ "",
