@@ -75,9 +75,19 @@ schematic to find the pins.
 
 ![oresat_debug_board.jpg](static/oresat_debug_board.jpg)
 
+For the GPS v1.1 if it's powered through the flatsat breakout board it also
+needs to be turned on via OPD / the C3 surrogate board. That's complicated to
+set up so it ends up easier to plug power directly into vbusp. Also pictured
+both eeprom write protect and the i2c connection need to be grounded but the
+i2c adapter only has one ground pin so we alligator clipped the card ground to
+the i2c body as a way to get around that. Finally note that WP is the left most
+TP and SCL/SDA are the two rightmost, the inner left TP is left unconnected.
+
+![gpsv11_eeprom_i2c.jpg](static/gpsv11_eeprom_i2c.jpg)
+
 ### Power on the card
-The card should have been power tested before attempting to program, this should not
-be the first time the card has been powered up.
+The card should have been power tested before attempting to program, this should
+not be the first time the card has been powered up.
 
 Attach the breakout to a power supply set for 7.2V and 1A. Power on the Octavo.
 
@@ -95,8 +105,37 @@ Example: Flash info for a v6.0 C3 card #1:
 
     ./eeprom.py write /dev/i2c-n c3 6.0 1
 
+This will print the flashed bytes on success:
+
+    b'\xaaU3\xeeA335OSC306002226PSAS0001'
+
 Example: Read the EEPROM ID:
 
     ./eeprom.py read /dev/i2c-n
 
+This will print the raw and decoded EEPROM values on success.
+
+    b'\xaaU3\xeeA335OSC306002226PSAS0001'
+    Identifier(name='C3', major=6, minor=0, number=1, year=26, week=22)
+
 `read` can be helpful for testing if you've connected the hardware correctly.
+
+### Debugging
+
+The i2cprobe utility either will only see the EEPROM address once or not at all
+but then it will lock up the bus. If the bus is probed the card will need to be
+powercycled to get the EEPROM talking again.
+
+Reading from an unprogrammed EEPROM will return a long string of 0xff bytes and
+then emit an error when it tries to decode that.
+
+### EEPROM data format
+
+The example EEPROM data b'\xaaU3\xeeA335OSC306002226PSAS0001' can be read as:
+- 0xAA5533EE: Header
+- A335: CPU identifier - here for the AM335x
+- OSC3: Board identifier - here "OreSat C3"
+- 0600: Board revision, two digits major, two digits minor - here 6.0
+- 2226: Date, two digits week and here - here week 22, year 26
+- PSAS: Fixed, always PSAS
+- 0001: Board number, four digits
