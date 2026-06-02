@@ -181,6 +181,18 @@ spidev
 __EOF__
 
 ##############################################################################
+echo "Log: (chroot) setup udev rules"
+
+cat <<__EOF__ >"/etc/udev/rules.d/10-gpiochip.rules"
+SUBSYSTEM=="gpio", DEVPATH=="*/i2c-2/*/gpiochip*", PROGRAM="/usr/bin/basename %E{OF_FULLNAME}", SYMLINK+="opd/%c"
+
+ENV{OF_FULLNAME}=="/ocp/interconnect@44c00000/segment@200000/target-module@7000/gpio@0", SYMLINK+="gpio/gpiochip0"
+ENV{OF_FULLNAME}=="/ocp/interconnect@48000000/segment@0/target-module@4c000/gpio@0", SYMLINK+="gpio/gpiochip1"
+ENV{OF_FULLNAME}=="/ocp/interconnect@48000000/segment@100000/target-module@ac000/gpio@0", SYMLINK+="gpio/gpiochip2"
+ENV{OF_FULLNAME}=="/ocp/interconnect@48000000/segment@100000/target-module@ae000/gpio@0", SYMLINK+="gpio/gpiochip3"
+__EOF__
+
+##############################################################################
 # TODO:
 # Write heredoc for journald.conf
 
