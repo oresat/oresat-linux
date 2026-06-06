@@ -192,8 +192,10 @@ ENV{OF_FULLNAME}=="/ocp/interconnect@48000000/segment@100000/target-module@ae000
 __EOF__
 
 ##############################################################################
-# TODO:
-# Write heredoc for journald.conf
+cat <<__EOF__ >"/etc/systemd/journald.conf"
+[Journal]
+SystemMaxUse=2G
+__EOF__
 
 ##############################################################################
 # Write heredoc for fstab
