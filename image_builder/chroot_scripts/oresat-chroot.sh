@@ -196,8 +196,12 @@ __EOF__
 # Write heredoc for journald.conf
 
 ##############################################################################
-# TODO:
 # Write heredoc for fstab
+cat <<__EOF__ >"/etc/fstab"
+# <file system>                                 <mount point>   <type>  <options>           <dump>  <pass>
+PARTUUID=00000000-0000-0000-0000-000000000000   /               ext4    defaults,noatime    0       1
+PARTUUID=11111111-1111-1111-1111-111111111111   /boot           vfat    defaults            0       2
+__EOF__
 
 ##############################################################################
 echo "Log: (chroot) add systemd-networkd configs"

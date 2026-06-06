@@ -69,38 +69,24 @@ kernel_select() {
 # get the first available kernel
 kernel_select
 
-# set up uenv
-echo "Log: (post-build) building boot fs"
-echo "uname_r=${kernel_version}" >>"${root_fs}/boot/uEnv.txt"
-echo "cmdline=fsck.repair=yes earlycon net.ifnames=0" >>"${root_fs}/boot/uEnv.txt"
-
 ###################################################################################################
+echo "Log: (post-build) building boot fs"
+
 # set up bootfs
-mkdir -p "${boot_fs}"
+# copy over existing boot directory to boot fs
+cp -a "${root_fs}/boot" "${boot_fs}"
+
 cat <<__EOF__ >"${boot_fs}/sysconf.txt"
 user_name="${rfs_username}"
 user_password="${rfs_password}"
 hostname="${rfs_hostname}"
 __EOF__
 
-cp -v "${root_fs}/boot/vmlinuz-${kernel_version}" "${boot_fs}"
-cp -v "${root_fs}/boot/initrd.img-${kernel_version}" "${boot_fs}"
+# set up uenv
+echo "uname_r=${kernel_version}" >>"${boot_fs}/uEnv.txt"
+echo "cmdline=fsck.repair=yes earlycon net.ifnames=0" >>"${boot_fs}/uEnv.txt"
 
-echo "Log: (post-build) copying fdt"
-mkdir -p "${boot_fs}/dtbs/${kernel_version}"
-
-if [ "${rfs_hostname}" != "oresat-dev" ]; then
-  dtbs=("${root_fs}/boot/dtbs/${kernel_version}/${rfs_hostname}"-*.dtb)
-
-  # select the latest dtb, strip directory and suffix
-  fdt=$(basename "${dtbs[-1]}")
-else
-  fdt="am335x-pocketbeagle.dtb"
-fi
-
-echo "Log: (post-build) configuring extlinux"
-cp -v "${root_fs}/boot/dtbs/${kernel_version}/${fdt}" "${boot_fs}/dtbs/${kernel_version}"
-
+echo "Log: (post-build) configuring extlinux bootmeth"
 mkdir -p "${boot_fs}/extlinux"
 cat <<__EOF__ >"${boot_fs}/extlinux/extlinux.conf"
 TIMEOUT 1
