@@ -24,8 +24,8 @@ fi
 disk_size_sectors=$(blockdev --getsz "${disk}")
 sector_size=$(blockdev --getss "${disk}")
 
-# calculate offset for 512M swap partition at end of disk
-swap_size_bytes=$((512 * 1024 * 1024))
+# calculate offset for 256M swap partition at end of disk
+swap_size_bytes=$((256 * 1024 * 1024))
 swap_size_sectors=$((swap_size_bytes / sector_size))
 
 # assuming that the root partition is directly after the boot partition
@@ -33,8 +33,13 @@ start=$(blockdev --getsz "${disk}p1")
 offset=$((disk_size_sectors - swap_size_sectors - start))
 
 # resize root to fill blockdev and leave space for swap
-echo -e ",+${offset}," | sfdisk -N "${part}" "${disk}"
-resize2fs "${mounted_root_partition}"
+echo -e ",+${offset}," | sfdisk --force -N "${part}" "${disk}"
 
 # create swap partition to fill the remaining space
-echo -e ",+,S" | sfdisk --append "${disk}"
+echo -e ",+,S" | sfdisk --force --append "${disk}"
+sleep 1
+
+# inform the kernel of the new layout
+partx -u "${disk}"
+mkswap "${disk}p3"
+resize2fs "${disk}p${part}"
