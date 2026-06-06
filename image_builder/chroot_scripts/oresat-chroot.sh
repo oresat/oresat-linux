@@ -144,7 +144,6 @@ Group=root
 WantedBy=multi-user.target
 __EOF__
 
-systemctl daemon-reload
 systemctl enable grow-partition.service
 
 ##############################################################################
