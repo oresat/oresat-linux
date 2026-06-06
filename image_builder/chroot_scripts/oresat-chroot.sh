@@ -268,4 +268,15 @@ mv /tmp/*.dtb "${dtb_dir}"
 chmod 755 "${dtb_dir}"/oresat*
 
 ##############################################################################
+# Flight images only
+
+if [ "${rfs_hostname}" != "oresat-dev" ]; then
+  echo "remove internet packages required during build"
+  apt -y purge git git-man curl wget rsync
+
+  echo "disable timesyncd"
+  systemctl disable systemd-timesyncd.service
+fi
+
+##############################################################################
 systemctl set-default multi-user.target
