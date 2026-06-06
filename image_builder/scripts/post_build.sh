@@ -8,7 +8,6 @@ fi
 target_dir="fs"
 root_fs="fs/fs-rootfs"
 boot_fs="fs/fs-bootfs"
-var_fs="fs/fs-varfs"
 fdt=""
 
 # these are supplied by the project config file
@@ -74,14 +73,6 @@ kernel_select
 echo "Log: (post-build) building boot fs"
 echo "uname_r=${kernel_version}" >>"${root_fs}/boot/uEnv.txt"
 echo "cmdline=fsck.repair=yes earlycon net.ifnames=0" >>"${root_fs}/boot/uEnv.txt"
-
-###################################################################################################
-# set up varfs
-
-mkdir -p "${var_fs}"
-
-# populates varfs with the contents of /var
-cp -av "${root_fs}/var/." "${var_fs}/"
 
 ###################################################################################################
 # set up bootfs
