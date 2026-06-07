@@ -86,6 +86,15 @@ __EOF__
 echo "uname_r=${kernel_version}" >>"${boot_fs}/uEnv.txt"
 echo "cmdline=fsck.repair=yes earlycon net.ifnames=0" >>"${boot_fs}/uEnv.txt"
 
+if [ "${rfs_hostname}" != "oresat-dev" ]; then
+  dtbs=("${boot_fs}/dtbs/${kernel_version}/${rfs_hostname}"-*.dtb)
+
+  # select the latest dtb, strip directory and suffix
+  fdt=$(basename "${dtbs[-1]}")
+else
+  fdt="am335x-pocketbeagle.dtb"
+fi
+
 echo "Log: (post-build) configuring extlinux bootmeth"
 mkdir -p "${boot_fs}/extlinux"
 cat <<__EOF__ >"${boot_fs}/extlinux/extlinux.conf"
