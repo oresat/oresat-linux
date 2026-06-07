@@ -33,7 +33,7 @@ start=$(blockdev --getsz "${disk}p1")
 offset=$((disk_size_sectors - swap_size_sectors - start))
 
 # resize root to fill blockdev and leave space for swap
-echo -e ",+${offset}," | sfdisk --force -N "${part}" "${disk}"
+echo -e ",${offset}," | sfdisk --force -N "${part}" "${disk}"
 
 # create swap partition to fill the remaining space
 echo -e ",+,S" | sfdisk --force --append "${disk}"
