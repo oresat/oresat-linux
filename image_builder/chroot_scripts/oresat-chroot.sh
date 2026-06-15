@@ -127,24 +127,25 @@ if [ "${rfs_hostname}" != "oresat-dev" ] && [ "${rfs_hostname}" != "oresat-gener
 fi
 
 ##############################################################################
-echo "Log: (chroot) add growparts oneshot daemon"
+echo "Log: (chroot) setup systemd-repart"
+mkdir /etc/repart.d
 
-cat <<__EOF__ >"/etc/systemd/system/grow-partition.service"
-[Unit]
-Description=Grow active root partition
-
-[Service]
-Type=oneshot
-ExecStart=bash /opt/scripts/grow_partition.sh
-ExecStart=systemctl disable grow-partition
-User=root
-Group=root
-
-[Install]
-WantedBy=multi-user.target
+cat <<__EOF__ >"/etc/repart.d/10-root.conf"
+[Partition]
+Type=root
+Label=rootfs
+SizeMinBytes=2G
+GrowFileSystem=yes
 __EOF__
 
-systemctl enable grow-partition.service
+cat <<__EOF__ >"/etc/repart.d/30-swap.conf"
+[Partition]
+Type=swap
+Label=swap
+Format=swap
+SizeMinBytes=256M
+SizeMaxBytes=256M
+__EOF__
 
 ##############################################################################
 echo "Log: (chroot) setup and configure nginx for OreSat OLAF app"
@@ -183,12 +184,12 @@ __EOF__
 echo "Log: (chroot) setup udev rules"
 
 cat <<__EOF__ >"/etc/udev/rules.d/10-gpiochip.rules"
-SUBSYSTEM=="gpio", DEVPATH=="*/i2c-2/*/gpiochip*", PROGRAM="/usr/bin/basename %E{OF_FULLNAME}", SYMLINK+="opd/%c"
+SUBSYSTEM=="gpio", DEVPATH=="*/i2c-2/*/gpiochip*", PROGRAM="/usr/bin/basename %E{OF_FULLNAME}", SYMLINK+="opd/%c", TAG+="uaccess"
 
-ENV{OF_FULLNAME}=="/ocp/interconnect@44c00000/segment@200000/target-module@7000/gpio@0", SYMLINK+="gpio/gpiochip0"
-ENV{OF_FULLNAME}=="/ocp/interconnect@48000000/segment@0/target-module@4c000/gpio@0", SYMLINK+="gpio/gpiochip1"
-ENV{OF_FULLNAME}=="/ocp/interconnect@48000000/segment@100000/target-module@ac000/gpio@0", SYMLINK+="gpio/gpiochip2"
-ENV{OF_FULLNAME}=="/ocp/interconnect@48000000/segment@100000/target-module@ae000/gpio@0", SYMLINK+="gpio/gpiochip3"
+ENV{OF_FULLNAME}=="/ocp/interconnect@44c00000/segment@200000/target-module@7000/gpio@0", SYMLINK+="gpio/gpiochip0", TAG+="uaccess"
+ENV{OF_FULLNAME}=="/ocp/interconnect@48000000/segment@0/target-module@4c000/gpio@0", SYMLINK+="gpio/gpiochip1", TAG+="uaccess"
+ENV{OF_FULLNAME}=="/ocp/interconnect@48000000/segment@100000/target-module@ac000/gpio@0", SYMLINK+="gpio/gpiochip2", TAG+="uaccess"
+ENV{OF_FULLNAME}=="/ocp/interconnect@48000000/segment@100000/target-module@ae000/gpio@0", SYMLINK+="gpio/gpiochip3", TAG+="uaccess"
 __EOF__
 
 ##############################################################################
@@ -199,10 +200,12 @@ __EOF__
 
 ##############################################################################
 # Write heredoc for fstab
+# FIXME: rootfs option ,x-systemd.growfs
 cat <<__EOF__ >"/etc/fstab"
-# <file system>                                 <mount point>   <type>  <options>           <dump>  <pass>
-PARTUUID=00000000-0000-0000-0000-000000000000   /               ext4    defaults,noatime    0       1
-PARTUUID=11111111-1111-1111-1111-111111111111   /boot           vfat    defaults            0       2
+# <file system       <mount point>   <type>  <options>                            <dump>  <pass>
+PARTLABEL=rootfs     /               ext4    defaults,noatime                     0       1
+PARTLABEL=boot       /boot           vfat    defaults                             0       2
+PARTLABEL=swap       none            swap    sw                                   0       0
 __EOF__
 
 ##############################################################################
