@@ -127,26 +127,6 @@ if [ "${rfs_hostname}" != "oresat-dev" ] && [ "${rfs_hostname}" != "oresat-gener
 fi
 
 ##############################################################################
-echo "Log: (chroot) add growparts oneshot daemon"
-
-cat <<__EOF__ >"/etc/systemd/system/grow-partition.service"
-[Unit]
-Description=Grow active root partition
-
-[Service]
-Type=oneshot
-ExecStart=bash /opt/scripts/grow_partition.sh
-ExecStart=systemctl disable grow-partition
-User=root
-Group=root
-
-[Install]
-WantedBy=multi-user.target
-__EOF__
-
-systemctl enable grow-partition.service
-
-##############################################################################
 echo "Log: (chroot) setup and configure nginx for OreSat OLAF app"
 
 cat <<__EOF__ >"/etc/nginx/nginx.conf"
