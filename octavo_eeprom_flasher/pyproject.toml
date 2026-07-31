@@ -28,6 +28,7 @@ quote-style = "preserve"
 [tool.ruff.lint]
 select = [ "ALL" ]
 ignore = [
+    "CPY001",
     "Q000",
     "Q001",
     "Q002",

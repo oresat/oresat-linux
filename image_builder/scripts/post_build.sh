@@ -49,12 +49,16 @@ echo "Log: (post-build) building root fs"
 mkdir -p "${root_fs}"
 tar xf armhf-rootfs-debian-*.tar -C "${root_fs}"
 
+###################################################################################################
+# set up rootfs
+
 dir_check="${root_fs}/boot"
 kernel_select() {
   echo "debug: kernel_select: picking the first available kernel..."
-  check=("${dir_check}"/vimlinuz*)
+  check=("${dir_check}"/vmlinuz*)
   if [ "${check[0]}" != "" ]; then
-    kernel_version="${check[0]#vmlinuz-}"
+    kernel_version=$(basename "${check[0]}")
+    kernel_version="${kernel_version#vmlinuz-}"
     echo "debug: kernel_select: found: [${kernel_version}]"
   else
     echo "ERROR: no installed kernel"
@@ -70,6 +74,8 @@ echo "Log: (post-build) building boot fs"
 echo "uname_r=${kernel_version}" >>"${root_fs}/boot/uEnv.txt"
 echo "cmdline=fsck.repair=yes earlycon net.ifnames=0" >>"${root_fs}/boot/uEnv.txt"
 
+###################################################################################################
+# set up bootfs
 mkdir -p "${boot_fs}"
 cat <<__EOF__ >"${boot_fs}/sysconf.txt"
 user_name="${rfs_username}"

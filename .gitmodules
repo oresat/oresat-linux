@@ -4,6 +4,8 @@
 [submodule "image_builder/image-builder"]
 	path = image_builder/image-builder
 	url = https://github.com/RobertCNelson/omap-image-builder.git
+  	ignore = untracked
 [submodule "device_trees/BeagleBoard-DeviceTrees"]
 	path = device_trees/BeagleBoard-DeviceTrees
 	url = https://github.com/beagleboard/BeagleBoard-DeviceTrees.git
+  	ignore = untracked

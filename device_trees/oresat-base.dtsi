@@ -13,9 +13,16 @@ LED pins, and the power regulator. All other pins are set to GPIO inputs.
   compatible = "ti,am33xx";
 
   chosen {
-    stdout-path = &uart0;
+    stdout-path = "serial0:115200n8";
     base_dtb = "am335x-osd3358-min.dts";
     base_dtb_timestamp = __TIMESTAMP__;
+  };
+
+  aliases {
+    gpio0 = &gpio0;
+    gpio1 = &gpio1;
+    gpio2 = &gpio2;
+    gpio3 = &gpio3;
   };
 
   leds {

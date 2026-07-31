@@ -43,32 +43,60 @@ echo " Log: (chroot) enable g_ether (ethernet over usb)"
 mac_addr_base="60:64:05:f9:0d"
 case "${rfs_hostname}" in
 "oresat-c3")
-  mac_addr="${mac_addr_base}:10"
+  dev_mac_addr="${mac_addr_base}:10"
+  host_mac_addr="${mac_addr_base}:01"
   ;;
 
 "oresat-cfc")
-  mac_addr="${mac_addr_base}:20"
+  dev_mac_addr="${mac_addr_base}:20"
+  host_mac_addr="${mac_addr_base}:02"
   ;;
 
 "oresat-dxwifi")
-  mac_addr="${mac_addr_base}:30"
+  dev_mac_addr="${mac_addr_base}:30"
+  host_mac_addr="${mac_addr_base}:03"
   ;;
 
 "oresat-gps")
-  mac_addr="${mac_addr_base}:40"
+  dev_mac_addr="${mac_addr_base}:40"
+  host_mac_addr="${mac_addr_base}:04"
   ;;
 
 "oresat-star-tracker")
-  mac_addr="${mac_addr_base}:50"
+  dev_mac_addr="${mac_addr_base}:50"
+  host_mac_addr="${mac_addr_base}:05"
   ;;
 
 *)
-  mac_addr="${mac_addr_base}:f0"
+  dev_mac_addr="${mac_addr_base}:f0"
+  host_mac_addr="${mac_addr_base}:0f"
   ;;
 esac
 
+# TODO:
+# replace g_ether with libcomposite, since it's deprecated
+
+# NOTE:
+# set Hardware (MAC) address for USB gadget ethernet (RNDIS)
+# host address applies to the USB host
+# device address applies to the card
+# For more details see https://elixir.bootlin.com/linux/v6.12.34/source/drivers/usb/gadget/legacy/ether.c#L360-L363
 echo "g_ether" >/etc/modules-load.d/g_ether.conf
-echo "options g_ether host_addr=${mac_addr}" >/etc/modprobe.d/g_ether.conf
+cat <<__EOF__ >"/etc/modprobe.d/g_ether.conf"
+options g_ether host_addr="${host_mac_addr}" dev_addr="${dev_mac_addr}"
+__EOF__
+
+cat <<__EOF__ >"/etc/modprobe.d/optimizations.conf"
+# Disable EFI persistent storage (not needed with U-Boot direct boot)
+blacklist efi_pstore
+
+# Disable Graphics/Display subsystem for headless operation
+blacklist drm
+blacklist drm_kms_helper
+__EOF__
+
+sudo systemctl mask modprobe@efi_pstore.service
+sudo systemctl mask modprobe@drm.service
 
 ##############################################################################
 echo "Log: (chroot) add OreSat OLAF app daemon"
@@ -97,27 +125,6 @@ systemctl daemon-reload
 if [ "${rfs_hostname}" != "oresat-dev" ] && [ "${rfs_hostname}" != "oresat-generic" ]; then
   systemctl enable "${rfs_hostname}d.service"
 fi
-
-##############################################################################
-echo "Log: (chroot) add growparts oneshot daemon"
-
-cat <<__EOF__ >"/etc/systemd/system/grow-partition.service"
-[Unit]
-Description=Grow active root partition
-
-[Service]
-Type=oneshot
-ExecStart=bash /opt/scripts/grow_partition.sh
-ExecStart=systemctl disable grow-partition
-User=root
-Group=root
-
-[Install]
-WantedBy=multi-user.target
-__EOF__
-
-systemctl daemon-reload
-systemctl enable grow-partition.service
 
 ##############################################################################
 echo "Log: (chroot) setup and configure nginx for OreSat OLAF app"
@@ -153,15 +160,31 @@ spidev
 __EOF__
 
 ##############################################################################
+echo "Log: (chroot) setup udev rules"
+
+cat <<__EOF__ >"/etc/udev/rules.d/10-gpiochip.rules"
+SUBSYSTEM=="gpio", DEVPATH=="*/i2c-2/*/gpiochip*", PROGRAM="/usr/bin/basename %E{OF_FULLNAME}", SYMLINK+="opd/%c"
+
+ENV{OF_FULLNAME}=="/ocp/interconnect@44c00000/segment@200000/target-module@7000/gpio@0", SYMLINK+="gpio/gpiochip0"
+ENV{OF_FULLNAME}=="/ocp/interconnect@48000000/segment@0/target-module@4c000/gpio@0", SYMLINK+="gpio/gpiochip1"
+ENV{OF_FULLNAME}=="/ocp/interconnect@48000000/segment@100000/target-module@ac000/gpio@0", SYMLINK+="gpio/gpiochip2"
+ENV{OF_FULLNAME}=="/ocp/interconnect@48000000/segment@100000/target-module@ae000/gpio@0", SYMLINK+="gpio/gpiochip3"
+__EOF__
+
+##############################################################################
+# TODO:
+# Write heredoc for journald.conf
+
+##############################################################################
+# TODO:
+# Write heredoc for fstab
+
+##############################################################################
 echo "Log: (chroot) add systemd-networkd configs"
 
 cat <<__EOF__ >"/etc/systemd/network/10-usb0.link"
 [Match]
 OriginalName=usb0
-
-[Link]
-RequiredForOnline=no
-MACAddress=${mac_addr}
 __EOF__
 
 cat <<__EOF__ >"/etc/systemd/network/10-usb0.network"
@@ -171,14 +194,12 @@ Name=usb0
 [Network]
 DHCP=yes
 MulticastDNS=yes
+RequiredForOnline=no
 __EOF__
 
 cat <<__EOF__ >"/etc/systemd/network/10-eth0.link"
 [Match]
-Name=eth0
-
-[Link]
-RequiredForOnline=no 
+OriginalName=eth0
 __EOF__
 
 cat <<__EOF__ >"/etc/systemd/network/10-eth0.network"
@@ -187,12 +208,15 @@ Name=eth0
 
 [Network]
 DHCP=yes
-MulticastDNS=yes
+RequiredForOnline=no
 __EOF__
 
-cat <<__EOF__ >"/ect/systemd/network/10-can.network"
+cat <<__EOF__ >"/etc/systemd/network/10-can.network"
 [Match]
 Name=can*
+
+[Link]
+RequiredForOnline=carrier
 
 [CAN]
 BitRate=1M
@@ -218,12 +242,4 @@ mv /tmp/*.dtb "${dtb_dir}"
 chmod 755 "${dtb_dir}"/oresat*
 
 ##############################################################################
-# Flight images only
-
-if [ "${rfs_hostname}" != "oresat-dev" ]; then
-  echo "remove internet packages required during build"
-  apt -y purge git git-man curl wget rsync
-
-  echo "disable timesyncd"
-  systemctl disable systemd-timesyncd.service
-fi
+systemctl set-default multi-user.target
