@@ -535,6 +535,11 @@
       /* 6  */ "",
       /* 7  */ "UART_EN";
   };
+
+  ext_rtc: rtc@52 {
+      compatible = "microcrystal, rv3028";
+      reg = <0x52>;
+  };
 };
 
 &spi0 {
