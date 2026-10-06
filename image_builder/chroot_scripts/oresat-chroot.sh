@@ -234,6 +234,10 @@ python3 -m pip install --break-system-packages \
 
 ##############################################################################
 echo "Log: (chroot) add oresat device trees to /boot"
+
+KERNEL_VERSION=$(ls /lib/modules | grep bone | head -n 1)
+mkdir -p "/boot/dtbs/${KERNEL_VERSION}"
+
 dtb_dirs=(/boot/dtbs/*)
 
 # get first available dtb dir
