@@ -46,7 +46,9 @@ OreSat scripts executed at specific moments.
 Install dependencies
 
 ```bash
-$ sudo apt install git zstd device-tree-compiler make cpp m4 gcc dosfstools kpartx wget parted tree bc
+$ sudo apt install git zstd device-tree-compiler make cpp m4 gcc dosfstools kpartx wget parted tree bc bison flex libssl-dev
+
+For u-boot dependencies, go to [here](https://docs.u-boot.org/en/v2025.01/build/gcc.html)
 ```
 
 Clone the oresat-linux repo
