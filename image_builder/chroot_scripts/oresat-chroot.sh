@@ -160,6 +160,13 @@ spidev
 __EOF__
 
 ##############################################################################
+echo "Log: (chroot) enable RTC-RV3028 kernel module at boot"
+
+cat <<__EOF__ >"/etc/modules-load.d/rtc-rv3028.conf"
+rtc-rv3028
+__EOF__
+
+##############################################################################
 echo "Log: (chroot) setup udev rules"
 
 cat <<__EOF__ >"/etc/udev/rules.d/10-gpiochip.rules"
