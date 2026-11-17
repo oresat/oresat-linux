@@ -160,6 +160,13 @@ spidev
 __EOF__
 
 ##############################################################################
+echo "Log: (chroot) enable RTC-RV3028 kernel module at boot"
+
+cat <<__EOF__ >"/etc/modules-load.d/rtc-rv3028.conf"
+rtc-rv3028
+__EOF__
+
+##############################################################################
 echo "Log: (chroot) setup udev rules"
 
 cat <<__EOF__ >"/etc/udev/rules.d/10-gpiochip.rules"
@@ -234,6 +241,14 @@ python3 -m pip install --break-system-packages \
 
 ##############################################################################
 echo "Log: (chroot) add oresat device trees to /boot"
+
+for dir in /lib/modules/*bone[0-9]*; do
+    [ -d "$dir" ] || continue
+    KERNEL_VERSION=$(basename "$dir")
+    break
+done
+mkdir -p "/boot/dtbs/${KERNEL_VERSION}"
+
 dtb_dirs=(/boot/dtbs/*)
 
 # get first available dtb dir
