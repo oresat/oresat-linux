@@ -11,7 +11,7 @@ if [ -z "$current_mode" ]; then
     echo "RTC-RV3028: could not read device mode"
     exit 1
 else
-    if [ ${current_mode} == ${lsm} ]; then
+    if [ "${current_mode}" == "${lsm}" ]; then
         echo "RTC-RV3028 Level Switching Mode (LSM) Active"
     else
         echo "RTC-RV3028 Level Switching Mode (LSM) Enabled"
