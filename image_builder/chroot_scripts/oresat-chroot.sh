@@ -160,6 +160,33 @@ spidev
 __EOF__
 
 ##############################################################################
+echo "Log: (chroot) enable RTC-RV3028 kernel module at boot"
+
+cat <<__EOF__ >"/etc/modules-load.d/rtc-rv3028.conf"
+rtc-rv3028
+__EOF__
+
+# add config
+cat <<__EOF__ >"/etc/systemd/system/rtc-mode.service"
+[Unit]
+Description=Enable RTC-RV3028 Level Switching Mode (LSM)
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+RemainAfterExit=True
+ExecStart=/opt/scripts/rtc_mode.sh
+
+[Install]
+WantedBy=multi-user.target
+Alias=rtc.service
+__EOF__
+
+# enable service
+systemctl enable rtc-mode.service
+
+##############################################################################
 echo "Log: (chroot) setup udev rules"
 
 cat <<__EOF__ >"/etc/udev/rules.d/10-gpiochip.rules"
