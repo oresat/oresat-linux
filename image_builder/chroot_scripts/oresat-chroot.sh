@@ -176,7 +176,7 @@ Type=oneshot
 User=root
 Group=root
 RemainAfterExit=True
-ExecStart=/bin/bash/rtc_mode.sh
+ExecStart=/opt/scripts/rtc_mode.sh
 
 [Install]
 WantedBy=multi-user.target
